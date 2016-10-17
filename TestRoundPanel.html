@@ -12,7 +12,7 @@
 <script src="js/VILibraries/EChart_RoundPanelVI.js"></script>
 <script>
     'use strict';
-    var round = new RoundPanel(document.getElementById('test'), '速度', 0, 200, 'KM/H');
+    var round = new RoundPanelVI(document.getElementById('test'), '速度', 0, 200, 'KM/H');
     setInterval(function () {
         round.setData((Math.random() * 200).toFixed(2))
     }, 1000);

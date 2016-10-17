@@ -7,7 +7,7 @@
  * @param domElement    HTML5中CANVAS对象
  * @constructor
  */
-function Wave(domElement) {
+function WaveVI(domElement) {
     var _this = this;
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
@@ -22,6 +22,7 @@ function Wave(domElement) {
     this.XMinVal = 0;
     this.YMaxVal = 10;
     this.YMinVal = -10;
+    this.autoZoom = true;
 
     //网格行列数//
     this.nRow = 5;
@@ -50,7 +51,7 @@ function Wave(domElement) {
     this.bufferVal = [];
     this.curPointX = this.offsetL;
     this.curPointY = this.offsetT;
-    console.log('Wave.js version 0.1');
+    console.log('WaveVI.js version 0.1');
 
     this.Paint = function () {
         _this.DrawBackground();
@@ -244,18 +245,32 @@ function Wave(domElement) {
         _this.ctx.closePath();
     };
 
-    this.WaveReset = function () {
+    this.reset = function () {
         for (var i = 0; i < len; i++) {
             _this.bufferVal[i] = 0.0;
         }
         _this.Paint();
     };
 
-    this.SetWaveValue = function (data, len) {
+    this.SetData = function (data, len) {
         _this.pointNum = len;
         _this.XMaxVal = len;
+        var YMax = 0, YMin = 0;
         for (var i = 0; i < len; i++) {
             _this.bufferVal[i] = data[i];
+            YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
+            YMin = YMin > _this.bufferVal[i] ? _this.bufferVal[i] : YMin;
+        }
+        if (_this.autoZoom) {
+            if ((_this.YMaxVal <= YMax) || (_this.YMaxVal - YMax > 5 * (YMax - YMin))) {
+                _this.YMaxVal = 2 * YMax - YMin;
+                _this.YMinVal = 2 * YMin - YMax;
+            }
+
+            if ((_this.YMinVal >= YMin) || (YMin - _this.YMaxVal > 5 * (YMax - YMin))) {
+                _this.YMaxVal = 2 * YMax - YMin;
+                _this.YMinVal = 2 * YMin - YMax;
+            }
         }
         _this.Paint();
     };
@@ -349,9 +364,6 @@ function Wave(domElement) {
                     data.push(AMP * (t1 - 6 * t2) / (3 * t2));
                 }
                 return data;
-
-            default:
-                return false;
         }
     };
 

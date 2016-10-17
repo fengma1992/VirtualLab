@@ -11,7 +11,7 @@
  * @param domElement    div容器
  * @constructor EChart.js
  */
-function RoundPanel(domElement, name, min, max, unit) {
+function RoundPanelVI(domElement, name, min, max, unit) {
     var _this = this;
     // 初始化echarts图表
     this.myChart = echarts.init(domElement);

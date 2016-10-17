@@ -2,21 +2,74 @@
 * css reset
 ********************************************************************/
 
-div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td { margin:0; padding:0; }
-body { margin:0 auto; padding:0; background:#fff; color:#555; font-size:14px; font-family: Verdana, Arial, Helvetica, sans-serif;}
-td,th,caption { font-size:14px; }
-h1, h2, h3, h4, h5, h6 { font-weight:normal; font-size:100%; }
-address, caption, cite, code, dfn, em, strong, th, var { font-style:normal; font-weight:normal;}
-a { color:#555; text-decoration:none; }
-a:hover { text-decoration:underline; }
-img { border:none; }
-ol,ul,li { list-style:none; }
-input, textarea, select, button { font:14px Verdana,Helvetica,Arial,sans-serif; }
-table { border-collapse:collapse; }
-html {overflow-y: scroll;}
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, button, textarea, p, blockquote, th, td {
+    margin: 0;
+    padding: 0;
+}
 
-.clearfix:after {content: "."; display: block; height:0; clear:both; visibility: hidden;}
-.clearfix { *zoom:1; }
+body {
+    margin: 0 auto;
+    padding: 0;
+    background: #fff;
+    color: #555;
+    font-size: 14px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+td, th, caption {
+    font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    font-size: 100%;
+}
+
+address, caption, cite, code, dfn, em, strong, th, var {
+    font-style: normal;
+    font-weight: normal;
+}
+
+a {
+    color: #555;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    border: none;
+}
+
+ol, ul, li {
+    list-style: none;
+}
+
+input, textarea, select, button {
+    font: 14px Verdana, Helvetica, Arial, sans-serif;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+html {
+    overflow-y: scroll;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.clearfix {
+    *zoom: 1;
+}
 
 /*****************************************************************/
 
@@ -39,7 +92,7 @@ html {overflow-y: scroll;}
     width: 9%;
 }
 
-input {
+.dataInput {
     width: 95%;
     height: 100%;
     text-align: center;
@@ -63,7 +116,7 @@ input {
     display: none;
 }
 
-#loadingDiv{
+#loadingDiv {
     display: none;
     position: absolute;
     top: 20%;
@@ -71,47 +124,64 @@ input {
     width: 20%;
     height: 20%;
     z-index: 1001;
-    text-align:center;
+    text-align: center;
 }
 
-.signalBtn{
+.normalBtn {
     text-align: center;
     font-size: 1.2em;
     padding: 2px 10px;
 }
 
-.flexDiv{
+.rowFlexDiv {
     display: flex;
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
 }
 
-.signalInput{
+.columnFlexDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.signalInput {
     width: 80px;
     height: 30px;
     font-size: 1.2em;
 }
 
-#videoFlexDiv{
+#controlDiv {
     display: flex;
+    flex-direction: column;
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
+    width: 320px;
 }
 
-#controlDiv{
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.pictureCanvas{
+.pictureCanvas {
     background-color: #dcecf1;
+    margin: 5px 5px;
 }
 
-#buttonDiv{
+#buttonDiv {
     width: 300px;
     float: right;
+}
+
+.PIDInput {
+    width: 50px;
+    font-size: 1.2em;
+    padding: 5px 5px;
+    text-align: center;
+}
+
+.normalSpan {
+    font-size: 1.2em;
+    padding: 5px 5px;
 }

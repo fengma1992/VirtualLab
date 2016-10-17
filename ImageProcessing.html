@@ -7,19 +7,24 @@
 </head>
 <body>
 <div class="mainDiv">
-    <div id="videoFlexDiv">
+    <div class="rowFlexDiv">
         <video id="video" width="320" height="240" class="pictureCanvas" autoplay="autoplay"></video>
         <canvas id="captureCanvas" width="320" height="240" class="pictureCanvas"></canvas>
-        <canvas id="filterCanvas" width="320" height="240" class="pictureCanvas"></canvas>
-        <canvas id="barCanvas" width="1000" height="320"></canvas>
+        <canvas id="grayCanvas" width="320" height="240" class="pictureCanvas"></canvas>
+        <canvas id="equalizerCanvas" width="320" height="240" class="pictureCanvas"></canvas>
+        <canvas id="binaryCanvas" width="320" height="240" class="pictureCanvas"></canvas>
+
+        <div id="controlDiv">
+            <!--<button onclick="openCamera()">开启摄像头</button>-->
+            <div>
+                <button class="normalBtn" onclick="capture()">拍照</button>
+                <button class="normalBtn" onclick="histogramEqualizer()">直方图均衡化</button>
+            </div>
+            <canvas id="knobCanvas" width="128" height="128"></canvas>
+            <span id="grayValue" style="width: 200px">二值化阈值：未设定</span>
+        </div>
     </div>
-    <div id="controlDiv">
-        <!--<button onclick="openCamera()">开启摄像头</button>-->
-        <button class="signalBtn" onclick="capture()">拍照</button>
-        <button onclick="histogramEqualizer()">直方图均衡化</button>
-        <canvas id="knobCanvas" width="128" height="128"></canvas>
-        <span id="grayValue" style="width: 200px">阈值：未设定</span>
-    </div>
+    <canvas id="barCanvas" width="1000" height="320"></canvas>
     <!--<input type="button" title="视频" value="视频" onclick="getVideo()"/><br/>-->
     <!--<canvas id="canvas2" width="320" height="240"></canvas>-->
 
@@ -30,102 +35,83 @@
 <script type="text/javascript">
     var video = document.querySelector('video');
     var captureCanvas = document.getElementById('captureCanvas');
-    var filterCanvas = document.getElementById('filterCanvas');
+    var grayCanvas = document.getElementById('grayCanvas');
+    var equalizerCanvas = document.getElementById('equalizerCanvas');
+    var binaryCanvas = document.getElementById('binaryCanvas');
     var barCanvas = document.getElementById('barCanvas');
     var knobCanvas = document.getElementById('knobCanvas');
     var span = document.getElementById('grayValue');
 
-    var ctx1 = captureCanvas.getContext('2d');
-    var ctx2 = filterCanvas.getContext('2d');
+    var captureContext = captureCanvas.getContext('2d');
+    var grayContext = grayCanvas.getContext('2d');
+    var equalizerContext = equalizerCanvas.getContext('2d');
+    var binaryContext = binaryCanvas.getContext('2d');
     var captureWidth = captureCanvas.width;
     var captureHeight = captureCanvas.height;
-    var bar = new Bar(barCanvas);
+    var bar = new BarVI(barCanvas);
     var captureFlag = false;
-    var audio, audioType, exArray = []; //存储设备源ID;
-    var histogram = [];
+    var HISTOGRAM = [], EQUALIZER_HIST = [];
+    drawText('原图', captureContext);
+    drawText('灰度图', grayContext);
+    drawText('均衡化图', equalizerContext);
+    drawText('二值化图', binaryContext);
 
-    function initHistogram(histogram) {
-        for (var i = 0; i < 256; i++) {
-            histogram[i] = 0;
-        }
-
-    }
-    var knob = new Knob(document.getElementById('knobCanvas'), 0, 255, 100);
+    var knob = new KnobVI(document.getElementById('knobCanvas'), 0, 255, 100);
 
     knob.attachEvent('mouseMove', function () {
         if (captureFlag) {
-            var tempImageData = ctx2.createImageData(captureWidth, captureHeight);
-            var tempHistogram = [];
-            var zeroCount = 0;
             var threshold = parseInt(knob.data);
-            for (var i = 0; i < grayImageData.data.length; i += 4) {
-                if (grayImageData.data[i] < threshold) {
-                    tempImageData.data[i] = tempImageData.data[i + 1] = tempImageData.data[i + 2] = 0;
-                    zeroCount++;
-                }
-                else
-                    tempImageData.data[i] = tempImageData.data[i + 1] = tempImageData.data[i + 2] = 255;
-                tempImageData.data[i + 3] = grayImageData.data[i + 3];
-            }
-
-            initHistogram(tempHistogram);
-            tempHistogram[0] = zeroCount;
-            tempHistogram[255] = grayImageData.data.length / 4 - zeroCount;
-            drawBar(tempHistogram);
-            ctx2.putImageData(tempImageData, 0, 0);
-            span.innerText = '阈值：'+threshold;
+            binary(threshold);
+            span.innerText = '二值化阈值：' + threshold;
         }
     });
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-    window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-        console.log("enumerateDevices() not supported.");
-    }
-    navigator.mediaDevices.enumerateDevices()
-            .then(function (devices) {
-                devices.forEach(function (device) {
-//                    console.log(device.kind + ": " + device.label +" id = " + device.deviceId);
-                    //这里会遍历audio,video，所以要加以区分
-                    if (device.kind == 'videoinput') {
-                        exArray.push(device.deviceId);
-                    }
-                });
-            })
-            .catch(function (err) {
-                console.log(err.name + ": " + err.message);
-            });
     openCamera();
+
     function openCamera() {
-        if (navigator.getUserMedia) {
-            navigator.getUserMedia({
-                        'video': {
-                            'optional': [{
-                                'sourceId': exArray[0] //0为前置摄像头，1为后置
-                            }]
-                        },
-                        'audio': false
-                    }, onSuccess,   //onSuccess是获取成功的回调函数
-                    function (e) {
-                        alert('Error！' + e);
-                    });
+        try {
+            var videoObj = {"video": true, audio: false}, flag = true,
+                    MediaErr = function (error) {
+                        flag = false;
+                        alert('ERROR:' + error);
+                    };
+            //获取媒体的兼容代码，目前只支持（Firefox,Chrome,Opera）
+            if (navigator.getUserMedia) {
+                //qq浏览器不支持
+                if (navigator.userAgent.indexOf('MQQBrowser') > -1) {
+                    alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器');
+                    return false;
+                }
+                navigator.getUserMedia(videoObj, function (stream) {
+                    video.src = stream;
+                    video.play();
+                }, MediaErr);
+            }
+            else if (navigator.webkitGetUserMedia) {
+                navigator.webkitGetUserMedia(videoObj, function (stream) {
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, MediaErr);
+            }
+            else if (navigator.mozGetUserMedia) {
+                navigator.mozGetUserMedia(videoObj, function (stream) {
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, MediaErr);
+            }
+            else if (navigator.msGetUserMedia) {
+                navigator.msGetUserMedia(videoObj, function (stream) {
+                    $(document).scrollTop($(window).height());
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, MediaErr);
+            } else {
+                alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器');
+                return false;
+            }
+        } catch (e) {
+            alert("浏览器不支持HTML5 CANVAS");
         }
-        else {
-            alert('Native device media streaming (getUserMedia) not supported in this browser.');
-        }
-    }
-
-    function onSuccess(stream) {
-
-        if (video.mozSrcObject !== undefined) {
-            //Firefox中，video.mozSrcObject最初为null，而不是未定义的，我们可以靠这个来检测Firefox的支持
-            video.mozSrcObject = stream;
-        }
-        else {
-            video.src = window.URL && window.URL.createObjectURL(stream) || stream;
-        }
-        video.play();
-
     }
 
     /**
@@ -141,15 +127,15 @@
             captureHeight = captureCanvas.height;
             captureWidth = captureCanvas.height / videoRatio;
         }
-        ctx1.drawImage(video, 0, 0, captureWidth, captureHeight); //将video对象内指定的区域捕捉绘制到画布上指定的区域，实现拍照。
+        captureContext.drawImage(video, 0, 0, captureWidth, captureHeight); //将video对象内指定的区域捕捉绘制到画布上指定的区域，实现拍照。
         convertCanvasToImage();
     }
 
-    var grayImageData = ctx1.createImageData(captureWidth, captureHeight);
+    var grayImageData = captureContext.createImageData(captureWidth, captureHeight);
 
     // Converts canvas to an image
     function convertCanvasToImage() {
-        var rgbImageData = ctx1.getImageData(0, 0, captureWidth, captureHeight);   //rgba格式数组
+        var rgbImageData = captureContext.getImageData(0, 0, captureWidth, captureHeight);   //rgba格式数组
         var l = rgbImageData.data.length / 4, R, G, B;
 
         for (var i = 0; i < l; i++) {
@@ -160,62 +146,103 @@
             grayImageData.data[i * 4] = grayImageData.data[i * 4 + 1] = grayImageData.data[i * 4 + 2] = (R * 299 + G * 587 + B * 114 + 500) / 1000;
             grayImageData.data[i * 4 + 3] = rgbImageData.data[i * 4 + 3];
         }
-        ctx2.putImageData(grayImageData, 0, 0);
+        grayContext.putImageData(grayImageData, 0, 0);
         drawBar(getHistogram(grayImageData));
     }
 
     function getHistogram(grayimage) {
-        initHistogram(histogram);
+        initHistogram(HISTOGRAM);
         for (var j = 0; j < grayimage.data.length; j += 4) {
-            histogram[grayimage.data[j]]++;
+            HISTOGRAM[grayimage.data[j]]++;
         }
         captureFlag = true;
-        return histogram;
+        return HISTOGRAM;
     }
 
+    /**
+     *直方图均衡化
+     */
     function histogramEqualizer() {
         if (!captureFlag) {
             alert('请先照相再进行图像处理操作');
             return;
         }
-        var temp = [],tempHist = [];
-        var i;
-        temp[0] = histogram[0];
+        var tempHist = [], i;
+        EQUALIZER_HIST[0] = HISTOGRAM[0];
         initHistogram(tempHist);
+
         for (i = 1; i < 256; i++)
-            temp[i] = temp[i - 1] + histogram[i];
-        var total = temp[255];
+            EQUALIZER_HIST[i] = EQUALIZER_HIST[i - 1] + HISTOGRAM[i];
+
+        var total = EQUALIZER_HIST[255];
+
         for (i = 0; i < 256; i++) {
-            temp[i] = parseInt(255 * temp[i] / total);
-            console.log(temp[i]);
+            EQUALIZER_HIST[i] = parseInt(255 * EQUALIZER_HIST[i] / total);
+            tempHist[EQUALIZER_HIST[i]] += HISTOGRAM[i];
         }
-        drawBar(temp);
+        drawBar(tempHist);
+
+        var tempData = equalizerContext.createImageData(captureWidth, captureHeight);
+        var l = tempData.data.length / 4;
+        for (i = 0; i < l; i++) {
+            tempData.data[i * 4] = tempData.data[i * 4 + 1] = tempData.data[i * 4 + 2] = EQUALIZER_HIST[grayImageData.data[i * 4]];
+            tempData.data[i * 4 + 3] = grayImageData.data[i * 4 + 3];
+        }
+        equalizerContext.putImageData(tempData, 0, 0);
     }
 
     /**
      * 二值化
      */
-    function binary(value) {
-        var tempData = grayImageData;
+    function binary(threshold) {
+        var tempImageData = binaryContext.createImageData(captureWidth, captureHeight);
+        var tempHistogram = [];
+        var zeroCount = 0;
         for (var i = 0; i < grayImageData.data.length; i += 4) {
-            if (grayImageData.data[i * 4] < value)
-                tempData.data[i * 4] = tempData.data[i * 4 + 1] = tempData.data[i * 4 + 2] = 0;
+            if (grayImageData.data[i] < threshold) {
+                tempImageData.data[i] = tempImageData.data[i + 1] = tempImageData.data[i + 2] = 0;
+                zeroCount++;
+            }
             else
-                tempData.data[i * 4] = tempData.data[i * 4 + 1] = tempData.data[i * 4 + 2] = 255;
+                tempImageData.data[i] = tempImageData.data[i + 1] = tempImageData.data[i + 2] = 255;
+            tempImageData.data[i + 3] = grayImageData.data[i + 3];
         }
-        ctx2.putImageData(tempData, 0, 0);
+
+        initHistogram(tempHistogram);
+        tempHistogram[0] = zeroCount;
+        tempHistogram[255] = grayImageData.data.length / 4 - zeroCount;
+        drawBar(tempHistogram);
+        binaryContext.putImageData(tempImageData, 0, 0);
     }
+
+    /**
+     * 画直方图
+     * @param histogram
+     */
     function drawBar(histogram) {
         var data = [], xAxis = [];
         for (var i = 0; i < 256; i++) {
             data.push(histogram[i] == undefined ? 0 : histogram[i]);
             xAxis.push(i);
         }
-        bar.option.title.text = '灰度直方图';
+        bar.option.title.text = '';
         bar.option.legend.data[0] = '灰度值';
         bar.option.series[0].name = '灰度值';
         bar.setData(data);
         bar.setXAxis(xAxis);
+    }
+
+    function drawText(text, context) {
+        context.beginPath();
+        context.font = "normal 28px Calibri";
+        context.fillText(text, 320 / 2 - 14 * text.length, 240 / 2 + 14);
+        context.closePath();
+    }
+
+    function initHistogram(histogram) {
+        for (var i = 0; i < 256; i++) {
+            histogram[i] = 0;
+        }
     }
 </script>
 </body>

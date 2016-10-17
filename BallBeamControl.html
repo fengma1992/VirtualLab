@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>球杆模型控制</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="mainDiv">
+    <canvas id="mainCanvas" width="1000" height="400"></canvas>
+    <div class="rowFlexDiv">
+        <div class="columnFlexDiv">
+            <span>小球位置曲线</span>
+            <canvas id="positionCanvas" width="500" height="300"></canvas>
+
+        </div>
+        <div class="columnFlexDiv">
+            <span>杆角度曲线</span>
+            <canvas id="angleCanvas" width="500" height="300"></canvas>
+
+        </div>
+    </div>
+    <div class="rowFlexDiv">
+        <canvas id="ADDCanvas" width="30" height="30"></canvas>
+        <canvas id="PIDCanvas" width="30" height="30"></canvas>
+        <canvas id="BallCanvas" width="30" height="30"></canvas>
+    </div>
+    <div class="rowFlexDiv">
+        <div>
+            <span class="normalSpan">P:</span><input type="number" id="PInput" value="20" class="PIDInput">
+        </div>
+        <div>
+            <span class="normalSpan">I:</span><input type="number" id="IInput" value="0" class="PIDInput">
+        </div>
+        <div>
+            <span class="normalSpan">D:</span><input type="number" id="DInput" value="20" class="PIDInput">
+        </div>
+        <span id="positionSpan" class="normalSpan">小球位置:20</span>
+        <button id="startBtn" class="normalBtn" onclick="start()">开始</button>
+        <button id="resetBtn" class="normalBtn" onclick="reset()">重置</button>
+    </div>
+</div>
+<script src="js/VILibraries/ADDVI.js"></script>
+<script src="js/VILibraries/PIDVI.js"></script>
+<script src="js/VILibraries/BallVI.js"></script>
+<script src="js/VILibraries/WaveVI.js"></script>
+<script src="js/three.js"></script>
+<script src="js/MTLLoader.js"></script>
+<script src="js/OBJLoader.js"></script>
+<script src="js/controls/OrbitControls.js"></script>
+<script src="js/ObjectControls.js"></script>
+
+<script>
+    var mainCanvas = document.getElementById('mainCanvas');
+    var positionCanvas = document.getElementById('positionCanvas');
+    var angleCanvas = document.getElementById('angleCanvas');
+    var ADDCanvas = document.getElementById('ADDCanvas');
+    var PIDCanvas = document.getElementById('PIDCanvas');
+    var BallCanvas = document.getElementById('BallCanvas');
+    var positionSpan = document.getElementById('positionSpan');
+    var PInput = document.getElementById('PInput');
+    var IInput = document.getElementById('IInput');
+    var DInput = document.getElementById('DInput');
+
+    var positionWave = new WaveVI(positionCanvas);
+    var angleWave = new WaveVI(angleCanvas);
+    var addVI = new AddVI(ADDCanvas);
+    var PIDVI = new PIDVI(PIDCanvas);
+    var ballVI = new BallVI(BallCanvas);
+    var position = 20;
+    var runFlag = false;
+    var timer;
+
+    addVI.autoSave = false;
+    PIDVI.autoSave = false;
+
+    function start() {
+
+        if (!runFlag) {
+            runFlag = !runFlag;
+            addVI.originalInput = position;
+            PIDVI.P = PInput.value;
+            PIDVI.I = IInput.value;
+            PIDVI.D = DInput.value;
+            timer = window.setInterval(onTimer(), 10);
+        }
+
+    }
+
+    function onTimer() {
+
+        //加法器
+        addVI.calculate(ballVI.position);//输入球位置信号，输出位置偏差
+        //PID控制器
+        PIDVI.setData(addVI.output);//输入位置偏差，输出杆角度
+        //球杆模型
+        ballVI.setInputAngle(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
+        //波形控件
+        positionWave.setData(ballVI.positionOutput, ballVI.dataLength);
+        angleWave.setData(ballVI.angelOutput, ballVI.dataLength);
+        //球杆3D场景
+        setPosition(ballVI.angle * Math.PI / 180, ballVI.position);
+        positionSpan.innerText = '小球位置：' + ballVI.position;
+    }
+
+    function setPosition() {
+
+
+    }
+
+    function reset() {
+
+        addVI.reset();
+        PIDVI.reset();
+        ballVI.reset();
+    }
+</script>
+</body>
+</html>

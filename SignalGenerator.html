@@ -9,20 +9,20 @@
 <body>
 <div class="mainDiv">
     <canvas id="signalCanvas" width="1000" height="400"></canvas>
-    <div class="flexDiv">
-        <button id="sinBtn" class="signalBtn" onclick="setValue(1)">正弦波</button>
-        <button id="squareBtn" class="signalBtn" onclick="setValue(2)">方波</button>
-        <button id="triangleBtn" class="signalBtn" onclick="setValue(3)">三角波</button>
-        <button id="noiseBtn" class="signalBtn" onclick="setValue(4)">白噪声</button>
-        <button id="startBtn" class="signalBtn" onclick="start()">运行</button>
+    <div class="rowFlexDiv">
+        <button id="sinBtn" class="normalBtn" onclick="setValue(1)">正弦波</button>
+        <button id="squareBtn" class="normalBtn" onclick="setValue(2)">方波</button>
+        <button id="triangleBtn" class="normalBtn" onclick="setValue(3)">三角波</button>
+        <button id="noiseBtn" class="normalBtn" onclick="setValue(4)">白噪声</button>
+        <button id="startBtn" class="normalBtn" onclick="start()">运行</button>
     </div>
-    <div class="flexDiv">
-        <div class="flexDiv">
+    <div class="rowFlexDiv">
+        <div class="rowFlexDiv">
             <canvas id="knobCanvas1" width="128" height="128"></canvas>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;幅值：</span>
             <input id="ampInput" type="number" value="2" class="signalInput" onchange="setAmp()">
         </div>
-        <div class="flexDiv">
+        <div class="rowFlexDiv">
             <canvas id="knobCanvas2" width="128" height="128"></canvas>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;频率：</span>
             <input id="freqInput" type="number" value="100" class="signalInput" onchange="setFreq()">
@@ -37,7 +37,7 @@
         var startBtn = document.getElementById('startBtn');
         startBtn.disabled = true;
 
-        var wave = new Wave(canvas);
+        var wave = new WaveVI(canvas);
         var data = [], phrase, type, interval,
                 originalAmp = ampInput.value, amplitude = originalAmp,
                 originalFreq = freqInput.value, frequency = originalFreq,
@@ -52,8 +52,7 @@
 
         function setData() {
             data = wave.SignalData(type, amplitude, frequency, phrase, n);
-            wave.SetWaveValue(data, data.length);
-
+            wave.SetData(data, data.length);
         }
         function start() {
             if (!started) {
@@ -70,7 +69,7 @@
                 started = !started;
             }
         }
-        var knob1 = new Knob(document.getElementById('knobCanvas1'), 0, 100, originalAmp);
+        var knob1 = new KnobVI(document.getElementById('knobCanvas1'), 0, 100, originalAmp);
 
         knob1.attachEvent('mouseMove', function () {
             ampInput.value = knob1.data.toFixed(1);
@@ -80,7 +79,7 @@
 
         });
 
-        var knob2 = new Knob(document.getElementById('knobCanvas2'), 0, 1000, originalFreq);
+        var knob2 = new KnobVI(document.getElementById('knobCanvas2'), 0, 1000, originalFreq);
 
         knob2.attachEvent('mouseMove', function () {
             freqInput.value = knob2.data.toFixed(1);

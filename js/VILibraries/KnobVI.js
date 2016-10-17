@@ -2,7 +2,15 @@
  * Created by Fengma on 2016/10/10.
  */
 
-Knob = function (domElement, min, max, startValue) {
+/**
+ * 旋钮
+ * @param domElement    HTML CANVAS
+ * @param min   旋钮最小值
+ * @param max   旋钮最大值
+ * @param startValue    旋钮初始值
+ * @constructor
+ */
+function KnobVI(domElement, min, max, startValue) {
     var _this = this;
     var spinnerFlag = false;
     var startX, startY, stopX, stopY;
@@ -58,7 +66,8 @@ Knob = function (domElement, min, max, startValue) {
         _this.data = data > max ? max : data;
         _this.radian = (data - min) / ratio;
         DrawSpinner();
-    }
+    };
+
     function DrawSpinner() {
         var xPos = _this.width / 2;
         var yPos = _this.height / 2;
@@ -78,7 +87,7 @@ Knob = function (domElement, min, max, startValue) {
         _this.ctx.beginPath();
         _this.ctx.font = "normal 14px Calibri";
         _this.ctx.fillText(min, 0, _this.height);
-        _this.ctx.fillText(max, _this.width-7*max.toString().length, _this.height); //字体大小为14
+        _this.ctx.fillText(max, _this.width - 7 * max.toString().length, _this.height); //字体大小为14
         _this.ctx.closePath();
     }
 
@@ -155,7 +164,7 @@ Knob = function (domElement, min, max, startValue) {
      * @param x
      * @param y
      * @param angle
-     * @returns {*[x1, y1]}
+     * @returns {[x1, y1]}
      */
     function rotateAxis(x, y, angle) {
         var radian = angle / 180 * Math.PI;

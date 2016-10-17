@@ -2,7 +2,7 @@
  * Created by Fengma on 2016/10/11.
  */
 
-function Bar(domElement) {
+function BarVI(domElement) {
     var _this = this;
     // 初始化echarts图表
     this.myChart = echarts.init(domElement);
