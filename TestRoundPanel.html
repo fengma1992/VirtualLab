@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/main.css">
+
+</head>
+<body>
+<canvas id="test" height="800" width="800"></canvas>
+<script src="js/ECharts/echarts.js"></script>
+<script src="js/VILibraries/EChart_RoundPanelVI.js"></script>
+<script>
+    'use strict';
+    var round = new RoundPanel(document.getElementById('test'), '速度', 0, 200, 'KM/H');
+    setInterval(function () {
+        round.setData((Math.random() * 200).toFixed(2))
+    }, 1000);
+</script>
+</body>
+</html>

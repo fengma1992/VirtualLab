@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>典型信号的波形与频谱分析</title>
+    <link rel="stylesheet" href="css/main.css">
+
+</head>
+<body>
+<div class="mainDiv">
+    <canvas id="signalCanvas" width="1000" height="400"></canvas>
+    <div class="flexDiv">
+        <button id="sinBtn" class="signalBtn" onclick="setValue(1)">正弦波</button>
+        <button id="squareBtn" class="signalBtn" onclick="setValue(2)">方波</button>
+        <button id="triangleBtn" class="signalBtn" onclick="setValue(3)">三角波</button>
+        <button id="noiseBtn" class="signalBtn" onclick="setValue(4)">白噪声</button>
+        <button id="startBtn" class="signalBtn" onclick="start()">运行</button>
+    </div>
+    <div class="flexDiv">
+        <div class="flexDiv">
+            <canvas id="knobCanvas1" width="128" height="128"></canvas>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;幅值：</span>
+            <input id="ampInput" type="number" value="2" class="signalInput" onchange="setAmp()">
+        </div>
+        <div class="flexDiv">
+            <canvas id="knobCanvas2" width="128" height="128"></canvas>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;频率：</span>
+            <input id="freqInput" type="number" value="100" class="signalInput" onchange="setFreq()">
+        </div>
+    </div>
+    <script src="js/VILibraries/WaveVI.js"></script>
+    <script src="js/VILibraries/KnobVI.js"></script>
+    <script>
+        var canvas = document.getElementById('signalCanvas');
+        var ampInput = document.getElementById('ampInput');
+        var freqInput = document.getElementById('freqInput');
+        var startBtn = document.getElementById('startBtn');
+        startBtn.disabled = true;
+
+        var wave = new Wave(canvas);
+        var data = [], phrase, type, interval,
+                originalAmp = ampInput.value, amplitude = originalAmp,
+                originalFreq = freqInput.value, frequency = originalFreq,
+                n = 1024, started = false;
+
+        function setValue(signalType) {
+            phrase = 0;
+            type = signalType;
+            setData();
+            startBtn.disabled = false;
+        }
+
+        function setData() {
+            data = wave.SignalData(type, amplitude, frequency, phrase, n);
+            wave.SetWaveValue(data, data.length);
+
+        }
+        function start() {
+            if (!started) {
+                interval = window.setInterval(function () {
+                    phrase += 10;
+                    setData();
+                }, 100);
+                startBtn.innerText = '停止';
+                started = !started;
+            }
+            else {
+                window.clearInterval(interval);
+                startBtn.innerText = '运行';
+                started = !started;
+            }
+        }
+        var knob1 = new Knob(document.getElementById('knobCanvas1'), 0, 100, originalAmp);
+
+        knob1.attachEvent('mouseMove', function () {
+            ampInput.value = knob1.data.toFixed(1);
+            amplitude = ampInput.value;
+
+            if (!started && type > 0)setData();
+
+        });
+
+        var knob2 = new Knob(document.getElementById('knobCanvas2'), 0, 1000, originalFreq);
+
+        knob2.attachEvent('mouseMove', function () {
+            freqInput.value = knob2.data.toFixed(1);
+            frequency = freqInput.value;
+
+            if (!started && type > 0)setData();
+        });
+
+        function setAmp() {
+            amplitude = parseFloat(ampInput.value).toFixed(1);
+            amplitude = amplitude > 100 ? 100 : amplitude;
+            ampInput.value = amplitude;
+            knob1.setData(amplitude);
+            if (!started && type > 0)setData();
+        }
+
+        function setFreq() {
+            frequency = parseFloat(freqInput.value).toFixed(1);
+            frequency = frequency > 1000 ? 1000 : frequency;
+            freqInput.value = frequency;
+            knob2.setData(frequency);
+            if (!started && type > 0)setData();
+        }
+
+
+    </script>
+</div>
+</body>
+</html>

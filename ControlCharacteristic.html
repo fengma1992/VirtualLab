@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>典型环节控制特性分析实验</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="mainDiv">
+    <div>
+        <canvas id="inputCanvas" width="600" height="300"></canvas>
+        <canvas id="outputCanvas" width="600" height="300"></canvas>
+    </div>
+    <table>
+        <tr>
+            <td>
+                <button class="signalBtn" onclick="">比例</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas1" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas1" width="20" height="20"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="signalBtn">积分</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas2" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas2" width="20" height="20"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="signalBtn">微分</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas3" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas3" width="20" height="20"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="signalBtn">惯性</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas4" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas4" width="20" height="20"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="signalBtn">震荡</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas5" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas5" width="20" height="20"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="signalBtn">比例积分</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas6" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas6" width="20" height="20"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="signalBtn">比例惯性</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas7" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas7" width="20" height="20"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button class="signalBtn">比例微分</button>
+            </td>
+            <td>
+                <canvas id="signalCanvas8" width="20" height="20"></canvas>
+            </td>
+            <td>
+                <canvas id="dataCanvas8" width="20" height="20"></canvas>
+            </td>
+        </tr>
+    </table>
+</div>
+<script src="js/VILibraries/WaveVI.js"></script>
+<script src="js/VILibraries/KnobVI.js"></script>
+<script src="js/VILibraries/SignalGeneratorVI/StepResponse.js"></script>
+<script src="js/VILibraries/SignalGeneratorVI/DataReceiver.js"></script>
+<script>
+    var inputCanvas = document.getElementById('inputCanvas');
+    var outputCanvas = document.getElementById('outputCanvas');
+    var signalCanvas1 = document.getElementById('signalCanvas1');
+    var signalCanvas2 = document.getElementById('signalCanvas2');
+    var signalCanvas3 = document.getElementById('signalCanvas3');
+    var signalCanvas4 = document.getElementById('signalCanvas4');
+    var signalCanvas5 = document.getElementById('signalCanvas5');
+    var signalCanvas6 = document.getElementById('signalCanvas6');
+    var signalCanvas7 = document.getElementById('signalCanvas7');
+    var signalCanvas8 = document.getElementById('signalCanvas8');
+
+    var dataCanvas1 = document.getElementById('dataCanvas1');
+    var dataCanvas2 = document.getElementById('dataCanvas2');
+    var dataCanvas3 = document.getElementById('dataCanvas3');
+    var dataCanvas4 = document.getElementById('dataCanvas4');
+    var dataCanvas5 = document.getElementById('dataCanvas5');
+    var dataCanvas6 = document.getElementById('dataCanvas6');
+    var dataCanvas7 = document.getElementById('dataCanvas7');
+    var dataCanvas8 = document.getElementById('dataCanvas8');
+
+    var inputWave = new Wave(inputCanvas);
+    var outputWave = new Wave(outputCanvas);
+    var signalGenerator1 = new StepResponse(signalCanvas1);
+    var signalGenerator2 = new StepResponse(signalCanvas2);
+    var signalGenerator3 = new StepResponse(signalCanvas3);
+    var signalGenerator4 = new StepResponse(signalCanvas4);
+    var signalGenerator5 = new StepResponse(signalCanvas5);
+    var signalGenerator6 = new StepResponse(signalCanvas6);
+    var signalGenerator7 = new StepResponse(signalCanvas7);
+    var signalGenerator8 = new StepResponse(signalCanvas8);
+    var dataReceiver1 = new DataReceiver(dataCanvas1);
+    var dataReceiver2 = new DataReceiver(dataCanvas2);
+    var dataReceiver3 = new DataReceiver(dataCanvas3);
+    var dataReceiver4 = new DataReceiver(dataCanvas4);
+    var dataReceiver5 = new DataReceiver(dataCanvas5);
+    var dataReceiver6 = new DataReceiver(dataCanvas6);
+    var dataReceiver7 = new DataReceiver(dataCanvas7);
+    var dataReceiver8 = new DataReceiver(dataCanvas8);
+
+
+    var n = 0;
+    var b1 = true;
+    var b2 = false;
+    var b3 = false;
+    var b4 = false;
+    var b5 = false;
+    var b6 = false;
+    var b7 = false;
+    var b8 = false;
+    function button1() {
+        b1 = true;
+        b2 = b3 = b4 = b5 = b6 = b7 = b8 = false;
+    }
+    function button2() {
+        b2 = true;
+        b1 = b3 = b4 = b5 = b6 = b7 = b8 = false;
+    }
+    function button3() {
+        b3 = true;
+        b1 = b2 = b4 = b5 = b6 = b7 = b8 = false;
+    }
+    function button4() {
+        b4 = true;
+        b1 = b2 = b3 = b5 = b6 = b7 = b8 = false;
+    }
+    function button5() {
+        b5 = true;
+        b1 = b2 = b3 = b4 = b6 = b7 = b8 = false;
+    }
+    function button6() {
+        b6 = true;
+        b1 = b2 = b3 = b4 = b5 = b7 = b8 = false;
+    }
+    function button7() {
+        b7 = true;
+        b1 = b2 = b3 = b4 = b5 = b6 = b8 = false;
+    }
+    function button8() {
+        b8 = true;
+        b1 = b2 = b3 = b4 = b5 = b6 = b7 = false;
+    }
+
+
+    function onTimer() {
+        if (n < 10) {
+            n++;
+            dataReceiver1.receiveData(0);
+            inputWave.SetWaveValue(dataReceiver1.output, dataReceiver1.dataLength);
+            outputWave.SetWaveValue(dataReceiver1.output, dataReceiver1.dataLength);
+        } else {
+            p1.setType(1);
+            p1.k1 = 1.5;
+            p1.input = 800;
+            p1.work();
+            trend1.in0 = p1.output;
+            trend1.work();
+            //===============================
+            p2.setType(2);
+            p2.k2 = 5;
+            p2.input = 800;
+            p2.work();
+            trend2.in0 = p2.output;
+            trend2.work();
+            //===============================
+            p3.setType(3);
+            p3.input = 800;
+            p3.work();
+            trend3.in0 = p3.output;
+            trend3.work();
+            //===============================
+            p6.setType(4);
+            p6.input = 800;
+            p6.work();
+            trend6.in0 = p6.output;
+            trend6.work();
+            //===============================
+            p8.setType(5);
+            p8.input = 800;
+            p8.work();
+            trend8.in0 = p8.output;
+            trend8.work();
+            //===============================
+            z4.setType(0);
+            z4.k1 = 0.025;
+            z4.input = 800;
+            z4.work();
+            trend4.in0 = z4.output;
+            trend4.work();
+            //===============================
+            z5.setType(1);
+            z5.k1 = 50;
+            z5.k2 = 0.05;
+            z5.input = 800;
+            z5.work();
+            trend5.in0 = z5.output;
+            trend5.work();
+            //===============================
+            z7.setType(2);
+            z7.k1 = 0.025;
+            z7.k2 = 1;
+            z7.input = 800;
+            z7.work();
+            trend7.in0 = z7.output;
+            trend7.work();
+
+            if (b1 == true) w32.setData(trend1.Flen, 1 / trend1.Fs, trend1.outArr);
+            if (b2 == true) w32.setData(trend2.Flen, 1 / trend2.Fs, trend2.outArr);
+            if (b3 == true) w32.setData(trend3.Flen, 1 / trend3.Fs, trend3.outArr);
+            if (b4 == true) w32.setData(trend4.Flen, 1 / trend4.Fs, trend4.outArr);
+            if (b5 == true) w32.setData(trend5.Flen, 1 / trend5.Fs, trend5.outArr);
+            if (b6 == true) w32.setData(trend6.Flen, 1 / trend6.Fs, trend6.outArr);
+            if (b7 == true) w32.setData(trend7.Flen, 1 / trend7.Fs, trend7.outArr);
+            if (b8 == true) w32.setData(trend8.Flen, 1 / trend8.Fs, trend8.outArr);
+
+            trend9.in0 = 800;
+            trend9.work();
+            w31.setData(trend9.Flen, 1 / trend9.Fs, trend9.outArr);
+        }
+    }
+</script>
+
+</body>
+</html>

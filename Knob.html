@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>旋钮</title>
+    <style>
+        body{
+            background-color: #26292f;
+        }
+        #knobBG, #knob {
+            position:absolute;
+            background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/knob_Base.png');
+            width:355px;
+            height:355px;
+        }
+        #description {
+            font-size:20px;
+        }
+        #knob {
+            background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/knob_Spinner.png');
+            z-index: 1;
+        }
+        .box {
+            font-size:30px;
+            padding: 10px;
+        }
+        #content .box {
+            margin-left:425px;
+            height: 335px;
+        }
+        #content{
+            height:355px;
+            overflow: hidden;
+        }
+        .box1{
+            background-color: #88b6f7;
+        }
+        .box2{
+            background-color: #9a9bff;
+        }
+        .box3{
+            background-color: #bbfb94;
+        }
+        .box4{
+            background-color: #ed74c4;
+        }
+        .box5{
+            background-color: #eb984e;
+        }
+        .box6{
+            background-color: #a9eaf1;
+        }
+        .box7{
+            background-color: #dcecf1;
+        }
+        .box8{
+            background-color: pink;
+        }
+        .box9{
+            background-color: purple;
+        }
+    </style>
+</head>
+<body>
+<div id="knobBG">
+    <div id="knob"></div>
+</div>
+<div id="content">
+    <div>
+        <div class="box box1">One <div id="description">Drag me or spin the knob. Flick for momentum. Notice how it smoothly snaps to sections. </div></div>
+        <div class="box box2">Two</div>
+        <div class="box box3">Three</div>
+        <div class="box box4">Four</div>
+        <div class="box box5">Five</div>
+        <div class="box box6">Six</div>
+        <div class="box box7">Seven</div>
+        <div class="box box8">Eight</div>
+        <div class="box box9">Nine</div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenLite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/utils/Draggable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/plugins/CSSPlugin.min.js"></script>
+<script>
+    /* fun little example using GreenSock's Draggable: http://www.greensock.com/draggable/ */
+
+    var content = document.getElementById("content");
+    var knob = document.getElementById("knob");
+    var maxScroll = content.scrollHeight - content.offsetHeight;
+    var needsRotationUpdate = false;
+    var sections = 9;
+
+    //when the user drags the knob, we must update the scroll position. We're using the special scrollProxy object of Draggable because it allows us to overscroll (normal browser behavior won't allow it to scroll past the top/bottom).
+    function onRotateKnob() {
+        dragContent.scrollProxy.top(maxScroll * dragKnob.rotation / -360);
+        needsRotationUpdate = false;
+    }
+
+    //this method updates the knob rotation, syncing it to wherever the content's scroll position is
+    function updateRotation() {
+        TweenMax.set(knob, {rotation:360 * (content.scrollTop / maxScroll)});
+        needsRotationUpdate = false;
+    }
+
+    //if the user flicks/spins/drags with momentum, a tween is created, but if the user interacts again before the tween is done, we must kill that tweens (so as not to fight with the user). This method kills any tweens of the knob or the content's scrollProxy.
+    function killTweens() {
+        TweenLite.killTweensOf([knob, dragContent.scrollProxy]);
+    }
+    content.addEventListener("mousewheel", killTweens);
+    content.addEventListener("DOMMouseScroll", killTweens);
+
+    //whenever the content gets scrolled (like by using the mousewheel or dragging the content), we simply set a flag indicating we need to update the knob's rotation. We use a "tick" handler later to actually trigger the update because that optimizes performance since ticks happen on requestAnimationFrame and we want to avoid thrashing
+    content.addEventListener("scroll", function() {
+        needsRotationUpdate = true;
+    });
+    TweenLite.ticker.addEventListener("tick", function() {
+        if (needsRotationUpdate) {
+            updateRotation();
+        }
+    });
+
+    //create the knob Draggable
+    Draggable.create(knob, {
+        type:"rotation",
+        throwProps:true,
+        edgeResistance:0.85,
+        bounds:{minRotation:0, maxRotation:360},
+        onDragStart:killTweens,
+        onDrag: onRotateKnob,
+        onThrowUpdate: onRotateKnob,
+        snap: function(endValue) {
+            var step = 360 / (sections - 1);
+            return Math.round( endValue / step) * step;
+        }
+    });
+
+    //create the content Draggable
+    Draggable.create(content, {
+        type:"scrollTop",
+        edgeResistance:0.5,
+        throwProps:true,
+        onDragStart: killTweens,
+        snap: function(endValue) {
+            var step = maxScroll / (sections - 1);
+            return Math.round( endValue / step) * -step;
+        }
+    });
+
+    //grab the Draggable instances for the content and the knob, and store them in variables so that we can reference them in other functions very quickly.
+    var dragContent = Draggable.get(content);
+    var dragKnob = Draggable.get(knob);
+</script>
+</body>
+</html>

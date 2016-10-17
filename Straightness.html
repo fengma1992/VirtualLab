@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>导轨直线度误差</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="js/three.js"></script>
+    <script src="js/MTLLoader.js"></script>
+    <script src="js/OBJLoader.js"></script>
+    <script src="js/controls/OrbitControls.js"></script>
+    <script src="js/ObjectControls.js"></script>
+    <script src="js/ECharts/echarts.js"></script>
+    <script src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"></script>
+
+</head>
+<body>
+
+<div class="mainDiv">
+    <canvas id="mainCanvas" width="1000" height="400"></canvas>
+    <table id="mainTable">
+        <tr>
+            <td rowspan="2">
+                <table id="dataTable">
+                    <tr>
+                        <th>测点序号</th>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>6</td>
+                        <td>7</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <th>读数</th>
+                        <td>0</td>
+                        <td><input id="data1" type="number" class="dataInput"></td>
+                        <td><input id="data2" type="number" class="dataInput"></td>
+                        <td><input id="data3" type="number" class="dataInput"></td>
+                        <td><input id="data4" type="number" class="dataInput"></td>
+                        <td><input id="data5" type="number" class="dataInput"></td>
+                        <td><input id="data6" type="number" class="dataInput"></td>
+                        <td><input id="data7" type="number" class="dataInput"></td>
+                        <td><input id="data8" type="number" class="dataInput"></td>
+                    </tr>
+                    <tr>
+                        <th>直接累加值</th>
+                        <td>0</td>
+                        <td id="sumData1"></td>
+                        <td id="sumData2"></td>
+                        <td id="sumData3"></td>
+                        <td id="sumData4"></td>
+                        <td id="sumData5"></td>
+                        <td id="sumData6"></td>
+                        <td id="sumData7"></td>
+                        <td id="sumData8"></td>
+                    </tr>
+                    <tr>
+                        <th>相对累加值</th>
+                        <td>0</td>
+                        <td id="relativeSumData1"></td>
+                        <td id="relativeSumData2"></td>
+                        <td id="relativeSumData3"></td>
+                        <td id="relativeSumData4"></td>
+                        <td id="relativeSumData5"></td>
+                        <td id="relativeSumData6"></td>
+                        <td id="relativeSumData7"></td>
+                        <td id="relativeSumData8"></td>
+                    </tr>
+                    <tr>
+                        <th>测得误差</th>
+                        <td id="error" colspan="9"></td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <canvas id="panelCanvas" width="295" height="200"></canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button id="completeBtn" onclick="setEChartData()">读数完成</button>
+            </td>
+        </tr>
+    </table>
+    <div id="eChartDiv"></div>
+    <div id="loadingDiv">
+        <img src="img/loading.gif" alt="loading">
+    </div>
+</div>
+
+<script>
+    var container, camera, panelCamera, scene, panelScene, renderer, panelRenderer,//绘图用
+            controls, sliderControl, switchControl,//控制用
+            machineRay,//开机射线
+            error;//最终误差
+
+    //crossMark in panelRenderer
+    var crossMarkTexture = new THREE.TextureLoader().load('img/crossMark.png');
+    var crossMarkMaterial = new THREE.MeshBasicMaterial({map: crossMarkTexture});
+    crossMarkMaterial.transparent = true;
+    var crossMark = new THREE.Mesh(new THREE.PlaneGeometry(128, 128), crossMarkMaterial);
+    crossMark.position.x = -160;
+    crossMark.position.z = 1;
+
+    var indexMark;
+    var raycaster = new THREE.Raycaster();
+    var indexLines = [], indexNumbers = [];
+    var objects = [], mouse = new THREE.Vector2(), SELECTED, mouseY = 0, rulerPosition = -400;
+
+    var requestAnimationFrame = window.requestAnimationFrame
+            || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame
+            || window.msRequestAnimationFrame;
+    window.requestAnimationFrame = requestAnimationFrame;
+
+    var mainTable = document.getElementById('mainTable'),
+            eChartDiv = document.getElementById('eChartDiv'),
+            mainCanvas = document.getElementById('mainCanvas'),
+            loadingDiv = document.getElementById('loadingDiv');
+
+    init(), animate();
+
+    function init() {
+
+        container = document.getElementById('mainDiv');
+
+        renderer = new THREE.WebGLRenderer({
+            canvas: mainCanvas,
+            antialias: true
+        });
+        renderer.setClearColor(0x6495ED);
+        renderer.setSize(mainCanvas.clientWidth, mainCanvas.clientHeight);
+
+        camera = new THREE.PerspectiveCamera(30, mainCanvas.clientWidth / mainCanvas.clientHeight, 1, 100000);
+        camera.position.z = 1500;
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.rotateSpeed = 0.8;
+        controls.enableZoom = true;
+        controls.zoomSpeed = 1.2;
+        controls.enableDamping = true;
+        controls.minPolarAngle = Math.PI / 4;
+        controls.maxPolarAngle = Math.PI * 3 / 4;
+        controls.minAzimuthAngle = -Math.PI / 4;
+        controls.maxAzimuthAngle = Math.PI / 4;
+
+        scene = new THREE.Scene();
+
+        var light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1000, 10000, 4000);
+        scene.add(light);
+
+        var light1 = new THREE.AmbientLight(0x555555);
+        scene.add(light1);
+
+//        var hintCanvas = document.createElement('canvas');
+//        hintCanvas.style.width = "128px";
+//        hintCanvas.style.height = "64px";
+//        var context1 = hintCanvas.getContext('2d');
+//        context1.font = "30px Arial";
+//        context1.fillStyle = "rgba(0,0,0,1)";
+//        context1.fillText('导轨长度：5m', 0, 32);
+//        // canvas contents will be used for a texture
+//        var texture1 = new THREE.Texture(hintCanvas);
+//        texture1.needsUpdate = true;
+//        var material1 = new THREE.MeshBasicMaterial({map: texture1});
+//        material1.transparent = true;
+//        material1.side = THREE.DoubleSide;
+//        var hint = new THREE.Mesh(new THREE.PlaneGeometry(hintCanvas.width, hintCanvas.height), material1);
+//        hint.position.set(0, 0, 0);
+//        scene.add(hint);
+        //开机后射线
+        machineRay = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 200), new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            opacity: 0.9
+        }));
+        machineRay.rotation.z = Math.PI / 2;
+        machineRay.position.x = -400;
+        machineRay.position.y = 118;
+
+        //use as a reference plane for ObjectControl
+        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(4000, 4000), new THREE.MeshBasicMaterial({
+            color: 0x555555, side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0
+        }));
+        plane.position.y = 0;
+        scene.add(plane);
+
+        sliderControl = new ObjectControls(camera, renderer.domElement);
+        sliderControl.map = plane;
+        sliderControl.offsetUse = true;
+
+        switchControl = new ObjectControls(camera, renderer.domElement);
+        switchControl.map = plane;
+        switchControl.offsetUse = true;
+
+        switchControl.attachEvent('mouseOver', function () {
+            this.container.style.cursor = 'pointer';
+        });
+
+        switchControl.attachEvent('mouseOut', function () {
+            this.container.style.cursor = 'auto';
+        });
+
+        var isStart = false;
+        switchControl.attachEvent('onclick', function () {
+
+            if (!isStart) {
+
+                isStart = !isStart;
+
+                //initial panel
+                mainTable.style.display = 'table';
+                panelInit(), panelAnimate();
+
+                scene.add(machineRay);
+                scene.remove(offSwitch);
+                switchControl.detach(offSwitch);
+                scene.add(onSwitch);
+                switchControl.attach(onSwitch);
+
+                sliderControl.attachEvent('onclick', function () {
+                });
+
+                sliderControl.attachEvent('mouseOver', function () {
+                    this.container.style.cursor = 'pointer';
+                });
+
+                sliderControl.attachEvent('mouseOut', function () {
+                    this.container.style.cursor = 'auto';
+                });
+
+                sliderControl.attachEvent('dragAndDrop', onMouseDrag);
+
+                sliderControl.attachEvent('mouseUp', function () {
+                    controls.enabled = true;
+                    this.container.style.cursor = 'auto';
+                });
+            }
+
+            else {
+                isStart = !isStart;
+
+                mainTable.style.display = 'none';
+                eChartDiv.style.display = 'none';
+                scene.remove(machineRay);
+                scene.remove(onSwitch);
+                switchControl.detach(onSwitch);
+                scene.add(offSwitch);
+                switchControl.attach(offSwitch);
+                sliderControl.detachEvent('onclick');
+                sliderControl.detachEvent('mouseOver');
+                sliderControl.detachEvent('mouseOut');
+                sliderControl.detachEvent('dragAndDrop');
+                sliderControl.attachEvent('mouseUp');
+            }
+
+        });
+
+        var mtlLoader = new THREE.MTLLoader();
+
+        var base, slider, offSwitch, onSwitch;
+        loadingDiv.style.display = 'inherit';
+        mtlLoader.load('assets/straightness_experiment/base.mtl', function (materials) {
+
+            materials.preload();
+
+            var objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.load('assets/straightness_experiment/base.obj', function (a) {
+                a.traverse(function (child) {
+                    if (child instanceof THREE.Mesh) {
+
+                        child.material.side = THREE.DoubleSide;
+                    }
+                });
+                base = a;
+                mtlLoader.load('assets/straightness_experiment/slider.mtl', function (materials) {
+
+                    materials.preload();
+
+                    var objLoader = new THREE.OBJLoader();
+                    objLoader.setMaterials(materials);
+                    objLoader.load('assets/straightness_experiment/slider.obj', function (b) {
+                        b.traverse(function (child) {
+                            if (child instanceof THREE.Mesh) {
+
+                                child.material.side = THREE.DoubleSide;
+                            }
+                        });
+                        slider = b;
+                        mtlLoader.load('assets/straightness_experiment/offSwitch.mtl', function (materials) {
+
+                            materials.preload();
+
+                            var objLoader = new THREE.OBJLoader();
+                            objLoader.setMaterials(materials);
+                            objLoader.load('assets/straightness_experiment/offSwitch.obj', function (c) {
+                                c.traverse(function (child) {
+                                    if (child instanceof THREE.Mesh) {
+
+                                        child.material.side = THREE.DoubleSide;
+                                    }
+                                });
+                                offSwitch = c;
+                                mtlLoader.load('assets/straightness_experiment/onSwitch.mtl', function (materials) {
+
+                                    materials.preload();
+
+                                    var objLoader = new THREE.OBJLoader();
+                                    objLoader.setMaterials(materials);
+                                    objLoader.load('assets/straightness_experiment/onSwitch.obj', function (d) {
+                                        d.traverse(function (child) {
+                                            if (child instanceof THREE.Mesh) {
+
+                                                child.material.side = THREE.DoubleSide;
+                                            }
+                                        });
+                                        onSwitch = d;
+                                        loadingDiv.style.display = 'none';
+                                        scene.add(base);
+                                        scene.add(slider);
+                                        sliderControl.attach(slider);
+                                        scene.add(offSwitch);
+                                        switchControl.attach(offSwitch);
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    function onMouseDrag() {
+
+        controls.enabled = false;
+        this.container.style.cursor = 'move';
+        this.focused.position.y = this.previous.y;  //lock y direction
+        var positionX = this.focused.position.x;
+        if (positionX < 0)
+            this.focused.position.x = 0;
+
+        else if (positionX > 875)
+            this.focused.position.x = 875;
+
+        positionX = this.focused.position.x;
+        console.log(positionX);
+        scene.remove(machineRay);
+        machineRay = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 200 + positionX), new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            opacity: 0.9
+        }));
+        machineRay.rotation.z = Math.PI / 2;
+        machineRay.position.x = -400 + positionX / 2;
+        machineRay.position.y = 118;
+        scene.add(machineRay);
+        var errorArray = [0, 20, 60, 80, -30, 60, -70, 10, -10];
+        var crossY = 0;
+        var range = 1000 / 8;
+        if (positionX < 0.5 * range) {
+            crossY = errorArray[0];
+            drawCrossMark(crossY);
+        }
+        else if (positionX < 1.5 * range) {
+            crossY = errorArray[1];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 2.5 * range) {
+            crossY = errorArray[2];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 3.5 * range) {
+            crossY = errorArray[3];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 4.5 * range) {
+            crossY = errorArray[4];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 5.5 * range) {
+            crossY = errorArray[5];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 6.5 * range) {
+            crossY = errorArray[6];
+            drawCrossMark(crossY);
+
+        }
+        else {
+            crossY = errorArray[7];
+            drawCrossMark(crossY);
+
+        }
+    }
+
+    function animate() {
+
+        window.requestAnimationFrame(animate);
+        sliderControl.update();
+        controls.update();
+        renderer.render(scene, camera);
+
+    }
+
+    function panelInit() {
+
+        var panelCanvas = document.getElementById('panelCanvas')
+        panelRenderer = new THREE.WebGLRenderer({
+            canvas: panelCanvas,
+            antialias: true,
+            alpha: true
+        });
+        panelRenderer.setClearColor(0x6495ED);
+        panelRenderer.setClearAlpha(0)
+        panelRenderer.setSize(panelCanvas.clientWidth, panelCanvas.clientHeight);
+
+        panelCamera = new THREE.PerspectiveCamera(30, panelCanvas.clientWidth / panelCanvas.clientHeight, 1, 2000);
+        panelCamera.position.z = 1000;
+        panelCamera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        panelScene = new THREE.Scene();
+
+        var light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(0, 0, 1000);
+        panelScene.add(light);
+
+        var scrollTexture = new THREE.TextureLoader().load('img/1.png');
+        var scrollGeometry = new THREE.BoxGeometry(32 * 2.5, 128 * 2.5, 10);
+        var scrollMesh = new THREE.Mesh(scrollGeometry,
+                new THREE.MeshBasicMaterial({map: scrollTexture}));
+        scrollMesh.position.x = 330;
+
+        var rulerMesh = new THREE.Mesh(new THREE.PlaneGeometry(180, 400),
+                new THREE.MeshBasicMaterial({color: 0xffffff}));
+        rulerMesh.position.x = 180;
+        //add index
+        drawIndexLine();
+
+        var panelMesh = new THREE.Mesh(new THREE.CircleGeometry(220, 40, 0, Math.PI * 2),
+                new THREE.MeshBasicMaterial({color: 0x66FF00}));
+        panelMesh.position.x = -160;
+        //add zoomIndex
+        drawZoomIndexLine();
+
+        var markGeometry = new THREE.Geometry();
+        var markMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 0.5});
+        markGeometry.vertices.push(new THREE.Vector3(200, 0.5, 0));
+        markGeometry.vertices.push(new THREE.Vector3(90, 0.5, 0));
+        var markLine = new THREE.Line(markGeometry, markMaterial, THREE.LineSegments);
+
+
+        var indexMarkGeometry = new THREE.Geometry();
+        indexMarkGeometry.vertices.push(new THREE.Vector3(-380, 0, 0));
+        indexMarkGeometry.vertices.push(new THREE.Vector3(60, 0, 0));
+
+        indexMark = new THREE.Line(indexMarkGeometry, new THREE.LineBasicMaterial({
+            color: 0x000000,
+            linewidth: 0.5
+        }), THREE.LineSegments);
+        indexMark.position.z = 2;
+        panelScene.add(indexMark);
+
+        panelScene.add(scrollMesh);
+        panelScene.add(rulerMesh);
+        panelScene.add(panelMesh);
+        panelScene.add(markLine);
+        objects.push(scrollMesh);
+
+        panelRenderer.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
+        panelRenderer.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
+        panelRenderer.domElement.addEventListener('mouseup', onDocumentMouseUp, false);
+        panelRenderer.domElement.addEventListener('mouseover', onDocumentMouseOver, false);
+
+    }
+
+    function onDocumentMouseMove(event) {
+
+        event.preventDefault();
+
+        var x = event.offsetX == undefined ? event.layerX : event.offsetX;
+        var y = event.offsetY == undefined ? event.layerY : event.offsetY;
+        mouse.x = ( x / panelRenderer.domElement.width ) * 2 - 1;
+        mouse.y = -( y / panelRenderer.domElement.height ) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, panelCamera);
+
+        if (SELECTED) {
+
+            rulerPosition += ( y - mouseY) / 2;
+            mouseY = event.offsetY == undefined ? event.layerY : event.offsetY;
+
+            //reDrawing
+            while (indexNumbers.length > 0) {
+                panelScene.remove(indexNumbers[0]);
+                indexNumbers.shift();
+            }
+
+            while (indexLines.length > 0) {
+                panelScene.remove(indexLines[0]);
+                indexLines.shift();
+            }
+
+            drawIndexLine();
+            drawIndexMark();
+        }
+
+        var intersects = raycaster.intersectObjects(objects);
+
+        if (intersects.length > 0) {
+
+            panelRenderer.domElement.style.cursor = 'pointer';
+
+        } else {
+
+            SELECTED = null;
+            panelRenderer.domElement.style.cursor = 'auto';
+
+        }
+
+    }
+
+    function onDocumentMouseDown(event) {
+
+        event.preventDefault();
+        mouseY = event.offsetY == undefined ? event.layerY : event.offsetY;
+
+        raycaster.setFromCamera(mouse, panelCamera);
+
+        var intersects = raycaster.intersectObjects(objects);
+
+        if (intersects.length > 0) {
+
+            SELECTED = intersects[0].object;
+            panelRenderer.domElement.style.cursor = 'pointer';
+
+        }
+
+    }
+
+    function onDocumentMouseUp(event) {
+
+        event.preventDefault();
+
+        if (SELECTED) SELECTED = null;
+
+        panelRenderer.domElement.style.cursor = 'auto';
+
+    }
+
+    function onDocumentMouseOver(event) {
+
+        event.preventDefault();
+
+        raycaster.setFromCamera(mouse, panelCamera);
+
+        var intersects = raycaster.intersectObjects(objects);
+
+        if (intersects.length > 0) {
+
+            panelRenderer.domElement.style.cursor = 'pointer';
+
+        }
+
+    }
+
+    function drawCrossMark(y) {
+
+        crossMark.position.y = y;
+
+        panelScene.add(crossMark);
+
+    }
+
+    function drawIndexMark() {
+
+        panelScene.remove(indexMark);
+
+        var indexMarkGeometry = new THREE.Geometry();
+        indexMarkGeometry.vertices.push(new THREE.Vector3(-160 - Math.sqrt(220 * 220 - (rulerPosition + 400) * (rulerPosition + 400)), rulerPosition + 400, 0));
+        indexMarkGeometry.vertices.push(new THREE.Vector3(-160 + Math.sqrt(220 * 220 - (rulerPosition + 400) * (rulerPosition + 400)), rulerPosition + 400, 0));
+
+        indexMark = new THREE.Line(indexMarkGeometry, new THREE.LineBasicMaterial({
+            color: 0x000000,
+            linewidth: 0.5
+        }), THREE.LineSegments);
+        indexMark.position.z = 2;
+        panelScene.add(indexMark);
+//        console.log('y: ' + rulerPosition);
+    }
+
+    function drawIndexLine() {
+
+        for (var i = 0; i < 100; i++) {
+            var indexGeometry = new THREE.Geometry();
+            var xPosition = 170;
+            var yPosition = -199 + 15 * i + rulerPosition;
+            if (yPosition >= 199 || yPosition <= -199) continue;
+
+            if (i % 5 == 0) xPosition = 180;
+
+            if (i % 10 == 0) {
+
+                xPosition = 190;
+                var indexCanvas = document.createElement('canvas');
+                indexCanvas.style.width = "128px";
+                indexCanvas.style.height = "256px";
+                var context1 = indexCanvas.getContext('2d');
+                context1.font = "30px Arial";
+                context1.fillStyle = "rgba(0,0,0,1)";
+                context1.fillText(i.toString(), 0, 25);
+                // canvas contents will be used for a texture
+                var texture1 = new THREE.Texture(indexCanvas);
+                texture1.needsUpdate = true;
+                var material1 = new THREE.MeshBasicMaterial({map: texture1});
+                material1.transparent = true;
+                var indexNumber = new THREE.Mesh(new THREE.PlaneGeometry(indexCanvas.width, indexCanvas.height), material1);
+                indexNumber.position.set(350, yPosition - 60, 0);
+                panelScene.add(indexNumber);
+                indexNumbers.push(indexNumber);
+            }
+
+            indexGeometry.vertices.push(new THREE.Vector3(150, yPosition, 0));
+            indexGeometry.vertices.push(new THREE.Vector3(xPosition, yPosition, 0));
+            var indexLine = new THREE.Line(indexGeometry, new THREE.LineBasicMaterial({
+                color: 0x000000,
+                linewidth: 0.5
+            }), THREE.LineSegments);
+            panelScene.add(indexLine);
+            indexLines.push(indexLine);
+        }
+    }
+
+    function drawZoomIndexLine() {
+        for (var i = 0; i < 100; i++) {
+            var indexGeometry = new THREE.Geometry();
+            var xPosition = -250;
+            var yPosition = -200 + 20 * i;
+            if (yPosition >= 200 || yPosition <= -200) continue;
+
+            if (i % 5 == 0) {
+
+                xPosition = -270;
+                var zoomIndexCanvas = document.createElement('canvas');
+                var context1 = zoomIndexCanvas.getContext('2d');
+                context1.font = "40px Arial";
+                context1.fillStyle = "rgba(0,0,0,1)";
+                context1.fillText(i.toString(), 0, 90);
+                // canvas contents will be used for a texture
+                var texture1 = new THREE.Texture(zoomIndexCanvas)
+                texture1.needsUpdate = true;
+                var material1 = new THREE.MeshBasicMaterial({map: texture1});
+                material1.transparent = true;
+                var zoomIndexNumber = new THREE.Mesh(
+                        new THREE.PlaneGeometry(zoomIndexCanvas.width, zoomIndexCanvas.height), material1);
+                zoomIndexNumber.position.set(-180, yPosition, 0);
+                panelScene.add(zoomIndexNumber);
+            }
+            indexGeometry.vertices.push(new THREE.Vector3(-210, yPosition, 0));
+            indexGeometry.vertices.push(new THREE.Vector3(xPosition, yPosition, 0));
+            var zoomIndexLine = new THREE.Line(indexGeometry, new THREE.LineBasicMaterial({
+                color: 0x000000,
+                linewidth: 0.5
+            }), THREE.LineSegments);
+            panelScene.add(zoomIndexLine);
+        }
+    }
+
+    function panelAnimate() {
+
+        window.requestAnimationFrame(panelAnimate);
+        panelRenderer.render(panelScene, panelCamera);
+
+    }
+
+    /**
+     *init EChart
+     * */
+    function setEChartData() {
+
+        var data = [], sumData = [], relativeSumData = [], sum = 0.0;
+        for (var i = 1; i < 9; i++) {
+            var temp = parseFloat(document.getElementById('data' + i).value);
+//            console.log(isNaN(temp)+':'+typeof temp);//type是number但isNaN检测得true？
+            if (isNaN(temp)) {
+                alert('读数未完成，请检查实验步骤是否正确');
+                return;
+            } else {
+                data.push(temp);
+                sum += parseFloat(data[i - 1]);
+                sumData.push(sum);
+                relativeSumData.push((sumData[i - 1] - i * data[0]).toFixed(1));
+                document.getElementById('sumData' + i).innerText = sum.toFixed(1);
+                document.getElementById('relativeSumData' + i).innerText = relativeSumData[i - 1];
+            }
+        }
+
+        var MAX = (relativeSumData.slice(0).sort(function (a, b) {
+                    return a - b;
+                })[7] / 10 + 3).toFixed(1) * 10;
+        var MIN = (relativeSumData.slice(0).sort(function (a, b) {
+                    return a - b;
+                })[0] / 10 - 3).toFixed(0) * 10;
+        if (MAX % 20 != 0)MAX += 10;
+        if (MIN % 20 != 0)MIN -= 10;
+
+        var option = {
+            title: {
+                text: '直线度误差相对累加折线',
+                x: 'center',
+                y: 0
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b}: {c}'
+            },
+            toolbox: {
+                feature: {
+                    myTool1: {
+                        show: true,
+                        title: '重绘包容线',
+                        icon: 'image://img/reset.png',
+                        onclick: function () {
+                            dataArray = [];
+                            option.series.markLine = {
+                                data: []
+                            };
+                            myChart.setOption(option);
+                        }
+                    },
+                    saveAsImage: {}
+                }
+            },
+            grid: {
+                show: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['第一次', '第二次', '第三次', '第四次', '第五次', '第六次', '第七次', '第八次', '']
+            },
+            yAxis: {
+                name: '读数',
+                min: MIN,
+                max: MAX
+            },
+            series: {
+                name: '误差折线图',
+                type: 'line'
+            }
+        };
+
+        var dataArray = [];
+        //coords3为包容线距离
+        var coords1, coords2, coords3, k;
+        var markLineOpt = {
+            label: {
+                normal: {
+                    show: false
+                }
+            },
+            tooltip: {
+                show: false
+            },
+            silent: true
+        };
+
+        option.series.data = relativeSumData;
+
+        eChartDiv.style.display = 'inherit';
+        var myChart = echarts.init(document.getElementById('eChartDiv'));
+        myChart.setOption(option);
+        myChart.on('click', function (params) {
+            if (dataArray.length > 6)   return;
+            dataArray.push(params.dataIndex);
+            dataArray.push(params.data);
+            if (dataArray.length == 4) {
+                if (Math.abs(dataArray[0] - dataArray[2]) == 1) {
+                    dataArray.pop();
+                    dataArray.pop();
+                    dataArray.pop();
+                    dataArray.pop();
+                    alert('选点错误！请重新选择');
+                    return;
+                }
+                k = (dataArray[3] - dataArray[1]) / (dataArray[2] - dataArray[0]);
+                var x0 = 0, x1 = 7, y0 = dataArray[1] - k * dataArray[0], y1 = dataArray[3] - k * (dataArray[2] - 7);
+                console.log(k + ', x0:' + x0 + ', x1:' + x1 + ', y0:' + y0 + ', y1:' + y1 + '\n');
+                coords1 = [{
+                    coord: [x0, y0],
+                    symbol: 'none'
+                }, {
+                    coord: [x1, y1],
+                    symbol: 'none'
+                }];
+                markLineOpt.data = [coords1];
+                option.series.markLine = markLineOpt;
+                myChart.setOption(option);
+            }
+            if (dataArray.length == 6) {
+                if ((dataArray[4] <= dataArray[2] && dataArray[4] <= dataArray[0]) || (dataArray[4] >= dataArray[2] && dataArray[4] >= dataArray[0])) {
+                    dataArray.pop();
+                    dataArray.pop();
+                    alert('选点错误！请重新选择');
+                    return;
+                }
+                var x3 = 0, x4 = 7, x5 = dataArray[4], y3 = dataArray[5] - k * dataArray[4], y4 = dataArray[5] - k * (dataArray[4] - 7), y5 = dataArray[3] - k * (dataArray[2] - dataArray[4]);
+                error = y5 - dataArray[5];
+                document.getElementById('error').innerText = error;
+//                console.log('x3:' + x3 + ', x4:' + x4 + ', y3:' + y3 + ', y4:' + y4 + ', error:' + error + '\n');
+                coords2 = [{
+                    coord: [x3, y3],
+                    symbol: 'none'
+                }, {
+                    coord: [x4, y4],
+                    symbol: 'none'
+                }];
+
+                coords3 = [{
+                    coord: [dataArray[4], dataArray[5]],
+                    symbol: 'none'
+                },
+                    {
+                        coord: [x5, y5],
+                        symbol: 'none'
+                    }];
+                markLineOpt.data = [coords1, coords2, coords3];
+                option.series.markLine = markLineOpt;
+                myChart.setOption(option);
+            }
+        });
+    }
+</script>
+</body>
+</html>
+
+
