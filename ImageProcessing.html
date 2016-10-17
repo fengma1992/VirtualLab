@@ -11,12 +11,13 @@
         <video id="video" width="320" height="240" class="pictureCanvas" autoplay="autoplay"></video>
         <canvas id="captureCanvas" width="320" height="240" class="pictureCanvas"></canvas>
         <canvas id="filterCanvas" width="320" height="240" class="pictureCanvas"></canvas>
+
         <canvas id="barCanvas" width="1000" height="320"></canvas>
     </div>
     <div id="controlDiv">
         <!--<button onclick="openCamera()">开启摄像头</button>-->
         <button class="signalBtn" onclick="capture()">拍照</button>
-        <button onclick="histogramEqualizer()">直方图均衡化</button>
+        <button class="signalBtn" onclick="histogramEqualizer()">直方图均衡化</button>
         <canvas id="knobCanvas" width="128" height="128"></canvas>
         <span id="grayValue" style="width: 200px">阈值：未设定</span>
     </div>
@@ -42,7 +43,7 @@
     var bar = new Bar(barCanvas);
     var captureFlag = false;
     var audio, audioType, exArray = []; //存储设备源ID;
-    var histogram = [];
+    var HISTOGRAM = [], EQUALIZER_HIST = [];
 
     function initHistogram(histogram) {
         for (var i = 0; i < 256; i++) {
@@ -73,11 +74,11 @@
             tempHistogram[255] = grayImageData.data.length / 4 - zeroCount;
             drawBar(tempHistogram);
             ctx2.putImageData(tempImageData, 0, 0);
-            span.innerText = '阈值：'+threshold;
+            span.innerText = '阈值：' + threshold;
         }
     });
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-    window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+//    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+//    window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
         console.log("enumerateDevices() not supported.");
@@ -95,23 +96,80 @@
             .catch(function (err) {
                 console.log(err.name + ": " + err.message);
             });
+
+//    if (navigator.getUserMedia) { // 标准的API
+//        navigator.getUserMedia({ "video": true }, function (stream) {
+//            video.src = stream;
+//            video.play();
+//        }, errocb);
+//    } else if (navigator.webkitGetUserMedia) { // WebKit 核心的API
+//        navigator.webkitGetUserMedia({ "video": true }, function (stream) {
+//            video.src = window.webkitURL.createObjectURL(stream);
+//            video.play();
+//        }, errocb);
+//    }
     openCamera();
+
     function openCamera() {
-        if (navigator.getUserMedia) {
-            navigator.getUserMedia({
-                        'video': {
-                            'optional': [{
-                                'sourceId': exArray[0] //0为前置摄像头，1为后置
-                            }]
-                        },
-                        'audio': false
-                    }, onSuccess,   //onSuccess是获取成功的回调函数
-                    function (e) {
-                        alert('Error！' + e);
-                    });
-        }
-        else {
-            alert('Native device media streaming (getUserMedia) not supported in this browser.');
+        try{
+
+            var videoObj = { "video": true,audio:false},
+                    flag=true,
+                    MediaErr = function (error)
+                    {
+                        flag=false;
+                        if (error.PERMISSION_DENIED)
+                        {
+                            alert('用户拒绝了浏览器请求媒体的权限', '提示');
+                        } else if (error.NOT_SUPPORTED_ERROR) {
+                            alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器', '提示');
+                        } else if (error.MANDATORY_UNSATISFIED_ERROR) {
+                            alert('指定的媒体类型未接收到媒体流', '提示');
+                        } else {
+                            alert('系统未能获取到摄像头，请确保摄像头已正确安装。或尝试刷新页面，重试', '提示');
+                        }
+                    };
+            //获取媒体的兼容代码，目前只支持（Firefox,Chrome,Opera）
+            if (navigator.getUserMedia)
+            {
+                //qq浏览器不支持
+                if (navigator.userAgent.indexOf('MQQBrowser') > -1) {
+                    alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器', '提示');
+                    return false;
+                }
+                navigator.getUserMedia(videoObj, function (stream) {
+                    video.src = stream;
+                    video.play();
+                }, MediaErr);
+            }
+            else if(navigator.webkitGetUserMedia)
+            {
+                navigator.webkitGetUserMedia(videoObj, function (stream)
+                {
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, MediaErr);
+            }
+            else if (navigator.mozGetUserMedia)
+            {
+                navigator.mozGetUserMedia(videoObj, function (stream) {
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, MediaErr);
+            }
+            else if (navigator.msGetUserMedia)
+            {
+                navigator.msGetUserMedia(videoObj, function (stream) {
+                    $(document).scrollTop($(window).height());
+                    video.src = window.URL.createObjectURL(stream);
+                    video.play();
+                }, MediaErr);
+            }else{
+                alert('对不起，您的浏览器不支持拍照功能，请使用其他浏览器');
+                return false;
+            }
+        }catch(e){
+            alert("浏览器不支持HTML5 CANVAS");
         }
     }
 
@@ -165,12 +223,12 @@
     }
 
     function getHistogram(grayimage) {
-        initHistogram(histogram);
+        initHistogram(HISTOGRAM);
         for (var j = 0; j < grayimage.data.length; j += 4) {
-            histogram[grayimage.data[j]]++;
+            HISTOGRAM[grayimage.data[j]]++;
         }
         captureFlag = true;
-        return histogram;
+        return HISTOGRAM;
     }
 
     function histogramEqualizer() {
@@ -178,30 +236,43 @@
             alert('请先照相再进行图像处理操作');
             return;
         }
-        var temp = [],tempHist = [];
-        var i;
-        temp[0] = histogram[0];
+        var tempHist = [], i;
+        EQUALIZER_HIST[0] = HISTOGRAM[0];
         initHistogram(tempHist);
+
         for (i = 1; i < 256; i++)
-            temp[i] = temp[i - 1] + histogram[i];
-        var total = temp[255];
+            EQUALIZER_HIST[i] = EQUALIZER_HIST[i - 1] + HISTOGRAM[i];
+
+        var total = EQUALIZER_HIST[255];
+
         for (i = 0; i < 256; i++) {
-            temp[i] = parseInt(255 * temp[i] / total);
-            console.log(temp[i]);
+            EQUALIZER_HIST[i] = parseInt(255 * EQUALIZER_HIST[i] / total);
+            tempHist[EQUALIZER_HIST[i]] += HISTOGRAM[i];
         }
-        drawBar(temp);
+        drawBar(tempHist);
+
+        var tempData = ctx2.createImageData(captureWidth, captureHeight);
+        var l = tempData.data.length / 4;
+        for (i = 0; i < l; i++) {
+            tempData.data[i * 4] = tempData.data[i * 4 + 1] = tempData.data[i * 4 + 2] = EQUALIZER_HIST[grayImageData.data[i * 4]];
+            tempData.data[i * 4 + 3] = grayImageData.data[i * 4 + 3];
+        }
+        ctx2.putImageData(tempData, 0, 0);
     }
 
     /**
      * 二值化
      */
     function binary(value) {
-        var tempData = grayImageData;
+        var tempData = ctx2.createImageData(captureWidth, captureHeight);
+
         for (var i = 0; i < grayImageData.data.length; i += 4) {
             if (grayImageData.data[i * 4] < value)
                 tempData.data[i * 4] = tempData.data[i * 4 + 1] = tempData.data[i * 4 + 2] = 0;
             else
                 tempData.data[i * 4] = tempData.data[i * 4 + 1] = tempData.data[i * 4 + 2] = 255;
+
+            tempData.data[i * 4 + 3] = grayImageData.data[i * 4 + 3];
         }
         ctx2.putImageData(tempData, 0, 0);
     }
