@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="ALIYUN_ObjectControl" uploadOnCheckin="180f5955-fe3b-452a-be3e-acc77fd22e6c">
+  <component name="PublishConfigData" serverName="ALIYUN_ObjectControl" persistUploadOnCheckin="false">
     <serverData>
       <paths name="ALIYUN_ObjectControl">
         <serverdata>
@@ -10,6 +10,5 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myUploadOnCheckinName" value="ALIYUN_ObjectControl" />
   </component>
 </project>
