@@ -116,7 +116,7 @@ html {
     display: none;
 }
 
-#loadingDiv {
+.loadingDiv {
     display: none;
     position: absolute;
     top: 20%;

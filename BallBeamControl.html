@@ -39,6 +39,10 @@
         <button id="startBtn" class="normalBtn" onclick="start()">开始</button>
         <button id="resetBtn" class="normalBtn" onclick="reset()">重置</button>
     </div>
+
+    <div id="loadingDiv" class="loadingDiv">
+        <img src="img/loading.gif" alt="loading">
+    </div>
 </div>
 <script src="js/VILibraries/ADDVI.js"></script>
 <script src="js/VILibraries/PIDVI.js"></script>
@@ -114,6 +118,268 @@
         PIDVI.reset();
         ballVI.reset();
     }
+
+    var camera, scene, renderer, //绘图用
+            controls, sliderControl;//控制用
+
+    var requestAnimationFrame = window.requestAnimationFrame
+            || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame
+            || window.msRequestAnimationFrame;
+    window.requestAnimationFrame = requestAnimationFrame;
+
+    var loadingDiv = document.getElementById('loadingDiv');
+
+    init();
+
+    function init() {
+
+        renderer = new THREE.WebGLRenderer({
+            canvas: mainCanvas,
+            antialias: true
+        });
+        renderer.setClearColor(0x6495ED);
+        renderer.setSize(mainCanvas.clientWidth, mainCanvas.clientHeight);
+
+        camera = new THREE.PerspectiveCamera(30, mainCanvas.clientWidth / mainCanvas.clientHeight, 1, 100000);
+        camera.position.z = 1500;
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.rotateSpeed = 0.8;
+        controls.enableZoom = true;
+        controls.zoomSpeed = 1.2;
+        controls.enableDamping = true;
+        controls.minPolarAngle = Math.PI / 4;
+        controls.maxPolarAngle = Math.PI * 3 / 4;
+        controls.minAzimuthAngle = -Math.PI / 4;
+        controls.maxAzimuthAngle = Math.PI / 4;
+
+        scene = new THREE.Scene();
+
+        var light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1000, 10000, 4000);
+        scene.add(light);
+
+        var light1 = new THREE.AmbientLight(0x555555);
+        scene.add(light1);
+
+
+        //use as a reference plane for ObjectControl
+        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400), new THREE.MeshBasicMaterial({
+            transparent: true,
+            opacity: 0
+        }));
+        plane.position.y = 0;
+        scene.add(plane);
+
+        sliderControl = new ObjectControls(camera, renderer.domElement);
+        sliderControl.map = plane;
+        sliderControl.offsetUse = true;
+
+        switchControl = new ObjectControls(camera, renderer.domElement);
+        switchControl.map = plane;
+        switchControl.offsetUse = true;
+
+        switchControl.attachEvent('mouseOver', function () {
+            this.container.style.cursor = 'pointer';
+        });
+
+        switchControl.attachEvent('mouseOut', function () {
+            this.container.style.cursor = 'auto';
+        });
+
+        var isStart = false;
+        switchControl.attachEvent('onclick', function () {
+
+            if (!isStart) {
+
+                isStart = !isStart;
+
+                sliderControl.attachEvent('onclick', function () {
+                });
+
+                sliderControl.attachEvent('mouseOver', function () {
+                    this.container.style.cursor = 'pointer';
+                });
+
+                sliderControl.attachEvent('mouseOut', function () {
+                    this.container.style.cursor = 'auto';
+                });
+
+                sliderControl.attachEvent('dragAndDrop', onMouseDrag);
+
+                sliderControl.attachEvent('mouseUp', function () {
+                    controls.enabled = true;
+                    this.container.style.cursor = 'auto';
+                });
+            }
+
+            else {
+                isStart = !isStart;
+
+                sliderControl.detachEvent('onclick');
+                sliderControl.detachEvent('mouseOver');
+                sliderControl.detachEvent('mouseOut');
+                sliderControl.detachEvent('dragAndDrop');
+                sliderControl.attachEvent('mouseUp');
+            }
+
+        });
+
+        var mtlLoader = new THREE.MTLLoader();
+
+        var base, slider, offSwitch, onSwitch;
+        loadingDiv.style.display = 'inherit';
+        mtlLoader.load('assets/straightness_experiment/base.mtl', function (materials) {
+
+            materials.preload();
+
+            var objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(materials);
+            objLoader.load('assets/straightness_experiment/base.obj', function (a) {
+                a.traverse(function (child) {
+                    if (child instanceof THREE.Mesh) {
+
+                        child.material.side = THREE.DoubleSide;
+                    }
+                });
+                base = a;
+                mtlLoader.load('assets/straightness_experiment/slider.mtl', function (materials) {
+
+                    materials.preload();
+
+                    var objLoader = new THREE.OBJLoader();
+                    objLoader.setMaterials(materials);
+                    objLoader.load('assets/straightness_experiment/slider.obj', function (b) {
+                        b.traverse(function (child) {
+                            if (child instanceof THREE.Mesh) {
+
+                                child.material.side = THREE.DoubleSide;
+                            }
+                        });
+                        slider = b;
+                        mtlLoader.load('assets/straightness_experiment/offSwitch.mtl', function (materials) {
+
+                            materials.preload();
+
+                            var objLoader = new THREE.OBJLoader();
+                            objLoader.setMaterials(materials);
+                            objLoader.load('assets/straightness_experiment/offSwitch.obj', function (c) {
+                                c.traverse(function (child) {
+                                    if (child instanceof THREE.Mesh) {
+
+                                        child.material.side = THREE.DoubleSide;
+                                    }
+                                });
+                                offSwitch = c;
+                                mtlLoader.load('assets/straightness_experiment/onSwitch.mtl', function (materials) {
+
+                                    materials.preload();
+
+                                    var objLoader = new THREE.OBJLoader();
+                                    objLoader.setMaterials(materials);
+                                    objLoader.load('assets/straightness_experiment/onSwitch.obj', function (d) {
+                                        d.traverse(function (child) {
+                                            if (child instanceof THREE.Mesh) {
+
+                                                child.material.side = THREE.DoubleSide;
+                                            }
+                                        });
+                                        onSwitch = d;
+                                        loadingDiv.style.display = 'none';
+                                        scene.add(base);
+                                        scene.add(slider);
+                                        sliderControl.attach(slider);
+                                        scene.add(offSwitch);
+                                        switchControl.attach(offSwitch);
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+        animate();
+    }
+
+    function onMouseDrag() {
+
+        controls.enabled = false;
+        this.container.style.cursor = 'move';
+        this.focused.position.y = this.previous.y;  //lock y direction
+        var positionX = this.focused.position.x;
+        if (positionX < 0)
+            this.focused.position.x = 0;
+
+        else if (positionX > 875)
+            this.focused.position.x = 875;
+
+        positionX = this.focused.position.x;
+        console.log(positionX);
+        scene.remove(machineRay);
+        machineRay = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 200 + positionX), new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            opacity: 0.9
+        }));
+        machineRay.rotation.z = Math.PI / 2;
+        machineRay.position.x = -400 + positionX / 2;
+        machineRay.position.y = 118;
+        scene.add(machineRay);
+        var errorArray = [0, 20, 60, 80, -30, 60, -70, 10, -10];
+        var crossY = 0;
+        var range = 1000 / 8;
+        if (positionX < 0.5 * range) {
+            crossY = errorArray[0];
+            drawCrossMark(crossY);
+        }
+        else if (positionX < 1.5 * range) {
+            crossY = errorArray[1];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 2.5 * range) {
+            crossY = errorArray[2];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 3.5 * range) {
+            crossY = errorArray[3];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 4.5 * range) {
+            crossY = errorArray[4];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 5.5 * range) {
+            crossY = errorArray[5];
+            drawCrossMark(crossY);
+
+        }
+        else if (positionX < 6.5 * range) {
+            crossY = errorArray[6];
+            drawCrossMark(crossY);
+
+        }
+        else {
+            crossY = errorArray[7];
+            drawCrossMark(crossY);
+
+        }
+    }
+
+    function animate() {
+
+        window.requestAnimationFrame(animate);
+        sliderControl.update();
+        controls.update();
+        renderer.render(scene, camera);
+
+    }
+
 </script>
 </body>
 </html>

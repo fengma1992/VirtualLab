@@ -87,7 +87,7 @@
         </tr>
     </table>
     <div id="eChartDiv"></div>
-    <div id="loadingDiv">
+    <div id="loadingDiv" class="loadingDiv">
         <img src="img/loading.gif" alt="loading">
     </div>
 </div>
@@ -122,7 +122,7 @@
             mainCanvas = document.getElementById('mainCanvas'),
             loadingDiv = document.getElementById('loadingDiv');
 
-    init(), animate();
+    init();
 
     function init() {
 
@@ -267,13 +267,13 @@
 
         var base, slider, offSwitch, onSwitch;
         loadingDiv.style.display = 'inherit';
-        mtlLoader.load('assets/straightness_experiment/base.mtl', function (materials) {
+        mtlLoader.load('assets/straightness/base.mtl', function (materials) {
 
             materials.preload();
 
             var objLoader = new THREE.OBJLoader();
             objLoader.setMaterials(materials);
-            objLoader.load('assets/straightness_experiment/base.obj', function (a) {
+            objLoader.load('assets/straightness/base.obj', function (a) {
                 a.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
 
@@ -281,13 +281,13 @@
                     }
                 });
                 base = a;
-                mtlLoader.load('assets/straightness_experiment/slider.mtl', function (materials) {
+                mtlLoader.load('assets/straightness/slider.mtl', function (materials) {
 
                     materials.preload();
 
                     var objLoader = new THREE.OBJLoader();
                     objLoader.setMaterials(materials);
-                    objLoader.load('assets/straightness_experiment/slider.obj', function (b) {
+                    objLoader.load('assets/straightness/slider.obj', function (b) {
                         b.traverse(function (child) {
                             if (child instanceof THREE.Mesh) {
 
@@ -295,13 +295,13 @@
                             }
                         });
                         slider = b;
-                        mtlLoader.load('assets/straightness_experiment/offSwitch.mtl', function (materials) {
+                        mtlLoader.load('assets/straightness/offSwitch.mtl', function (materials) {
 
                             materials.preload();
 
                             var objLoader = new THREE.OBJLoader();
                             objLoader.setMaterials(materials);
-                            objLoader.load('assets/straightness_experiment/offSwitch.obj', function (c) {
+                            objLoader.load('assets/straightness/offSwitch.obj', function (c) {
                                 c.traverse(function (child) {
                                     if (child instanceof THREE.Mesh) {
 
@@ -309,13 +309,13 @@
                                     }
                                 });
                                 offSwitch = c;
-                                mtlLoader.load('assets/straightness_experiment/onSwitch.mtl', function (materials) {
+                                mtlLoader.load('assets/straightness/onSwitch.mtl', function (materials) {
 
                                     materials.preload();
 
                                     var objLoader = new THREE.OBJLoader();
                                     objLoader.setMaterials(materials);
-                                    objLoader.load('assets/straightness_experiment/onSwitch.obj', function (d) {
+                                    objLoader.load('assets/straightness/onSwitch.obj', function (d) {
                                         d.traverse(function (child) {
                                             if (child instanceof THREE.Mesh) {
 
@@ -337,6 +337,7 @@
                 });
             });
         });
+        animate();
     }
 
     function onMouseDrag() {

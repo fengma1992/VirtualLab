@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" promptOnRemoteOverwrite="CHECK_TIMESTAMP" uploadOnCheckin="180f5955-fe3b-452a-be3e-acc77fd22e6c" filePermissions="420" folderPermissions="493" notifyRemoteChanges="true">
+  <component name="PublishConfigData" promptOnRemoteOverwrite="CHECK_TIMESTAMP" uploadOnCheckin="180f5955-fe3b-452a-be3e-acc77fd22e6c" notifyRemoteChanges="true">
     <serverData>
       <paths name="ALIYUN_ObjectControl">
         <serverdata>
