@@ -10,6 +10,7 @@
 <div class="mainDiv">
     <canvas id="signalCanvas" width="1000" height="400"></canvas>
     <div class="rowFlexDiv">
+        <canvas id="dataCanvas" width="40" height="40"></canvas>
         <button id="sinBtn" class="normalBtn" onclick="setValue(1)">正弦波</button>
         <button id="squareBtn" class="normalBtn" onclick="setValue(2)">方波</button>
         <button id="triangleBtn" class="normalBtn" onclick="setValue(3)">三角波</button>
@@ -29,30 +30,32 @@
         </div>
     </div>
     <script src="js/VILibraries/WaveVI.js"></script>
+    <script src="js/VILibraries/SignalGeneratorVI.js"></script>
     <script src="js/VILibraries/KnobVI.js"></script>
     <script>
         var canvas = document.getElementById('signalCanvas');
         var ampInput = document.getElementById('ampInput');
         var freqInput = document.getElementById('freqInput');
         var startBtn = document.getElementById('startBtn');
+        var dataCanvas = document.getElementById('dataCanvas');
         startBtn.disabled = true;
 
         var wave = new WaveVI(canvas);
-        var data = [], phrase, type, interval,
+        var data = new SignalGeneratorVI(dataCanvas);
+        var phrase, interval,
                 originalAmp = ampInput.value, amplitude = originalAmp,
-                originalFreq = freqInput.value, frequency = originalFreq,
-                n = 1024, started = false;
+                originalFreq = freqInput.value, frequency = originalFreq, started = false;
 
         function setValue(signalType) {
             phrase = 0;
-            type = signalType;
+            data.signalType = signalType;
             setData();
             startBtn.disabled = false;
         }
 
         function setData() {
-            data = wave.SignalData(type, amplitude, frequency, phrase, n);
-            wave.SetData(data, data.length);
+            data.setData(amplitude, frequency, phrase);
+            wave.setData(data.output, data.output.length);
         }
         function start() {
             if (!started) {
@@ -85,7 +88,7 @@
             freqInput.value = knob2.data.toFixed(1);
             frequency = freqInput.value;
 
-            if (!started && type > 0)setData();
+            if (!started)setData();
         });
 
         function setAmp() {
@@ -93,7 +96,7 @@
             amplitude = amplitude > 100 ? 100 : amplitude;
             ampInput.value = amplitude;
             knob1.setData(amplitude);
-            if (!started && type > 0)setData();
+            if (!started)setData();
         }
 
         function setFreq() {
@@ -101,7 +104,7 @@
             frequency = frequency > 1000 ? 1000 : frequency;
             freqInput.value = frequency;
             knob2.setData(frequency);
-            if (!started && type > 0)setData();
+            if (!started)setData();
         }
 
 

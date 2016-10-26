@@ -21,8 +21,13 @@ function KnobVI(domElement, min, max, startValue) {
     this.radian = (startValue - min) / ratio;
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
+    this.name = 'KnobVI';
+
     this.width = this.canvas.width; //对象宽度//
     this.height = this.canvas.height; //对象高度//
+
+    //虚拟仪器中相连接的控件VI
+    this.target = [];
 
     this.canvas.addEventListener('mousemove', onMouseMove, false);
     this.canvas.addEventListener('mousedown', onMouseDown, false);

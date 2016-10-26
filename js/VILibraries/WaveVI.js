@@ -3,14 +3,17 @@
  */
 
 /**
- *
+ *  数据显示控件
  * @param domElement    HTML5中CANVAS对象
  * @constructor
  */
 function WaveVI(domElement) {
+
     var _this = this;
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
+    this.name = 'WaveVI';
+
     this.width = this.canvas.width; //对象宽度//
     this.height = this.canvas.height; //对象高度//
     //坐标单位//
@@ -51,14 +54,20 @@ function WaveVI(domElement) {
     this.bufferVal = [];
     this.curPointX = this.offsetL;
     this.curPointY = this.offsetT;
-    console.log('WaveVI.js version 0.1');
 
-    this.Paint = function () {
-        _this.DrawBackground();
-        _this.DrawWave();
+    //虚拟仪器中相连接的控件VI
+    this.source = [];
+
+    this.paint = function () {
+        _this.drawBackground();
+        _this.drawWave();
+        if (_this.drawRulerFlag) {
+
+            _this.drawRuler();
+        }
     };
 
-    this.DrawWave = function () {
+    this.drawWave = function () {
 
         var ratioX = _this.waveWidth / (_this.XMaxVal - _this.XMinVal);
         var ratioY = _this.waveHeight / (_this.YMaxVal - _this.YMinVal);
@@ -78,7 +87,7 @@ function WaveVI(domElement) {
         }
         //绘制波形曲线
         _this.ctx.beginPath();
-        _this.ctx.lineWidth = 4;
+        _this.ctx.lineWidth = 2;
         _this.ctx.lineCap = "round";
         _this.ctx.strokeStyle = _this.signalColor;
         for (i = 1; i < _this.pointNum; i++) {
@@ -90,7 +99,7 @@ function WaveVI(domElement) {
         _this.ctx.save();
     };
 
-    this.DrawBackground = function () {
+    this.drawBackground = function () {
         var ctx = _this.ctx;
         //刷背景//
         ctx.beginPath();
@@ -224,10 +233,9 @@ function WaveVI(domElement) {
         ctx.save();
     };
 
-    this.DrawBackground();
+    this.drawBackground();
 
     this.drawRuler = function () {
-        _this.Paint();
         //画标尺//
         _this.ctx.beginPath();
         _this.ctx.lineWidth = 1;
@@ -241,7 +249,7 @@ function WaveVI(domElement) {
         _this.ctx.stroke();
         var curPointX = ((_this.curPointX - _this.offsetL) * (_this.XMaxVal - _this.XMinVal) / _this.waveWidth).toFixed(0);
         var curPointY = parseFloat(_this.bufferVal[curPointX]).toFixed(2);
-        _this.ctx.fillText(`(${curPointX}, ${curPointY})`, _this.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
+        _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')', _this.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
         _this.ctx.closePath();
     };
 
@@ -249,15 +257,15 @@ function WaveVI(domElement) {
         for (var i = 0; i < len; i++) {
             _this.bufferVal[i] = 0.0;
         }
-        _this.Paint();
+        _this.paint();
     };
 
-    this.SetData = function (data, len) {
+    this.setData = function (data, len) {
         _this.pointNum = len;
         _this.XMaxVal = len;
         var YMax = 0, YMin = 0;
         for (var i = 0; i < len; i++) {
-            _this.bufferVal[i] = data[i];
+            _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
             YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
             YMin = YMin > _this.bufferVal[i] ? _this.bufferVal[i] : YMin;
         }
@@ -271,100 +279,35 @@ function WaveVI(domElement) {
                 _this.YMaxVal = 2 * YMax - YMin;
                 _this.YMinVal = 2 * YMin - YMax;
             }
+            if (YMax < 0.01 && YMin > -0.01) {
+                _this.YMaxVal = 1;
+                _this.YMinVal = -1;
+            }
         }
-        _this.Paint();
+        _this.paint();
     };
 
-    this.SetAxisRangX = function (xMin, xNax) {
+    this.setAxisRangX = function (xMin, xNax) {
         _this.XMinVal = xMin;
         _this.XMaxVal = xNax;
-        _this.Paint();
+        _this.paint();
     };
 
-    this.SetAxisRangY = function (yMin, yMax) {
+    this.setAxisRangY = function (yMin, yMax) {
         _this.YMinVal = yMin;
         _this.YMaxVal = yMax;
-        _this.Paint();
+        _this.paint();
     };
 
-    this.SetPointNum = function (num) {
+    this.setPointNum = function (num) {
         _this.pointNum = num;
-        _this.Paint();
+        _this.paint();
     };
 
-    this.SetRowColNum = function (row, col) {
+    this.setRowColNum = function (row, col) {
         _this.nRow = row;
         _this.nCol = col;
-        _this.Paint();
-    };
-
-    /**
-     * 信号产生函数
-     * @param type  信号类型
-     * @param amp 信号幅值
-     * @param f 信号频率
-     * @param phase 信号相位
-     * @param n 信号长度
-     */
-    this.SignalData = function (type, amp, f, phase, n) {
-        var data = [];
-        var LEN = n == undefined ? 1024 : n;
-        var AMP = amp > 0 ? amp : 0;
-        var FS = 11025;
-        var i, j;
-        var T = 1 / f;//周期
-        var dt = 1 / FS;//采样周期
-        var t, t1, t2, t3;
-
-        if (f <= 0) {
-            for (i = 0; i < LEN; i++) {
-                data.push(0);
-            }
-            return data;
-        }
-        switch (type) {
-            case 1://正弦波
-                for (i = 0; i < LEN; i++) {
-                    data.push(AMP * Math.sin(2 * Math.PI * f * i / FS + (2 * Math.PI * phase) / 360));
-                }
-                return data;
-
-            case 2://方波
-                t1 = T / 2;//半周期时长
-                t3 = T * phase / 360.0;
-                for (i = 0; i < LEN; i++) {
-                    t = i * dt + t3;
-                    t2 = t - Math.floor(t / T) * T;
-                    if (t2 >= t1)
-                        data.push(-AMP);
-                    else
-                        data.push(AMP);
-                }
-                return data;
-
-            case 3://三角波
-                t3 = T * phase / 360.0;
-                for (i = 0; i < LEN; i++) {
-                    t = i * dt + t3;
-                    t2 = parseInt(t / T);
-                    t1 = t - t2 * T;
-                    if (t1 <= T / 2)
-                        data.push(4 * AMP * t1 / T - AMP);
-                    else
-                        data.push(3 * AMP - 4 * AMP * t1 / T);
-                }
-                return data;
-
-            case 4://白噪声
-                t2 = 32767;// 0 -- 0x7fff
-                for (i = 0; i < LEN; i++) {
-                    t1 = 0;
-                    for (j = 0; j < 12; j++)
-                        t1 += (t2 * Math.random());
-                    data.push(AMP * (t1 - 6 * t2) / (3 * t2));
-                }
-                return data;
-        }
+        _this.paint();
     };
 
     var _mouseOverFlag = false;
@@ -431,8 +374,8 @@ function WaveVI(domElement) {
 
     };
 
-    function OnMouseMove(event) {
-        if (!_this.drawRulerFlag)
+    function onMouseMove(event) {
+        if (!_this.drawRulerFlag || _this.bufferVal.length == 0)
             return;
         _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 5;
         _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 5;
@@ -443,7 +386,7 @@ function WaveVI(domElement) {
         if (_this.curPointX >= (_this.width - _this.offsetR)) {
             _this.curPointX = _this.width - _this.offsetR;
         }
-        _this.drawRuler();
+        _this.paint();
     }
 
     function onContainerMouseDown(event) {
@@ -454,7 +397,7 @@ function WaveVI(domElement) {
     }
 
     // this.canvas.addEventListener('mousedown', onContainerMouseDown, false);  // mouseDownListener
-    this.canvas.addEventListener('mousemove', OnMouseMove, false);   // mouseMoveListener
+    this.canvas.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
     // this.canvas.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
 }
 

@@ -1,27 +1,29 @@
 /**
- * Created by Fengma on 2016/10/18.
+ * Created by Fengma on 2016/10/26.
  */
 
 /**
- * PID控制器
- * @param domElement HTML CANVAS
+ * 比例积分响应
+ * @param domElement
  * @constructor
  */
-function PIDVI(domElement) {
-
+function ProportionalIntegralResponseVI(domElement) {
+    'use strict';
     var _this = this;
     this.container = domElement;
-    this.ctx = this.container.getContext('2d');
-    this.name = 'PIDVI';
+    this.ctx = this.container.getContext("2d");
+    this.name = 'ProportionalIntegralResponseVI';
 
+    this.signalType = 4;
+    this.k1 = 1;
+    this.k2 = 1;
+    this.k3 = 0;
+    this.Fs = 1000;
     this.input = 0;
+    this.lastInput = 0;
+    this.temp1 = 0;
+    this.temp2 = 0;
     this.singleOutput = 0;
-    this.P = 1;
-    this.I = 1;
-    this.D = 1;
-    this.Fs = 50;
-    this.u1 = 0;
-    this.y1 = 0;
 
     this.dataLength = 1024;
     this.index = 0;
@@ -32,28 +34,33 @@ function PIDVI(domElement) {
     this.source = [];
     this.target = [];
 
-    /**
-     *
-     * @param inputValue 从输入端读取的数据
-     */
-    this.setData = function (inputValue) {
+    this.setData = function (input) {
+        if (isNaN(input)) {
+            return false;
+        }
 
-        var v1, v2, v3, v21, u, Ts = 1.0 / _this.Fs;
+        var v1, v2, v21;
 
-        _this.input = inputValue;
-        u = _this.input;//从输入端口上读数
-        v1 = _this.P * u;
-        v21 = _this.y1 + 0.5 * Ts * (u + _this.u1);
-        _this.y1 = v21;
-        v2 = _this.I * v21;
-        v3 = _this.D * (u - _this.u1) / Ts;
-        _this.u1 = u;
-        _this.singleOutput = v1 + v2 + v3;//向输出端口上写数
+        _this.input = input;
 
-        if (_this.autoSave)
+        if (_this.signalType < 6) {
+            v1 = _this.k1 * _this.input;
+
+            v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
+            _this.temp1 = v21;
+            v2 = _this.k2 * v21;
+
+            _this.singleOutput = v1 + v2;
+            _this.lastInput = _this.input;
+        }
+
+        if (_this.autoSave) {
+
             _this.dataCollector(_this.singleOutput);
+        }
 
         return _this.singleOutput;
+
     };
 
     /**
@@ -79,25 +86,22 @@ function PIDVI(domElement) {
         }
     };
 
-    this.reset = function () {
 
-        _this.input = 0;
-        _this.singleOutput = 0;
-        _this.P = 1;
-        _this.I = 1;
-        _this.D = 1;
-        _this.Fs = 50;
-        _this.u1 = 0;
-        _this.y1 = 0;
+    this.reset = function () {
+        _this.lastInput = 0;
+        _this.temp1 = 0;
+        _this.temp2 = 0;
         _this.index = 0;
     };
 
+
     this.draw = function () {
-        _this.ctx.font = "normal 12px Microsoft YaHei";
+        _this.ctx.font = 'normal 12px Microsoft YaHei';
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText('PID', _this.container.width / 2 - 11, _this.container.height / 2 + 6);
+        _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText('积分', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 
     this.draw();

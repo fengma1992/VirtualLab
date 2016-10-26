@@ -12,6 +12,7 @@
  * @constructor EChart.js
  */
 function RoundPanelVI(domElement, name, min, max, unit) {
+    'use strict';
     var _this = this;
     // 初始化echarts图表
     this.myChart = echarts.init(domElement);

@@ -12,33 +12,41 @@
         <canvas id="outputCanvas" width="1000" height="300"></canvas>
     </div>
     <div class="rowFlexDiv">
-        <canvas id="signalCanvas" width="30" height="30"></canvas>
-        <button class="normalBtn" onclick="setType(1)">比例</button>
-        <button class="normalBtn" onclick="setType(2)">积分</button>
-        <button class="normalBtn" onclick="setType(3)">微分</button>
-        <button class="normalBtn" onclick="setType(4)">惯性</button>
-        <button class="normalBtn" onclick="setType(5)">震荡</button>
-        <button class="normalBtn" onclick="setType(6)">比例积分</button>
-        <button class="normalBtn" onclick="setType(7)">比例惯性</button>
-        <button class="normalBtn" onclick="setType(8)">比例微分</button>
+        <canvas id="inputDataCanvas" width="50" height="30"></canvas>
+        <canvas id="signalCanvas" width="50" height="30"></canvas>
+        <button class="normalBtn" onclick="setStepType(1)">比例</button>
+        <button class="normalBtn" onclick="setStepType(2)">积分</button>
+        <button class="normalBtn" onclick="setStepType(3)">微分</button>
+        <button class="normalBtn" onclick="setStepType(4)">惯性</button>
+        <button class="normalBtn" onclick="setStepType(5)">震荡</button>
+        <button class="normalBtn" onclick="setStepType(6)">比例积分</button>
+        <button class="normalBtn" onclick="setStepType(7)">比例惯性</button>
+        <button class="normalBtn" onclick="setStepType(8)">比例微分</button>
     </div>
 </div>
 <script src="js/VILibraries/WaveVI.js"></script>
 <script src="js/VILibraries/StepResponseGeneratorVI.js"></script>
+<script src="js/VILibraries/InputVI.js"></script>
 <script>
     var inputCanvas = document.getElementById('inputCanvas');
     var outputCanvas = document.getElementById('outputCanvas');
     var signalCanvas = document.getElementById('signalCanvas');
+    var inputDataCanvas = document.getElementById('inputDataCanvas');
 
     var inputWave = new WaveVI(inputCanvas);
     var outputWave = new WaveVI(outputCanvas);
+    var inputData = new InputVI(inputDataCanvas);
     var signalGenerator = new StepResponseGeneratorVI(signalCanvas);
 
-    var input = [], signalType = 1;
-    for (var i = 0; i < 1024; i++)
-        input[i] = 800;
+    var signalType = 1, n = 0;
+    //    for (var i = 0; i < 1024; i++) {
+    //        if (i < 10)
+    //            input[i] = 0;
+    //        else
+    //            input[i] = 800;
+    //    }
 
-    function setType(type) {
+    function setStepType(type) {
 
         reset();
         signalType = type;
@@ -46,47 +54,48 @@
         switch (signalType) {
 
             case 1://比例
-                signalGenerator.setType(1);
+                signalGenerator.setStepType(1);
                 signalGenerator.k1 = 1.5;
                 break;
 
             case 2://积分
-                signalGenerator.setType(2);
+                signalGenerator.setStepType(2);
                 signalGenerator.k2 = 5;
                 break;
 
             case 3://微分
-                signalGenerator.setType(3);
+                signalGenerator.setStepType(3);
                 signalGenerator.k3 = 0.0025;
                 break;
 
             case 4://惯性
-                signalGenerator.setType(6);
+                signalGenerator.setStepType(6);
                 signalGenerator.k1 = 0.025;
                 break;
 
             case 5://震荡
-                signalGenerator.setType(7);
+                signalGenerator.setStepType(7);
                 signalGenerator.k1 = 50;
                 signalGenerator.k2 = 0.05;
                 break;
 
             case 6://比例积分
-                signalGenerator.setType(4);
+                signalGenerator.setStepType(4);
                 break;
 
             case 7://比例惯性
-                signalGenerator.setType(8);
+                signalGenerator.setStepType(8);
                 signalGenerator.k1 = 0.025;
                 signalGenerator.k2 = 1;
                 break;
 
             case 8://比例微分
-                signalGenerator.setType(5);
+                signalGenerator.setStepType(5);
+                signalGenerator.k3 = 0.0025;
                 break;
 
             default:
-                signalGenerator.setType(1);
+                signalGenerator.setStepType(1);
                 signalGenerator.k1 = 1.5;
                 break;
         }
@@ -94,14 +103,24 @@
     }
 
     function onTimer() {
+        if (n < 10) {
+            signalGenerator.setData(0);
+            inputData.setData(0);
+            n++;
+        }
+        else {
+            signalGenerator.setData(800);
+            inputData.setData(800);
+        }
 
-        signalGenerator.setData(800);
-        outputWave.SetData(signalGenerator.output, 1024);
-        inputWave.SetData(input, 1024);
+        outputWave.setData(signalGenerator.output, 1024);
+        inputWave.setData(inputData.output, 1024);
     }
 
     function reset() {
 
+        n = 0;
+        inputData.reset();
         signalGenerator.reset();
     }
 </script>

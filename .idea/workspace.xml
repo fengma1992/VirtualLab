@@ -1,22 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="1019night">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
+    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="1026-1">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/VirtualInstrument.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/ball.mtl" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/ball.obj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/base.mtl" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/base.obj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/beam.mtl" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/beam.obj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/mark.mtl" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/mark.obj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/Rotor/base.mtl" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/Rotor/base.obj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/Rotor/rotor.mtl" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/Rotor/rotor.obj" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/draggable.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/css/popup.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/InputVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/jsPlumb-2.2.2-min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/jsPlumb-2.2.2.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/popup.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/img/loading.gif" afterPath="$PROJECT_DIR$/img/loading.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jsLinters/jslint.xml" afterPath="$PROJECT_DIR$/.idea/jsLinters/jslint.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ControlCharacteristic.html" afterPath="$PROJECT_DIR$/ControlCharacteristic.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GearBox.html" afterPath="$PROJECT_DIR$/GearBox.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SignalGenerator.html" afterPath="$PROJECT_DIR$/SignalGenerator.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Straightness.html" afterPath="$PROJECT_DIR$/Straightness.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/base.mtl" afterPath="$PROJECT_DIR$/assets/straightness/base.mtl" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/base.obj" afterPath="$PROJECT_DIR$/assets/straightness/base.obj" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/offSwitch.mtl" afterPath="$PROJECT_DIR$/assets/straightness/offSwitch.mtl" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/offSwitch.obj" afterPath="$PROJECT_DIR$/assets/straightness/offSwitch.obj" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/onSwitch.mtl" afterPath="$PROJECT_DIR$/assets/straightness/onSwitch.mtl" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/onSwitch.obj" afterPath="$PROJECT_DIR$/assets/straightness/onSwitch.obj" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/slider.mtl" afterPath="$PROJECT_DIR$/assets/straightness/slider.mtl" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness_experiment/slider.obj" afterPath="$PROJECT_DIR$/assets/straightness/slider.obj" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/ECharts/echarts.js" afterPath="$PROJECT_DIR$/js/ECharts/echarts.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ADDVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ADDVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/EChart_RoundPanelVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/EChart_RoundPanelVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/KnobVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/KnobVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/PIDVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/PIDVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/WaveVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/WaveVI.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/base.mtl" afterPath="$PROJECT_DIR$/assets/Straightness/base.mtl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/base.obj" afterPath="$PROJECT_DIR$/assets/Straightness/base.obj" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/offSwitch.mtl" afterPath="$PROJECT_DIR$/assets/Straightness/offSwitch.mtl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/offSwitch.obj" afterPath="$PROJECT_DIR$/assets/Straightness/offSwitch.obj" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/onSwitch.mtl" afterPath="$PROJECT_DIR$/assets/Straightness/onSwitch.mtl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/onSwitch.obj" afterPath="$PROJECT_DIR$/assets/Straightness/onSwitch.obj" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/slider.mtl" afterPath="$PROJECT_DIR$/assets/Straightness/slider.mtl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/assets/straightness/slider.obj" afterPath="$PROJECT_DIR$/assets/Straightness/slider.obj" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/js/VILibraries/BallVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,137 +81,36 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="BallBeamControl.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
+      <file leaf-file-name="VirtualInstrument.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/VirtualInstrument.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="233" column="87" selection-start-line="233" selection-start-column="87" selection-end-line="233" selection-end-column="87" />
+            <state relative-caret-position="408">
+              <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
               <folding>
-                <element signature="e#2975#3257#0" expanded="false" />
-                <element signature="e#3282#3812#0" expanded="false" />
-                <element signature="e#3841#3850#0" expanded="false" />
-                <element signature="e#3873#3951#0" expanded="false" />
-                <element signature="e#11029#12938#0" expanded="false" />
+                <element signature="e#4182#4976#0" expanded="false" />
+                <element signature="e#5050#5236#0" expanded="false" />
+                <element signature="e#12962#13482#0" expanded="false" />
+                <element signature="e#13795#15769#0" expanded="false" />
+                <element signature="e#20742#22192#0" expanded="false" />
+                <element signature="e#22198#22310#0" expanded="false" />
+                <element signature="e#22373#25426#0" expanded="false" />
+                <element signature="e#23195#24149#0" expanded="false" />
+                <element signature="e#24285#24930#0" expanded="false" />
+                <element signature="e#24988#25191#0" expanded="false" />
+                <element signature="e#25247#25420#0" expanded="false" />
+                <marker date="1477466099884" expanded="true" signature="10557:10594" ph="..." />
+                <marker date="1477466099884" expanded="true" signature="12117:12154" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="KnobVI.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/VILibraries/KnobVI.js">
+      <file leaf-file-name="StepResponseGeneratorVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="912">
-              <caret line="40" column="9" selection-start-line="40" selection-start-column="9" selection-end-line="40" selection-end-column="9" />
-              <folding>
-                <element signature="n#!!block;n#onMouseDown#0;n#!!block;n#KnobVI#0" expanded="false" />
-                <element signature="n#!!block;n#calculateRadian#0;n#!!block;n#KnobVI#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="371">
-              <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+            <state relative-caret-position="535">
+              <caret line="182" column="32" selection-start-line="182" selection-start-column="26" selection-end-line="182" selection-end-column="32" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Straightness.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Straightness.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="145">
-              <caret line="317" column="71" selection-start-line="317" selection-start-column="71" selection-end-line="317" selection-end-column="71" />
-              <folding>
-                <element signature="n#table#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-                <element signature="e#7065#7130#0" expanded="false" />
-                <element signature="e#7414#7532#0" expanded="false" />
-                <element signature="e#9320#9966#0" expanded="false" />
-                <element signature="e#13416#15325#0" expanded="false" />
-                <element signature="e#15532#18431#0" expanded="false" />
-                <element signature="e#18473#19680#0" expanded="false" />
-                <element signature="e#19722#20114#0" expanded="false" />
-                <element signature="e#20154#20292#0" expanded="false" />
-                <element signature="e#20334#20605#0" expanded="false" />
-                <element signature="e#20637#20716#0" expanded="false" />
-                <element signature="e#20747#21459#0" expanded="false" />
-                <element signature="e#21490#23284#0" expanded="false" />
-                <element signature="e#23319#24920#0" expanded="false" />
-                <element signature="e#24950#25066#0" expanded="false" />
-                <element signature="e#25133#30780#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/css/main.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="172">
-              <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
-            <state split_layout="FIRST">
-              <first_editor relative-caret-position="0">
-                <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-                <folding />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-          <provider editor-type-id="MarkdownFxPreviewEditor">
-            <state />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="params.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/params.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EChart_BarVI.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/VILibraries/EChart_BarVI.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1560">
-              <caret line="67" column="9" selection-start-line="67" selection-start-column="9" selection-end-line="67" selection-end-column="9" />
-              <folding>
-                <element signature="n#!!doc;n#BarVI#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="WaveVI.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/VILibraries/WaveVI.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1200">
-              <caret line="52" column="9" selection-start-line="52" selection-start-column="9" selection-end-line="52" selection-end-column="9" />
-              <folding>
-                <element signature="e#1444#1509#0" expanded="false" />
-                <element signature="e#1544#2626#0" expanded="false" />
-                <element signature="e#2667#7606#0" expanded="false" />
-                <element signature="e#7670#8541#0" expanded="false" />
-                <element signature="e#9587#9677#0" expanded="false" />
-                <element signature="e#9726#9816#0" expanded="false" />
-                <element signature="e#10053#10193#0" expanded="false" />
-                <element signature="e#12350#13211#0" expanded="false" />
-                <element signature="e#13254#13873#0" expanded="false" />
-                <element signature="n#!!block;n#OnMouseMove#0;n#!!block;n#WaveVI#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -179,10 +120,10 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="CSS File" />
         <option value="AMD JavaScript File" />
-        <option value="JavaScript File" />
+        <option value="CSS File" />
         <option value="HTML File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -202,17 +143,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/myLib.js" />
-        <option value="$PROJECT_DIR$/js/ObjectControl.js" />
-        <option value="$PROJECT_DIR$/DragObject.html" />
-        <option value="$PROJECT_DIR$/../../WebGL/Virtual_Lab/LoadOBJMTL.html" />
-        <option value="$PROJECT_DIR$/raycaster.html" />
-        <option value="$PROJECT_DIR$/js/VILibs/RoundPanel.js" />
-        <option value="$PROJECT_DIR$/js/VILibs/PlotScreen.js" />
-        <option value="$PROJECT_DIR$/TestPlotScreen.html" />
-        <option value="vm:4597" />
-        <option value="$PROJECT_DIR$/Knob.html" />
-        <option value="$PROJECT_DIR$/test.html" />
         <option value="$PROJECT_DIR$/js/VILibraries/PlotScreen.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/Knob.js" />
         <option value="$PROJECT_DIR$/TestRoundPanel.html" />
@@ -227,24 +157,49 @@
         <option value="$PROJECT_DIR$/js/VILibraries/ADD.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/StepResponseGenerator.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/PID.js" />
-        <option value="$PROJECT_DIR$/SignalGenerator.html" />
         <option value="$PROJECT_DIR$/js/VILibraries/EChart_BarVI.js" />
         <option value="$PROJECT_DIR$/ImageProcessing.html" />
-        <option value="$PROJECT_DIR$/js/VILibraries/EChart_RoundPanelVI.js" />
-        <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
-        <option value="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" />
-        <option value="$PROJECT_DIR$/js/VILibraries/PIDVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/BallVI.js" />
-        <option value="$PROJECT_DIR$/js/VILibraries/ADDVI.js" />
+        <option value="$PROJECT_DIR$/GearBox.html" />
+        <option value="$PROJECT_DIR$/Straightness.html" />
+        <option value="$PROJECT_DIR$/Dragable.html" />
+        <option value="$PROJECT_DIR$/../jsPlumb-master/jsPlumb-master/demo/statemachine/demo.js" />
+        <option value="$PROJECT_DIR$/../jsPlumb-master/jsPlumb-master/demo/statemachine/dom.html" />
+        <option value="$PROJECT_DIR$/Draggable.html" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/DragTest.html" />
+        <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
+        <option value="$PROJECT_DIR$/SignalGenerator.html" />
         <option value="$PROJECT_DIR$/js/VILibraries/KnobVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/WaveVI.js" />
-        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/VILibraries/EChart_RoundPanelVI.js" />
         <option value="$PROJECT_DIR$/css/main.css" />
-        <option value="$PROJECT_DIR$/GearBox.html" />
         <option value="$PROJECT_DIR$/BallBeamControl.html" />
-        <option value="$PROJECT_DIR$/Straightness.html" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ProportionalResponse.js" />
+        <option value="$PROJECT_DIR$/css/draggable.css" />
+        <option value="$PROJECT_DIR$/VirtualInstrument.html" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ProportialDifferentialResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ProportialIntegralResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ADDVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/InputVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/PIDVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" />
       </list>
     </option>
+  </component>
+  <component name="JsBowerSettings">
+    <exe-path />
+    <config-path />
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
@@ -257,6 +212,28 @@
     <option name="y" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1066" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Code quality toolsJavaScript</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>JSLint</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -311,20 +288,38 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="assets" />
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ObjectControl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ObjectControl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VILibraries" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
-    <property name="settings.editor.selected.configurable" value="reference.settings.deploy.options" />
+    <property name="settings.editor.selected.configurable" value="settings.meteor" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../JSTest" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
@@ -344,27 +339,27 @@
       <recent name="D:\Workspace\WebStorm\objectControl\js" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Workspace\WebStorm\ObjectControl\js" />
+      <recent name="D:\Workspace\WebStorm\ObjectControl\css" />
+      <recent name="D:\Workspace\WebStorm\ObjectControl\assets\Rotor" />
+      <recent name="D:\Workspace\WebStorm\ObjectControl\assets\BallBeamControl" />
       <recent name="D:\Workspace\WebStorm\ObjectControl" />
-      <recent name="D:\Workspace\WebStorm\ObjectControl\js\ECharts" />
-      <recent name="D:\Workspace\WebStorm\ObjectControl\js\VILibs" />
-      <recent name="D:\Workspace\WebStorm\ObjectControl\assets\GearBox" />
-      <recent name="D:\Workspace\WebStorm\ObjectControl\assets\gear" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.ImageProcessing.html">
-    <configuration default="false" name="ImageProcessing.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ObjectControl/ImageProcessing.html">
-      <method />
-    </configuration>
-    <configuration default="false" name="EChart_BarVI.js" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="EChart_BarVI.js" working-dir="$PROJECT_DIR$/js/VILibraries">
-      <method />
-    </configuration>
+  <component name="RunManager" selected="JavaScript Debug.VirtualInstrument.html">
     <configuration default="false" name="ControlCharacteristic.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ObjectControl/ControlCharacteristic.html">
       <method />
     </configuration>
     <configuration default="false" name="WaveVI.js" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="WaveVI.js" working-dir="$PROJECT_DIR$/js/VILibraries">
       <method />
     </configuration>
-    <configuration default="false" name="SignalGenerator.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ObjectControl/SignalGenerator.html">
+    <configuration default="false" name="BallBeamControl.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ObjectControl/BallBeamControl.html">
+      <method />
+    </configuration>
+    <configuration default="false" name="VirtualInstrument.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ObjectControl/VirtualInstrument.html">
+      <method />
+    </configuration>
+    <configuration default="false" name="Draggable.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ObjectControl/Draggable.html">
       <method />
     </configuration>
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
@@ -421,19 +416,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.ImageProcessing.html" />
-      <item index="1" class="java.lang.String" itemvalue="Node.js.EChart_BarVI.js" />
-      <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.ControlCharacteristic.html" />
-      <item index="3" class="java.lang.String" itemvalue="Node.js.WaveVI.js" />
-      <item index="4" class="java.lang.String" itemvalue="JavaScript Debug.SignalGenerator.html" />
+      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.ControlCharacteristic.html" />
+      <item index="1" class="java.lang.String" itemvalue="Node.js.WaveVI.js" />
+      <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.BallBeamControl.html" />
+      <item index="3" class="java.lang.String" itemvalue="JavaScript Debug.VirtualInstrument.html" />
+      <item index="4" class="java.lang.String" itemvalue="JavaScript Debug.Draggable.html" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.ImageProcessing.html" />
-        <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.ControlCharacteristic.html" />
-        <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.SignalGenerator.html" />
+        <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.VirtualInstrument.html" />
+        <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.BallBeamControl.html" />
+        <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.Draggable.html" />
         <item index="3" class="java.lang.String" itemvalue="Node.js.WaveVI.js" />
-        <item index="4" class="java.lang.String" itemvalue="Node.js.EChart_BarVI.js" />
+        <item index="4" class="java.lang.String" itemvalue="JavaScript Debug.ControlCharacteristic.html" />
       </list>
     </recent_temporary>
   </component>
@@ -475,7 +470,18 @@
       <workItem from="1476754396018" duration="14801000" />
       <workItem from="1476842848335" duration="3698000" />
       <workItem from="1476848121115" duration="10343000" />
-      <workItem from="1476871105355" duration="2848000" />
+      <workItem from="1476871105355" duration="6242000" />
+      <workItem from="1476926557622" duration="82000" />
+      <workItem from="1476926685369" duration="8086000" />
+      <workItem from="1476945418394" duration="14227000" />
+      <workItem from="1477013739432" duration="10428000" />
+      <workItem from="1477100736310" duration="647000" />
+      <workItem from="1477272290714" duration="16741000" />
+      <workItem from="1477298425426" duration="4615000" />
+      <workItem from="1477314582130" duration="6166000" />
+      <workItem from="1477358671615" duration="19971000" />
+      <workItem from="1477402252012" duration="5018000" />
+      <workItem from="1477445020367" duration="13303000" />
     </task>
     <task id="LOCAL-00001" summary="test&#10;">
       <created>1476862004763</created>
@@ -568,11 +574,18 @@
       <option name="project" value="LOCAL" />
       <updated>1476870823514</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="1019night">
+      <created>1476884738322</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1476884738322</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="234343000" />
+    <option name="totallyTimeSpent" value="337021000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -587,25 +600,25 @@
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16350211" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15822785" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5042194" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4862869" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5042194" order="12" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4862869" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4957806" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4957806" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23326133" sideWeight="0.4978903" order="3" side_tool="false" content_ui="tabs" x="1235" y="241" width="659" height="704" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23434125" sideWeight="0.4978903" order="3" side_tool="false" content_ui="tabs" x="1235" y="241" width="659" height="704" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32959402" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -645,148 +658,19 @@
     <MESSAGE value="1019test2" />
     <MESSAGE value="1019test3" />
     <MESSAGE value="1019night" />
-    <option name="LAST_COMMIT_MESSAGE" value="1019night" />
+    <MESSAGE value="1026-1" />
+    <option name="LAST_COMMIT_MESSAGE" value="1026-1" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="8" />
+      <option name="time" value="10" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/TestRoundPanel.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="22" column="43" selection-start-line="22" selection-start-column="43" selection-end-line="22" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/three.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="596928">
-          <caret line="24872" column="4" selection-start-line="24872" selection-start-column="4" selection-end-line="24872" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/GearBox.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="744">
-          <caret line="31" column="38" selection-start-line="31" selection-start-column="38" selection-end-line="31" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Straightness.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/ObjectControls.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/three.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205536">
-          <caret line="8564" column="4" selection-start-line="8564" selection-start-column="4" selection-end-line="8564" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Straightness.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4272">
-          <caret line="299" column="25" selection-start-line="299" selection-start-column="25" selection-end-line="299" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controls/TrackballControls.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-990">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controls/OrbitControls.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/webstorm.jar!/resources/html5-schema/html5/tables.rnc">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="217" column="16" selection-start-line="217" selection-start-column="16" selection-end-line="217" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="846" column="0" selection-start-line="846" selection-start-column="0" selection-end-line="846" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript5.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="850">
-          <caret line="133" column="33" selection-start-line="133" selection-start-column="33" selection-end-line="133" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Temp/Temp1_201606121510.zip/201606121510/js/clock-1.1.0.min.js" />
-    <entry file="file://$USER_HOME$/AppData/Local/Temp/Temp1_201410201650.zip/201410201650/readme.html" />
-    <entry file="file://$USER_HOME$/AppData/Local/Temp/Temp1_201410201650.zip/201410201650/js/jquery-sDashboard.js" />
-    <entry file="file://$PROJECT_DIR$/../../WebGL/Virtual_Lab/LoadOBJMTL.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1872">
-          <caret line="78" column="46" selection-start-line="78" selection-start-column="46" selection-end-line="78" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/OBJLoader.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1152">
-          <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/MTLLoader.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-456">
-          <caret line="184" column="3" selection-start-line="184" selection-start-column="3" selection-end-line="184" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/three.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/DOMEvents.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-577">
-          <caret line="158" column="52" selection-start-line="158" selection-start-column="52" selection-end-line="158" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="http://images.cnblogs.com/cnblogs_com/html5test/359114/r_test.jpg">
-      <provider editor-type-id="images">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="httpFileEditor">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/greensock-js/getting_started.html" />
     <entry file="file://$PROJECT_DIR$/greensock-js/docs.html" />
     <entry file="file://$PROJECT_DIR$/test.html">
@@ -803,48 +687,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/HTML5.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="1280" column="0" selection-start-line="1280" selection-start-column="0" selection-end-line="1280" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/ECharts/echarts.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="48">
           <caret line="47155" column="34" selection-start-line="47155" selection-start-column="34" selection-end-line="47155" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Knob.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24">
-          <caret line="99" column="21" selection-start-line="99" selection-start-column="21" selection-end-line="99" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/ObjectControls.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="193" column="0" selection-start-line="193" selection-start-column="0" selection-end-line="342" selection-end-column="94" />
-          <folding>
-            <element signature="e#1179#1221#0" expanded="false" />
-            <element signature="e#1442#1575#0" expanded="false" />
-            <element signature="e#2000#2305#0" expanded="false" />
-            <element signature="e#2344#2441#0" expanded="false" />
-            <element signature="e#3326#3945#0" expanded="false" />
-            <element signature="e#4359#4424#0" expanded="false" />
-            <element signature="e#4463#4734#0" expanded="false" />
-            <element signature="e#4769#4875#0" expanded="false" />
-            <element signature="e#4916#4977#0" expanded="false" />
-            <element signature="e#5012#5075#0" expanded="false" />
-            <element signature="e#5110#5662#0" expanded="false" />
-            <element signature="e#5705#7158#0" expanded="false" />
-            <element signature="e#7196#9950#0" expanded="false" />
-            <element signature="e#9991#10159#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -856,13 +702,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI/DataReceiver.js" />
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/EChart_RoundPanelVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="13" column="16" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ImageProcessing.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="271">
@@ -870,111 +709,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="505">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="672">
-          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/PIDVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/BallVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="624">
-          <caret line="28" column="20" selection-start-line="28" selection-start-column="20" selection-end-line="28" selection-end-column="20" />
-          <folding>
-            <element signature="n#!!doc;n#BallVI#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/ADDVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
-          <folding>
-            <element signature="n#!!doc;n#AddVI#0" expanded="false" />
-            <element signature="e#597#658#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TestPlotScreen.html" />
-    <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="648">
-          <caret line="27" column="36" selection-start-line="27" selection-start-column="36" selection-end-line="27" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/EChart_BarVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1560">
-          <caret line="67" column="9" selection-start-line="67" selection-start-column="9" selection-end-line="67" selection-end-column="9" />
-          <folding>
-            <element signature="n#!!doc;n#BarVI#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/WaveVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1200">
-          <caret line="52" column="9" selection-start-line="52" selection-start-column="9" selection-end-line="52" selection-end-column="9" />
-          <folding>
-            <element signature="e#1444#1509#0" expanded="false" />
-            <element signature="e#1544#2626#0" expanded="false" />
-            <element signature="e#2667#7606#0" expanded="false" />
-            <element signature="e#7670#8541#0" expanded="false" />
-            <element signature="e#9587#9677#0" expanded="false" />
-            <element signature="e#9726#9816#0" expanded="false" />
-            <element signature="e#10053#10193#0" expanded="false" />
-            <element signature="e#12350#13211#0" expanded="false" />
-            <element signature="e#13254#13873#0" expanded="false" />
-            <element signature="n#!!block;n#OnMouseMove#0;n#!!block;n#WaveVI#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/params.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/KnobVI.js">
+    <entry file="file://$PROJECT_DIR$/assets/Straightness/offSwitch.obj">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="912">
-          <caret line="40" column="9" selection-start-line="40" selection-start-column="9" selection-end-line="40" selection-end-column="9" />
-          <folding>
-            <element signature="n#!!block;n#onMouseDown#0;n#!!block;n#KnobVI#0" expanded="false" />
-            <element signature="n#!!block;n#calculateRadian#0;n#!!block;n#KnobVI#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="MarkdownFxPreviewEditor">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
         <state split_layout="FIRST">
           <first_editor relative-caret-position="0">
             <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-            <folding />
           </first_editor>
           <second_editor />
         </state>
@@ -982,86 +739,368 @@
       <provider editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/ObjectControls.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="52" column="13" selection-start-line="52" selection-start-column="13" selection-end-line="52" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GearBox.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="422">
+          <caret line="44" column="21" selection-start-line="44" selection-start-column="21" selection-end-line="44" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/three.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="22773" column="0" selection-start-line="22773" selection-start-column="0" selection-end-line="22773" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jsPlumb-master/jsPlumb-master/demo/statemachine/demo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="576">
+          <caret line="24" column="46" selection-start-line="24" selection-start-column="46" selection-end-line="24" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jsPlumb-master/jsPlumb-master/demo/statemachine/dom.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="449">
+          <caret line="37" column="14" selection-start-line="37" selection-start-column="14" selection-end-line="37" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Straightness.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="18" column="19" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/jsPlumb-2.1.7.js" />
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/DOMCore.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="847">
+          <caret line="199" column="0" selection-start-line="199" selection-start-column="0" selection-end-line="199" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/HTML5.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="2414" column="45" selection-start-line="2414" selection-start-column="45" selection-end-line="2414" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Knob.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="402">
+          <caret line="87" column="47" selection-start-line="87" selection-start-column="47" selection-end-line="87" selection-end-column="47" />
           <folding />
         </state>
       </provider>
-      <provider editor-type-id="MarkdownFxPreviewEditor">
-        <state />
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="873" column="0" selection-start-line="873" selection-start-column="0" selection-end-line="873" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/js/popup.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="371">
-          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+        <state relative-caret-position="1368">
+          <caret line="0" column="10557" selection-start-line="0" selection-start-column="10557" selection-end-line="0" selection-end-column="10557" />
+          <folding>
+            <marker date="1477313526456" expanded="true" signature="7968:8009" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/jsPlumb-2.2.2.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="2733" column="29" selection-start-line="2733" selection-start-column="29" selection-end-line="2733" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="486">
+          <caret line="43" column="30" selection-start-line="43" selection-start-column="30" selection-end-line="43" selection-end-column="30" />
+          <folding>
+            <element signature="e#3111#3264#0" expanded="false" />
+            <element signature="e#3415#3557#0" expanded="false" />
+            <element signature="e#3587#3834#0" expanded="false" />
+            <element signature="e#3863#4114#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/KnobVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="648">
+          <caret line="29" column="19" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
+          <folding>
+            <element signature="n#!!block;n#DrawSpinner#0;n#!!block;n#KnobVI#0" expanded="false" />
+            <element signature="n#!!block;n#onMouseDown#0;n#!!block;n#KnobVI#0" expanded="false" />
+            <element signature="n#!!block;n#onMouseMove#0;n#!!block;n#KnobVI#0" expanded="false" />
+            <element signature="n#!!block;n#onMouseUp#0;n#!!block;n#KnobVI#0" expanded="false" />
+            <element signature="n#!!block;n#calculateRadian#0;n#!!block;n#KnobVI#0" expanded="false" />
+            <element signature="n#!!doc;n#rotateAxis#0;n#!!block;n#KnobVI#0" expanded="false" />
+            <element signature="n#!!block;n#rotateAxis#0;n#!!block;n#KnobVI#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/EChart_RoundPanelVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/main.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
+        <state relative-caret-position="775">
+          <caret line="196" column="13" selection-start-line="196" selection-start-column="13" selection-end-line="196" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/GearBox.html">
+    <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="512">
-          <caret line="104" column="45" selection-start-line="104" selection-start-column="45" selection-end-line="104" selection-end-column="45" />
+        <state relative-caret-position="456">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="415">
+          <caret line="98" column="41" selection-start-line="98" selection-start-column="41" selection-end-line="98" selection-end-column="41" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="233" column="87" selection-start-line="233" selection-start-column="87" selection-end-line="233" selection-end-column="87" />
-          <folding>
-            <element signature="e#2975#3257#0" expanded="false" />
-            <element signature="e#3282#3812#0" expanded="false" />
-            <element signature="e#3841#3850#0" expanded="false" />
-            <element signature="e#3873#3951#0" expanded="false" />
-            <element signature="e#11029#12938#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/straightness/offSwitch.obj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="480">
+          <caret line="23" column="57" selection-start-line="23" selection-start-column="57" selection-end-line="23" selection-end-column="57" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Straightness.html">
+    <entry file="file://$PROJECT_DIR$/css/draggable.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="145">
-          <caret line="317" column="71" selection-start-line="317" selection-start-column="71" selection-end-line="317" selection-end-column="71" />
+        <state relative-caret-position="648">
+          <caret line="84" column="16" selection-start-line="84" selection-start-column="16" selection-end-line="84" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ADDVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="67" column="32" selection-start-line="67" selection-start-column="32" selection-end-line="67" selection-end-column="32" />
           <folding>
-            <element signature="n#table#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="e#7065#7130#0" expanded="false" />
-            <element signature="e#7414#7532#0" expanded="false" />
-            <element signature="e#9320#9966#0" expanded="false" />
-            <element signature="e#13416#15325#0" expanded="false" />
-            <element signature="e#15532#18431#0" expanded="false" />
-            <element signature="e#18473#19680#0" expanded="false" />
-            <element signature="e#19722#20114#0" expanded="false" />
-            <element signature="e#20154#20292#0" expanded="false" />
-            <element signature="e#20334#20605#0" expanded="false" />
-            <element signature="e#20637#20716#0" expanded="false" />
-            <element signature="e#20747#21459#0" expanded="false" />
-            <element signature="e#21490#23284#0" expanded="false" />
-            <element signature="e#23319#24920#0" expanded="false" />
-            <element signature="e#24950#25066#0" expanded="false" />
-            <element signature="e#25133#30780#0" expanded="false" />
+            <element signature="n#!!doc;n#AddVI#0" expanded="false" />
+            <element signature="e#488#725#0" expanded="false" />
+            <element signature="e#1374#1500#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/BallBeamVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="559">
+          <caret line="115" column="32" selection-start-line="115" selection-start-column="32" selection-end-line="115" selection-end-column="32" />
+          <folding>
+            <element signature="e#576#1568#0" expanded="false" />
+            <element signature="e#1710#2489#0" expanded="false" />
+            <element signature="e#2521#2723#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="89" column="32" selection-start-line="89" selection-start-column="32" selection-end-line="89" selection-end-column="32" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/EChart_BarVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-953">
+          <caret line="6" column="19" selection-start-line="6" selection-start-column="19" selection-end-line="6" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="607">
+          <caret line="95" column="34" selection-start-line="95" selection-start-column="34" selection-end-line="97" selection-end-column="93" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/InputVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="53" column="32" selection-start-line="53" selection-start-column="26" selection-end-line="53" selection-end-column="32" />
+          <folding>
+            <element signature="n#!!doc;n#InputVI#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="95" column="32" selection-start-line="95" selection-start-column="32" selection-end-line="95" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="97" column="32" selection-start-line="97" selection-start-column="32" selection-end-line="97" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/PIDVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="559">
+          <caret line="95" column="32" selection-start-line="95" selection-start-column="32" selection-end-line="95" selection-end-column="32" />
+          <folding>
+            <element signature="e#680#1178#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="94" column="32" selection-start-line="94" selection-start-column="32" selection-end-line="94" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="91" column="32" selection-start-line="91" selection-start-column="32" selection-end-line="91" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="98" column="32" selection-start-line="98" selection-start-column="32" selection-end-line="98" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="86" column="32" selection-start-line="86" selection-start-column="32" selection-end-line="86" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="511">
+          <caret line="107" column="32" selection-start-line="107" selection-start-column="32" selection-end-line="107" selection-end-column="32" />
+          <folding>
+            <element signature="n#!!doc;n#SignalGeneratorVI#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/WaveVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-408">
+          <caret line="30" column="18" selection-start-line="30" selection-start-column="18" selection-end-line="30" selection-end-column="18" />
+          <folding>
+            <element signature="e#1481#1623#0" expanded="false" />
+            <element signature="e#1658#2740#0" expanded="false" />
+            <element signature="e#2781#7720#0" expanded="false" />
+            <element signature="e#7784#8641#0" expanded="false" />
+            <element signature="e#8673#8791#0" expanded="false" />
+            <element signature="e#8834#9797#0" expanded="false" />
+            <element signature="e#9846#9936#0" expanded="false" />
+            <element signature="e#9985#10075#0" expanded="false" />
+            <element signature="e#10116#10176#0" expanded="false" />
+            <element signature="e#10223#10305#0" expanded="false" />
+            <element signature="e#10547#11408#0" expanded="false" />
+            <element signature="e#11451#12070#0" expanded="false" />
+            <element signature="n#!!block;n#onMouseMove#0;n#!!block;n#WaveVI#0" expanded="false" />
+            <element signature="n#!!block;n#onContainerMouseDown#0;n#!!block;n#WaveVI#0" expanded="false" />
+            <element signature="n#!!block;n#onContainerMouseUp#0;n#!!block;n#WaveVI#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="182" column="32" selection-start-line="182" selection-start-column="26" selection-end-line="182" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Draggable.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1152">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="9" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VirtualInstrument.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
+          <folding>
+            <element signature="e#4182#4976#0" expanded="false" />
+            <element signature="e#5050#5236#0" expanded="false" />
+            <element signature="e#12962#13482#0" expanded="false" />
+            <element signature="e#13795#15769#0" expanded="false" />
+            <element signature="e#20742#22192#0" expanded="false" />
+            <element signature="e#22198#22310#0" expanded="false" />
+            <element signature="e#22373#25426#0" expanded="false" />
+            <element signature="e#23195#24149#0" expanded="false" />
+            <element signature="e#24285#24930#0" expanded="false" />
+            <element signature="e#24988#25191#0" expanded="false" />
+            <element signature="e#25247#25420#0" expanded="false" />
+            <marker date="1477466099884" expanded="true" signature="10557:10594" ph="..." />
+            <marker date="1477466099884" expanded="true" signature="12117:12154" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
   </component>
   <component name="webServersAuthStorage">
-    <data>AAAAsNszTFUC4znwhJQElZG8PHXA2hGXuiedSWxVvcagfp0d/FbtxeLTDOuhbg4ZgRI4zYJCKzSgMzkmIf+ZOx40QcL6OqM+2QYO5WmU2k2tXEL90c6a/7AtKzgCF3HP5QVFrj8aVmikcl/6mWXqJYiweCZT3MVrGQCtgJduWId0+9VbyDaW4EAfzxqCFfoVdxzpzsKbazsKWc5bOlgfIqCvnCvbf6WN9DxiXHPWvf3nHCfFF7PbJWilYOpH0E2IbiPalw==</data>
+    <data>AAAAsF4vMR2M9UcllFRuHgfiCRncB/Mtg6uA6MnZbTCm+kUyq062hZ2TWcbmGakPhXFw08zIIReSx2QdYAl9p1SfE/DWfn6bM4HQ8gNfyGt2qbBiA3pndWHICuSKtKRFHmy0tvdnZqi7iOIpXLP+qMWiLSRxhF9vjzKjVKr6rnh9rl5pVn3VONsC2mIw8rQxc59VFzn/R42SGzD95xs2biWQeZVBE2SFLpsdNzT3U5T34Bw0GzVE+OHdBSsQjRdttJVFTw==</data>
   </component>
 </project>

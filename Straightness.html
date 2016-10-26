@@ -88,7 +88,7 @@
     </table>
     <div id="eChartDiv"></div>
     <div id="loadingDiv" class="loadingDiv">
-        <img src="img/loading.gif" alt="loading">
+        <img class="loadingImg" src="img/loading.gif" alt="loading">
     </div>
 </div>
 
@@ -144,10 +144,10 @@
         controls.enableZoom = true;
         controls.zoomSpeed = 1.2;
         controls.enableDamping = true;
-        controls.minPolarAngle = Math.PI / 4;
-        controls.maxPolarAngle = Math.PI * 3 / 4;
-        controls.minAzimuthAngle = -Math.PI / 4;
-        controls.maxAzimuthAngle = Math.PI / 4;
+//        controls.minPolarAngle = Math.PI / 4;
+//        controls.maxPolarAngle = Math.PI * 3 / 4;
+//        controls.minAzimuthAngle = -Math.PI / 4;
+//        controls.maxAzimuthAngle = Math.PI / 4;
 
         scene = new THREE.Scene();
 
@@ -184,13 +184,8 @@
         machineRay.position.y = 118;
 
         //use as a reference plane for ObjectControl
-        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(4000, 4000), new THREE.MeshBasicMaterial({
-            color: 0x555555, side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0
-        }));
-        plane.position.y = 0;
-        scene.add(plane);
+        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(4000, 4000));
+
 
         sliderControl = new ObjectControls(camera, renderer.domElement);
         sliderControl.map = plane;
@@ -266,14 +261,14 @@
         var mtlLoader = new THREE.MTLLoader();
 
         var base, slider, offSwitch, onSwitch;
-        loadingDiv.style.display = 'inherit';
-        mtlLoader.load('assets/straightness/base.mtl', function (materials) {
+        loadingDiv.style.display = 'flex';
+        mtlLoader.load('assets/Straightness/base.mtl', function (materials) {
 
             materials.preload();
 
             var objLoader = new THREE.OBJLoader();
             objLoader.setMaterials(materials);
-            objLoader.load('assets/straightness/base.obj', function (a) {
+            objLoader.load('assets/Straightness/base.obj', function (a) {
                 a.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
 
@@ -281,13 +276,13 @@
                     }
                 });
                 base = a;
-                mtlLoader.load('assets/straightness/slider.mtl', function (materials) {
+                mtlLoader.load('assets/Straightness/slider.mtl', function (materials) {
 
                     materials.preload();
 
                     var objLoader = new THREE.OBJLoader();
                     objLoader.setMaterials(materials);
-                    objLoader.load('assets/straightness/slider.obj', function (b) {
+                    objLoader.load('assets/Straightness/slider.obj', function (b) {
                         b.traverse(function (child) {
                             if (child instanceof THREE.Mesh) {
 
@@ -295,13 +290,13 @@
                             }
                         });
                         slider = b;
-                        mtlLoader.load('assets/straightness/offSwitch.mtl', function (materials) {
+                        mtlLoader.load('assets/Straightness/offSwitch.mtl', function (materials) {
 
                             materials.preload();
 
                             var objLoader = new THREE.OBJLoader();
                             objLoader.setMaterials(materials);
-                            objLoader.load('assets/straightness/offSwitch.obj', function (c) {
+                            objLoader.load('assets/Straightness/offSwitch.obj', function (c) {
                                 c.traverse(function (child) {
                                     if (child instanceof THREE.Mesh) {
 
@@ -309,13 +304,13 @@
                                     }
                                 });
                                 offSwitch = c;
-                                mtlLoader.load('assets/straightness/onSwitch.mtl', function (materials) {
+                                mtlLoader.load('assets/Straightness/onSwitch.mtl', function (materials) {
 
                                     materials.preload();
 
                                     var objLoader = new THREE.OBJLoader();
                                     objLoader.setMaterials(materials);
-                                    objLoader.load('assets/straightness/onSwitch.obj', function (d) {
+                                    objLoader.load('assets/Straightness/onSwitch.obj', function (d) {
                                         d.traverse(function (child) {
                                             if (child instanceof THREE.Mesh) {
 

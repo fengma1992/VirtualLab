@@ -1,0 +1,125 @@
+.demo {
+    /* for IE10+ touch devices */
+    touch-action: none;
+}
+
+.draggable-sideBar {
+    width: 18%;
+    height: 700px;
+    border: 1px solid #CCC;
+    background-color: white;
+
+    /*from jsPlumbToolkit-defaults.css*/
+    /*overflow: hidden !important;*/
+    position: relative;
+    /*cursor: pointer;*/
+    overflow: auto !important;
+}
+
+.draggable-sideBar .draggable-element {
+    border: 0.5px solid #346789;
+    box-shadow: 2px 2px 19px #aaa;
+    -o-box-shadow: 2px 2px 19px #aaa;
+    -webkit-box-shadow: 2px 2px 19px #aaa;
+    -moz-box-shadow: 2px 2px 19px #aaa;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    opacity: 0.8;
+    line-height: 80px;
+    cursor: move;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+    text-align: center;
+    z-index: 20;
+    background-color: #eeeeef;
+    color: black;
+    font-family: helvetica, sans-serif;
+    padding: 0.3em;
+    font-size: 0.9em;
+    -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+    -moz-transition: -moz-box-shadow 0.15s ease-in;
+    -o-transition: -o-box-shadow 0.15s ease-in;
+    transition: box-shadow 0.15s ease-in;
+}
+
+.draggable-sideBar .draggable-element:hover {
+    box-shadow: 2px 2px 19px #444;
+    -o-box-shadow: 2px 2px 19px #444;
+    -webkit-box-shadow: 2px 2px 19px #444;
+    -moz-box-shadow: 2px 2px 19px #444;
+    opacity: 0.6;
+}
+
+.draggable-div {
+    width: 80%;
+    height: 700px;
+    border: 1px solid #CCC;
+    background-color: white;
+
+    /*from jsPlumbToolkit-defaults.css*/
+    /*overflow: hidden !important;*/
+    position: relative;
+    /*cursor: pointer;*/
+    overflow: auto !important;
+}
+
+.draggable-div .draggable-element {
+    border: 1px solid #346789;
+    box-shadow: 2px 2px 19px #aaa;
+    -o-box-shadow: 2px 2px 19px #aaa;
+    -webkit-box-shadow: 2px 2px 19px #aaa;
+    -moz-box-shadow: 2px 2px 19px #aaa;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    opacity: 0.8;
+    line-height: 80px;
+    cursor: move;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+    text-align: center;
+    z-index: 20;
+    position: absolute;
+    background-color: #eeeeef;
+    color: black;
+    font-family: helvetica, sans-serif;
+    padding: 0.3em;
+    font-size: 0.9em;
+    -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+    -moz-transition: -moz-box-shadow 0.15s ease-in;
+    -o-transition: -o-box-shadow 0.15s ease-in;
+    transition: box-shadow 0.15s ease-in;
+}
+
+.draggable-div .draggable-element:hover {
+    box-shadow: 2px 2px 19px #444;
+    -o-box-shadow: 2px 2px 19px #444;
+    -webkit-box-shadow: 2px 2px 19px #444;
+    -moz-box-shadow: 2px 2px 19px #444;
+    opacity: 0.6;
+}
+
+.draggable-div .jtk-connector {
+    z-index: 4;
+}
+
+.draggable-div .jtk-endpoint, .endpointTargetLabel, .endpointSourceLabel {
+    z-index: 21;
+    cursor: pointer;
+}
+
+.draggable-div .aLabel {
+    background-color: white;
+    padding: 0.4em;
+    font: 12px sans-serif;
+    color: #444;
+    z-index: 21;
+    border: 1px dotted gray;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+/*.draggable-div .aLabel.jtk-hover {*/
+/*background-color: #5C96BC;*/
+/*color: white;*/
+/*border: 1px solid white;*/
+/*}*/

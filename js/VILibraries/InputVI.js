@@ -1,44 +1,33 @@
 /**
- * Created by Fengma on 2016/10/18.
+ * Created by Fengma on 2016/10/25.
  */
 
-function AddVI(domElement) {
-
+function InputVI(domElement) {
+    'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
-    this.name = 'AddVI';
-
-    this.originalInput = 0;
-    this.latestInput = 0;
-    this.singleOutput = 0;
+    this.name = 'InputVI';
 
     this.dataLength = 1024;
     this.index = 0;
+    this.lastOutput = 100;//输出初值
     this.output = [];
-    this.autoSave = true;
 
     //虚拟仪器中相连接的控件VI
-    this.source = [];
     this.target = [];
-
-    this.calculate = function (latestInput) {
-
-        _this.latestInput = latestInput;
-        _this.singleOutput = _this.originalInput - _this.latestInput;
-
-        if (_this.autoSave)
-            _this.dataCollector(_this.singleOutput);
-
-        return _this.singleOutput;
-    };
 
     /**
      * 将输出数保存在数组内
      * @param data singleOutput
      */
-    this.dataCollector = function (data) {
+    this.setData = function (data) {
 
+        if (isNaN(data)) {
+
+            return;
+        }
+        _this.lastOutput = data;
         var i = 0;
         if (_this.index == 0) {
             for (i = 0; i < _this.dataLength; i++) {
@@ -46,21 +35,18 @@ function AddVI(domElement) {
             }
         }
         if (_this.index <= (_this.dataLength - 1)) {
-            _this.output[_this.index] = data;
+            _this.output[_this.index] = _this.lastOutput;
             _this.index++;
         } else {
             for (i = 0; i < _this.dataLength - 1; i++) {
                 _this.output[i] = _this.output[i + 1];
             }
-            _this.output[_this.dataLength - 1] = data;
+            _this.output[_this.dataLength - 1] = _this.lastOutput;
         }
     };
 
     this.reset = function () {
 
-        this.originalInput = 0;
-        this.latestInput = 0;
-        this.singleOutput = 0;
         _this.index = 0;
     };
 
@@ -69,7 +55,8 @@ function AddVI(domElement) {
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText('加法器', _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+        _this.ctx.fillText('直流', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText('输入', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 
     this.draw();

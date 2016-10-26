@@ -5,7 +5,7 @@
       <webServer id="180f5955-fe3b-452a-be3e-acc77fd22e6c" name="ALIYUN_ObjectControl" url="http://114.215.189.49:8800/ObjectControl/">
         <fileTransfer host="114.215.189.49" port="23">
           <advancedOptions>
-            <advancedOptions compatibilityMode="true" dataProtectionLevel="Private" passiveMode="true" showHiddenFiles="true" />
+            <advancedOptions compatibilityMode="true" controlEncoding="UTF-8" dataProtectionLevel="Private" passiveMode="true" showHiddenFiles="true" />
           </advancedOptions>
           <option name="port" value="23" />
         </fileTransfer>

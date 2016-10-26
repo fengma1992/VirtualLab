@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/draggable.css">
+    <link rel="stylesheet" href="css/popup.css"/>
+    <title>虚拟仪器实验</title>
+</head>
+<body onload="init()">
+
+<div class="mainDiv rowFlexDiv">
+    <div class="draggable-sideBar">
+        <canvas id="wave-canvas" class="draggable-element" width="170" height="80"
+                zoom="3"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="add-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="input-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="pid-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="stepResponseGenerator-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="signalGenerator-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+    </div>
+    <div class="draggable-div" id="container" ondrop="drop(event)" ondragover="allowDrop(event)">
+    </div>
+</div>
+<!--虚拟仪器库-->
+<script src="js/VILibraries/WaveVI.js"></script>
+<script src="js/VILibraries/ADDVI.js"></script>
+<script src="js/VILibraries/InputVI.js"></script>
+<script src="js/VILibraries/PIDVI.js"></script>
+<script src="js/VILibraries/StepResponseGeneratorVI.js"></script>
+<script src="js/VILibraries/SignalGeneratorVI.js"></script>
+<script src="js/VILibraries/BallBeamVI.js"></script>
+<!--三维显示库-->
+<script src="js/three.js"></script>
+<script src="js/MTLLoader.js"></script>
+<script src="js/OBJLoader.js"></script>
+<script src="js/controls/OrbitControls.js"></script>
+<script src="js/ObjectControls.js"></script>
+<!--拖拽连线库-->
+<script src="js/jsPlumb-2.2.2.js"></script>
+<!--弹出框-->
+<script src="js/popup.js"></script>
+<script>
+    var instance;
+    var dataObject = {
+        waveCount: 0,
+        addCount: 0,
+        inputCount: 0,
+        pidCount: 0,
+        stepResponseGeneratorCount: 0,
+        signalGeneratorCount: 0,
+        waveVI: [],
+        addVI: [],
+        inputVI: [],
+        pidVI: [],
+        stepResponseGeneratorVI: [],
+        signalGeneratorVI: [],
+        P: [],
+        I: [],
+        D: [],
+        addOriginalInput: [],
+        stepType: [],
+        signalType: []
+
+    };
+
+    function init() {
+        new WaveVI(document.getElementById('wave-canvas'));
+        new AddVI(document.getElementById('add-canvas'));
+        new InputVI(document.getElementById('input-canvas'));
+        new PIDVI(document.getElementById('pid-canvas'));
+        new StepResponseGeneratorVI(document.getElementById('stepResponseGenerator-canvas'));
+        new SignalGeneratorVI(document.getElementById('signalGenerator-canvas'));
+        ready();
+    }
+
+    function ready() {
+
+        instance = window.jsp = jsPlumb.getInstance({
+            // default drag options
+            DragOptions: {cursor: 'pointer', zIndex: 2000},
+            // the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
+            // case it returns the 'labelText' member that we set on each connection in the 'init' method below.
+            ConnectionOverlays: [
+                ["Arrow", {
+                    location: 1,
+                    visible: true,
+                    width: 11,
+                    length: 11,
+                    id: "ARROW",
+                    events: {
+                        click: function () {
+//                            alert("you clicked on the arrow overlay")
+                            //点击箭头事件
+                        }
+                    }
+//                }],
+//                ["Label", {
+//                    location: 0.5,
+//                    id: "label",
+//                    cssClass: "aLabel",
+//                    events: {
+//                        tap: function () {
+//                            //点击连线文字事件
+//                        }
+//                    }
+                }]
+            ],
+            Container: "container"
+        });
+
+        var basicType = {
+            connector: "StateMachine",
+            paintStyle: {stroke: "red", strokeWidth: 4},
+            hoverPaintStyle: {stroke: "blue"},
+            overlays: ["Arrow"]
+        };
+        instance.registerConnectionType("basic", basicType);
+
+        // suspend drawing and initialise.
+        instance.batch(function () {
+
+            // listen for new connections; initialise them the same way we initialise the connections at startup.
+            instance.bind("connection", function (connInfo, originalEvent) {
+
+//                connInfo.connection.getOverlay("label").setLabel('解绑');
+                var sourceArr = connInfo.connection.sourceId.split('-');
+                var targetArr = connInfo.connection.targetId.split('-');
+
+                //对于多输出控件,进行输出端口判断
+                if (sourceArr[0] == 'input') {
+
+                    //输出为空||输出端口重置||输出端口与当前相同
+                    if (!getObjectVI(sourceArr[0])[sourceArr[2]].target ||
+                            getObjectVI(sourceArr[0])[sourceArr[2]].target[0] == null ||
+                            getObjectVI(sourceArr[0])[sourceArr[2]].target[0] == getObjectVI(targetArr[0])[targetArr[2]]) {
+
+                        getObjectVI(sourceArr[0])[sourceArr[2]].target[0] = getObjectVI(targetArr[0])[targetArr[2]];
+                    }
+                    else {
+
+                        getObjectVI(sourceArr[0])[sourceArr[2]].target[1] = getObjectVI(targetArr[0])[targetArr[2]];
+                    }
+                }
+                else {
+
+                    getObjectVI(sourceArr[0])[sourceArr[2]].target[0] = getObjectVI(targetArr[0])[targetArr[2]];
+                }
+
+                //对于多输入控件,进行输入端口判断
+                if (targetArr[0] == 'add') {
+
+                    if (!getObjectVI(targetArr[0])[targetArr[2]].source ||
+                            getObjectVI(targetArr[0])[targetArr[2]].source[0] == null ||
+                            getObjectVI(targetArr[0])[targetArr[2]].source[0] == getObjectVI(sourceArr[0])[sourceArr[2]]) {
+
+                        getObjectVI(targetArr[0])[targetArr[2]].source[0] = getObjectVI(sourceArr[0])[sourceArr[2]];
+                    }
+                    else {
+
+                        getObjectVI(targetArr[0])[targetArr[2]].source[1] = getObjectVI(sourceArr[0])[sourceArr[2]];
+                    }
+                }
+                else {
+
+                    getObjectVI(targetArr[0])[targetArr[2]].source[0] = getObjectVI(sourceArr[0])[sourceArr[2]];
+                }
+
+//                console.log(getObjectVI(targetArr[0])[targetArr[2]].source[0].name);
+//                console.log(getObjectVI(sourceArr[0])[sourceArr[2]].target[0].name);
+            });
+
+            //
+            // listen for clicks on connections, and offer to delete connections on click.
+            //
+            instance.bind("click", function (conn, originalEvent) {
+//                if (confirm("Delete connection from " + conn.sourceId + " to " + conn.targetId + "?"))
+//                    instance.detach(conn);
+//                conn.toggleType("basic");
+            });
+
+            instance.bind("connectionDrag", function (connection) {
+//                console.log("connection " + connection.sourceId + " is being dragged. suspendedElement is ", connection.targetId, " of type ", connection.suspendedElementType);
+            });
+
+            instance.bind("connectionDragStop", function (connection) {
+//                console.log("connection " + connection.id + " was dragged");
+            });
+
+            instance.bind("connectionMoved", function (params) {
+//                console.log("connection " + params.connection.id + " was moved");
+            });
+        });
+
+        jsPlumb.fire("jsPlumbDemoLoaded", instance);
+
+    }
+
+    var box;
+    function showBox(element) {
+        var elementInfo = element.id.split('-');
+        switch (elementInfo[0]) {
+
+
+            case 'add':
+                box = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<span class="normalSpan">初值:</span><input type="number" id="ADDInput" value="20" class="PIDInput"><br>', 1, function () {
+                        });
+                break;
+
+            case 'pid':
+                box = G.box('请输入PID参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<span class="normalSpan">P:</span><input type="number" id="PInput" value="20" class="PIDInput">' +
+                        '<span class="normalSpan">I:</span><input type="number" id="IInput" value="0" class="PIDInput">' +
+                        '<span class="normalSpan">D:</span><input type="number" id="DInput" value="20" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setPID(' + elementInfo[2] + ')">确定</button>',
+                        1, function () {
+                        });
+                break;
+
+            case 'input':
+                box = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<span class="normalSpan">初值:</span><input type="number" id="Input" value="100" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setInput(' + elementInfo[2] + ')">确定</button>',
+                        1, function () {
+                        });
+                break;
+
+            case 'stepResponseGenerator':
+                box = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1.2em; ">' +
+                        '<input type="radio" class="radioInput" name="type" value="1" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="2" onclick="setStepType(this.value,' + elementInfo[2] + ')">积分<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="3" onclick="setStepType(this.value,' + elementInfo[2] + ')">微分<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="4" onclick="setStepType(this.value,' + elementInfo[2] + ')">惯性<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="5" onclick="setStepType(this.value,' + elementInfo[2] + ')">震荡<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="6" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例积分<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="7" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例惯性<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="8" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例微分<br>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'signalGenerator':
+                box = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1.2em; ">' +
+                        '<input type="radio" class="radioInput" name="type" value="1" onclick="setSignalType(this.value,' + elementInfo[2] + ')">正弦波<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="2" onclick="setSignalType(this.value,' + elementInfo[2] + ')">方波<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="3" onclick="setSignalType(this.value,' + elementInfo[2] + ')">三角波<br>' +
+                        '<input type="radio" class="radioInput" name="type" value="4" onclick="setSignalType(this.value,' + elementInfo[2] + ')">白噪声<br>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+        }
+
+    }
+
+    function setPID(elementNumber) {
+
+        if (box) {
+
+            box.close();
+        }
+
+        dataObject.P[elementNumber] = document.getElementById('PInput').value;
+        dataObject.I[elementNumber] = document.getElementById('IInput').value;
+        dataObject.D[elementNumber] = document.getElementById('DInput').value;
+        dataObject.pidVI[elementNumber].P = dataObject.P[elementNumber];
+        dataObject.pidVI[elementNumber].I = dataObject.I[elementNumber];
+        dataObject.pidVI[elementNumber].D = dataObject.D[elementNumber];
+    }
+
+    function setInput(elementNumber) {
+
+        if (box) {
+
+            box.close();
+        }
+
+        dataObject.inputVI[elementNumber].lastOutput = document.getElementById('Input').value;
+    }
+
+    function setStepType(type, elementNumber) {
+
+        if (box) {
+
+            box.close();
+        }
+
+        switch (parseInt(type)) {
+
+            case 1://比例
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(1);
+                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 1.5;
+                break;
+
+            case 2://积分
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(2);
+                dataObject.stepResponseGeneratorVI[elementNumber].k2 = 5;
+                break;
+
+            case 3://微分
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(3);
+                dataObject.stepResponseGeneratorVI[elementNumber].k3 = 0.0025;
+                break;
+
+            case 4://惯性
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(6);
+                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 0.025;
+                break;
+
+            case 5://震荡
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(7);
+                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 50;
+                dataObject.stepResponseGeneratorVI[elementNumber].k2 = 0.05;
+                break;
+
+            case 6://比例积分
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(4);
+                break;
+
+            case 7://比例惯性
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(8);
+                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 0.025;
+                dataObject.stepResponseGeneratorVI[elementNumber].k2 = 1;
+                break;
+
+            case 8://比例微分
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(5);
+                dataObject.stepResponseGeneratorVI[elementNumber].k3 = 0.0025;
+                break;
+
+            default:
+                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(1);
+                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 1.5;
+                break;
+        }
+
+        if (!(dataObject.stepResponseGeneratorVI[0].source[0] == undefined) && !(dataObject.stepResponseGeneratorVI[0].target[0] == undefined)) {
+
+            reset();
+            window.setInterval(onStepTimer, 50);
+        }
+    }
+
+    function onStepTimer() {
+
+        var i;
+        if (dataObject.stepResponseGeneratorVI[0].source[0].name == 'InputVI') {
+
+            dataObject.stepResponseGeneratorVI[0].source[0].setData(dataObject.stepResponseGeneratorVI[0].source[0].lastOutput);
+            dataObject.stepResponseGeneratorVI[0].setData(dataObject.stepResponseGeneratorVI[0].source[0].lastOutput);
+
+            if (dataObject.stepResponseGeneratorVI[0].target[0].name == 'WaveVI') {
+
+                dataObject.stepResponseGeneratorVI[0].target[0].setData(dataObject.stepResponseGeneratorVI[0].output, 1024);//输出信号波形控件赋值
+            }
+            for (i = 0; i < dataObject.stepResponseGeneratorVI[0].source[0].target.length; i++) {
+
+                if (dataObject.stepResponseGeneratorVI[0].source[0].target[i].name == 'WaveVI') {
+
+                    dataObject.stepResponseGeneratorVI[0].source[0].target[i].setData(dataObject.stepResponseGeneratorVI[0].source[0].output, 1024);//输入信号波形控件赋值
+                }
+            }
+        }
+    }
+
+    function reset() {
+
+        dataObject.stepResponseGeneratorVI[0].source[0].reset();
+        dataObject.stepResponseGeneratorVI[0].reset();
+    }
+
+
+    var amp = 2, frequency = 100, phase = 0;
+
+    function setSignalType(type, elementNumber) {
+
+        if (box) {
+
+            box.close();
+        }
+
+        dataObject.signalGeneratorVI[elementNumber].signalType = type;
+        if (dataObject.signalGeneratorVI[0].target[0]) {
+
+            window.setInterval(onSignalTimer, 100);
+        }
+    }
+
+    function onSignalTimer() {
+
+        phase += 10;
+        dataObject.signalGeneratorVI[0].setData(amp, frequency, phase);
+        if (dataObject.signalGeneratorVI[0].target[0].name == 'WaveVI') {
+
+            dataObject.signalGeneratorVI[0].target[0].setData(dataObject.signalGeneratorVI[0].output, dataObject.signalGeneratorVI[0].output.length);
+        }
+
+    }
+
+    function allowDrop(e) {
+
+        e.preventDefault();
+    }
+
+    function drag(e) {
+
+        e.dataTransfer.setData("Text", e.target.id);
+    }
+
+    function drop(e) {
+
+        e.preventDefault();
+        var element = document.getElementById(e.dataTransfer.getData("Text"));
+        var newElement = document.createElement(element.tagName.toLowerCase());
+        for (var i = 0; i < element.attributes.length - 3; i++) {
+            newElement.setAttribute(element.attributes.item(i).nodeName, element.getAttribute(element.attributes.item(i).nodeName));
+        }
+        switch (element.id.split('-')[0]) {
+            case 'wave':
+                newElement.id = element.id + '-' + dataObject.waveCount++;
+                break;
+
+            case 'add':
+                newElement.id = element.id + '-' + dataObject.addCount++;
+                dataObject.addOriginalInput.push(800);
+                break;
+
+            case 'input':
+                newElement.id = element.id + '-' + dataObject.inputCount++;
+                break;
+
+            case 'pid':
+                newElement.id = element.id + '-' + dataObject.pidCount++;
+                dataObject.P.push(20);
+                dataObject.I.push(0);
+                dataObject.D.push(20);
+                break;
+
+            case 'stepResponseGenerator':
+                if (dataObject.stepResponseGeneratorCount > 0) {
+                    G.alert('阶跃响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.stepResponseGeneratorCount++;
+                dataObject.stepType.push(1);
+                break;
+
+            case 'signalGenerator':
+                if (dataObject.signalGeneratorCount > 0) {
+                    G.alert('信号发生器已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.signalGeneratorCount++;
+                break;
+        }
+        newElement.width = element.width * element.getAttribute('zoom');
+        newElement.height = element.height * element.getAttribute('zoom');
+        newElement.style.left = (e.offsetX - newElement.width / 2) + "px";
+        newElement.style.top = (e.offsetY - newElement.height / 2) + "px";
+        draw(newElement);
+    }
+
+
+    function getObjectVI(type) {
+        switch (type) {
+            case 'wave':
+                return dataObject.waveVI;
+
+            case 'input':
+                return dataObject.inputVI;
+
+            case 'pid':
+                return dataObject.pidVI;
+
+            case 'add':
+                return dataObject.addVI;
+
+            case 'stepResponseGenerator':
+                return dataObject.stepResponseGeneratorVI;
+
+            case 'signalGenerator':
+                return dataObject.signalGeneratorVI;
+        }
+    }
+
+    function draw(element) {
+
+        instance.getContainer().appendChild(element);
+        instance.draggable(element);
+        var elementInfo = element.id.split('-');
+        switch (elementInfo[0]) {
+            case 'wave':
+                dataObject.waveVI.push(new WaveVI(element));
+                dataObject.waveVI[elementInfo[2]].drawRulerFlag = false;
+                addEndpoints(element.id, [], ["LeftMiddle"]);
+                break;
+
+            case 'input':
+                dataObject.inputVI.push(new InputVI(element));
+                addEndpoints(element.id, ["RightMiddle", "BottomCenter"], []);
+                break;
+
+            case 'pid':
+                dataObject.pidVI.push(new PIDVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'add':
+                dataObject.addVI.push(new AddVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle", "BottomCenter"]);
+                break;
+
+            case 'stepResponseGenerator':
+                dataObject.stepResponseGeneratorVI.push(new StepResponseGeneratorVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'signalGenerator':
+                dataObject.signalGeneratorVI.push(new SignalGeneratorVI(element));
+                addEndpoints(element.id, ["RightMiddle"], []);
+                break;
+        }
+    }
+
+    /**
+     *添加节点
+     * @param toId 元素ID
+     * @param sourceAnchors 输出节点
+     * @param targetAnchors 输入节点
+     */
+    function addEndpoints(toId, sourceAnchors, targetAnchors) {
+
+        // this is the paint style for the connecting lines..
+        var connectorPaintStyle = {
+                    strokeWidth: 2,
+                    stroke: "#61B7CF",
+                    joinstyle: "round",
+                    outlineStroke: "white",
+                    outlineWidth: 2
+                },
+                // .. and this is the hover style.
+                connectorHoverStyle = {
+                    strokeWidth: 3,
+                    stroke: "#216477",
+                    outlineWidth: 5,
+                    outlineStroke: "white"
+                },
+                endpointHoverStyle = {
+                    fill: "#216477",
+                    stroke: "#216477"
+                },
+                // the definition of source endpoints (the small blue ones)
+                sourceEndpoint = {
+                    endpoint: "Dot",
+                    paintStyle: {
+                        stroke: "#7AB02C",
+                        fill: "transparent",
+                        radius: 7,
+                        strokeWidth: 1
+                    },
+                    isSource: true,
+                    connector: ["Flowchart", {stub: [10, 15], gap: 10, cornerRadius: 5, alwaysRespectStubs: true}],
+                    connectorStyle: connectorPaintStyle,
+                    hoverPaintStyle: endpointHoverStyle,
+                    connectorHoverStyle: connectorHoverStyle,
+                    dragOptions: {},
+                    overlays: [
+                        ["Label", {
+                            location: [0.5, 1.5],
+                            label: "Drag",
+                            cssClass: "endpointSourceLabel",
+                            visible: false
+                        }]
+                    ]
+                },
+                // the definition of target endpoints (will appear when the user drags a connection)
+                targetEndpoint = {
+                    endpoint: "Dot",
+                    paintStyle: {fill: "#7AB02C", radius: 7},
+                    hoverPaintStyle: endpointHoverStyle,
+                    maxConnections: -1,
+                    dropOptions: {hoverClass: "hover", activeClass: "active"},
+                    isTarget: true,
+                    overlays: [
+                        ["Label", {
+                            location: [0.5, -0.5],
+                            label: "Drop",
+                            cssClass: "endpointTargetLabel",
+                            visible: false
+                        }]
+                    ]
+                };
+
+        for (var i = 0; i < sourceAnchors.length; i++) {
+            var sourceUUID = toId + '-' + sourceAnchors[i];
+            instance.addEndpoint(toId, sourceEndpoint, {
+                anchor: sourceAnchors[i], uuid: sourceUUID
+            });
+        }
+        for (var j = 0; j < targetAnchors.length; j++) {
+            var targetUUID = toId + '-' + targetAnchors[j];
+            instance.addEndpoint(toId, targetEndpoint, {anchor: targetAnchors[j], uuid: targetUUID});
+        }
+    }
+
+</script>
+</body>
+</html>

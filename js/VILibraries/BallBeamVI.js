@@ -2,8 +2,9 @@
  * Created by Fengma on 2016/10/19.
  */
 
-function BallVI(domElement) {
+function BallBeamVI(domElement) {
 
+    'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
@@ -31,14 +32,22 @@ function BallVI(domElement) {
         var u, v, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
         u = angle;
         if (_this.limit) {
-            if ((u - _this.angle) > angleMax)
+            if ((u - _this.angle) > angleMax) {
+
                 u = _this.angle + angleMax;
-            if ((_this.angle - u) > angleMax)
+            }
+            if ((_this.angle - u) > angleMax) {
+
                 u = _this.angle - angleMax;
-            if (u > 30)
+            }
+            if (u > 30) {
+
                 u = 30;
-            if (u < -30)
+            }
+            if (u < -30) {
+
                 u = -30;
+            }
         }
 
         _this.angle = u;//向输出端口上写数据
@@ -49,14 +58,16 @@ function BallVI(domElement) {
         v = _this.y2 + 0.5 * Ts * (u + _this.u2);
         _this.u2 = u;
         _this.y2 = v;
-        if (v > 40)
-            v = 40;
-        if (v < -40)
-            v = -40;
+        // if (v > 40)
+        //     v = 40;
+        // if (v < -40)
+        //     v = -40;
         _this.position = v;//向输出端口上写数据
 
-        if (_this.autoSave)
+        if (_this.autoSave) {
+
             _this.dataCollector(_this.angle, _this.position);
+        }
 
         return [_this.angle, _this.position];
     };
@@ -99,6 +110,15 @@ function BallVI(domElement) {
         _this.y1 = 0;
         _this.y2 = 0;
         _this.index = 0;
-    }
+    };
 
+    this.draw = function () {
+        _this.ctx.font = "normal 12px Microsoft YaHei";
+        _this.ctx.fillStyle = 'orange';
+        _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
+        _this.ctx.fillStyle = 'black';
+        _this.ctx.fillText('球杆', _this.container.width / 2 - 12, _this.container.height / 2 + 6);
+    };
+
+    this.draw();
 }

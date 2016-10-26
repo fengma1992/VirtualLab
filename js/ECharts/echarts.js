@@ -18953,7 +18953,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            this._paintList(list, paintAll);
 
-	            // Paint custum layers
+                // paint custum layers
 	            for (var i = 0; i < zlevelList.length; i++) {
 	                var z = zlevelList[i];
 	                var layer = this._layers[z];

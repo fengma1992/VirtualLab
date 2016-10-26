@@ -1,0 +1,208 @@
+@charset "utf-8";
+* {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-user-select: none;
+    -webkit-text-size-adjust: none;
+    -webkit-touch-callout: none;
+}
+
+a:focus {
+    -moz-outline-style: none;
+    outline: none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #FFF;
+    line-height: 1.6;
+    font-family: Arial, "Microsoft YaHei";
+}
+
+body {
+    color: #001648;
+    font-size: 14px;
+}
+
+img {
+    vertical-align: middle;
+}
+
+p, ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.G_bg, .G_box, .G_notice, .G_alert, .G_success, .G_error, .G_confirm, .G_prompt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 99;
+}
+
+.G_bg {
+    background-color: #000;
+    width: 100%;
+    height: 100%;
+}
+
+.G_box, .G_notice, .G_alert, .G_success, .G_error, .G_confirm, .G_prompt {
+    border-radius: 5px;
+    font-size: 16px;
+    border: solid 1px #EEE;
+    background-color: #F5F5F5;
+}
+
+.G_notice, .G_alert, .G_success, .G_error {
+    padding: 10px 12px 10px 50px;
+    line-height: 25px;
+}
+
+.G_notice svg, .G_alert svg, .G_success svg, .G_error svg, .G_confirm svg, .G_prompt svg {
+    position: absolute;
+    height: 36px;
+    width: 36px;
+    left: 10px;
+    top: 50%;
+    margin-top: -17px;
+}
+
+.G_alert {
+    color: #B66B07;
+}
+
+.G_notice {
+    color: #287BA4;
+}
+
+.G_error {
+    color: #E22;
+    padding-left: 45px;
+}
+
+.G_error svg {
+    left: 5px;
+    margin-top: -19px;
+}
+
+.G_success {
+    color: #299a0b;
+}
+
+.G_confirm {
+    padding: 10px 15px;
+    color: #00627A;
+}
+
+.G_confirm svg {
+    top: 26px;
+    left: 15px;
+}
+
+.G_confirm .G_p1 {
+    padding-left: 40px;
+    height: 30px;
+    line-height: 30px;
+}
+
+.G_confirm .G_p2 {
+    height: 25px;
+    padding-top: 12px;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+.G_prompt {
+    color: #555;
+    padding: 10px 13px;
+}
+
+.G_prompt svg {
+    top: 28px;
+    left: 13px;
+}
+
+.G_prompt .G_p1 {
+    padding-left: 34px;
+    height: 30px;
+    line-height: 30px;
+}
+
+.G_prompt .G_p3 {
+    padding: 6px 0;
+}
+
+.G_prompt .G_p3 input {
+    width: 200px;
+    color: #333;
+    outline: none;
+    height: 16px;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 5px;
+    border: solid 1px #BCBCBC;
+}
+
+.G_prompt .G_p2 {
+    padding: 5px;
+    text-align: center;
+}
+
+.G_box {
+    background-color: #fff;
+}
+
+.G_content {
+    font-size: 14px;
+}
+
+.G_title {
+    height: 38px;
+    line-height: 38px;
+    padding: 0 15px;
+    font-weight: bold;
+    color: #555;
+    background: -moz-linear-gradient(top, #FDFDFD 0%, #F1F4F5 100%);
+    background: -webkit-linear-gradient(top, #FDFDFD 0%, #F1F4F5 100%);
+    background: linear-gradient(to bottom, #FDFDFD 0%, #F1F4F5 100%);
+}
+
+.G_close {
+    position: absolute;
+    width: 20px;
+    cursor: pointer;
+    text-align: center;
+    padding: 5px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 20px;
+    top: 3px;
+    right: 6px;
+}
+
+.G_span {
+    display: inline-block;
+    width: 60px;
+    line-height: 25px;
+    border: solid 1px #D6D6D6;
+    border-radius: 5px;
+    margin: 0 8px;
+    text-align: center;
+    font-size: 14px;
+    color: #B78B42;
+    cursor: pointer;
+    letter-spacing: 2px;
+    background: -moz-linear-gradient(top, #f9f9f9 0%, #e4e4e4 100%);
+    background: -webkit-linear-gradient(top, #f9f9f9 0%, #e4e4e4 100%);
+    background: linear-gradient(to bottom, #f9f9f9 0%, #e4e4e4 100%);
+}
+
+.G_span:hover, .G_span:active {
+    background: #477B97;
+    color: #fff;
+    border-color: #2B59C9;
+}

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>球杆模型控制</title>
+    <title>球杆模型控制实验</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -12,18 +12,16 @@
         <div class="columnFlexDiv">
             <span>小球位置曲线</span>
             <canvas id="positionCanvas" width="500" height="300"></canvas>
-
         </div>
         <div class="columnFlexDiv">
             <span>杆角度曲线</span>
             <canvas id="angleCanvas" width="500" height="300"></canvas>
-
         </div>
     </div>
     <div class="rowFlexDiv">
-        <canvas id="ADDCanvas" width="30" height="30"></canvas>
-        <canvas id="PIDCanvas" width="30" height="30"></canvas>
-        <canvas id="BallCanvas" width="30" height="30"></canvas>
+        <canvas id="ADDCanvas" width="40" height="30"></canvas>
+        <canvas id="PIDCanvas" width="40" height="30"></canvas>
+        <canvas id="BallBeamCanvas" width="40" height="30"></canvas>
     </div>
     <div class="rowFlexDiv">
         <div>
@@ -35,18 +33,17 @@
         <div>
             <span class="normalSpan">D:</span><input type="number" id="DInput" value="20" class="PIDInput">
         </div>
-        <span id="positionSpan" class="normalSpan">小球位置:20</span>
+        <span id="positionSpan" class="normalSpan">选定位置:20</span>
         <button id="startBtn" class="normalBtn" onclick="start()">开始</button>
         <button id="resetBtn" class="normalBtn" onclick="reset()">重置</button>
     </div>
-
     <div id="loadingDiv" class="loadingDiv">
-        <img src="img/loading.gif" alt="loading">
+        <img class="loadingImg" src="img/loading.gif" alt="loading">
     </div>
 </div>
 <script src="js/VILibraries/ADDVI.js"></script>
 <script src="js/VILibraries/PIDVI.js"></script>
-<script src="js/VILibraries/BallVI.js"></script>
+<script src="js/VILibraries/BallBeamVI.js"></script>
 <script src="js/VILibraries/WaveVI.js"></script>
 <script src="js/three.js"></script>
 <script src="js/MTLLoader.js"></script>
@@ -55,23 +52,36 @@
 <script src="js/ObjectControls.js"></script>
 
 <script>
+    var loadingDiv = document.getElementById('loadingDiv');
     var mainCanvas = document.getElementById('mainCanvas');
     var positionCanvas = document.getElementById('positionCanvas');
     var angleCanvas = document.getElementById('angleCanvas');
     var ADDCanvas = document.getElementById('ADDCanvas');
     var PIDCanvas = document.getElementById('PIDCanvas');
-    var BallCanvas = document.getElementById('BallCanvas');
+    var BallBeamCanvas = document.getElementById('BallBeamCanvas');
     var positionSpan = document.getElementById('positionSpan');
     var PInput = document.getElementById('PInput');
     var IInput = document.getElementById('IInput');
     var DInput = document.getElementById('DInput');
+    var startBtn = document.getElementById('startBtn');
 
+    //3D部分变量
+    var camera, scene, renderer, controls, markControl, beam, ball, mark;
+
+    var requestAnimationFrame = window.requestAnimationFrame
+            || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame
+            || window.msRequestAnimationFrame;
+    window.requestAnimationFrame = requestAnimationFrame;
+
+    //VI部分变量
     var positionWave = new WaveVI(positionCanvas);
     var angleWave = new WaveVI(angleCanvas);
     var addVI = new AddVI(ADDCanvas);
     var PIDVI = new PIDVI(PIDCanvas);
-    var ballVI = new BallVI(BallCanvas);
+    var ballBeamVI = new BallBeamVI(BallBeamCanvas);
     var position = 20;
+    var angle = 0;
     var runFlag = false;
     var timer;
 
@@ -81,12 +91,23 @@
     function start() {
 
         if (!runFlag) {
+
             runFlag = !runFlag;
+            startBtn.innerText = '暂停';
+            position = mark.position.x;
             addVI.originalInput = position;
             PIDVI.P = PInput.value;
             PIDVI.I = IInput.value;
             PIDVI.D = DInput.value;
-            timer = window.setInterval(onTimer(), 10);
+            timer = window.setInterval(onTimer, 30);
+
+        }
+        else {
+
+            runFlag = !runFlag;
+            startBtn.innerText = '开始';
+            window.clearInterval(timer);
+
         }
 
     }
@@ -94,41 +115,47 @@
     function onTimer() {
 
         //加法器
-        addVI.calculate(ballVI.position);//输入球位置信号，输出位置偏差
+        addVI.calculate(ballBeamVI.position);//输入球位置信号，输出位置偏差
         //PID控制器
-        PIDVI.setData(addVI.output);//输入位置偏差，输出杆角度
+        PIDVI.setData(addVI.singleOutput);//输入位置偏差，输出杆角度
         //球杆模型
-        ballVI.setInputAngle(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
+        ballBeamVI.setInputAngle(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
         //波形控件
-        positionWave.setData(ballVI.positionOutput, ballVI.dataLength);
-        angleWave.setData(ballVI.angelOutput, ballVI.dataLength);
+        positionWave.setData(ballBeamVI.positionOutput, ballBeamVI.dataLength);
+        angleWave.setData(ballBeamVI.angelOutput, ballBeamVI.dataLength);
         //球杆3D场景
-        setPosition(ballVI.angle * Math.PI / 180, ballVI.position);
-        positionSpan.innerText = '小球位置：' + ballVI.position;
+        setPosition(ballBeamVI.angle * Math.PI / 180, ballBeamVI.position);
+        console.log('ballposition:' + ballBeamVI.position + ' ballBeamVI.angle:' + ballBeamVI.angle + ' addVI.singleOutput:' + addVI.singleOutput + ' PIDVI.singleOutput:' + PIDVI.singleOutput);
+
     }
 
-    function setPosition() {
-
-
+    function setPosition(ang, pos) {
+        angle = -ang;//角度为逆时针旋转
+        beam.rotation.z = angle;
+        ball.rotation.z = angle;
+        mark.rotation.z = angle;
+        ball.position.y = pos * Math.sin(angle);
+        ball.position.x = pos * Math.cos(angle);
+        mark.position.y = position * Math.sin(angle);
+        mark.position.x = position * Math.cos(angle);
     }
 
     function reset() {
 
+        runFlag = false;
+        startBtn.innerText = '开始';
+        window.clearInterval(timer);
         addVI.reset();
         PIDVI.reset();
-        ballVI.reset();
+        ballBeamVI.reset();
+        beam.rotation.z = 0;
+        ball.rotation.z = 0;
+        mark.rotation.z = 0;
+        ball.position.y = 0;
+        ball.position.x = 0;
+        mark.position.y = 0;
+        mark.position.x = 0;
     }
-
-    var camera, scene, renderer, //绘图用
-            controls, sliderControl;//控制用
-
-    var requestAnimationFrame = window.requestAnimationFrame
-            || window.mozRequestAnimationFrame
-            || window.webkitRequestAnimationFrame
-            || window.msRequestAnimationFrame;
-    window.requestAnimationFrame = requestAnimationFrame;
-
-    var loadingDiv = document.getElementById('loadingDiv');
 
     init();
 
@@ -142,7 +169,7 @@
         renderer.setSize(mainCanvas.clientWidth, mainCanvas.clientHeight);
 
         camera = new THREE.PerspectiveCamera(30, mainCanvas.clientWidth / mainCanvas.clientHeight, 1, 100000);
-        camera.position.z = 1500;
+        camera.position.z = 400;
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
         controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -150,149 +177,112 @@
         controls.enableZoom = true;
         controls.zoomSpeed = 1.2;
         controls.enableDamping = true;
-        controls.minPolarAngle = Math.PI / 4;
-        controls.maxPolarAngle = Math.PI * 3 / 4;
-        controls.minAzimuthAngle = -Math.PI / 4;
-        controls.maxAzimuthAngle = Math.PI / 4;
+//        controls.minPolarAngle = Math.PI / 4;
+//        controls.maxPolarAngle = Math.PI * 3 / 4;
+//        controls.minAzimuthAngle = -Math.PI / 4;
+//        controls.maxAzimuthAngle = Math.PI / 4;
 
         scene = new THREE.Scene();
 
-        var light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(1000, 10000, 4000);
+
+        var light = new THREE.AmbientLight(0x555555);
         scene.add(light);
-
-        var light1 = new THREE.AmbientLight(0x555555);
+        var light1 = new THREE.DirectionalLight(0xffffff, 1);
+        light1.position.set(4000, 4000, 4000);
         scene.add(light1);
-
+        var light2 = new THREE.DirectionalLight(0xffffff, 1);
+        light2.position.set(-4000, 4000, -4000);
+        scene.add(light2);
 
         //use as a reference plane for ObjectControl
-        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400), new THREE.MeshBasicMaterial({
-            transparent: true,
-            opacity: 0
-        }));
-        plane.position.y = 0;
-        scene.add(plane);
+        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
 
-        sliderControl = new ObjectControls(camera, renderer.domElement);
-        sliderControl.map = plane;
-        sliderControl.offsetUse = true;
+        markControl = new ObjectControls(camera, renderer.domElement);
+        markControl.map = plane;
+        markControl.offsetUse = true;
 
-        switchControl = new ObjectControls(camera, renderer.domElement);
-        switchControl.map = plane;
-        switchControl.offsetUse = true;
-
-        switchControl.attachEvent('mouseOver', function () {
+        markControl.attachEvent('mouseOver', function () {
             this.container.style.cursor = 'pointer';
         });
 
-        switchControl.attachEvent('mouseOut', function () {
+        markControl.attachEvent('mouseOut', function () {
             this.container.style.cursor = 'auto';
         });
 
-        var isStart = false;
-        switchControl.attachEvent('onclick', function () {
+        markControl.attachEvent('dragAndDrop', onMouseDrag);
 
-            if (!isStart) {
-
-                isStart = !isStart;
-
-                sliderControl.attachEvent('onclick', function () {
-                });
-
-                sliderControl.attachEvent('mouseOver', function () {
-                    this.container.style.cursor = 'pointer';
-                });
-
-                sliderControl.attachEvent('mouseOut', function () {
-                    this.container.style.cursor = 'auto';
-                });
-
-                sliderControl.attachEvent('dragAndDrop', onMouseDrag);
-
-                sliderControl.attachEvent('mouseUp', function () {
-                    controls.enabled = true;
-                    this.container.style.cursor = 'auto';
-                });
-            }
-
-            else {
-                isStart = !isStart;
-
-                sliderControl.detachEvent('onclick');
-                sliderControl.detachEvent('mouseOver');
-                sliderControl.detachEvent('mouseOut');
-                sliderControl.detachEvent('dragAndDrop');
-                sliderControl.attachEvent('mouseUp');
-            }
-
+        markControl.attachEvent('mouseUp', function () {
+            controls.enabled = true;
+            this.container.style.cursor = 'auto';
         });
 
         var mtlLoader = new THREE.MTLLoader();
 
-        var base, slider, offSwitch, onSwitch;
-        loadingDiv.style.display = 'inherit';
-        mtlLoader.load('assets/straightness_experiment/base.mtl', function (materials) {
+        loadingDiv.style.display = 'flex';
+        mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
 
             materials.preload();
 
             var objLoader = new THREE.OBJLoader();
             objLoader.setMaterials(materials);
-            objLoader.load('assets/straightness_experiment/base.obj', function (a) {
-                a.traverse(function (child) {
+            objLoader.load('assets/BallBeamControl/base.obj', function (base) {
+                base.traverse(function (child) {
                     if (child instanceof THREE.Mesh) {
 
                         child.material.side = THREE.DoubleSide;
                     }
                 });
-                base = a;
-                mtlLoader.load('assets/straightness_experiment/slider.mtl', function (materials) {
+                mtlLoader.load('assets/BallBeamControl/beam.mtl', function (materials) {
 
                     materials.preload();
 
                     var objLoader = new THREE.OBJLoader();
                     objLoader.setMaterials(materials);
-                    objLoader.load('assets/straightness_experiment/slider.obj', function (b) {
+                    objLoader.load('assets/BallBeamControl/beam.obj', function (b) {
                         b.traverse(function (child) {
                             if (child instanceof THREE.Mesh) {
 
                                 child.material.side = THREE.DoubleSide;
                             }
                         });
-                        slider = b;
-                        mtlLoader.load('assets/straightness_experiment/offSwitch.mtl', function (materials) {
+                        beam = b;
+                        mtlLoader.load('assets/BallBeamControl/ball.mtl', function (materials) {
 
                             materials.preload();
 
                             var objLoader = new THREE.OBJLoader();
                             objLoader.setMaterials(materials);
-                            objLoader.load('assets/straightness_experiment/offSwitch.obj', function (c) {
+                            objLoader.load('assets/BallBeamControl/ball.obj', function (c) {
                                 c.traverse(function (child) {
                                     if (child instanceof THREE.Mesh) {
 
                                         child.material.side = THREE.DoubleSide;
                                     }
                                 });
-                                offSwitch = c;
-                                mtlLoader.load('assets/straightness_experiment/onSwitch.mtl', function (materials) {
+                                ball = c;
+                                mtlLoader.load('assets/BallBeamControl/mark.mtl', function (materials) {
 
                                     materials.preload();
 
                                     var objLoader = new THREE.OBJLoader();
                                     objLoader.setMaterials(materials);
-                                    objLoader.load('assets/straightness_experiment/onSwitch.obj', function (d) {
+                                    objLoader.load('assets/BallBeamControl/mark.obj', function (d) {
                                         d.traverse(function (child) {
                                             if (child instanceof THREE.Mesh) {
 
                                                 child.material.side = THREE.DoubleSide;
                                             }
                                         });
-                                        onSwitch = d;
+                                        mark = d;
                                         loadingDiv.style.display = 'none';
+                                        beam.rotation.z = angle;
+                                        mark.rotation.z = angle;
+                                        ball.rotation.z = angle;
                                         scene.add(base);
-                                        scene.add(slider);
-                                        sliderControl.attach(slider);
-                                        scene.add(offSwitch);
-                                        switchControl.attach(offSwitch);
+                                        scene.add(beam);
+                                        scene.add(ball);
+                                        scene.add(mark);
+                                        markControl.attach(mark);
                                     });
                                 });
                             });
@@ -310,71 +300,19 @@
         this.container.style.cursor = 'move';
         this.focused.position.y = this.previous.y;  //lock y direction
         var positionX = this.focused.position.x;
-        if (positionX < 0)
-            this.focused.position.x = 0;
-
-        else if (positionX > 875)
-            this.focused.position.x = 875;
+        if (positionX < -120)
+            this.focused.position.x = -120;
+        else if (positionX > 120)
+            this.focused.position.x = 120;
 
         positionX = this.focused.position.x;
-        console.log(positionX);
-        scene.remove(machineRay);
-        machineRay = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 200 + positionX), new THREE.MeshBasicMaterial({
-            color: 0xff0000,
-            opacity: 0.9
-        }));
-        machineRay.rotation.z = Math.PI / 2;
-        machineRay.position.x = -400 + positionX / 2;
-        machineRay.position.y = 118;
-        scene.add(machineRay);
-        var errorArray = [0, 20, 60, 80, -30, 60, -70, 10, -10];
-        var crossY = 0;
-        var range = 1000 / 8;
-        if (positionX < 0.5 * range) {
-            crossY = errorArray[0];
-            drawCrossMark(crossY);
-        }
-        else if (positionX < 1.5 * range) {
-            crossY = errorArray[1];
-            drawCrossMark(crossY);
-
-        }
-        else if (positionX < 2.5 * range) {
-            crossY = errorArray[2];
-            drawCrossMark(crossY);
-
-        }
-        else if (positionX < 3.5 * range) {
-            crossY = errorArray[3];
-            drawCrossMark(crossY);
-
-        }
-        else if (positionX < 4.5 * range) {
-            crossY = errorArray[4];
-            drawCrossMark(crossY);
-
-        }
-        else if (positionX < 5.5 * range) {
-            crossY = errorArray[5];
-            drawCrossMark(crossY);
-
-        }
-        else if (positionX < 6.5 * range) {
-            crossY = errorArray[6];
-            drawCrossMark(crossY);
-
-        }
-        else {
-            crossY = errorArray[7];
-            drawCrossMark(crossY);
-
-        }
+        positionSpan.innerText = '选定位置：' + positionX.toFixed(2);
     }
 
     function animate() {
 
         window.requestAnimationFrame(animate);
-        sliderControl.update();
+        markControl.update();
         controls.update();
         renderer.render(scene, camera);
 

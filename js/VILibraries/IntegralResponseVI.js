@@ -1,16 +1,28 @@
 /**
- * Created by Fengma on 2016/10/18.
+ * Created by Fengma on 2016/10/26.
  */
 
-function AddVI(domElement) {
-
+/**
+ * 积分响应
+ * @param domElement
+ * @constructor
+ */
+function IntegralResponseVI(domElement) {
+    'use strict';
     var _this = this;
     this.container = domElement;
-    this.ctx = domElement.getContext('2d');
-    this.name = 'AddVI';
+    this.ctx = this.container.getContext("2d");
+    this.name = 'IntegralResponseVI';
 
-    this.originalInput = 0;
-    this.latestInput = 0;
+    this.signalType = 2;
+    this.k1 = 0;
+    this.k2 = 1;
+    this.k3 = 0;
+    this.Fs = 1000;
+    this.input = 0;
+    this.lastInput = 0;
+    this.temp1 = 0;
+    this.temp2 = 0;
     this.singleOutput = 0;
 
     this.dataLength = 1024;
@@ -22,15 +34,30 @@ function AddVI(domElement) {
     this.source = [];
     this.target = [];
 
-    this.calculate = function (latestInput) {
+    this.setData = function (input) {
+        if (isNaN(input)) {
+            return false;
+        }
+        var v2, v21;
 
-        _this.latestInput = latestInput;
-        _this.singleOutput = _this.originalInput - _this.latestInput;
+        _this.input = input;
 
-        if (_this.autoSave)
+
+        v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
+        _this.temp1 = v21;
+        v2 = _this.k2 * v21;
+
+
+        _this.singleOutput = v2;
+        _this.lastInput = _this.input;
+
+        if (_this.autoSave) {
+
             _this.dataCollector(_this.singleOutput);
+        }
 
         return _this.singleOutput;
+
     };
 
     /**
@@ -56,22 +83,23 @@ function AddVI(domElement) {
         }
     };
 
-    this.reset = function () {
 
-        this.originalInput = 0;
-        this.latestInput = 0;
-        this.singleOutput = 0;
+    this.reset = function () {
+        _this.lastInput = 0;
+        _this.temp1 = 0;
+        _this.temp2 = 0;
         _this.index = 0;
     };
 
+
     this.draw = function () {
-        _this.ctx.font = "normal 12px Microsoft YaHei";
+        _this.ctx.font = 'normal 12px Microsoft YaHei';
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText('加法器', _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+        _this.ctx.fillText('积分', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 
     this.draw();
-
 }

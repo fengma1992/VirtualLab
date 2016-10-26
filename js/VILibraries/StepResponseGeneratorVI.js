@@ -4,9 +4,12 @@
 
 function StepResponseGeneratorVI(domElement) {
     var _this = this;
-    this.canvas = domElement;
-    this.ctx = this.canvas.getContext("2d");
+    this.container = domElement;
+    this.ctx = this.container.getContext("2d");
+    this.name = 'StepResponseGeneratorVI';
+
     this.signalType = 0;
+    this.text = '阶跃响应';
     this.k1 = 1;
     this.k2 = 1;
     this.k3 = 1;
@@ -22,7 +25,14 @@ function StepResponseGeneratorVI(domElement) {
     this.output = [];
     this.autoSave = true;
 
+    //虚拟仪器中相连接的控件VI
+    this.source = [];
+    this.target = [];
+
     this.setData = function (input) {
+        if (isNaN(input)) {
+            return false;
+        }
         var v, v1, v2, v21, v3, E, a1, b1;
 
         _this.input = input;
@@ -37,6 +47,7 @@ function StepResponseGeneratorVI(domElement) {
             v3 = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;
 
             _this.singleOutput = v1 + v2 + v3;
+            _this.lastInput = _this.input;
         }
         else if (_this.signalType < 9) {
             if (_this.signalType == 6) { //一阶 1/(TS+1)
@@ -61,7 +72,6 @@ function StepResponseGeneratorVI(domElement) {
                 _this.temp1 = v;
                 _this.singleOutput = v + _this.k2 * _this.input;//输出
             }
-
         }
         else _this.singleOutput = 0;
 
@@ -80,7 +90,7 @@ function StepResponseGeneratorVI(domElement) {
 
         var i = 0;
         if (_this.index == 0) {
-            for (i = 0; i < _this.dataLength - 1; i++) {
+            for (i = 0; i < _this.dataLength; i++) {
                 _this.output[i] = 0;
             }
         }
@@ -95,7 +105,7 @@ function StepResponseGeneratorVI(domElement) {
         }
     };
 
-    this.setType = function (type) {
+    this.setStepType = function (type) {
 
         _this.signalType = type;
 
@@ -168,17 +178,15 @@ function StepResponseGeneratorVI(domElement) {
         _this.index = 0;
     };
 
-    this.Draw = function (type) {
 
-        _this.ctx.beginPath();
-        _this.ctx.fillStyle = 'RGB(255,100,100)';
-        _this.ctx.fillRect(0, 0, _this.canvas.width, _this.canvas.height);
-        _this.ctx.closePath();
-        _this.ctx.beginPath();
-        _this.ctx.font = 'normal ' + 16 + 'px Calibri';
-        _this.ctx.fillStyle = 'RGB(0,0,0)';
-        _this.ctx.fillText(type, this.canvas.width / 2 - 8, this.canvas.height / 2 + 4);
-        _this.ctx.closePath();
+    this.draw = function () {
+        _this.ctx.font = 'normal 12px Microsoft YaHei';
+        _this.ctx.fillStyle = 'orange';
+        _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
+        _this.ctx.fillStyle = 'black';
+        _this.ctx.fillText(_this.text.substring(0, 2), _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText(_this.text.substring(2), _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
-    this.Draw('SG');
+
+    this.draw();
 }
