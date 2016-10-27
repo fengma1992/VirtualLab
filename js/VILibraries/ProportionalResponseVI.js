@@ -88,7 +88,7 @@ function ProportionalResponseVI(domElement) {
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 2 + 6);
+        _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
         _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 

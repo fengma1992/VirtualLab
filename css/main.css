@@ -128,8 +128,8 @@ html {
 }
 
 .loadingImg {
-    width: 128px;
-    height: 128px;
+    width: 64px;
+    height: 64px;
 }
 
 .normalBtn {
@@ -196,4 +196,8 @@ html {
     margin: 5px 5px;
     width: 15px;
     height: 15px;
+}
+
+.VI-div {
+    width: 80%;
 }

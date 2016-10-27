@@ -19,7 +19,7 @@ function PIDVI(domElement) {
     this.P = 1;
     this.I = 1;
     this.D = 1;
-    this.Fs = 50;
+    this.Fs = 100;
     this.u1 = 0;
     this.y1 = 0;
 
@@ -86,7 +86,7 @@ function PIDVI(domElement) {
         _this.P = 1;
         _this.I = 1;
         _this.D = 1;
-        _this.Fs = 50;
+        _this.Fs = 100;
         _this.u1 = 0;
         _this.y1 = 0;
         _this.index = 0;

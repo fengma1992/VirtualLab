@@ -19,9 +19,9 @@
         </div>
     </div>
     <div class="rowFlexDiv">
-        <canvas id="ADDCanvas" width="40" height="30"></canvas>
-        <canvas id="PIDCanvas" width="40" height="30"></canvas>
-        <canvas id="BallBeamCanvas" width="40" height="30"></canvas>
+        <canvas id="ADDCanvas" width="30" height="30"></canvas>
+        <canvas id="PIDCanvas" width="30" height="30"></canvas>
+        <canvas id="BallBeamCanvas" width="30" height="30"></canvas>
     </div>
     <div class="rowFlexDiv">
         <div>
@@ -33,7 +33,7 @@
         <div>
             <span class="normalSpan">D:</span><input type="number" id="DInput" value="20" class="PIDInput">
         </div>
-        <span id="positionSpan" class="normalSpan">选定位置:20</span>
+        <span id="positionSpan" class="normalSpan">选定位置:0</span>
         <button id="startBtn" class="normalBtn" onclick="start()">开始</button>
         <button id="resetBtn" class="normalBtn" onclick="reset()">重置</button>
     </div>
@@ -80,8 +80,7 @@
     var addVI = new AddVI(ADDCanvas);
     var PIDVI = new PIDVI(PIDCanvas);
     var ballBeamVI = new BallBeamVI(BallBeamCanvas);
-    var position = 20;
-    var angle = 0;
+    var position = 0;
     var runFlag = false;
     var timer;
 
@@ -124,13 +123,12 @@
         positionWave.setData(ballBeamVI.positionOutput, ballBeamVI.dataLength);
         angleWave.setData(ballBeamVI.angelOutput, ballBeamVI.dataLength);
         //球杆3D场景
-        setPosition(ballBeamVI.angle * Math.PI / 180, ballBeamVI.position);
-        console.log('ballposition:' + ballBeamVI.position + ' ballBeamVI.angle:' + ballBeamVI.angle + ' addVI.singleOutput:' + addVI.singleOutput + ' PIDVI.singleOutput:' + PIDVI.singleOutput);
+        setPosition(ballBeamVI.PIDAngle * Math.PI / 180, ballBeamVI.PIDPosition);
 
     }
 
     function setPosition(ang, pos) {
-        angle = -ang;//角度为逆时针旋转
+        var angle = -ang;//角度为逆时针旋转
         beam.rotation.z = angle;
         ball.rotation.z = angle;
         mark.rotation.z = angle;
@@ -148,13 +146,8 @@
         addVI.reset();
         PIDVI.reset();
         ballBeamVI.reset();
-        beam.rotation.z = 0;
-        ball.rotation.z = 0;
-        mark.rotation.z = 0;
-        ball.position.y = 0;
-        ball.position.x = 0;
-        mark.position.y = 0;
-        mark.position.x = 0;
+        position = 0;
+        setPosition(0, 0);
     }
 
     init();
@@ -177,10 +170,6 @@
         controls.enableZoom = true;
         controls.zoomSpeed = 1.2;
         controls.enableDamping = true;
-//        controls.minPolarAngle = Math.PI / 4;
-//        controls.maxPolarAngle = Math.PI * 3 / 4;
-//        controls.minAzimuthAngle = -Math.PI / 4;
-//        controls.maxAzimuthAngle = Math.PI / 4;
 
         scene = new THREE.Scene();
 
@@ -216,14 +205,15 @@
             this.container.style.cursor = 'auto';
         });
 
+
         var mtlLoader = new THREE.MTLLoader();
+        var objLoader = new THREE.OBJLoader();
 
         loadingDiv.style.display = 'flex';
         mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
 
             materials.preload();
 
-            var objLoader = new THREE.OBJLoader();
             objLoader.setMaterials(materials);
             objLoader.load('assets/BallBeamControl/base.obj', function (base) {
                 base.traverse(function (child) {
@@ -236,7 +226,6 @@
 
                     materials.preload();
 
-                    var objLoader = new THREE.OBJLoader();
                     objLoader.setMaterials(materials);
                     objLoader.load('assets/BallBeamControl/beam.obj', function (b) {
                         b.traverse(function (child) {
@@ -250,7 +239,6 @@
 
                             materials.preload();
 
-                            var objLoader = new THREE.OBJLoader();
                             objLoader.setMaterials(materials);
                             objLoader.load('assets/BallBeamControl/ball.obj', function (c) {
                                 c.traverse(function (child) {
@@ -264,7 +252,6 @@
 
                                     materials.preload();
 
-                                    var objLoader = new THREE.OBJLoader();
                                     objLoader.setMaterials(materials);
                                     objLoader.load('assets/BallBeamControl/mark.obj', function (d) {
                                         d.traverse(function (child) {
@@ -275,9 +262,6 @@
                                         });
                                         mark = d;
                                         loadingDiv.style.display = 'none';
-                                        beam.rotation.z = angle;
-                                        mark.rotation.z = angle;
-                                        ball.rotation.z = angle;
                                         scene.add(base);
                                         scene.add(beam);
                                         scene.add(ball);

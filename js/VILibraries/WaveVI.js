@@ -21,7 +21,7 @@ function WaveVI(domElement) {
     this.strLabelY = 'Y';
 
     //坐标数值//
-    this.XMaxVal = 1024;
+    this.XMaxVal = 1023;
     this.XMinVal = 0;
     this.YMaxVal = 10;
     this.YMinVal = -10;
@@ -30,7 +30,7 @@ function WaveVI(domElement) {
     //网格行列数//
     this.nRow = 5;
     this.nCol = 10;
-    this.pointNum = 1024;
+    this.pointNum = 1023;
     this.borderWidth = 5;
     this.drawRulerFlag = true;
 
@@ -261,8 +261,8 @@ function WaveVI(domElement) {
     };
 
     this.setData = function (data, len) {
-        _this.pointNum = len;
-        _this.XMaxVal = len;
+        _this.pointNum = len - 1;
+        _this.XMaxVal = len - 1;
         var YMax = 0, YMin = 0;
         for (var i = 0; i < len; i++) {
             _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];

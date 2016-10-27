@@ -10,54 +10,119 @@
     <title>虚拟仪器实验</title>
 </head>
 <body onload="init()">
-
-<div class="mainDiv rowFlexDiv">
-    <div class="draggable-sideBar">
-        <canvas id="wave-canvas" class="draggable-element" width="170" height="80"
+<div id="container-div" class="rowFlexDiv">
+    <div class="draggable-sideBar" id="sideBar">
+        <canvas id="WaveVI-canvas" class="draggable-element" width="170" height="90"
                 zoom="3"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="add-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="BallBeamVI-canvas" class="draggable-element" width="170" height="90"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="Knob-canvas" class="draggable-element" width="45" height="45"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="ADDVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="input-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="InputVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="pid-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="PIDVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="stepResponseGenerator-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="ProportionalResponseVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="signalGenerator-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="IntegralResponseVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="DifferentialResponseVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="InertiaResponseVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="OscillationResponseVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="ProportionalIntegralResponseVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="ProportionalDifferentialResponseVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="ProportionalInertiaResponseVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="SignalGeneratorVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
     </div>
-    <div class="draggable-div" id="container" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <div id="mainVI" class="VI-div">
+        <div id="container" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)">
+        </div>
     </div>
 </div>
+<div id="loadingDiv" class="loadingDiv">
+    <img class="loadingImg" src="img/loading.gif" alt="loading">
+</div>
 <!--虚拟仪器库-->
+<script src="js/VILibraries/BallBeamVI.js"></script>
 <script src="js/VILibraries/WaveVI.js"></script>
 <script src="js/VILibraries/ADDVI.js"></script>
 <script src="js/VILibraries/InputVI.js"></script>
+<script src="js/VILibraries/KnobVI.js"></script>
 <script src="js/VILibraries/PIDVI.js"></script>
-<script src="js/VILibraries/StepResponseGeneratorVI.js"></script>
+<script src="js/VILibraries/DifferentialResponseVI.js"></script>
+<script src="js/VILibraries/InertiaResponseVI.js"></script>
+<script src="js/VILibraries/IntegralResponseVI.js"></script>
+<script src="js/VILibraries/OscillationResponseVI.js"></script>
+<script src="js/VILibraries/ProportionalDifferentialResponseVI.js"></script>
+<script src="js/VILibraries/ProportionalInertiaResponseVI.js"></script>
+<script src="js/VILibraries/ProportionalIntegralResponseVI.js"></script>
+<script src="js/VILibraries/ProportionalResponseVI.js"></script>
 <script src="js/VILibraries/SignalGeneratorVI.js"></script>
 <script src="js/VILibraries/BallBeamVI.js"></script>
 <!--三维显示库-->
@@ -71,20 +136,67 @@
 <!--弹出框-->
 <script src="js/popup.js"></script>
 <script>
+
+    window.addEventListener('resize', resize, false);
+    function resize() {
+        var height = document.documentElement.clientHeight * 0.95 > 600 ? document.documentElement.clientHeight * 0.95 : 600;
+        mainElement[0].style.height = height + 'px';
+        if (mainElement[3]) {
+
+            mainElement[2].style.height = height + 'px';
+            mainElement[1].style.height = height - mainElement[3].offsetHeight - mainElement[4].offsetHeight - 5 + 'px';
+            mainElement[3].style.width = mainElement[1].clientWidth + 'px';
+            if (renderer) {
+
+                camera.aspect = mainElement[3].clientWidth / mainElement[3].clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(mainElement[3].clientWidth, mainElement[3].clientHeight);
+            }
+        }
+        else {
+
+            mainElement[1].style.height = height + 'px';
+        }
+    }
+
+    //0为sideBar，1为拖动框，2为右侧主框，4为提示文字
+    var mainElement = [];
+    mainElement[0] = document.getElementById('sideBar');
+    mainElement[1] = document.getElementById('container');
+    mainElement[2] = document.getElementById('mainVI');
     var instance;
+    var loadingDiv = document.getElementById('loadingDiv');
     var dataObject = {
-        waveCount: 0,
-        addCount: 0,
-        inputCount: 0,
-        pidCount: 0,
-        stepResponseGeneratorCount: 0,
-        signalGeneratorCount: 0,
-        waveVI: [],
-        addVI: [],
-        inputVI: [],
-        pidVI: [],
-        stepResponseGeneratorVI: [],
-        signalGeneratorVI: [],
+        THREECount: 0,
+        BallBeamVICount: 0,
+        WaveVICount: 0,
+        ADDVICount: 0,
+        InputVICount: 0,
+        PIDVICount: 0,
+        ProportionalResponseVICount: 0,
+        IntegralResponseVICount: 0,
+        DifferentialResponseVICount: 0,
+        InertiaResponseVICount: 0,
+        OscillationResponseVICount: 0,
+        ProportionalIntegralResponseVICount: 0,
+        ProportionalDifferentialResponseVICount: 0,
+        ProportionalInertiaResponseVICount: 0,
+        SignalGeneratorVICount: 0,
+        THREE: [],
+        BallBeamVI: [],
+        WaveVI: [],
+        ADDVI: [],
+        InputVI: [],
+        PIDVI: [],
+        ProportionalResponseVI: [],
+        IntegralResponseVI: [],
+        DifferentialResponseVI: [],
+        InertiaResponseVI: [],
+        OscillationResponseVI: [],
+        ProportionalIntegralResponseVI: [],
+        ProportionalDifferentialResponseVI: [],
+        ProportionalInertiaResponseVI: [],
+        SignalGeneratorVI: [],
         P: [],
         I: [],
         D: [],
@@ -95,13 +207,22 @@
     };
 
     function init() {
-        new WaveVI(document.getElementById('wave-canvas'));
-        new AddVI(document.getElementById('add-canvas'));
-        new InputVI(document.getElementById('input-canvas'));
-        new PIDVI(document.getElementById('pid-canvas'));
-        new StepResponseGeneratorVI(document.getElementById('stepResponseGenerator-canvas'));
-        new SignalGeneratorVI(document.getElementById('signalGenerator-canvas'));
+        new BallBeamVI(document.getElementById('BallBeamVI-canvas'));
+        new WaveVI(document.getElementById('WaveVI-canvas'));
+        new AddVI(document.getElementById('ADDVI-canvas'));
+        new InputVI(document.getElementById('InputVI-canvas'));
+        new PIDVI(document.getElementById('PIDVI-canvas'));
+        new ProportionalResponseVI(document.getElementById('ProportionalResponseVI-canvas'));
+        new IntegralResponseVI(document.getElementById('IntegralResponseVI-canvas'));
+        new DifferentialResponseVI(document.getElementById('DifferentialResponseVI-canvas'));
+        new InertiaResponseVI(document.getElementById('InertiaResponseVI-canvas'));
+        new OscillationResponseVI(document.getElementById('OscillationResponseVI-canvas'));
+        new ProportionalIntegralResponseVI(document.getElementById('ProportionalIntegralResponseVI-canvas'));
+        new ProportionalDifferentialResponseVI(document.getElementById('ProportionalDifferentialResponseVI-canvas'));
+        new ProportionalInertiaResponseVI(document.getElementById('ProportionalInertiaResponseVI-canvas'));
+        new SignalGeneratorVI(document.getElementById('SignalGeneratorVI-canvas'));
         ready();
+        resize();
     }
 
     function ready() {
@@ -109,8 +230,8 @@
         instance = window.jsp = jsPlumb.getInstance({
             // default drag options
             DragOptions: {cursor: 'pointer', zIndex: 2000},
-            // the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
-            // case it returns the 'labelText' member that we set on each connection in the 'init' method below.
+            // the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text;
+            // in this case it returns the 'labelText' member that we set on each connection in the 'init' method below.
             ConnectionOverlays: [
                 ["Arrow", {
                     location: 1,
@@ -210,7 +331,8 @@
             });
 
             instance.bind("connectionDrag", function (connection) {
-//                console.log("connection " + connection.sourceId + " is being dragged. suspendedElement is ", connection.targetId, " of type ", connection.suspendedElementType);
+//                console.log("connection " + connection.sourceId + " is being dragged. suspendedElement is ",
+//                        connection.targetId, " of type ", connection.suspendedElementType);
             });
 
             instance.bind("connectionDragStop", function (connection) {
@@ -232,49 +354,123 @@
         switch (elementInfo[0]) {
 
 
-            case 'add':
+            case 'ADDVI':
                 box = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                        '<span class="normalSpan">初值:</span><input type="number" id="ADDInput" value="20" class="PIDInput"><br>', 1, function () {
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">初值:</span><input type="number" id="ADD-input" value="20" class="PIDInput"><br>' +
+                        '</div>', 1, function () {
                         });
                 break;
 
-            case 'pid':
+            case 'PIDVI':
                 box = G.box('请输入PID参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                        '<span class="normalSpan">P:</span><input type="number" id="PInput" value="20" class="PIDInput">' +
-                        '<span class="normalSpan">I:</span><input type="number" id="IInput" value="0" class="PIDInput">' +
-                        '<span class="normalSpan">D:</span><input type="number" id="DInput" value="20" class="PIDInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setPID(' + elementInfo[2] + ')">确定</button>',
-                        1, function () {
-                        });
-                break;
-
-            case 'input':
-                box = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                        '<span class="normalSpan">初值:</span><input type="number" id="Input" value="100" class="PIDInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setInput(' + elementInfo[2] + ')">确定</button>',
-                        1, function () {
-                        });
-                break;
-
-            case 'stepResponseGenerator':
-                box = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                        '<div style="margin: 10px 10px; font-size: 1.2em; ">' +
-                        '<input type="radio" class="radioInput" name="type" value="1" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例<br>' +
-                        '<input type="radio" class="radioInput" name="type" value="2" onclick="setStepType(this.value,' + elementInfo[2] + ')">积分<br>' +
-                        '<input type="radio" class="radioInput" name="type" value="3" onclick="setStepType(this.value,' + elementInfo[2] + ')">微分<br>' +
-                        '<input type="radio" class="radioInput" name="type" value="4" onclick="setStepType(this.value,' + elementInfo[2] + ')">惯性<br>' +
-                        '<input type="radio" class="radioInput" name="type" value="5" onclick="setStepType(this.value,' + elementInfo[2] + ')">震荡<br>' +
-                        '<input type="radio" class="radioInput" name="type" value="6" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例积分<br>' +
-                        '<input type="radio" class="radioInput" name="type" value="7" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例惯性<br>' +
-                        '<input type="radio" class="radioInput" name="type" value="8" onclick="setStepType(this.value,' + elementInfo[2] + ')">比例微分<br>' +
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">P:</span><input type="number" id="P-input" value="20" class="PIDInput">' +
+                        '<span class="normalSpan">I:</span><input type="number" id="I-input" value="0" class="PIDInput">' +
+                        '<span class="normalSpan">D:</span><input type="number" id="D-input" value="20" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setPID(' + elementInfo[2] + ')">确定</button>' +
                         '</div>',
                         1, function () {
                         });
                 break;
 
-            case 'signalGenerator':
+            case 'InputVI':
+                box = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">初值:</span><input type="number" id="Input" value="100" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setInput(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'ProportionalResponseVI':
+                box = G.box('比例响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalResponseVI-input" value="1.5" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(1)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'IntegralResponseVI':
+                box = G.box('积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="IntegralResponseVI-input" value="5" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(2)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'DifferentialResponseVI':
+                box = G.box('微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K3:</span><input type="number" id="DifferentialResponseVI-input" value="0.0025" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(3)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'InertiaResponseVI':
+                box = G.box('惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K:</span><input type="number" id="InertiaResponseVI-input" value="0.025" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(4)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'OscillationResponseVI':
+                box = G.box('震荡响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="50" class="PIDInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="0.05" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(5)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'ProportionalIntegralResponseVI':
+                box = G.box('比例积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalDifferentialResponseVI-input-1" value="1" class="PIDInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionalDifferentialResponseVI-input-2" value="1" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(6)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'ProportionalDifferentialResponseVI':
+                box = G.box('比例微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalResponseVI-input-1" value="1" class="PIDInput">' +
+                        '<span class="normalSpan">K3:</span><input type="number" id="ProportionalResponseVI-input-2" value="1" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(7)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'ProportionalInertiaResponseVI':
+                box = G.box('比例惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalInertiaResponseVI-input-1" value="1" class="PIDInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionalInertiaResponseVI-input-2" value="1" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(8)">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'SignalGeneratorVI':
                 box = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                        '<div style="margin: 10px 10px; font-size: 1.2em; ">' +
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<input type="radio" class="radioInput" name="type" value="1" onclick="setSignalType(this.value,' + elementInfo[2] + ')">正弦波<br>' +
                         '<input type="radio" class="radioInput" name="type" value="2" onclick="setSignalType(this.value,' + elementInfo[2] + ')">方波<br>' +
                         '<input type="radio" class="radioInput" name="type" value="3" onclick="setSignalType(this.value,' + elementInfo[2] + ')">三角波<br>' +
@@ -294,12 +490,12 @@
             box.close();
         }
 
-        dataObject.P[elementNumber] = document.getElementById('PInput').value;
-        dataObject.I[elementNumber] = document.getElementById('IInput').value;
-        dataObject.D[elementNumber] = document.getElementById('DInput').value;
-        dataObject.pidVI[elementNumber].P = dataObject.P[elementNumber];
-        dataObject.pidVI[elementNumber].I = dataObject.I[elementNumber];
-        dataObject.pidVI[elementNumber].D = dataObject.D[elementNumber];
+        dataObject.P[elementNumber] = document.getElementById('P-input').value;
+        dataObject.I[elementNumber] = document.getElementById('I-input').value;
+        dataObject.D[elementNumber] = document.getElementById('D-input').value;
+        dataObject.PIDVI[elementNumber].P = dataObject.P[elementNumber];
+        dataObject.PIDVI[elementNumber].I = dataObject.I[elementNumber];
+        dataObject.PIDVI[elementNumber].D = dataObject.D[elementNumber];
     }
 
     function setInput(elementNumber) {
@@ -309,10 +505,11 @@
             box.close();
         }
 
-        dataObject.inputVI[elementNumber].lastOutput = document.getElementById('Input').value;
+        dataObject.InputVI[elementNumber].lastOutput = document.getElementById('Input').value;
     }
 
-    function setStepType(type, elementNumber) {
+    var stepResponse;
+    function setStepResponseData(type) {
 
         if (box) {
 
@@ -322,55 +519,52 @@
         switch (parseInt(type)) {
 
             case 1://比例
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(1);
-                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 1.5;
+                dataObject.ProportionalResponseVI[0].k1 = document.getElementById('ProportionalResponseVI-input').value;
+                stepResponse = dataObject.ProportionalResponseVI[0];
                 break;
 
             case 2://积分
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(2);
-                dataObject.stepResponseGeneratorVI[elementNumber].k2 = 5;
+                dataObject.IntegralResponseVI[0].k2 = document.getElementById('IntegralResponseVI-input').value;
+                stepResponse = dataObject.IntegralResponseVI[0];
                 break;
 
             case 3://微分
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(3);
-                dataObject.stepResponseGeneratorVI[elementNumber].k3 = 0.0025;
+                dataObject.DifferentialResponseVI[0].k3 = document.getElementById('IntegralResponseVI-input').value;
+                stepResponse = dataObject.DifferentialResponseVI[0];
                 break;
 
             case 4://惯性
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(6);
-                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 0.025;
+                dataObject.InertiaResponseVI[0].k1 = document.getElementById('InertiaResponseVI-input').value;
+                stepResponse = dataObject.InertiaResponseVI[0];
                 break;
 
             case 5://震荡
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(7);
-                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 50;
-                dataObject.stepResponseGeneratorVI[elementNumber].k2 = 0.05;
+                dataObject.OscillationResponseVI[0].k1 = document.getElementById('OscillationResponseVI-input-1').value;
+                dataObject.OscillationResponseVI[0].k2 = document.getElementById('OscillationResponseVI-input-2').value;
+                stepResponse = dataObject.OscillationResponseVI[0];
                 break;
 
             case 6://比例积分
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(4);
+                dataObject.ProportionalIntegralResponseVI[0].k1 = document.getElementById('ProportionalIntegralResponseVI-input-1').value;
+                dataObject.ProportionalIntegralResponseVI[0].k2 = document.getElementById('ProportionalIntegralResponseVI-input-2').value;
+                stepResponse = dataObject.ProportionalIntegralResponseVI[0];
                 break;
 
-            case 7://比例惯性
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(8);
-                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 0.025;
-                dataObject.stepResponseGeneratorVI[elementNumber].k2 = 1;
+            case 7://比例微分
+                dataObject.ProportionalDifferentialResponseVI[0].k1 = document.getElementById('ProportionalDifferentialResponseVI-input-1').value;
+                dataObject.ProportionalDifferentialResponseVI[0].k3 = document.getElementById('ProportionalDifferentialResponseVI-input-2').value;
+                stepResponse = dataObject.ProportionalDifferentialResponseVI[0];
                 break;
 
-            case 8://比例微分
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(5);
-                dataObject.stepResponseGeneratorVI[elementNumber].k3 = 0.0025;
-                break;
-
-            default:
-                dataObject.stepResponseGeneratorVI[elementNumber].setStepType(1);
-                dataObject.stepResponseGeneratorVI[elementNumber].k1 = 1.5;
+            case 8://比例惯性
+                dataObject.ProportionalInertiaResponseVI[0].k1 = document.getElementById('ProportionalInertiaResponseVI-input-1').value;
+                dataObject.ProportionalInertiaResponseVI[0].k2 = document.getElementById('ProportionalInertiaResponseVI-input-2').value;
+                stepResponse = dataObject.ProportionalInertiaResponseVI[0];
                 break;
         }
 
-        if (!(dataObject.stepResponseGeneratorVI[0].source[0] == undefined) && !(dataObject.stepResponseGeneratorVI[0].target[0] == undefined)) {
+        if (!(stepResponse.source[0] == undefined) && !(stepResponse.target[0] == undefined)) {
 
-            reset();
             window.setInterval(onStepTimer, 50);
         }
     }
@@ -378,31 +572,24 @@
     function onStepTimer() {
 
         var i;
-        if (dataObject.stepResponseGeneratorVI[0].source[0].name == 'InputVI') {
+        if (stepResponse.source[0].name == 'InputVI') {
 
-            dataObject.stepResponseGeneratorVI[0].source[0].setData(dataObject.stepResponseGeneratorVI[0].source[0].lastOutput);
-            dataObject.stepResponseGeneratorVI[0].setData(dataObject.stepResponseGeneratorVI[0].source[0].lastOutput);
+            stepResponse.source[0].setData(stepResponse.source[0].lastOutput);
+            stepResponse.setData(stepResponse.source[0].lastOutput);
 
-            if (dataObject.stepResponseGeneratorVI[0].target[0].name == 'WaveVI') {
+            if (stepResponse.target[0].name == 'WaveVI') {
 
-                dataObject.stepResponseGeneratorVI[0].target[0].setData(dataObject.stepResponseGeneratorVI[0].output, 1024);//输出信号波形控件赋值
+                stepResponse.target[0].setData(stepResponse.output, 1024);//输出信号波形控件赋值
             }
-            for (i = 0; i < dataObject.stepResponseGeneratorVI[0].source[0].target.length; i++) {
+            for (i = 0; i < stepResponse.source[0].target.length; i++) {
 
-                if (dataObject.stepResponseGeneratorVI[0].source[0].target[i].name == 'WaveVI') {
+                if (stepResponse.source[0].target[i].name == 'WaveVI') {
 
-                    dataObject.stepResponseGeneratorVI[0].source[0].target[i].setData(dataObject.stepResponseGeneratorVI[0].source[0].output, 1024);//输入信号波形控件赋值
+                    stepResponse.source[0].target[i].setData(stepResponse.source[0].output, 1024);//输入信号波形控件赋值
                 }
             }
         }
     }
-
-    function reset() {
-
-        dataObject.stepResponseGeneratorVI[0].source[0].reset();
-        dataObject.stepResponseGeneratorVI[0].reset();
-    }
-
 
     var amp = 2, frequency = 100, phase = 0;
 
@@ -413,8 +600,8 @@
             box.close();
         }
 
-        dataObject.signalGeneratorVI[elementNumber].signalType = type;
-        if (dataObject.signalGeneratorVI[0].target[0]) {
+        dataObject.SignalGeneratorVI[elementNumber].signalType = type;
+        if (dataObject.SignalGeneratorVI[0].target[0]) {
 
             window.setInterval(onSignalTimer, 100);
         }
@@ -423,10 +610,10 @@
     function onSignalTimer() {
 
         phase += 10;
-        dataObject.signalGeneratorVI[0].setData(amp, frequency, phase);
-        if (dataObject.signalGeneratorVI[0].target[0].name == 'WaveVI') {
+        dataObject.SignalGeneratorVI[0].setData(amp, frequency, phase);
+        if (dataObject.SignalGeneratorVI[0].target[0].name == 'WaveVI') {
 
-            dataObject.signalGeneratorVI[0].target[0].setData(dataObject.signalGeneratorVI[0].output, dataObject.signalGeneratorVI[0].output.length);
+            dataObject.SignalGeneratorVI[0].target[0].setData(dataObject.SignalGeneratorVI[0].output, dataObject.SignalGeneratorVI[0].output.length);
         }
 
     }
@@ -445,112 +632,252 @@
 
         e.preventDefault();
         var element = document.getElementById(e.dataTransfer.getData("Text"));
-        var newElement = document.createElement(element.tagName.toLowerCase());
+        var newElement = document.createElement('canvas');
         for (var i = 0; i < element.attributes.length - 3; i++) {
             newElement.setAttribute(element.attributes.item(i).nodeName, element.getAttribute(element.attributes.item(i).nodeName));
         }
         switch (element.id.split('-')[0]) {
-            case 'wave':
-                newElement.id = element.id + '-' + dataObject.waveCount++;
+            case 'BallBeamVI':
+                if (dataObject.BallBeamVICount > 0) {
+                    G.alert('球杆实验已添加！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.BallBeamVICount++;
+                break;
+            case 'WaveVI':
+                newElement.id = element.id + '-' + dataObject.WaveVICount++;
                 break;
 
-            case 'add':
-                newElement.id = element.id + '-' + dataObject.addCount++;
+            case 'ADDVI':
+                newElement.id = element.id + '-' + dataObject.ADDVICount++;
                 dataObject.addOriginalInput.push(800);
                 break;
 
-            case 'input':
-                newElement.id = element.id + '-' + dataObject.inputCount++;
+            case 'InputVI':
+                newElement.id = element.id + '-' + dataObject.InputVICount++;
                 break;
 
-            case 'pid':
-                newElement.id = element.id + '-' + dataObject.pidCount++;
+            case 'PIDVI':
+                newElement.id = element.id + '-' + dataObject.PIDVICount++;
                 dataObject.P.push(20);
                 dataObject.I.push(0);
                 dataObject.D.push(20);
                 break;
 
-            case 'stepResponseGenerator':
-                if (dataObject.stepResponseGeneratorCount > 0) {
-                    G.alert('阶跃响应已存在！', 1, 1000);
+            case 'ProportionalResponseVI':
+                if (dataObject.ProportionalResponseVICount > 0) {
+                    G.alert('比例响应已存在！', 1, 1000);
                     return;
                 }
-                newElement.id = element.id + '-' + dataObject.stepResponseGeneratorCount++;
-                dataObject.stepType.push(1);
+                newElement.id = element.id + '-' + dataObject.ProportionalResponseVICount++;
                 break;
 
-            case 'signalGenerator':
-                if (dataObject.signalGeneratorCount > 0) {
+            case 'IntegralResponseVI':
+                if (dataObject.IntegralResponseVICount > 0) {
+                    G.alert('积分响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.IntegralResponseVICount++;
+                break;
+
+            case 'DifferentialResponseVI':
+                if (dataObject.DifferentialResponseVICount > 0) {
+                    G.alert('微分响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.DifferentialResponseVICount++;
+                break;
+
+            case 'InertiaResponseVI':
+                if (dataObject.InertiaResponseVICount > 0) {
+                    G.alert('惯性响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.InertiaResponseVICount++;
+                break;
+
+            case 'OscillationResponseVI':
+                if (dataObject.OscillationResponseVICount > 0) {
+                    G.alert('震荡响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.OscillationResponseVI++;
+                break;
+
+            case 'ProportionalIntegralResponseVI':
+                if (dataObject.ProportionalIntegralResponseVICount > 0) {
+                    G.alert('比例积分响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.ProportionalIntegralResponseVICount++;
+                break;
+
+            case 'ProportionalDifferentialResponseVI':
+                if (dataObject.ProportionalDifferentialResponseVICount > 0) {
+                    G.alert('比例微分响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.ProportionalDifferentialResponseVICount++;
+                break;
+
+            case 'ProportionalInertiaResponseVI':
+                if (dataObject.ProportionalInertiaResponseVICount > 0) {
+                    G.alert('比例惯性响应已存在！', 1, 1000);
+                    return;
+                }
+                newElement.id = element.id + '-' + dataObject.ProportionalInertiaResponseVICount++;
+                break;
+
+            case 'SignalGeneratorVI':
+                if (dataObject.SignalGeneratorVICount > 0) {
                     G.alert('信号发生器已存在！', 1, 1000);
                     return;
                 }
-                newElement.id = element.id + '-' + dataObject.signalGeneratorCount++;
+                newElement.id = element.id + '-' + dataObject.SignalGeneratorVICount++;
                 break;
         }
+        newElement.setAttribute('oncontextmenu', 'toggleDrag(event, this)');
         newElement.width = element.width * element.getAttribute('zoom');
         newElement.height = element.height * element.getAttribute('zoom');
         newElement.style.left = (e.offsetX - newElement.width / 2) + "px";
         newElement.style.top = (e.offsetY - newElement.height / 2) + "px";
-        draw(newElement);
+        VIDraw(newElement);
     }
 
 
     function getObjectVI(type) {
         switch (type) {
-            case 'wave':
-                return dataObject.waveVI;
+            case 'BallBeamVI':
+                return dataObject.BallBeamVI;
 
-            case 'input':
-                return dataObject.inputVI;
+            case 'WaveVI':
+                return dataObject.WaveVI;
 
-            case 'pid':
-                return dataObject.pidVI;
+            case 'InputVI':
+                return dataObject.InputVI;
 
-            case 'add':
-                return dataObject.addVI;
+            case 'PIDVI':
+                return dataObject.PIDVI;
 
-            case 'stepResponseGenerator':
-                return dataObject.stepResponseGeneratorVI;
+            case 'ADDVI':
+                return dataObject.ADDVI;
 
-            case 'signalGenerator':
-                return dataObject.signalGeneratorVI;
+            case 'ProportionalResponseVI':
+                return dataObject.ProportionalResponseVI;
+
+            case 'IntegralResponseVI':
+                return dataObject.IntegralResponseVI;
+
+            case 'DifferentialResponseVI':
+                return dataObject.DifferentialResponseVI;
+
+            case 'InertiaResponseVI':
+                return dataObject.InertiaResponseVI;
+
+            case 'OscillationResponseVI':
+                return dataObject.OscillationResponseVI;
+
+            case 'ProportionalIntegralResponseVI':
+                return dataObject.ProportionalIntegralResponseVI;
+
+            case 'ProportionalDifferentialResponseVI':
+                return dataObject.ProportionalDifferentialResponseVI;
+
+            case 'ProportionalInertiaResponseVI':
+                return dataObject.ProportionalInertiaResponseVI;
+
+            case 'SignalGeneratorVI':
+                return dataObject.SignalGeneratorVI;
         }
     }
 
-    function draw(element) {
+    function VIDraw(element) {
 
         instance.getContainer().appendChild(element);
         instance.draggable(element);
         var elementInfo = element.id.split('-');
         switch (elementInfo[0]) {
-            case 'wave':
-                dataObject.waveVI.push(new WaveVI(element));
-                dataObject.waveVI[elementInfo[2]].drawRulerFlag = false;
+            case 'BallBeamVI':
+                dataObject.WaveVI.push(new BallBeamVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                var objCanvas = document.createElement('canvas');
+                objCanvas.width = document.getElementById('container').clientWidth;
+                objCanvas.height = 400;
+                objCanvas.id = 'THREE-canvas';
+                var hintSpan = document.createElement('p');
+                hintSpan.setAttribute('class', 'normalSpan');
+                hintSpan.id = 'hintSpan';
+                hintSpan.innerHTML = '当前选定位置:0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;拖动滑块，选定小球预定位置开始实验';
+                document.getElementById('mainVI').insertBefore(hintSpan, document.getElementById('container'));
+                document.getElementById('mainVI').insertBefore(objCanvas, hintSpan);
+                mainElement[3] = objCanvas;
+                mainElement[4] = hintSpan;
+                resize();
+                BallBeamDraw(objCanvas, loadingDiv);
+                break;
+            case 'WaveVI':
+                dataObject.WaveVI.push(new WaveVI(element));
+//                dataObject.WaveVI[elementInfo[2]].drawRulerFlag = false;
                 addEndpoints(element.id, [], ["LeftMiddle"]);
                 break;
 
-            case 'input':
-                dataObject.inputVI.push(new InputVI(element));
+            case 'InputVI':
+                dataObject.InputVI.push(new InputVI(element));
                 addEndpoints(element.id, ["RightMiddle", "BottomCenter"], []);
                 break;
 
-            case 'pid':
-                dataObject.pidVI.push(new PIDVI(element));
+            case 'PIDVI':
+                dataObject.PIDVI.push(new PIDVI(element));
                 addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
                 break;
 
-            case 'add':
-                dataObject.addVI.push(new AddVI(element));
+            case 'ADDVI':
+                dataObject.ADDVI.push(new AddVI(element));
                 addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle", "BottomCenter"]);
                 break;
 
-            case 'stepResponseGenerator':
-                dataObject.stepResponseGeneratorVI.push(new StepResponseGeneratorVI(element));
+            case 'ProportionalResponseVI':
+                dataObject.ProportionalResponseVI.push(new ProportionalResponseVI(element));
                 addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
                 break;
 
-            case 'signalGenerator':
-                dataObject.signalGeneratorVI.push(new SignalGeneratorVI(element));
+            case 'IntegralResponseVI':
+                dataObject.IntegralResponseVI.push(new IntegralResponseVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'DifferentialResponseVI':
+                dataObject.DifferentialResponseVI.push(new DifferentialResponseVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'InertiaResponseVI':
+                dataObject.InertiaResponseVI.push(new InertiaResponseVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'OscillationResponseVI':
+                dataObject.OscillationResponseVI.push(new OscillationResponseVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'ProportionalIntegralResponseVI':
+                dataObject.ProportionalIntegralResponseVI.push(new ProportionalIntegralResponseVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'ProportionalDifferentialResponseVI':
+                dataObject.ProportionalDifferentialResponseVI.push(new ProportionalDifferentialResponseVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'ProportionalInertiaResponseVI':
+                dataObject.ProportionalInertiaResponseVI.push(new ProportionalInertiaResponseVI(element));
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
+                break;
+
+            case 'SignalGeneratorVI':
+                dataObject.SignalGeneratorVI.push(new SignalGeneratorVI(element));
                 addEndpoints(element.id, ["RightMiddle"], []);
                 break;
         }
@@ -636,6 +963,19 @@
             instance.addEndpoint(toId, targetEndpoint, {anchor: targetAnchors[j], uuid: targetUUID});
         }
     }
+
+    /**
+     * 右键点击锁定VI
+     * @param e
+     * @param element
+     */
+    function toggleDrag(e, element) {
+        e = e || window.event;
+        e.preventDefault(); //阻止右键默认菜单
+        instance.toggleDraggable(element);
+    }
+
+
 
 </script>
 </body>
