@@ -22,8 +22,8 @@
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="Knob-canvas" class="draggable-element" width="45" height="45"
-                zoom="1"
+        <canvas id="KnobVI-canvas" class="draggable-element" width="45" height="45"
+                zoom="3"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
@@ -137,28 +137,6 @@
 <script src="js/popup.js"></script>
 <script>
 
-    window.addEventListener('resize', resize, false);
-    function resize() {
-        var height = document.documentElement.clientHeight * 0.95 > 600 ? document.documentElement.clientHeight * 0.95 : 600;
-        mainElement[0].style.height = height + 'px';
-        if (mainElement[3]) {
-
-            mainElement[2].style.height = height + 'px';
-            mainElement[1].style.height = height - mainElement[3].offsetHeight - mainElement[4].offsetHeight - 5 + 'px';
-            mainElement[3].style.width = mainElement[1].clientWidth + 'px';
-            if (renderer) {
-
-                camera.aspect = mainElement[3].clientWidth / mainElement[3].clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(mainElement[3].clientWidth, mainElement[3].clientHeight);
-            }
-        }
-        else {
-
-            mainElement[1].style.height = height + 'px';
-        }
-    }
-
     //0为sideBar，1为拖动框，2为右侧主框，4为提示文字
     var mainElement = [];
     mainElement[0] = document.getElementById('sideBar');
@@ -166,12 +144,14 @@
     mainElement[2] = document.getElementById('mainVI');
     var instance;
     var loadingDiv = document.getElementById('loadingDiv');
+
     var dataObject = {
         THREECount: 0,
         BallBeamVICount: 0,
         WaveVICount: 0,
         ADDVICount: 0,
         InputVICount: 0,
+        KnobVICount: 0,
         PIDVICount: 0,
         ProportionalResponseVICount: 0,
         IntegralResponseVICount: 0,
@@ -187,6 +167,7 @@
         WaveVI: [],
         ADDVI: [],
         InputVI: [],
+        KnobVI: [],
         PIDVI: [],
         ProportionalResponseVI: [],
         IntegralResponseVI: [],
@@ -203,7 +184,6 @@
         addOriginalInput: [],
         stepType: [],
         signalType: []
-
     };
 
     function init() {
@@ -211,6 +191,7 @@
         new WaveVI(document.getElementById('WaveVI-canvas'));
         new AddVI(document.getElementById('ADDVI-canvas'));
         new InputVI(document.getElementById('InputVI-canvas'));
+        new KnobVI(document.getElementById('KnobVI-canvas'));
         new PIDVI(document.getElementById('PIDVI-canvas'));
         new ProportionalResponseVI(document.getElementById('ProportionalResponseVI-canvas'));
         new IntegralResponseVI(document.getElementById('IntegralResponseVI-canvas'));
@@ -248,7 +229,7 @@
 //                }],
 //                ["Label", {
 //                    location: 0.5,
-//                    id: "label",
+//                    id: "connectionLabel",
 //                    cssClass: "aLabel",
 //                    events: {
 //                        tap: function () {
@@ -271,56 +252,80 @@
         // suspend drawing and initialise.
         instance.batch(function () {
 
-            // listen for new connections; initialise them the same way we initialise the connections at startup.
-            instance.bind("connection", function (connInfo, originalEvent) {
+            // 监听连线事件
+            instance.bind("connection", function (connectionInfo) {
 
-//                connInfo.connection.getOverlay("label").setLabel('解绑');
-                var sourceArr = connInfo.connection.sourceId.split('-');
-                var targetArr = connInfo.connection.targetId.split('-');
+//                connectionInfo.connection.getOverlay("connectionLabel").setLabel('解绑');
+                var sourceArr = connectionInfo.connection.sourceId.split('-');
+                var targetArr = connectionInfo.connection.targetId.split('-');
 
                 //对于多输出控件,进行输出端口判断
-                if (sourceArr[0] == 'input') {
+                if (sourceArr[0] == 'InputVI') {
 
-                    //输出为空||输出端口重置||输出端口与当前相同
-                    if (!getObjectVI(sourceArr[0])[sourceArr[2]].target ||
-                            getObjectVI(sourceArr[0])[sourceArr[2]].target[0] == null ||
-                            getObjectVI(sourceArr[0])[sourceArr[2]].target[0] == getObjectVI(targetArr[0])[targetArr[2]]) {
-
-                        getObjectVI(sourceArr[0])[sourceArr[2]].target[0] = getObjectVI(targetArr[0])[targetArr[2]];
-                    }
-                    else {
-
-                        getObjectVI(sourceArr[0])[sourceArr[2]].target[1] = getObjectVI(targetArr[0])[targetArr[2]];
-                    }
+                    getObjectVIByName(sourceArr[0])[sourceArr[2]].target.push(getObjectVIByName(targetArr[0])[targetArr[2]]);
                 }
                 else {
 
-                    getObjectVI(sourceArr[0])[sourceArr[2]].target[0] = getObjectVI(targetArr[0])[targetArr[2]];
+                    getObjectVIByName(sourceArr[0])[sourceArr[2]].target.push(getObjectVIByName(targetArr[0])[targetArr[2]]);
                 }
 
                 //对于多输入控件,进行输入端口判断
-                if (targetArr[0] == 'add') {
+                if (targetArr[0] == 'ADDVI') {
 
-                    if (!getObjectVI(targetArr[0])[targetArr[2]].source ||
-                            getObjectVI(targetArr[0])[targetArr[2]].source[0] == null ||
-                            getObjectVI(targetArr[0])[targetArr[2]].source[0] == getObjectVI(sourceArr[0])[sourceArr[2]]) {
+                    if (!getObjectVIByName(targetArr[0])[targetArr[2]].source ||
+                            getObjectVIByName(targetArr[0])[targetArr[2]].source[0] == null ||
+                            getObjectVIByName(targetArr[0])[targetArr[2]].source[0] == getObjectVIByName(sourceArr[0])[sourceArr[2]]) {
 
-                        getObjectVI(targetArr[0])[targetArr[2]].source[0] = getObjectVI(sourceArr[0])[sourceArr[2]];
+                        getObjectVIByName(targetArr[0])[targetArr[2]].source[0] = getObjectVIByName(sourceArr[0])[sourceArr[2]];
                     }
                     else {
 
-                        getObjectVI(targetArr[0])[targetArr[2]].source[1] = getObjectVI(sourceArr[0])[sourceArr[2]];
+                        getObjectVIByName(targetArr[0])[targetArr[2]].source[1] = getObjectVIByName(sourceArr[0])[sourceArr[2]];
                     }
                 }
                 else {
+                    if (getObjectVIByName(targetArr[0])[targetArr[2]].source.length > 0) {
 
-                    getObjectVI(targetArr[0])[targetArr[2]].source[0] = getObjectVI(sourceArr[0])[sourceArr[2]];
+                        G.alert(getObjectVIByName(targetArr[0])[targetArr[2]].cnText + '仅允许一个输入！', 1, 1000);
+                        instance.detach(connectionInfo.connection);
+                    }
+                    else {
+
+                        getObjectVIByName(targetArr[0])[targetArr[2]].source[0] = getObjectVIByName(sourceArr[0])[sourceArr[2]];
+                    }
+
                 }
 
-//                console.log(getObjectVI(targetArr[0])[targetArr[2]].source[0].name);
-//                console.log(getObjectVI(sourceArr[0])[sourceArr[2]].target[0].name);
             });
 
+            //监听断开连线
+            instance.bind('connectionDetached', function (connectionInfo) {
+
+                var sourceArr = connectionInfo.connection.sourceId.split('-');
+                var targetArr = connectionInfo.connection.targetId.split('-');
+                var sourceElement = getObjectVIByName(sourceArr[0])[sourceArr[2]];
+                var targetElement = getObjectVIByName(targetArr[0])[targetArr[2]];
+
+                var i;
+                for (i = 0; i < sourceElement.target.length; i++) {
+
+                    if (sourceElement.target[i] == targetElement) {
+
+                        sourceElement.target.splice(i, 1);
+                        break;
+                    }
+                }
+                for (i = 0; i < targetElement.source.length; i++) {
+
+                    if (targetElement.source[i] == sourceElement) {
+
+                        targetElement.source.splice(i, 1);
+                        break;
+                    }
+                }
+
+
+            });
             //
             // listen for clicks on connections, and offer to delete connections on click.
             //
@@ -346,6 +351,57 @@
 
         jsPlumb.fire("jsPlumbDemoLoaded", instance);
 
+    }
+
+    function getObjectVIByName(name) {
+
+        switch (name) {
+
+            case 'BallBeamVI':
+                return dataObject.BallBeamVI;
+
+            case 'WaveVI':
+                return dataObject.WaveVI;
+
+            case 'InputVI':
+                return dataObject.InputVI;
+
+            case 'KnobVI':
+                return dataObject.KnobVI;
+
+            case 'PIDVI':
+                return dataObject.PIDVI;
+
+            case 'ADDVI':
+                return dataObject.ADDVI;
+
+            case 'ProportionalResponseVI':
+                return dataObject.ProportionalResponseVI;
+
+            case 'IntegralResponseVI':
+                return dataObject.IntegralResponseVI;
+
+            case 'DifferentialResponseVI':
+                return dataObject.DifferentialResponseVI;
+
+            case 'InertiaResponseVI':
+                return dataObject.InertiaResponseVI;
+
+            case 'OscillationResponseVI':
+                return dataObject.OscillationResponseVI;
+
+            case 'ProportionalIntegralResponseVI':
+                return dataObject.ProportionalIntegralResponseVI;
+
+            case 'ProportionalDifferentialResponseVI':
+                return dataObject.ProportionalDifferentialResponseVI;
+
+            case 'ProportionalInertiaResponseVI':
+                return dataObject.ProportionalInertiaResponseVI;
+
+            case 'SignalGeneratorVI':
+                return dataObject.SignalGeneratorVI;
+        }
     }
 
     var box;
@@ -378,6 +434,18 @@
                 box = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">初值:</span><input type="number" id="Input" value="100" class="PIDInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setInput(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>',
+                        1, function () {
+                        });
+                break;
+
+            case 'KnobVI':
+                box = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div style="margin: 10px 10px; font-size: 1em; ">' +
+                        '<span class="normalSpan">最小值:</span><input type="number" id="MinInput" value="0" class="PIDInput">' +
+                        '<span class="normalSpan">最大值:</span><input type="number" id="MaxInput" value="1" class="PIDInput">' +
+                        '<span class="normalSpan">初值:</span><input type="number" id="DefaultInput" value="0" class="PIDInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setInput(' + elementInfo[2] + ')">确定</button>' +
                         '</div>',
                         1, function () {
@@ -529,7 +597,7 @@
                 break;
 
             case 3://微分
-                dataObject.DifferentialResponseVI[0].k3 = document.getElementById('IntegralResponseVI-input').value;
+                dataObject.DifferentialResponseVI[0].k3 = document.getElementById('DifferentialResponseVI-input').value;
                 stepResponse = dataObject.DifferentialResponseVI[0];
                 break;
 
@@ -657,6 +725,10 @@
                 newElement.id = element.id + '-' + dataObject.InputVICount++;
                 break;
 
+            case 'KnobVI':
+                newElement.id = element.id + '-' + dataObject.KnobVICount++;
+                break;
+
             case 'PIDVI':
                 newElement.id = element.id + '-' + dataObject.PIDVICount++;
                 dataObject.P.push(20);
@@ -701,7 +773,7 @@
                     G.alert('震荡响应已存在！', 1, 1000);
                     return;
                 }
-                newElement.id = element.id + '-' + dataObject.OscillationResponseVI++;
+                newElement.id = element.id + '-' + dataObject.OscillationResponseVICount++;
                 break;
 
             case 'ProportionalIntegralResponseVI':
@@ -744,61 +816,15 @@
         VIDraw(newElement);
     }
 
-
-    function getObjectVI(type) {
-        switch (type) {
-            case 'BallBeamVI':
-                return dataObject.BallBeamVI;
-
-            case 'WaveVI':
-                return dataObject.WaveVI;
-
-            case 'InputVI':
-                return dataObject.InputVI;
-
-            case 'PIDVI':
-                return dataObject.PIDVI;
-
-            case 'ADDVI':
-                return dataObject.ADDVI;
-
-            case 'ProportionalResponseVI':
-                return dataObject.ProportionalResponseVI;
-
-            case 'IntegralResponseVI':
-                return dataObject.IntegralResponseVI;
-
-            case 'DifferentialResponseVI':
-                return dataObject.DifferentialResponseVI;
-
-            case 'InertiaResponseVI':
-                return dataObject.InertiaResponseVI;
-
-            case 'OscillationResponseVI':
-                return dataObject.OscillationResponseVI;
-
-            case 'ProportionalIntegralResponseVI':
-                return dataObject.ProportionalIntegralResponseVI;
-
-            case 'ProportionalDifferentialResponseVI':
-                return dataObject.ProportionalDifferentialResponseVI;
-
-            case 'ProportionalInertiaResponseVI':
-                return dataObject.ProportionalInertiaResponseVI;
-
-            case 'SignalGeneratorVI':
-                return dataObject.SignalGeneratorVI;
-        }
-    }
-
     function VIDraw(element) {
 
         instance.getContainer().appendChild(element);
         instance.draggable(element);
         var elementInfo = element.id.split('-');
         switch (elementInfo[0]) {
+
             case 'BallBeamVI':
-                dataObject.WaveVI.push(new BallBeamVI(element));
+                dataObject.BallBeamVI.push(new BallBeamVI(element));
                 addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
                 var objCanvas = document.createElement('canvas');
                 objCanvas.width = document.getElementById('container').clientWidth;
@@ -813,17 +839,22 @@
                 mainElement[3] = objCanvas;
                 mainElement[4] = hintSpan;
                 resize();
-                BallBeamDraw(objCanvas, loadingDiv);
+                dataObject.BallBeamVI[0].BallBeamDraw(objCanvas, loadingDiv);
                 break;
+
             case 'WaveVI':
                 dataObject.WaveVI.push(new WaveVI(element));
-//                dataObject.WaveVI[elementInfo[2]].drawRulerFlag = false;
                 addEndpoints(element.id, [], ["LeftMiddle"]);
+                break;
+
+            case 'KnobVI':
+                dataObject.WaveVI.push(new KnobVI(element));
+                addEndpoints(element.id, ['TopCenter'], []);
                 break;
 
             case 'InputVI':
                 dataObject.InputVI.push(new InputVI(element));
-                addEndpoints(element.id, ["RightMiddle", "BottomCenter"], []);
+                addEndpoints(element.id, ["RightMiddle"], []);
                 break;
 
             case 'PIDVI':
@@ -833,7 +864,7 @@
 
             case 'ADDVI':
                 dataObject.ADDVI.push(new AddVI(element));
-                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle", "BottomCenter"]);
+                addEndpoints(element.id, ["RightMiddle"], ["LeftMiddle"]);
                 break;
 
             case 'ProportionalResponseVI':
@@ -970,13 +1001,30 @@
      * @param element
      */
     function toggleDrag(e, element) {
+
         e = e || window.event;
         e.preventDefault(); //阻止右键默认菜单
         instance.toggleDraggable(element);
     }
 
 
+    window.addEventListener('resize', resize, false);
 
+    function resize() {
+
+        var height = document.documentElement.clientHeight * 0.95 > 600 ? document.documentElement.clientHeight * 0.95 : 600;
+        mainElement[0].style.height = height + 'px';
+        if (mainElement[3]) {
+
+            mainElement[2].style.height = height + 'px';
+            mainElement[1].style.height = height - mainElement[3].offsetHeight - mainElement[4].offsetHeight - 5 + 'px';
+            mainElement[3].style.width = mainElement[1].clientWidth + 'px';
+        }
+        else {
+
+            mainElement[1].style.height = height + 'px';
+        }
+    }
 </script>
 </body>
 </html>

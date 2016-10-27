@@ -13,6 +13,7 @@ function PIDVI(domElement) {
     this.container = domElement;
     this.ctx = this.container.getContext('2d');
     this.name = 'PIDVI';
+    this.cnText = 'PID';
 
     this.input = 0;
     this.singleOutput = 0;

@@ -13,6 +13,7 @@ function ProportionalIntegralResponseVI(domElement) {
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'ProportionalIntegralResponseVI';
+    this.cnText = '比例积分响应';
 
     this.signalType = 4;
     this.k1 = 1;

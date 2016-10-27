@@ -13,6 +13,7 @@ function ProportionalDifferentialResponseVI(domElement) {
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'ProportionalDifferentialResponseVI';
+    this.cnText = '比例微分响应';
 
     this.signalType = 5;
     this.k1 = 1;

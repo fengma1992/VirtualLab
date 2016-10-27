@@ -13,6 +13,7 @@ function ProportionalResponseVI(domElement) {
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'ProportionalResponseVI';
+    this.cnText = '比例响应';
 
     this.signalType = 1;
     this.k1 = 1;

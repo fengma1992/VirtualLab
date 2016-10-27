@@ -4,6 +4,10 @@
 
 function BarVI(domElement) {
     var _this = this;
+    this.name = 'BarVI';
+    this.cnText = '柱状图';
+
+
     // 初始化echarts图表
     this.myChart = echarts.init(domElement);
 

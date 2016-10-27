@@ -1,13 +1,18 @@
 /**
  * Created by Fengma on 2016/10/18.
  */
-
+/**
+ * 加法器
+ * @param domElement
+ * @constructor
+ */
 function AddVI(domElement) {
 
     var _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'AddVI';
+    this.cnText = '加法器';
 
     this.originalInput = 0;
     this.latestInput = 0;

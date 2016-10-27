@@ -10,18 +10,22 @@
  * @param startValue    旋钮初始值
  * @constructor
  */
-function KnobVI(domElement, min, max, startValue) {
+function KnobVI(domElement, minValue, maxValue, startValue) {
     var _this = this;
     var spinnerFlag = false;
     var startX, startY, stopX, stopY;
     var roundCount = 0;
+    var min = isNaN(minValue) ? 0 : minValue;
+    var max = isNaN(maxValue) ? 1 : maxValue;
+    var defaultValue = isNaN(startValue) ? 0 : startValue;
     var ratio = (max - min) / (Math.PI * 1.5);
 
-    this.data = startValue;
-    this.radian = (startValue - min) / ratio;
+    this.data = defaultValue;
+    this.radian = (defaultValue - min) / ratio;
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
     this.name = 'KnobVI';
+    this.cnText = '旋钮';
 
     this.width = this.canvas.width; //对象宽度//
     this.height = this.canvas.height; //对象高度//

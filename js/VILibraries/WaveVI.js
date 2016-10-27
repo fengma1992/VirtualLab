@@ -13,6 +13,7 @@ function WaveVI(domElement) {
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
     this.name = 'WaveVI';
+    this.cnText = '波形控件';
 
     this.width = this.canvas.width; //对象宽度//
     this.height = this.canvas.height; //对象高度//

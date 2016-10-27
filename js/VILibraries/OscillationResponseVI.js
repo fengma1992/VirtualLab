@@ -13,6 +13,7 @@ function OscillationResponseVI(domElement) {
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'OscillationResponseVI';
+    this.cnText = '震荡响应';
 
     this.signalType = 7;
     this.k1 = 1;

@@ -7,9 +7,9 @@ function StepResponseGeneratorVI(domElement) {
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'StepResponseGeneratorVI';
+    this.cnText = '阶跃响应';
 
     this.signalType = 0;
-    this.text = '阶跃响应';
     this.k1 = 1;
     this.k2 = 1;
     this.k3 = 1;

@@ -2,12 +2,18 @@
  * Created by Fengma on 2016/10/25.
  */
 
+/**
+ * 直流输出
+ * @param domElement
+ * @constructor
+ */
 function InputVI(domElement) {
     'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'InputVI';
+    this.cnText = '直流输出';
 
     this.dataLength = 1024;
     this.index = 0;
@@ -56,7 +62,7 @@ function InputVI(domElement) {
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
         _this.ctx.fillText('直流', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-        _this.ctx.fillText('输入', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+        _this.ctx.fillText('输出', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 
     this.draw();
