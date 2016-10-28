@@ -7,17 +7,17 @@
  * @param domElement
  * @constructor
  */
-function InputVI(domElement) {
+function DCOutputVI(domElement) {
     'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
-    this.name = 'InputVI';
+    this.name = 'DCOutputVI';
     this.cnText = '直流输出';
 
     this.dataLength = 1024;
     this.index = 0;
-    this.lastOutput = 100;//输出初值
+    this.singleOutput = 100;//输出初值
     this.output = [];
 
     //虚拟仪器中相连接的控件VI
@@ -33,7 +33,7 @@ function InputVI(domElement) {
 
             return;
         }
-        _this.lastOutput = data;
+        _this.singleOutput = data;
         var i = 0;
         if (_this.index == 0) {
             for (i = 0; i < _this.dataLength; i++) {
@@ -41,13 +41,13 @@ function InputVI(domElement) {
             }
         }
         if (_this.index <= (_this.dataLength - 1)) {
-            _this.output[_this.index] = _this.lastOutput;
+            _this.output[_this.index] = _this.singleOutput;
             _this.index++;
         } else {
             for (i = 0; i < _this.dataLength - 1; i++) {
                 _this.output[i] = _this.output[i + 1];
             }
-            _this.output[_this.dataLength - 1] = _this.lastOutput;
+            _this.output[_this.dataLength - 1] = _this.singleOutput;
         }
     };
 

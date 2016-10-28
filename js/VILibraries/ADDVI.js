@@ -14,12 +14,12 @@ function AddVI(domElement) {
     this.name = 'AddVI';
     this.cnText = '加法器';
 
+    this.dataLength = 1024;
+    this.index = 0;
     this.originalInput = 0;
     this.latestInput = 0;
     this.singleOutput = 0;
 
-    this.dataLength = 1024;
-    this.index = 0;
     this.output = [];
     this.autoSave = true;
 
@@ -27,13 +27,15 @@ function AddVI(domElement) {
     this.source = [];
     this.target = [];
 
-    this.calculate = function (latestInput) {
+    this.setData = function (latestInput) {
 
         _this.latestInput = latestInput;
         _this.singleOutput = _this.originalInput - _this.latestInput;
 
-        if (_this.autoSave)
+        if (_this.autoSave) {
+
             _this.dataCollector(_this.singleOutput);
+        }
 
         return _this.singleOutput;
     };

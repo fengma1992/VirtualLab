@@ -5,23 +5,23 @@
 /**
  * 旋钮
  * @param domElement    HTML CANVAS
- * @param min   旋钮最小值
- * @param max   旋钮最大值
+ * @param minValue   旋钮最小值
+ * @param maxValue   旋钮最大值
  * @param startValue    旋钮初始值
  * @constructor
  */
-function KnobVI(domElement, minValue, maxValue, startValue) {
+function KnobVI(domElement) {
     var _this = this;
     var spinnerFlag = false;
     var startX, startY, stopX, stopY;
     var roundCount = 0;
-    var min = isNaN(minValue) ? 0 : minValue;
-    var max = isNaN(maxValue) ? 1 : maxValue;
-    var defaultValue = isNaN(startValue) ? 0 : startValue;
-    var ratio = (max - min) / (Math.PI * 1.5);
 
-    this.data = defaultValue;
-    this.radian = (defaultValue - min) / ratio;
+    this.min = 0;
+    this.max = 1;
+    this.defaultValue = 0;
+    this.ratio = (this.max - this.min) / (Math.PI * 1.5);
+    this.singleOutput = this.defaultValue;
+    this.radian = (this.defaultValue - this.min) / this.ratio;
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
     this.name = 'KnobVI';
@@ -33,9 +33,6 @@ function KnobVI(domElement, minValue, maxValue, startValue) {
     //虚拟仪器中相连接的控件VI
     this.target = [];
 
-    this.canvas.addEventListener('mousemove', onMouseMove, false);
-    this.canvas.addEventListener('mousedown', onMouseDown, false);
-    this.canvas.addEventListener('mouseup', onMouseUp, false);
 
     var knob_Base = new Image(), knob_Spinner = new Image();
     knob_Base.src = "img/knob_Base.png";
@@ -51,11 +48,51 @@ function KnobVI(domElement, minValue, maxValue, startValue) {
         return _this.radian;
     };
 
+    this.setDataRange = function (minValue, maxValue, startValue) {
+
+        _this.min = isNaN(minValue) ? 0 : minValue;
+        _this.max = isNaN(maxValue) ? 1 : maxValue;
+        _this.defaultValue = isNaN(startValue) ? 0 : startValue;
+        _this.ratio = (_this.max - _this.min) / (Math.PI * 1.5);
+        this.singleOutput = _this.defaultValue;
+        this.radian = (_this.defaultValue - _this.min) / _this.ratio;
+        DrawSpinner();
+    };
+
+    //外部指定旋钮显示值
+    this.setData = function (data) {
+        if (isNaN(data)) {
+
+            return;
+        }
+        _this.singleOutput = data > _this.max ? _this.max : data;
+        _this.radian = (_this.singleOutput - _this.min) / _this.ratio;
+        DrawSpinner();
+    };
+
+    function DrawSpinner() {
+
+        var xPos = _this.width / 2;
+        var yPos = _this.height / 2;
+        _this.ctx.clearRect(0, 0, _this.width, _this.height);
+        _this.ctx.drawImage(knob_Base, 0, 0, _this.width, _this.height);
+        _this.ctx.save();   //保存之前位置
+        _this.ctx.translate(xPos, yPos);
+        _this.ctx.rotate(_this.radian - 135 / 180 * Math.PI);  //旋转, 初始位置为左下角
+        _this.ctx.translate(-xPos, -yPos);
+        _this.ctx.drawImage(knob_Spinner, 0, 0, _this.width, _this.height);
+        _this.ctx.restore();  //恢复之前位置
+        _this.ctx.beginPath();
+        _this.ctx.font = "normal 14px Calibri";
+        _this.ctx.fillText(_this.min.toString(), 0, _this.height);
+        _this.ctx.fillText(_this.max.toString(), _this.width - 7 * _this.max.toString().length, _this.height); //字体大小为14
+        _this.ctx.closePath();
+    }
 
     this.mouseMove = function () {
     }; // this.container.style.cursor = 'move';
-    this.mouseUp = function () {
 
+    this.mouseUp = function () {
     };
 
     this.attachEvent = function (event, handler) {
@@ -67,38 +104,9 @@ function KnobVI(domElement, minValue, maxValue, startValue) {
             case 'mouseUp':
                 this.mouseUp = handler;
                 break;
-                break;
         }
     };
 
-    this.setData = function (data) {
-        _this.data = data > max ? max : data;
-        _this.radian = (data - min) / ratio;
-        DrawSpinner();
-    };
-
-    function DrawSpinner() {
-        var xPos = _this.width / 2;
-        var yPos = _this.height / 2;
-        _this.ctx.clearRect(0, 0, _this.width, _this.height);
-        _this.ctx.drawImage(knob_Base, 0, 0, _this.width, _this.height);
-        // _this.ctx.beginPath();
-        // _this.ctx.font = "normal 14px Calibri";
-        // _this.ctx.fillText(min, _this.width / 7, _this.height - 20);
-        // _this.ctx.fillText(max, _this.width * 6 / 7, _this.height - 20);
-        // _this.ctx.closePath();
-        _this.ctx.save();   //保存之前位置
-        _this.ctx.translate(xPos, yPos);
-        _this.ctx.rotate(_this.radian - 135 / 180 * Math.PI);  //旋转, 初始位置为左下角
-        _this.ctx.translate(-xPos, -yPos);
-        _this.ctx.drawImage(knob_Spinner, 0, 0, _this.width, _this.height);
-        _this.ctx.restore();  //恢复之前位置
-        _this.ctx.beginPath();
-        _this.ctx.font = "normal 14px Calibri";
-        _this.ctx.fillText(min, 0, _this.height);
-        _this.ctx.fillText(max, _this.width - 7 * max.toString().length, _this.height); //字体大小为14
-        _this.ctx.closePath();
-    }
 
     function onMouseDown(event) {
 
@@ -136,7 +144,7 @@ function KnobVI(domElement, minValue, maxValue, startValue) {
             else if (_this.radian > 270 / 360 * 2 * Math.PI) {
                 _this.radian = 270 / 180 * Math.PI;
             }
-            _this.data = _this.radian * ratio + min;
+            _this.singleOutput = _this.radian * _this.ratio + _this.min;
             DrawSpinner();
             startX = stopX;
             startY = stopY;
@@ -179,4 +187,10 @@ function KnobVI(domElement, minValue, maxValue, startValue) {
         var radian = angle / 180 * Math.PI;
         return [Math.sin(radian) * y + Math.cos(radian) * x, Math.cos(radian) * y - Math.sin(radian) * x];
     }
+
+
+    this.canvas.addEventListener('mousemove', onMouseMove, false);
+    this.canvas.addEventListener('mousedown', onMouseDown, false);
+    this.canvas.addEventListener('mouseup', onMouseUp, false);
+
 }

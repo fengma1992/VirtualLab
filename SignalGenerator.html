@@ -72,20 +72,22 @@
                 started = !started;
             }
         }
-        var knob1 = new KnobVI(document.getElementById('knobCanvas1'), 0, 100, originalAmp);
+        var knob1 = new KnobVI(document.getElementById('knobCanvas1'));
+        knob1.setDataRange(0, 100, originalAmp);
 
         knob1.attachEvent('mouseMove', function () {
-            ampInput.value = knob1.data.toFixed(1);
+            ampInput.value = knob1.singleOutput.toFixed(1);
             amplitude = ampInput.value;
 
             if (!started && type > 0)setData();
 
         });
 
-        var knob2 = new KnobVI(document.getElementById('knobCanvas2'), 0, 1000, originalFreq);
+        var knob2 = new KnobVI(document.getElementById('knobCanvas2'));
+        knob2.setDataRange(0, 1000, originalFreq);
 
         knob2.attachEvent('mouseMove', function () {
-            freqInput.value = knob2.data.toFixed(1);
+            freqInput.value = knob2.singleOutput.toFixed(1);
             frequency = freqInput.value;
 
             if (!started)setData();

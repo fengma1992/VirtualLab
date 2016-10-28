@@ -26,7 +26,7 @@
 </div>
 <script src="js/VILibraries/WaveVI.js"></script>
 <script src="js/VILibraries/StepResponseGeneratorVI.js"></script>
-<script src="js/VILibraries/InputVI.js"></script>
+<script src="js/VILibraries/DCOutputVI.js"></script>
 <script>
     var inputCanvas = document.getElementById('inputCanvas');
     var outputCanvas = document.getElementById('outputCanvas');
@@ -35,7 +35,7 @@
 
     var inputWave = new WaveVI(inputCanvas);
     var outputWave = new WaveVI(outputCanvas);
-    var inputData = new InputVI(inputDataCanvas);
+    var inputData = new DCOutputVI(inputDataCanvas);
     var signalGenerator = new StepResponseGeneratorVI(signalCanvas);
 
     var signalType = 1, n = 0;

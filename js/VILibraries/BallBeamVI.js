@@ -22,10 +22,13 @@ function BallBeamVI(domElement) {
 
     this.dataLength = 1024;
     this.index = 0;
-    this.autoSave = true;
     this.angelOutput = [];
     this.positionOutput = [];
+    this.autoSave = true;
 
+    //虚拟仪器中相连接的控件VI
+    this.source = [];
+    this.target = [];
     /**
      *
      * @param angle 输入端口读取角度

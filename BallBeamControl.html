@@ -114,7 +114,7 @@
     function onTimer() {
 
         //加法器
-        addVI.calculate(ballBeamVI.position);//输入球位置信号，输出位置偏差
+        addVI.setData(ballBeamVI.position);//输入球位置信号，输出位置偏差
         //PID控制器
         PIDVI.setData(addVI.singleOutput);//输入位置偏差，输出杆角度
         //球杆模型

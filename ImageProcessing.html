@@ -56,11 +56,12 @@
     drawText('均衡化图', equalizerContext);
     drawText('二值化图', binaryContext);
 
-    var knob = new KnobVI(document.getElementById('knobCanvas'), 0, 255, 100);
+    var knob = new KnobVI(document.getElementById('knobCanvas'));
+    knob.setDataRange(0, 255, 100);
 
     knob.attachEvent('mouseMove', function () {
         if (captureFlag) {
-            var threshold = parseInt(knob.data);
+            var threshold = parseInt(knob.singleOutput);
             binary(threshold);
             span.innerText = '二值化阈值：' + threshold;
         }
@@ -233,10 +234,8 @@
     }
 
     function drawText(text, context) {
-        context.beginPath();
-        context.font = "normal 28px Calibri";
+        context.font = "normal 28px Microsoft YaHei";
         context.fillText(text, 320 / 2 - 14 * text.length, 240 / 2 + 14);
-        context.closePath();
     }
 
     function initHistogram(histogram) {
@@ -244,6 +243,7 @@
             histogram[i] = 0;
         }
     }
+
 </script>
 </body>
 </html>

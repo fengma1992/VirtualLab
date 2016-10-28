@@ -18,6 +18,7 @@ function SignalGeneratorVI(domElement) {
     this.output = [];
 
     //虚拟仪器中相连接的控件VI
+    this.source = [];
     this.target = [];
 
     /**
@@ -28,9 +29,9 @@ function SignalGeneratorVI(domElement) {
      */
     this.setData = function (amp, f, phase) {
 
-        _this.amp = amp;
-        _this.frequency = f;
-        _this.phase = phase;
+        _this.amp = (isNaN(amp) || !amp) ? _this.amp : amp;
+        _this.frequency = (isNaN(f) || !f) ? _this.frequency : f;
+        _this.phase = (isNaN(phase) || !phase) ? _this.phase : phase;
         var FS = 11025;
         var i, j;
         var T = 1 / _this.frequency;//周期
