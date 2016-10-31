@@ -60,6 +60,7 @@ function WaveVI(domElement) {
     this.source = [];
 
     this.paint = function () {
+
         _this.drawBackground();
         _this.drawWave();
         if (_this.drawRulerFlag) {
@@ -77,12 +78,15 @@ function WaveVI(domElement) {
 
         var i;
         for (i = 0; i < _this.pointNum; i++) {
+
             pointX[i] = _this.offsetL + i * ratioX;
             pointY[i] = _this.offsetT + (_this.YMaxVal - _this.bufferVal[i]) * ratioY;
             if (pointY[i] < _this.offsetT) {
+
                 pointY[i] = _this.offsetT;
             }
             if (pointY[i] > (_this.offsetT + _this.waveHeight)) {
+
                 pointY[i] = _this.offsetT + _this.waveHeight;
             }
         }
@@ -92,6 +96,7 @@ function WaveVI(domElement) {
         _this.ctx.lineCap = "round";
         _this.ctx.strokeStyle = _this.signalColor;
         for (i = 1; i < _this.pointNum; i++) {
+
             _this.ctx.moveTo(pointX[i - 1], pointY[i - 1]);
             _this.ctx.lineTo(pointX[i], pointY[i]);
         }
@@ -101,6 +106,7 @@ function WaveVI(domElement) {
     };
 
     this.drawBackground = function () {
+
         var ctx = _this.ctx;
         //刷背景//
         ctx.beginPath();
@@ -135,11 +141,13 @@ function WaveVI(domElement) {
         var i, j;
         //绘制横向网格线
         for (i = 1; i < nRow; i++) {
+
             ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
             ctx.lineTo(_this.width - _this.offsetR, divY * i + _this.offsetT);
         }
         //绘制纵向网格线
         for (j = 1; j < nCol; j++) {
+
             ctx.moveTo(divX * j + _this.offsetL, _this.offsetT);
             ctx.lineTo(divX * j + _this.offsetL, _this.height - _this.offsetB);
         }
@@ -157,22 +165,28 @@ function WaveVI(domElement) {
         //画纵刻度
         var k;
         for (k = 1; k < scaleYNum; k++) {
+
             if (k % 2 == 0) {
+
                 ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
                 ctx.lineTo(_this.offsetL, _this.offsetT + k * scaleYStep);
             }
             else {
+
                 ctx.moveTo(_this.offsetL - 3, _this.offsetT + k * scaleYStep);
                 ctx.lineTo(_this.offsetL, _this.offsetT + k * scaleYStep);
             }
         }
         //画横刻度
         for (k = 1; k < scaleXNum; k++) {
+
             if (k % 2 == 0) {
+
                 ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
                 ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 7);
             }
             else {
+
                 ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
                 ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 4);
             }
@@ -199,33 +213,42 @@ function WaveVI(domElement) {
         var temp = 0;
         //横坐标刻度//
         for (i = 2; i < scaleXNum; i += 4) {
+
             temp = _this.XMinVal + xvalstep * i;
             if (Math.abs(temp) >= 1000) {
+
                 temp = temp / 1000;
                 strLab = temp.toFixed(1).toString() + 'k';
             }
             else if (Math.abs(temp) < 1000 && Math.abs(temp) >= 100) {
+
                 strLab = temp.toFixed(0).toString();
             }
             else if (Math.abs(temp) < 100 && Math.abs(temp) >= 10) {
+
                 strLab = temp.toFixed(1).toString();
             }
             else if (Math.abs(temp) < 10) {
+
                 strLab = temp.toFixed(2).toString();
             }
             ctx.fillText(strLab, _this.offsetL + scaleXStep * i - 9, _this.height - 10);
         }
         //纵坐标刻度//
         for (i = 2; i < scaleYNum; i += 2) {
+
             temp = _this.YMaxVal - yvalstep * i;
             if (Math.abs(temp) >= 1000) {
+
                 temp = temp / 1000;
                 strLab = temp.toFixed(1).toString() + 'k';
             }
             else if (Math.abs(temp) < 1000 && Math.abs(temp) >= 10) {
+
                 strLab = temp.toFixed(0).toString();
             }
             else if (Math.abs(temp) < 10) {
+
                 strLab = temp.toFixed(1).toString();
             }
             ctx.fillText(strLab, _this.offsetL - 35, _this.offsetT + scaleYStep * i + 5);
@@ -237,6 +260,7 @@ function WaveVI(domElement) {
     this.drawBackground();
 
     this.drawRuler = function () {
+
         //画标尺//
         _this.ctx.beginPath();
         _this.ctx.lineWidth = 1;
@@ -244,43 +268,56 @@ function WaveVI(domElement) {
         _this.ctx.strokeStyle = _this.rulerColor;
         _this.ctx.font = "normal 14px Calibri";
         _this.ctx.fillStyle = _this.rulerColor;
+
         //竖标尺//
         _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
         _this.ctx.lineTo(_this.curPointX + 0.5, _this.height - _this.offsetB);
         _this.ctx.stroke();
         var curPointX = ((_this.curPointX - _this.offsetL) * (_this.XMaxVal - _this.XMinVal) / _this.waveWidth).toFixed(0);
         var curPointY = parseFloat(_this.bufferVal[curPointX]).toFixed(2);
-        _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')', _this.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
+        _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')',
+            _this.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
         _this.ctx.closePath();
     };
 
     this.reset = function () {
-        for (var i = 0; i < len; i++) {
+        var i;
+        for (i = 0; i < len; i++) {
+
             _this.bufferVal[i] = 0.0;
         }
         _this.paint();
     };
 
     this.setData = function (data, len) {
+
+        if (len == undefined) {
+
+            len = data.length > _this.pointNum ? data.length : _this.pointNum;
+        }
         _this.pointNum = len - 1;
         _this.XMaxVal = len - 1;
         var YMax = 0, YMin = 0;
         for (var i = 0; i < len; i++) {
+
             _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
             YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
             YMin = YMin > _this.bufferVal[i] ? _this.bufferVal[i] : YMin;
         }
         if (_this.autoZoom) {
+
             if ((_this.YMaxVal <= YMax) || (_this.YMaxVal - YMax > 5 * (YMax - YMin))) {
+
                 _this.YMaxVal = 2 * YMax - YMin;
                 _this.YMinVal = 2 * YMin - YMax;
             }
-
             if ((_this.YMinVal >= YMin) || (YMin - _this.YMaxVal > 5 * (YMax - YMin))) {
+
                 _this.YMaxVal = 2 * YMax - YMin;
                 _this.YMinVal = 2 * YMin - YMax;
             }
             if (YMax < 0.01 && YMin > -0.01) {
+
                 _this.YMaxVal = 1;
                 _this.YMinVal = -1;
             }
@@ -289,23 +326,27 @@ function WaveVI(domElement) {
     };
 
     this.setAxisRangX = function (xMin, xNax) {
+
         _this.XMinVal = xMin;
         _this.XMaxVal = xNax;
         _this.paint();
     };
 
     this.setAxisRangY = function (yMin, yMax) {
+
         _this.YMinVal = yMin;
         _this.YMaxVal = yMax;
         _this.paint();
     };
 
     this.setPointNum = function (num) {
+
         _this.pointNum = num;
         _this.paint();
     };
 
     this.setRowColNum = function (row, col) {
+
         _this.nRow = row;
         _this.nCol = col;
         _this.paint();

@@ -27,7 +27,7 @@ function PIDVI(domElement) {
     this.dataLength = 1024;
     this.index = 0;
     this.output = [];
-    this.autoSave = true;
+    this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
     this.source = [];
@@ -35,13 +35,18 @@ function PIDVI(domElement) {
 
     /**
      *
-     * @param inputValue 从输入端读取的数据
+     * @param input 从输入端读取的数据
      */
-    this.setData = function (inputValue) {
+    this.setData = function (input) {
+
+        _this.input = typeof input === 'object' ? input[input.length - 1] : input;
+        if (isNaN(_this.input)) {
+
+            return false;
+        }
 
         var v1, v2, v3, v21, u, Ts = 1.0 / _this.Fs;
 
-        _this.input = inputValue;
         u = _this.input;//从输入端口上读数
         v1 = _this.P * u;
         v21 = _this.y1 + 0.5 * Ts * (u + _this.u1);
@@ -51,18 +56,8 @@ function PIDVI(domElement) {
         _this.u1 = u;
         _this.singleOutput = v1 + v2 + v3;//向输出端口上写数
 
-        if (_this.autoSave)
-            _this.dataCollector(_this.singleOutput);
 
-        return _this.singleOutput;
-    };
-
-    /**
-     * 将输出数保存在数组内
-     * @param data singleOutput
-     */
-    this.dataCollector = function (data) {
-
+        //将输出数保存在数组内
         var i = 0;
         if (_this.index == 0) {
             for (i = 0; i < _this.dataLength; i++) {
@@ -70,15 +65,18 @@ function PIDVI(domElement) {
             }
         }
         if (_this.index <= (_this.dataLength - 1)) {
-            _this.output[_this.index] = data;
+            _this.output[_this.index] = _this.singleOutput;
             _this.index++;
         } else {
             for (i = 0; i < _this.dataLength - 1; i++) {
                 _this.output[i] = _this.output[i + 1];
             }
-            _this.output[_this.dataLength - 1] = data;
+            _this.output[_this.dataLength - 1] = _this.singleOutput;
         }
+
+        return _this.singleOutput;
     };
+
 
     this.reset = function () {
 

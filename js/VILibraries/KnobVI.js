@@ -5,9 +5,6 @@
 /**
  * 旋钮
  * @param domElement    HTML CANVAS
- * @param minValue   旋钮最小值
- * @param maxValue   旋钮最大值
- * @param startValue    旋钮初始值
  * @constructor
  */
 function KnobVI(domElement) {
@@ -27,6 +24,11 @@ function KnobVI(domElement) {
     this.name = 'KnobVI';
     this.cnText = '旋钮';
 
+    this.dataLength = 1024;
+    this.index = 0;
+    this.output = [];
+    this.outputCount = 2;
+
     this.width = this.canvas.width; //对象宽度//
     this.height = this.canvas.height; //对象高度//
 
@@ -44,10 +46,13 @@ function KnobVI(domElement) {
     knob_Base.onerror = knob_Spinner.onerror = function () {
         console.log('error');
     };
-    this.getRadian = function () {
-        return _this.radian;
-    };
 
+    /**
+     *设置旋钮初始参数
+     * @param minValue  最小值
+     * @param maxValue  最大值
+     * @param startValue  初值
+     */
     this.setDataRange = function (minValue, maxValue, startValue) {
 
         _this.min = isNaN(minValue) ? 0 : minValue;
@@ -56,18 +61,43 @@ function KnobVI(domElement) {
         _this.ratio = (_this.max - _this.min) / (Math.PI * 1.5);
         this.singleOutput = _this.defaultValue;
         this.radian = (_this.defaultValue - _this.min) / _this.ratio;
+
         DrawSpinner();
     };
 
-    //外部指定旋钮显示值
     this.setData = function (data) {
+
         if (isNaN(data)) {
 
-            return;
+            return false;
         }
-        _this.singleOutput = data > _this.max ? _this.max : data;
-        _this.radian = (_this.singleOutput - _this.min) / _this.ratio;
-        DrawSpinner();
+
+        _this.singleOutput = data;
+
+        var i = 0;
+        if (_this.index == 0) {
+
+            for (i = 0; i < _this.dataLength; i++) {
+
+                _this.output[i] = 0;
+            }
+        }
+        if (_this.index <= (_this.dataLength - 1)) {
+
+            _this.output[_this.index] = _this.singleOutput;
+            _this.index++;
+        } else {
+            for (i = 0; i < _this.dataLength - 1; i++) {
+
+                _this.output[i] = _this.output[i + 1];
+            }
+            _this.output[_this.dataLength - 1] = _this.singleOutput;
+        }
+    };
+
+    this.reset = function () {
+
+        _this.index = 0;
     };
 
     function DrawSpinner() {
@@ -144,7 +174,7 @@ function KnobVI(domElement) {
             else if (_this.radian > 270 / 360 * 2 * Math.PI) {
                 _this.radian = 270 / 180 * Math.PI;
             }
-            _this.singleOutput = _this.radian * _this.ratio + _this.min;
+            _this.setData(_this.radian * _this.ratio + parseFloat(_this.min));
             DrawSpinner();
             startX = stopX;
             startY = stopY;

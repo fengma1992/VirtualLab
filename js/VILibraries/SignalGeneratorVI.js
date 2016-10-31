@@ -16,6 +16,7 @@ function SignalGeneratorVI(domElement) {
     this.frequency = 256;
     this.signalType = 1;
     this.output = [];
+    this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
     this.source = [];

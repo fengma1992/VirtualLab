@@ -24,7 +24,7 @@ function BallBeamVI(domElement) {
     this.index = 0;
     this.angelOutput = [];
     this.positionOutput = [];
-    this.autoSave = true;
+    this.outputCount = 4;
 
     //虚拟仪器中相连接的控件VI
     this.source = [];
@@ -35,9 +35,10 @@ function BallBeamVI(domElement) {
      */
     this.setInputAngle = function (angle) {
 
+        angle = typeof angle === 'object' ? angle[angle.length - 1] : angle;
         if (isNaN(angle)) {
 
-            return;
+            return false;
         }
 
         var u, v, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
@@ -71,10 +72,7 @@ function BallBeamVI(domElement) {
         _this.y2 = v;
         _this.PIDPosition = v;//向输出端口上写数据
 
-        if (_this.autoSave) {
-
-            _this.dataCollector(_this.PIDAngle, _this.PIDPosition);
-        }
+        _this.dataCollector(_this.PIDAngle, _this.PIDPosition);
 
         return [_this.PIDAngle, _this.PIDPosition];
     };

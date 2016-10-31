@@ -19,6 +19,7 @@ function DCOutputVI(domElement) {
     this.index = 0;
     this.singleOutput = 100;//输出初值
     this.output = [];
+    this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
     this.target = [];
@@ -31,20 +32,27 @@ function DCOutputVI(domElement) {
 
         if (isNaN(data)) {
 
-            return;
+            return false;
         }
+
         _this.singleOutput = data;
+
         var i = 0;
         if (_this.index == 0) {
+
             for (i = 0; i < _this.dataLength; i++) {
+
                 _this.output[i] = 0;
             }
         }
         if (_this.index <= (_this.dataLength - 1)) {
+
             _this.output[_this.index] = _this.singleOutput;
             _this.index++;
         } else {
+
             for (i = 0; i < _this.dataLength - 1; i++) {
+
                 _this.output[i] = _this.output[i + 1];
             }
             _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -57,6 +65,7 @@ function DCOutputVI(domElement) {
     };
 
     this.draw = function () {
+
         _this.ctx.font = "normal 12px Microsoft YaHei";
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);

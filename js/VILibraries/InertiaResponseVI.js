@@ -28,6 +28,7 @@ function InertiaResponseVI(domElement) {
     this.dataLength = 1024;
     this.index = 0;
     this.output = [];
+    this.outputCount = 2;
     this.autoSave = true;
 
     //虚拟仪器中相连接的控件VI
@@ -35,13 +36,14 @@ function InertiaResponseVI(domElement) {
     this.target = [];
 
     this.setData = function (input) {
-        if (isNaN(input)) {
+
+        _this.input = typeof input === 'object' ? input[input.length - 1] : input;
+        if (isNaN(_this.input)) {
+
             return false;
         }
 
         var v, E;
-
-        _this.input = input;
 
         //一阶 1/(TS+1)
         E = Math.exp(-1 / (_this.k1 * _this.Fs));

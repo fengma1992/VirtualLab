@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
+    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="1028-night&#10;1、更新允许多个连接；&#10;2、更改对象保存为二维数组形式">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/TextVI.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VirtualInstrument.html" afterPath="$PROJECT_DIR$/VirtualInstrument.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ADDVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ADDVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/DCOutputVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/DCOutputVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/KnobVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/KnobVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/PIDVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/PIDVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/WaveVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/WaveVI.js" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,84 +45,159 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="VirtualInstrument.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="VirtualInstrument.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/VirtualInstrument.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="190" column="0" selection-start-line="190" selection-start-column="0" selection-end-line="190" selection-end-column="0" />
+            <state relative-caret-position="296">
+              <caret line="725" column="64" selection-start-line="725" selection-start-column="64" selection-end-line="725" selection-end-column="64" />
               <folding>
-                <element signature="n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
                 <element signature="n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
                 <element signature="n#div#1;n#body#0;n#html#0;n#!!top" expanded="false" />
-                <element signature="e#6261#7414#0" expanded="false" />
-                <element signature="e#7437#8733#0" expanded="false" />
-                <element signature="e#8756#19103#0" expanded="false" />
-                <element signature="e#8811#9701#0" expanded="false" />
-                <element signature="e#9729#9915#0" expanded="false" />
-                <element signature="e#10149#17825#0" expanded="false" />
-                <element signature="e#17904#18021#0" expanded="false" />
-                <element signature="e#18122#19028#0" expanded="false" />
-                <element signature="e#19142#20558#0" expanded="false" />
-                <element signature="e#20590#29879#0" expanded="false" />
-                <element signature="e#29918#30455#0" expanded="false" />
-                <element signature="e#30499#30688#0" expanded="false" />
-                <element signature="e#30728#31127#0" expanded="false" />
-                <element signature="e#31191#33989#0" expanded="false" />
-                <element signature="e#34018#34755#0" expanded="false" />
-                <element signature="e#34806#35075#0" expanded="false" />
-                <element signature="e#35152#36032#0" expanded="false" />
-                <element signature="e#36060#36096#0" expanded="false" />
-                <element signature="e#36119#36180#0" expanded="false" />
-                <element signature="e#36203#41084#0" expanded="false" />
-                <element signature="e#41115#45451#0" expanded="false" />
-                <element signature="e#45457#45569#0" expanded="false" />
-                <element signature="e#45632#48715#0" expanded="false" />
-                <element signature="e#48721#48786#0" expanded="false" />
-                <element signature="e#48823#48944#0" expanded="false" />
-                <element signature="e#49024#49589#0" expanded="false" />
-                <marker date="1477651548814" expanded="true" signature="10634:10640" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10640:10646" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10646:10652" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10652:10658" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10658:10664" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10664:10670" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10670:10676" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10676:10682" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="10726:10761" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="12864:12899" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="14442:14448" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14448:14454" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14454:14460" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14460:14466" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14466:14472" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14472:14478" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14478:14484" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14484:14490" ph=" " />
-                <marker date="1477651548814" expanded="true" signature="14534:14569" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="16078:16113" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="20833:20868" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="21267:21302" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="22093:22128" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="22682:22717" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="23555:23590" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="24151:24186" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="24745:24780" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="25343:25378" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="25938:25973" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="26698:26733" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="27484:27519" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="28241:28276" ph="..." />
-                <marker date="1477651548814" expanded="true" signature="29001:29036" ph="..." />
+                <element signature="e#6557#7633#0" expanded="false" />
+                <element signature="e#7656#9014#0" expanded="false" />
+                <element signature="e#9092#9982#0" expanded="false" />
+                <element signature="e#10010#10196#0" expanded="false" />
+                <element signature="e#17619#17736#0" expanded="false" />
+                <element signature="e#17837#18743#0" expanded="false" />
+                <element signature="e#18857#20342#0" expanded="false" />
+                <element signature="e#20374#30272#0" expanded="false" />
+                <element signature="e#30311#30647#0" expanded="false" />
+                <element signature="e#30976#31230#0" expanded="false" />
+                <element signature="e#33818#36643#0" expanded="false" />
+                <element signature="e#37692#38572#0" expanded="false" />
+                <element signature="e#38600#38636#0" expanded="false" />
+                <element signature="e#38659#38720#0" expanded="false" />
+                <element signature="e#43612#48307#0" expanded="false" />
+                <element signature="e#48313#48511#0" expanded="false" />
+                <element signature="e#48610#51721#0" expanded="false" />
+                <element signature="e#51727#51792#0" expanded="false" />
+                <element signature="e#51829#51950#0" expanded="false" />
+                <element signature="e#52029#52594#0" expanded="false" />
+                <marker date="1477923222894" expanded="true" signature="10921:10927" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="10927:10933" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="10933:10939" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="10939:10945" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="10945:10951" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="10951:10957" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="10957:10963" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="10963:10969" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="11013:11048" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="12843:12878" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="14427:14433" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14433:14439" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14439:14445" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14445:14451" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14451:14457" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14457:14463" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14463:14469" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14469:14475" ph=" " />
+                <marker date="1477923222894" expanded="true" signature="14519:14554" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="16071:16106" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="20617:20652" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="21054:21089" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="21887:21922" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="22438:22473" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="23030:23065" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="23912:23947" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="24511:24546" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="25108:25143" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="25709:25744" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="26307:26342" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="27073:27108" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="27865:27900" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="28628:28663" ph="..." />
+                <marker date="1477923222894" expanded="true" signature="29394:29429" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/index.html">
+      <file leaf-file-name="TextVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/TextVI.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="649">
-              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+            <state relative-caret-position="288">
+              <caret line="23" column="19" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+              <folding>
+                <element signature="e#438#1039#0" expanded="false" />
+                <element signature="e#1093#1196#0" expanded="false" />
+                <element signature="e#1228#1354#0" expanded="false" />
+                <element signature="e#1385#1707#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WaveVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/WaveVI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-87">
+              <caret line="61" column="29" selection-start-line="61" selection-start-column="29" selection-end-line="61" selection-end-column="29" />
+              <folding>
+                <element signature="e#1507#1650#0" expanded="false" />
+                <element signature="e#1685#2771#0" expanded="false" />
+                <element signature="e#2812#7769#0" expanded="false" />
+                <element signature="e#7833#8704#0" expanded="false" />
+                <element signature="e#8736#8866#0" expanded="false" />
+                <element signature="e#8909#10007#0" expanded="false" />
+                <element signature="e#10056#10147#0" expanded="false" />
+                <element signature="e#10196#10287#0" expanded="false" />
+                <element signature="e#10328#10389#0" expanded="false" />
+                <element signature="e#10436#10519#0" expanded="false" />
+                <element signature="e#10761#11622#0" expanded="false" />
+                <element signature="e#11665#12284#0" expanded="false" />
+                <element signature="n#!!block;n#onMouseMove#0;n#!!block;n#WaveVI#0" expanded="false" />
+                <element signature="n#!!block;n#onContainerMouseDown#0;n#!!block;n#WaveVI#0" expanded="false" />
+                <element signature="n#!!block;n#onContainerMouseUp#0;n#!!block;n#WaveVI#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PIDVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/PIDVI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="124">
+              <caret line="41" column="16" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProportionalDifferentialResponseVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="436">
+              <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProportionalInertiaResponseVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="419">
+              <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProportionalIntegralResponseVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="319">
+              <caret line="45" column="24" selection-start-line="45" selection-start-column="24" selection-end-line="45" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProportionalResponseVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="436">
+              <caret line="43" column="9" selection-start-line="43" selection-start-column="9" selection-end-line="43" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -112,8 +206,8 @@
       <file leaf-file-name="SignalGeneratorVI.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+            <state relative-caret-position="24">
+              <caret line="18" column="25" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
               <folding>
                 <element signature="n#!!doc;n#SignalGeneratorVI#0" expanded="false" />
               </folding>
@@ -121,112 +215,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="KnobVI.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/VILibraries/KnobVI.js">
+      <file leaf-file-name="StepResponseGeneratorVI.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
-              <caret line="54" column="26" selection-start-line="54" selection-start-column="14" selection-end-line="54" selection-end-column="26" />
-              <folding>
-                <element signature="e#3000#3229#0" expanded="false" />
-                <element signature="n#!!block;n#onMouseDown#0;n#!!block;n#KnobVI#0" expanded="false" />
-                <element signature="n#!!block;n#onMouseUp#0;n#!!block;n#KnobVI#0" expanded="false" />
-                <element signature="n#!!block;n#calculateRadian#0;n#!!block;n#KnobVI#0" expanded="false" />
-                <element signature="n#!!doc;n#rotateAxis#0;n#!!block;n#KnobVI#0" expanded="false" />
-                <element signature="n#!!block;n#rotateAxis#0;n#!!block;n#KnobVI#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ImageProcessing.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ImageProcessing.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="489">
-              <caret line="59" column="21" selection-start-line="59" selection-start-column="21" selection-end-line="59" selection-end-column="21" />
-              <folding>
-                <element signature="e#6465#6489#0" expanded="false" />
-                <element signature="e#6524#7513#0" expanded="false" />
-                <element signature="e#7519#7541#0" expanded="false" />
-                <element signature="e#7573#8420#0" expanded="false" />
-                <element signature="e#8426#8473#0" expanded="false" />
-                <element signature="e#8506#8872#0" expanded="false" />
-                <element signature="e#8911#9046#0" expanded="false" />
-                <element signature="e#9086#9173#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ADDVI.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/VILibraries/ADDVI.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="528">
-              <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="e#1461#1587#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SignalGenerator.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="121">
-              <caret line="75" column="26" selection-start-line="75" selection-start-column="26" selection-end-line="75" selection-end-column="26" />
+            <state relative-caret-position="486">
+              <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="IntegralResponseVI.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="35" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BallBeamControl.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2424">
-              <caret line="123" column="41" selection-start-line="123" selection-start-column="41" selection-end-line="123" selection-end-column="41" />
-              <folding>
-                <element signature="e#3500#4000#0" expanded="false" />
-                <element signature="e#7212#10063#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BallBeamVI.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/VILibraries/BallBeamVI.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="30" column="21" selection-start-line="30" selection-start-column="21" selection-end-line="30" selection-end-column="21" />
-              <folding>
-                <element signature="e#1694#1776#0" expanded="false" />
-                <element signature="e#1829#2608#0" expanded="false" />
-                <element signature="e#2640#2842#0" expanded="false" />
-                <element signature="e#2873#3087#0" expanded="false" />
-                <element signature="e#3462#3575#0" expanded="false" />
-                <element signature="e#5221#5286#0" expanded="false" />
-                <element signature="e#5346#5408#0" expanded="false" />
-                <element signature="e#5532#5631#0" expanded="false" />
-                <element signature="e#5858#5923#0" expanded="false" />
-                <element signature="e#5985#6047#0" expanded="false" />
-                <element signature="e#6137#6653#0" expanded="false" />
-                <element signature="e#6876#6941#0" expanded="false" />
-                <element signature="e#7002#7064#0" expanded="false" />
-                <element signature="e#7649#14164#0" expanded="false" />
-                <element signature="e#12679#12850#0" expanded="false" />
-                <element signature="n#!!block;n#ballBeamAnimate#0;n#!!block;n#BallBeamVI#0" expanded="false" />
-                <element signature="n#!!block;n#setPosition#0;n#!!block;n#BallBeamVI#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -259,7 +253,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/VILibraries/Knob.js" />
         <option value="$PROJECT_DIR$/TestRoundPanel.html" />
         <option value="$PROJECT_DIR$/js/VILibraries/Echart_RoundPanelVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/Echart_BarVI.js" />
@@ -283,33 +276,34 @@
         <option value="$PROJECT_DIR$/js/VILibraries/ProportialDifferentialResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/ProportialIntegralResponseVI.js" />
         <option value="$PROJECT_DIR$/GearBox.html" />
-        <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/css/draggable.css" />
-        <option value="$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js" />
-        <option value="$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/EChart_BarVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/EChart_RoundPanelVI.js" />
+        <option value="$PROJECT_DIR$/BallBeamControl.html" />
+        <option value="$PROJECT_DIR$/js/VILibraries/InputVI.js" />
+        <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
+        <option value="$PROJECT_DIR$/SignalGenerator.html" />
+        <option value="$PROJECT_DIR$/ImageProcessing.html" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/css/main.css" />
+        <option value="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/ADDVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/TextVI.js" />
+        <option value="$PROJECT_DIR$/VirtualInstrument.html" />
+        <option value="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/KnobVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/DCOutputVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" />
+        <option value="$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/PIDVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js" />
-        <option value="$PROJECT_DIR$/js/VILibraries/WaveVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" />
-        <option value="$PROJECT_DIR$/BallBeamControl.html" />
-        <option value="$PROJECT_DIR$/js/VILibraries/InputVI.js" />
-        <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
-        <option value="$PROJECT_DIR$/js/VILibraries/DCOutputVI.js" />
-        <option value="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" />
-        <option value="$PROJECT_DIR$/js/VILibraries/KnobVI.js" />
-        <option value="$PROJECT_DIR$/SignalGenerator.html" />
-        <option value="$PROJECT_DIR$/ImageProcessing.html" />
-        <option value="$PROJECT_DIR$/js/VILibraries/ADDVI.js" />
-        <option value="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" />
-        <option value="$PROJECT_DIR$/VirtualInstrument.html" />
-        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/VILibraries/WaveVI.js" />
       </list>
     </option>
   </component>
@@ -376,8 +370,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -406,12 +398,32 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ObjectControl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ObjectControl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VILibraries" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -581,7 +593,9 @@
       <workItem from="1477402252012" duration="5018000" />
       <workItem from="1477445020367" duration="28521000" />
       <workItem from="1477531893278" duration="38808000" />
-      <workItem from="1477612734775" duration="10040000" />
+      <workItem from="1477612734775" duration="10872000" />
+      <workItem from="1477895683080" duration="12128000" />
+      <workItem from="1477912317427" duration="6647000" />
     </task>
     <task id="LOCAL-00001" summary="test&#10;">
       <created>1476862004763</created>
@@ -713,7 +727,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="401087000" />
+    <option name="totallyTimeSpent" value="420694000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -731,18 +745,18 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15822785" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5042194" order="12" side_tool="true" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4862869" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4957806" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23650108" sideWeight="0.4978903" order="3" side_tool="false" content_ui="tabs" x="1235" y="241" width="659" height="704" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23650108" sideWeight="0.4978903" order="3" side_tool="false" content_ui="tabs" x="1235" y="241" width="659" height="704" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32959402" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -797,12 +811,11 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="10" />
+      <option name="time" value="11" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/greensock-js/docs.html" />
     <entry file="file://$PROJECT_DIR$/test.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
@@ -834,20 +847,20 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+      <provider editor-type-id="MarkdownFxPreviewEditor">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
         <state split_layout="FIRST">
           <first_editor relative-caret-position="0">
             <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-      <provider editor-type-id="MarkdownFxPreviewEditor">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -880,27 +893,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Knob.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="402">
-          <caret line="87" column="47" selection-start-line="87" selection-start-column="47" selection-end-line="87" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="873" column="0" selection-start-line="873" selection-start-column="0" selection-end-line="873" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/popup.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1368">
           <caret line="0" column="10557" selection-start-line="0" selection-start-column="10557" selection-end-line="0" selection-end-column="10557" />
           <folding>
-            <marker date="1477313526456" expanded="true" signature="7968:8009" ph="..." />
+            <marker date="1477652446149" expanded="true" signature="7968:8009" ph="..." />
           </folding>
         </state>
       </provider>
@@ -926,7 +924,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="298">
           <caret line="443" column="0" selection-start-line="443" selection-start-column="0" selection-end-line="443" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -948,18 +945,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="131" column="14" selection-start-line="131" selection-start-column="14" selection-end-line="131" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/GearBox.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="241">
           <caret line="109" column="41" selection-start-line="109" selection-start-column="33" selection-end-line="109" selection-end-column="41" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -994,23 +983,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="37" column="17" selection-start-line="37" selection-start-column="8" selection-end-line="37" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="26" column="14" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="9" column="26" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1029,91 +1001,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/PIDVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="9" column="14" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="17" column="24" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="9" column="39" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="9" column="31" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="4" column="32" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/WaveVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="15" column="23" selection-start-line="15" selection-start-column="23" selection-end-line="15" selection-end-column="23" />
-          <folding>
-            <element signature="e#1507#1649#0" expanded="false" />
-            <element signature="e#7810#8667#0" expanded="false" />
-            <element signature="e#8699#8817#0" expanded="false" />
-            <element signature="e#9880#9970#0" expanded="false" />
-            <element signature="e#10019#10109#0" expanded="false" />
-            <element signature="e#10150#10210#0" expanded="false" />
-            <element signature="e#10257#10339#0" expanded="false" />
-            <element signature="e#10581#11442#0" expanded="false" />
-            <element signature="e#11485#12104#0" expanded="false" />
-            <element signature="n#!!block;n#onMouseMove#0;n#!!block;n#WaveVI#0" expanded="false" />
-            <element signature="n#!!block;n#onContainerMouseDown#0;n#!!block;n#WaveVI#0" expanded="false" />
-            <element signature="n#!!block;n#onContainerMouseUp#0;n#!!block;n#WaveVI#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/DCOutputVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="19" column="12" selection-start-line="19" selection-start-column="12" selection-end-line="19" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/jsPlumb-2.2.2.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="69240">
@@ -1122,62 +1009,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js">
+    <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="35" selection-end-column="21" />
+        <state relative-caret-position="241">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="176" column="0" selection-start-line="176" selection-start-column="0" selection-end-line="176" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2424">
-          <caret line="123" column="41" selection-start-line="123" selection-start-column="41" selection-end-line="123" selection-end-column="41" />
+        <state relative-caret-position="340">
+          <caret line="119" column="14" selection-start-line="119" selection-start-column="14" selection-end-line="119" selection-end-column="14" />
           <folding>
-            <element signature="e#3500#4000#0" expanded="false" />
-            <element signature="e#7212#10063#0" expanded="false" />
+            <element signature="e#7221#10072#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/BallBeamVI.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="30" column="21" selection-start-line="30" selection-start-column="21" selection-end-line="30" selection-end-column="21" />
-          <folding>
-            <element signature="e#1694#1776#0" expanded="false" />
-            <element signature="e#1829#2608#0" expanded="false" />
-            <element signature="e#2640#2842#0" expanded="false" />
-            <element signature="e#2873#3087#0" expanded="false" />
-            <element signature="e#3462#3575#0" expanded="false" />
-            <element signature="e#5221#5286#0" expanded="false" />
-            <element signature="e#5346#5408#0" expanded="false" />
-            <element signature="e#5532#5631#0" expanded="false" />
-            <element signature="e#5858#5923#0" expanded="false" />
-            <element signature="e#5985#6047#0" expanded="false" />
-            <element signature="e#6137#6653#0" expanded="false" />
-            <element signature="e#6876#6941#0" expanded="false" />
-            <element signature="e#7002#7064#0" expanded="false" />
-            <element signature="e#7649#14164#0" expanded="false" />
-            <element signature="e#12679#12850#0" expanded="false" />
-            <element signature="n#!!block;n#ballBeamAnimate#0;n#!!block;n#BallBeamVI#0" expanded="false" />
-            <element signature="n#!!block;n#setPosition#0;n#!!block;n#BallBeamVI#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="75" column="26" selection-start-line="75" selection-start-column="26" selection-end-line="75" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ImageProcessing.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="489">
+        <state relative-caret-position="628">
           <caret line="59" column="21" selection-start-line="59" selection-start-column="21" selection-end-line="59" selection-end-column="21" />
           <folding>
             <element signature="e#6465#6489#0" expanded="false" />
@@ -1192,123 +1058,274 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/VILibraries/KnobVI.js">
+    <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="54" column="26" selection-start-line="54" selection-start-column="14" selection-end-line="54" selection-end-column="26" />
-          <folding>
-            <element signature="e#3000#3229#0" expanded="false" />
-            <element signature="n#!!block;n#onMouseDown#0;n#!!block;n#KnobVI#0" expanded="false" />
-            <element signature="n#!!block;n#onMouseUp#0;n#!!block;n#KnobVI#0" expanded="false" />
-            <element signature="n#!!block;n#calculateRadian#0;n#!!block;n#KnobVI#0" expanded="false" />
-            <element signature="n#!!doc;n#rotateAxis#0;n#!!block;n#KnobVI#0" expanded="false" />
-            <element signature="n#!!block;n#rotateAxis#0;n#!!block;n#KnobVI#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="244">
+          <caret line="56" column="50" selection-start-line="56" selection-start-column="50" selection-end-line="56" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Knob.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="402">
+          <caret line="87" column="47" selection-start-line="87" selection-start-column="47" selection-end-line="87" selection-end-column="47" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/VILibraries/ADDVI.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
+        <state relative-caret-position="292">
+          <caret line="34" column="39" selection-start-line="34" selection-start-column="39" selection-end-line="34" selection-end-column="39" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#1461#1587#0" expanded="false" />
+            <element signature="e#943#1069#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/BallBeamVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="362">
+          <caret line="41" column="9" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
+          <folding>
+            <element signature="e#1732#1814#0" expanded="false" />
+            <element signature="e#1867#2646#0" expanded="false" />
+            <element signature="e#2678#2880#0" expanded="false" />
+            <element signature="e#2911#3125#0" expanded="false" />
+            <element signature="e#3500#3613#0" expanded="false" />
+            <element signature="e#3672#14510#0" expanded="false" />
+            <element signature="e#5259#5324#0" expanded="false" />
+            <element signature="e#5384#5446#0" expanded="false" />
+            <element signature="e#5570#5669#0" expanded="false" />
+            <element signature="e#5896#5961#0" expanded="false" />
+            <element signature="e#6023#6085#0" expanded="false" />
+            <element signature="e#6175#6691#0" expanded="false" />
+            <element signature="e#6914#6979#0" expanded="false" />
+            <element signature="e#7040#7102#0" expanded="false" />
+            <element signature="e#7687#14202#0" expanded="false" />
+            <element signature="e#12717#12888#0" expanded="false" />
+            <element signature="n#!!block;n#onBallBeamDrag#0;n#!!block;n#BallBeamVI#0" expanded="false" />
+            <element signature="n#!!block;n#ballBeamAnimate#0;n#!!block;n#BallBeamVI#0" expanded="false" />
+            <element signature="n#!!block;n#setPosition#0;n#!!block;n#BallBeamVI#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/IntegralResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="586">
+          <caret line="45" column="8" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/DifferentialResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="44" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="39" column="17" selection-start-line="39" selection-start-column="17" selection-end-line="39" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/DCOutputVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/KnobVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
+          <folding>
+            <element signature="e#1184#1295#0" expanded="false" />
+            <element signature="e#3523#3752#0" expanded="false" />
+            <element signature="n#!!doc;n#rotateAxis#0;n#!!block;n#KnobVI#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="38" column="17" selection-start-line="38" selection-start-column="17" selection-end-line="38" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/PIDVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="41" column="16" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalDifferentialResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="436">
+          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalInertiaResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="319">
+          <caret line="45" column="24" selection-start-line="45" selection-start-column="24" selection-end-line="45" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="436">
+          <caret line="43" column="9" selection-start-line="43" selection-start-column="9" selection-end-line="43" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
+        <state relative-caret-position="24">
+          <caret line="18" column="25" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
           <folding>
             <element signature="n#!!doc;n#SignalGeneratorVI#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/VirtualInstrument.html">
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="190" column="0" selection-start-line="190" selection-start-column="0" selection-end-line="190" selection-end-column="0" />
+        <state relative-caret-position="486">
+          <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/WaveVI.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-87">
+          <caret line="61" column="29" selection-start-line="61" selection-start-column="29" selection-end-line="61" selection-end-column="29" />
           <folding>
-            <element signature="n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#div#1;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="e#6261#7414#0" expanded="false" />
-            <element signature="e#7437#8733#0" expanded="false" />
-            <element signature="e#8756#19103#0" expanded="false" />
-            <element signature="e#8811#9701#0" expanded="false" />
-            <element signature="e#9729#9915#0" expanded="false" />
-            <element signature="e#10149#17825#0" expanded="false" />
-            <element signature="e#17904#18021#0" expanded="false" />
-            <element signature="e#18122#19028#0" expanded="false" />
-            <element signature="e#19142#20558#0" expanded="false" />
-            <element signature="e#20590#29879#0" expanded="false" />
-            <element signature="e#29918#30455#0" expanded="false" />
-            <element signature="e#30499#30688#0" expanded="false" />
-            <element signature="e#30728#31127#0" expanded="false" />
-            <element signature="e#31191#33989#0" expanded="false" />
-            <element signature="e#34018#34755#0" expanded="false" />
-            <element signature="e#34806#35075#0" expanded="false" />
-            <element signature="e#35152#36032#0" expanded="false" />
-            <element signature="e#36060#36096#0" expanded="false" />
-            <element signature="e#36119#36180#0" expanded="false" />
-            <element signature="e#36203#41084#0" expanded="false" />
-            <element signature="e#41115#45451#0" expanded="false" />
-            <element signature="e#45457#45569#0" expanded="false" />
-            <element signature="e#45632#48715#0" expanded="false" />
-            <element signature="e#48721#48786#0" expanded="false" />
-            <element signature="e#48823#48944#0" expanded="false" />
-            <element signature="e#49024#49589#0" expanded="false" />
-            <marker date="1477651548814" expanded="true" signature="10634:10640" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10640:10646" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10646:10652" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10652:10658" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10658:10664" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10664:10670" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10670:10676" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10676:10682" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="10726:10761" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="12864:12899" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="14442:14448" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14448:14454" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14454:14460" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14460:14466" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14466:14472" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14472:14478" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14478:14484" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14484:14490" ph=" " />
-            <marker date="1477651548814" expanded="true" signature="14534:14569" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="16078:16113" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="20833:20868" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="21267:21302" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="22093:22128" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="22682:22717" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="23555:23590" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="24151:24186" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="24745:24780" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="25343:25378" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="25938:25973" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="26698:26733" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="27484:27519" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="28241:28276" ph="..." />
-            <marker date="1477651548814" expanded="true" signature="29001:29036" ph="..." />
+            <element signature="e#1507#1650#0" expanded="false" />
+            <element signature="e#1685#2771#0" expanded="false" />
+            <element signature="e#2812#7769#0" expanded="false" />
+            <element signature="e#7833#8704#0" expanded="false" />
+            <element signature="e#8736#8866#0" expanded="false" />
+            <element signature="e#8909#10007#0" expanded="false" />
+            <element signature="e#10056#10147#0" expanded="false" />
+            <element signature="e#10196#10287#0" expanded="false" />
+            <element signature="e#10328#10389#0" expanded="false" />
+            <element signature="e#10436#10519#0" expanded="false" />
+            <element signature="e#10761#11622#0" expanded="false" />
+            <element signature="e#11665#12284#0" expanded="false" />
+            <element signature="n#!!block;n#onMouseMove#0;n#!!block;n#WaveVI#0" expanded="false" />
+            <element signature="n#!!block;n#onContainerMouseDown#0;n#!!block;n#WaveVI#0" expanded="false" />
+            <element signature="n#!!block;n#onContainerMouseUp#0;n#!!block;n#WaveVI#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/js/VILibraries/TextVI.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="649">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="288">
+          <caret line="23" column="19" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+          <folding>
+            <element signature="e#438#1039#0" expanded="false" />
+            <element signature="e#1093#1196#0" expanded="false" />
+            <element signature="e#1228#1354#0" expanded="false" />
+            <element signature="e#1385#1707#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VirtualInstrument.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="296">
+          <caret line="725" column="64" selection-start-line="725" selection-start-column="64" selection-end-line="725" selection-end-column="64" />
+          <folding>
+            <element signature="n#div#1;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#div#1;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="e#6557#7633#0" expanded="false" />
+            <element signature="e#7656#9014#0" expanded="false" />
+            <element signature="e#9092#9982#0" expanded="false" />
+            <element signature="e#10010#10196#0" expanded="false" />
+            <element signature="e#17619#17736#0" expanded="false" />
+            <element signature="e#17837#18743#0" expanded="false" />
+            <element signature="e#18857#20342#0" expanded="false" />
+            <element signature="e#20374#30272#0" expanded="false" />
+            <element signature="e#30311#30647#0" expanded="false" />
+            <element signature="e#30976#31230#0" expanded="false" />
+            <element signature="e#33818#36643#0" expanded="false" />
+            <element signature="e#37692#38572#0" expanded="false" />
+            <element signature="e#38600#38636#0" expanded="false" />
+            <element signature="e#38659#38720#0" expanded="false" />
+            <element signature="e#43612#48307#0" expanded="false" />
+            <element signature="e#48313#48511#0" expanded="false" />
+            <element signature="e#48610#51721#0" expanded="false" />
+            <element signature="e#51727#51792#0" expanded="false" />
+            <element signature="e#51829#51950#0" expanded="false" />
+            <element signature="e#52029#52594#0" expanded="false" />
+            <marker date="1477923222894" expanded="true" signature="10921:10927" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="10927:10933" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="10933:10939" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="10939:10945" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="10945:10951" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="10951:10957" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="10957:10963" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="10963:10969" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="11013:11048" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="12843:12878" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="14427:14433" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14433:14439" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14439:14445" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14445:14451" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14451:14457" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14457:14463" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14463:14469" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14469:14475" ph=" " />
+            <marker date="1477923222894" expanded="true" signature="14519:14554" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="16071:16106" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="20617:20652" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="21054:21089" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="21887:21922" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="22438:22473" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="23030:23065" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="23912:23947" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="24511:24546" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="25108:25143" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="25709:25744" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="26307:26342" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="27073:27108" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="27865:27900" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="28628:28663" ph="..." />
+            <marker date="1477923222894" expanded="true" signature="29394:29429" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
   </component>
   <component name="webServersAuthStorage">
-    <data>AAAAsDNyZhO8lvGWiutnSMIlScBmG0kLtjCnFwHCa2VpNEdoB/E7YKaAtzfxCzOtuSKRloRdnQWY5aOq+B3biY6FKAE4IbXrNbAVlxhyumJoAfr/Rpxigd0KwGqlQp5XUQflEpFvZpkqazGO19do+JrrFf/5XniYouOR573OM93I0v2kXfSskVeYzwXX4IKxeZ9QBUGTco0Rn5T+dErgYRiUV2AnJCLar8UFceoOPfeyxC8RE+wzlIwdYE3vgXpeWGs29Q==</data>
+    <data>AAAAsCmnevS6L5YSHYn3gYOFS/asmNIP8Aba4xQA4Hv0G7WYLuCu8IWyI4QMTSr/wpwEjdzGQsc2yh+vglnRIiapWYgdZEwKjl6tGFg5xNBh8nMaVtM1sRWKBDO3r1koT0iNGnrWPcey0wP3UR0EiT0Fkfciv7T0yLGHX3R5QFTKr5nwPIUPFwWqxC6nqtgRtaX/ku9YlC9kGk4iCS8QsGpyrW543bLd/rE8QfBIwlabrqXb+HJHuZSdEVheYDw8rKtPkw==</data>
   </component>
 </project>

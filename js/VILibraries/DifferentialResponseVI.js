@@ -29,6 +29,7 @@ function DifferentialResponseVI(domElement) {
     this.dataLength = 1024;
     this.index = 0;
     this.output = [];
+    this.outputCount = 2;
     this.autoSave = true;
 
     //虚拟仪器中相连接的控件VI
@@ -36,11 +37,12 @@ function DifferentialResponseVI(domElement) {
     this.target = [];
 
     this.setData = function (input) {
-        if (isNaN(input)) {
+
+        _this.input = typeof input === 'object' ? input[input.length - 1] : input;
+        if (isNaN(_this.input)) {
+
             return false;
         }
-
-        _this.input = input;
 
 
         _this.singleOutput = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;

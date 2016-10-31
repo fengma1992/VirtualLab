@@ -23,19 +23,20 @@ function StepResponseGeneratorVI(domElement) {
     this.dataLength = 1024;
     this.index = 0;
     this.output = [];
-    this.autoSave = true;
+    this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
     this.source = [];
     this.target = [];
 
     this.setData = function (input) {
-        if (isNaN(input)) {
+
+        _this.input = typeof input === 'object' ? input[input.length - 1] : input;
+        if (isNaN(_this.input)) {
+
             return false;
         }
         var v, v1, v2, v21, v3, E, a1, b1;
-
-        _this.input = input;
 
         if (_this.signalType < 6) {
             v1 = _this.k1 * _this.input;
@@ -75,19 +76,8 @@ function StepResponseGeneratorVI(domElement) {
         }
         else _this.singleOutput = 0;
 
-        if (_this.autoSave)
-            _this.dataCollector(_this.singleOutput);
 
-        return _this.singleOutput;
-
-    };
-
-    /**
-     * 将输出数保存在数组内
-     * @param data singleOutput
-     */
-    this.dataCollector = function (data) {
-
+        //将输出数保存在数组内
         var i = 0;
         if (_this.index == 0) {
             for (i = 0; i < _this.dataLength; i++) {
@@ -95,15 +85,19 @@ function StepResponseGeneratorVI(domElement) {
             }
         }
         if (_this.index <= (_this.dataLength - 1)) {
-            _this.output[_this.index] = data;
+            _this.output[_this.index] = _this.singleOutput;
             _this.index++;
         } else {
             for (i = 0; i < _this.dataLength - 1; i++) {
                 _this.output[i] = _this.output[i + 1];
             }
-            _this.output[_this.dataLength - 1] = data;
+            _this.output[_this.dataLength - 1] = _this.singleOutput;
         }
+
+        return _this.singleOutput;
+
     };
+
 
     this.setStepType = function (type) {
 
