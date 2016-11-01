@@ -14,6 +14,7 @@ function IntegralResponseVI(domElement) {
     this.ctx = this.container.getContext("2d");
     this.name = 'IntegralResponseVI';
     this.cnText = '积分响应';
+    this.runningFlag = false;
 
     this.signalType = 2;
     this.k1 = 0;

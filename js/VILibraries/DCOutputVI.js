@@ -14,6 +14,7 @@ function DCOutputVI(domElement) {
     this.ctx = domElement.getContext('2d');
     this.name = 'DCOutputVI';
     this.cnText = '直流输出';
+    this.runningFlag = false;
 
     this.dataLength = 1024;
     this.index = 0;

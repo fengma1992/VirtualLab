@@ -10,6 +10,7 @@ function BallBeamVI(domElement) {
     this.ctx = domElement.getContext('2d');
     this.name = 'BallBeamVI';
     this.cnText = '球杆模型';
+    this.runningFlag = false;
 
     this.Fs = 50;
     this.PIDAngle = 0;

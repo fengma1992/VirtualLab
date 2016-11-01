@@ -14,6 +14,7 @@ function ProportionalInertiaResponseVI(domElement) {
     this.ctx = this.container.getContext("2d");
     this.name = 'ProportionalInertiaResponseVI';
     this.cnText = '比例惯性响应';
+    this.runningFlag = false;
 
     this.signalType = 8;
     this.k1 = 1;

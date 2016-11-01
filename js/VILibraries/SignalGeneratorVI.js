@@ -9,6 +9,8 @@ function SignalGeneratorVI(domElement) {
     this.ctx = domElement.getContext('2d');
     this.name = 'SignalGeneratorVI';
     this.cnText = '信号发生器';
+    this.runningFlag = false;
+    this.dataSetCount = 0;
 
     this.dataLength = 1024;
     this.phase = 0;

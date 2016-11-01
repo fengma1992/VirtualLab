@@ -6,6 +6,7 @@ function BarVI(domElement) {
     var _this = this;
     this.name = 'BarVI';
     this.cnText = '柱状图';
+    this.runningFlag = false;
 
 
     // 初始化echarts图表

@@ -16,6 +16,7 @@ function TextVI(domElement) {
     this.ctx = domElement.getContext('2d');
     this.name = 'TextVI';
     this.cnText = '文本框';
+    this.runningFlag = false;
 
     this.latestInput = 0;
     this.decimalPlace = 1;

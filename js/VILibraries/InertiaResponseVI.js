@@ -14,6 +14,7 @@ function InertiaResponseVI(domElement) {
     this.ctx = this.container.getContext("2d");
     this.name = 'InertiaResponseVI';
     this.cnText = '惯性响应';
+    this.runningFlag = false;
 
     this.signalType = 6;
     this.k1 = 1;

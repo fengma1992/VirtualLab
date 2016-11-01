@@ -14,6 +14,7 @@ function DifferentialResponseVI(domElement) {
     this.ctx = this.container.getContext("2d");
     this.name = 'DifferentialResponseVI';
     this.cnText = '微分响应';
+    this.runningFlag = false;
 
     this.signalType = 3;
     this.k1 = 0;

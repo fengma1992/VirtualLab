@@ -15,6 +15,8 @@ function AddVI(domElement) {
     this.ctx = domElement.getContext('2d');
     this.name = 'AddVI';
     this.cnText = '加法器';
+    this.runningFlag = false;
+    this.dataSetCount = 0;
 
     this.dataLength = 1024;
     this.index = 0;
@@ -42,6 +44,16 @@ function AddVI(domElement) {
         return _this.singleOutput;
     };
 
+    this.setOriginalData = function (originalInput) {
+
+        originalInput = typeof originalInput === 'object' ? originalInput[originalInput.length - 1] : originalInput;
+        if (isNaN(originalInput)) {
+
+            return false;
+        }
+        _this.originalInput = originalInput;
+        return _this.originalInput;
+    }
 
     this.reset = function () {
 

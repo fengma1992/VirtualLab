@@ -15,7 +15,7 @@ function KnobVI(domElement) {
 
     this.min = 0;
     this.max = 1;
-    this.defaultValue = 0;
+    this.defaultValue = 1;
     this.ratio = (this.max - this.min) / (Math.PI * 1.5);
     this.singleOutput = this.defaultValue;
     this.radian = (this.defaultValue - this.min) / this.ratio;
@@ -23,6 +23,7 @@ function KnobVI(domElement) {
     this.ctx = this.canvas.getContext("2d");
     this.name = 'KnobVI';
     this.cnText = '旋钮';
+    this.runningFlag = false;
 
     this.dataLength = 1024;
     this.index = 0;
@@ -59,7 +60,7 @@ function KnobVI(domElement) {
         _this.max = isNaN(maxValue) ? 1 : maxValue;
         _this.defaultValue = isNaN(startValue) ? 0 : startValue;
         _this.ratio = (_this.max - _this.min) / (Math.PI * 1.5);
-        this.singleOutput = _this.defaultValue;
+        this.setData(_this.defaultValue);
         this.radian = (_this.defaultValue - _this.min) / _this.ratio;
 
         DrawSpinner();

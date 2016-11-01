@@ -16,6 +16,7 @@ function RoundPanelVI(domElement, name, min, max, unit) {
     var _this = this;
     this.name = 'RoundPanelVI';
     this.cnText = '圆表盘';
+    this.runningFlag = false;
 
     // 初始化echarts图表
     this.myChart = echarts.init(domElement);

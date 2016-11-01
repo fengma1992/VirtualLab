@@ -291,6 +291,7 @@
                 }
                 else if (sourceElement.outputCount == 2) {
 
+                    var clickFlag = false;
                     outputSetBox = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                             '<div style="margin: 10px 10px; font-size: 1em; ">' +
                             '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox.close()">输出(单值)<br>' +
@@ -443,6 +444,7 @@
 
             case 'PIDVI':
                 return dataObject.PIDVI;
+
             case 'TextVI':
                 return dataObject.TextVI;
 
@@ -479,6 +481,7 @@
     }
 
     function showBox(element) {
+
         var elementInfo = element.id.split('-');
         switch (elementInfo[0]) {
 
@@ -487,8 +490,7 @@
                 dataSetBox = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">初值:</span><input type="number" id="ADD-input" value="20" class="normalInput"><br>' +
-                        '</div>', 1, function () {
-                        });
+                        '</div>', 1);
                 break;
 
             case 'PIDVI':
@@ -498,9 +500,7 @@
                         '<span class="normalSpan">I:</span><input type="number" id="I-input" value="0" class="normalInput">' +
                         '<span class="normalSpan">D:</span><input type="number" id="D-input" value="20" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setPIDVI(' + elementInfo[2] + ')">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '</div>', 1);
                 break;
 
             case 'TextVI':
@@ -508,9 +508,7 @@
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<input type="number" id="TextVI-input" value="1" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setTextVI(' + elementInfo[2] + ')">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '</div>', 1);
                 break;
 
             case 'DCOutputVI':
@@ -518,9 +516,7 @@
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">初值:</span><input type="number" id="DCOutputVI-input" value="100" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setDCOutputVI(' + elementInfo[2] + ')">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '</div>', 1);
                 break;
 
             case 'KnobVI':
@@ -530,49 +526,42 @@
                         '<span class="normalSpan">最大值:</span><input type="number" id="DCOutputVI-input-2" value="1" class="normalInput">' +
                         '<span class="normalSpan">初值:</span><input type="number" id="DCOutputVI-input-3" value="0" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setKnobVI(' + elementInfo[2] + ')">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '</div>', 1);
                 break;
 
             case 'ProportionalResponseVI':
                 dataSetBox = G.box('比例响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K1:</span><input type="number" id="ProportionalResponseVI-input" value="1.5" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(1)">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionalResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>', 1);
                 break;
 
             case 'IntegralResponseVI':
                 dataSetBox = G.box('积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K2:</span><input type="number" id="IntegralResponseVI-input" value="5" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(2)">确定</button>' +
+                        '<button id="startBtn" class="normalBtn" onclick="setIntegralResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>',
-                        1, function () {
-                        });
+                        1);
                 break;
 
             case 'DifferentialResponseVI':
                 dataSetBox = G.box('微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K3:</span><input type="number" id="DifferentialResponseVI-input" value="0.0025" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(3)">确定</button>' +
+                        '<button id="startBtn" class="normalBtn" onclick="setDifferentialResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>',
-                        1, function () {
-                        });
+                        1);
                 break;
 
             case 'InertiaResponseVI':
                 dataSetBox = G.box('惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K:</span><input type="number" id="InertiaResponseVI-input" value="0.025" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(4)">确定</button>' +
+                        '<button id="startBtn" class="normalBtn" onclick="setInertiaResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>',
-                        1, function () {
-                        });
+                        1);
                 break;
 
             case 'OscillationResponseVI':
@@ -580,10 +569,8 @@
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="50" class="normalInput">' +
                         '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="0.05" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(5)">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '<button id="startBtn" class="normalBtn" onclick="setOscillationResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>', 1);
                 break;
 
             case 'ProportionalIntegralResponseVI':
@@ -591,10 +578,8 @@
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K1:</span><input type="number" id="ProportionalDifferentialResponseVI-input-1" value="1" class="normalInput">' +
                         '<span class="normalSpan">K2:</span><input type="number" id="ProportionalDifferentialResponseVI-input-2" value="1" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(6)">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionalIntegralResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>', 1);
                 break;
 
             case 'ProportionalDifferentialResponseVI':
@@ -602,10 +587,8 @@
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K1:</span><input type="number" id="ProportionalResponseVI-input-1" value="1" class="normalInput">' +
                         '<span class="normalSpan">K3:</span><input type="number" id="ProportionalResponseVI-input-2" value="1" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(7)">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionalDifferentialResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>', 1);
                 break;
 
             case 'ProportionalInertiaResponseVI':
@@ -613,25 +596,20 @@
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
                         '<span class="normalSpan">K1:</span><input type="number" id="ProportionalInertiaResponseVI-input-1" value="1" class="normalInput">' +
                         '<span class="normalSpan">K2:</span><input type="number" id="ProportionalInertiaResponseVI-input-2" value="1" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setStepResponseData(8)">确定</button>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionalInertiaResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>', 1);
                 break;
 
             case 'SignalGeneratorVI':
                 dataSetBox = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div style="margin: 10px 10px; font-size: 1em; ">' +
-                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="1" onclick="setSignalType(this.value,' + elementInfo[2] + ')">正弦波<br>' +
-                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="2" onclick="setSignalType(this.value,' + elementInfo[2] + ')">方波<br>' +
-                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="3" onclick="setSignalType(this.value,' + elementInfo[2] + ')">三角波<br>' +
-                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="4" onclick="setSignalType(this.value,' + elementInfo[2] + ')">白噪声<br>' +
-                        '</div>',
-                        1, function () {
-                        });
+                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="1" onclick="setSignalGeneratorVI(' + elementInfo[2] + ',this.value)">正弦波<br>' +
+                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="2" onclick="setSignalGeneratorVI(' + elementInfo[2] + ',this.value)">方波<br>' +
+                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="3" onclick="setSignalGeneratorVI(' + elementInfo[2] + ',this.value)">三角波<br>' +
+                        '<input type="radio" class="radioInput" name="SignalGeneratorVI-type" value="4" onclick="setSignalGeneratorVI(' + elementInfo[2] + ',this.value)">白噪声<br>' +
+                        '</div>', 1);
                 break;
         }
-
     }
 
     function setPIDVI(elementNumber) {
@@ -644,6 +622,8 @@
         dataObject.PIDVI[elementNumber].P = document.getElementById('P-input').value;
         dataObject.PIDVI[elementNumber].I = document.getElementById('I-input').value;
         dataObject.PIDVI[elementNumber].D = document.getElementById('D-input').value;
+
+        findTimerExecutor(dataObject.PIDVI[elementNumber]);
     }
 
     function setTextVI(elementNumber) {
@@ -664,8 +644,8 @@
 
             dataSetBox.close();
         }
+        dataObject.DCOutputVI[elementNumber].setData(document.getElementById('DCOutputVI-input').value);
 
-        dataObject.DCOutputVI[elementNumber].singleOutput = document.getElementById('DCOutputVI-input').value;
         findTimerExecutor(dataObject.DCOutputVI[elementNumber]);
     }
 
@@ -680,7 +660,146 @@
         var maxValue = document.getElementById('DCOutputVI-input-2').value;
         var defaultValue = document.getElementById('DCOutputVI-input-3').value;
         dataObject.KnobVI[elementNumber].setDataRange(minValue, maxValue, defaultValue);
+
         findTimerExecutor(dataObject.KnobVI[elementNumber]);
+    }
+
+    /**
+     * 比例
+     */
+    function setProportionalResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.ProportionalResponseVI[elementNumber].k1 = document.getElementById('ProportionalResponseVI-input').value;
+
+        findTimerExecutor(dataObject.ProportionalResponseVI[elementNumber]);
+    }
+
+    /**
+     * 积分
+     */
+    function setIntegralResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.IntegralResponseVI[elementNumber].k2 = document.getElementById('IntegralResponseVI-input').value;
+
+        findTimerExecutor(dataObject.IntegralResponseVI[elementNumber]);
+    }
+
+    /**
+     * 微分
+     */
+    function setDifferentialResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.DifferentialResponseVI[elementNumber].k3 = document.getElementById('DifferentialResponseVI-input').value;
+
+        findTimerExecutor(dataObject.DifferentialResponseVI[elementNumber]);
+    }
+
+    /**
+     * 惯性
+     */
+    function setInertiaResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.InertiaResponseVI[elementNumber].k1 = document.getElementById('InertiaResponseVI-input').value;
+
+        findTimerExecutor(dataObject.InertiaResponseVI[elementNumber]);
+    }
+
+    /**
+     * 震荡
+     */
+    function setOscillationResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.OscillationResponseVI[elementNumber].k1 = document.getElementById('OscillationResponseVI-input-1').value;
+        dataObject.OscillationResponseVI[elementNumber].k2 = document.getElementById('OscillationResponseVI-input-2').value;
+
+        findTimerExecutor(dataObject.OscillationResponseVI[elementNumber]);
+    }
+
+    /**
+     * 比例积分
+     */
+    function setProportionalIntegralResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+        dataObject.ProportionalIntegralResponseVI[elementNumber].k1 = document.getElementById('ProportionalIntegralResponseVI-input-1').value;
+        dataObject.ProportionalIntegralResponseVI[elementNumber].k2 = document.getElementById('ProportionalIntegralResponseVI-input-2').value;
+
+        findTimerExecutor(dataObject.ProportionalIntegralResponseVI[elementNumber]);
+    }
+
+    /**
+     * 比例微分
+     */
+    function setProportionalDifferentialResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.ProportionalDifferentialResponseVI[elementNumber].k1 = document.getElementById('ProportionalDifferentialResponseVI-input-1').value;
+        dataObject.ProportionalDifferentialResponseVI[elementNumber].k3 = document.getElementById('ProportionalDifferentialResponseVI-input-2').value;
+
+        findTimerExecutor(dataObject.ProportionalDifferentialResponseVI[elementNumber]);
+    }
+
+    /**
+     * 比例惯性
+     */
+    function setProportionalInertiaResponseVI(elementNumber) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.ProportionalInertiaResponseVI[elementNumber].k1 = document.getElementById('ProportionalInertiaResponseVI-input-1').value;
+        dataObject.ProportionalInertiaResponseVI[elementNumber].k2 = document.getElementById('ProportionalInertiaResponseVI-input-2').value;
+
+        findTimerExecutor(dataObject.ProportionalInertiaResponseVI[elementNumber]);
+    }
+
+    /**
+     * 信号发生器
+     */
+    function setSignalGeneratorVI(elementNumber, type) {
+
+        if (dataSetBox) {
+
+            dataSetBox.close();
+        }
+
+        dataObject.SignalGeneratorVI[elementNumber].signalType = type;
+
+        findTimerExecutor(dataObject.SignalGeneratorVI[elementNumber]);
     }
 
     /**
@@ -688,54 +807,151 @@
      */
     function findTimerExecutor(element) {
 
-        if (element.target == undefined) {
-            //说明此VI为只有输入没有输出的连线尾，如波形显示
-        }
-        else if (element.source == false || element.source == undefined) {
-            //说明此VI为只有输出没有输入的连线头，如旋钮，或未连接输入的VI
-
-            if (element.target.length > 0) {
-                //存在输出连线
-
-                element.setData(element.singleOutput);
-                window.setInterval(function () {
-                    onTimer(element, 1);
-                }, 50);
-            }
-        }
+        var runningElementArr = [];
+        window.setInterval(function () {
+            onTimer(element, runningElementArr);
+        }, 50);
     }
 
     /**
      * Timer函数
      * @param element   启动Timer的VI
-     * @param timerType VI类型，1为起点，2为第一个输入输出
+     *@param runningElementArr    用来存储是否需要刷新数据标志
      */
-    function onTimer(element, timerType) {
-
-        if (timerType == 1) {
-
-            findTargetElement(element);
-        }
-    }
-
-    function findTargetElement(element) {
+    function onTimer(element, runningElementArr) {
 
         var i;
-        for (i = 0; i < element.target.length; i++) {
+        for (i = 0; i < runningElementArr.length; i++) {
 
-            var data = getOutput(element, element.target[i][1]);
-            setElementData(element.target[i][0], data);
+            runningElementArr[i].runningFlag = false;
+        }
+        findSourceElement(element, runningElementArr);
+        findTargetElement(element, runningElementArr);
+    }
+
+    function findSourceElement(element, runningElementArr) {
+
+        //添加element.runningFlag到标志位存储数组中
+        if (runningElementArr.indexOf(element) == -1) {
+
+            runningElementArr.push(element);
+        }
+
+        if (element.source == false || element.source == undefined) {
+
+            if (!element.runningFlag) {
+
+                element.setData(element.singleOutput);  //直流输出等VI，直接重复赋值以生成输出数组
+                element.runningFlag = true;
+            }
+            return false;
+        }
+        else {
+
+            var i;
+            for (i = 0; i < element.source.length; i++) {
+
+                if (!element.runningFlag) {
+
+                    var j, sourceData;
+                    //查找element对应的输入VI的输出参数
+                    for (j = 0; j < element.source[i][0].target.length; j++) {
+
+                        if (element.source[i][0].target[j][0] == element) {
+
+                            sourceData = getOutput(element.source[i][0], element.source[i][0].target[j][1]);
+                            break;
+                        }
+                    }
+                    setElementData(element, sourceData, element.source[i][1]);
+
+                    findSourceElement(element.source[i][0], runningElementArr);    //继续向前查找sourceVI
+                    findTargetElement(element.source[i][0], runningElementArr);    //同时也向后查找当前sourceVI对应的其他targetVI
+                }
+            }
         }
     }
 
-    function setElementData(element, data) {
+    function findTargetElement(element, runningElementArr) {
 
-        element.setData(data);
-        if (element.target != undefined) {
+        if (element.target == false || element.target == undefined) {
 
-            if (element.target.length > 0) {
-                findTargetElement(element);
+            return false;
+        }
+        else {
+
+            var i;
+            for (i = 0; i < element.target.length; i++) {
+
+                //添加element到标志位存储数组中
+                if (runningElementArr.indexOf(element.target[i][0]) == -1) {
+
+                    runningElementArr.push(element.target[i][0]);
+                }
+                if (!element.target[i][0].runningFlag) {
+
+                    var j, sourceDataType;
+                    //查找element.target的输入参数类型
+                    for (j = 0; j < element.target[i][0].source.length; j++) {
+
+                        if (element.target[i][0].source[j][0] == element) {
+
+                            sourceDataType = element.target[i][0].source[j][1];
+                            break;
+                        }
+                    }
+                    var sourceData = getOutput(element, element.target[i][1]);
+
+                    setElementData(element.target[i][0], sourceData, sourceDataType);
+
+                    findTargetElement(element.target[i][0], runningElementArr);    //继续向后查找targetVI
+                    findSourceElement(element.target[i][0], runningElementArr);    //同时向前查找当前targetVI对应的不同的sourceVI
+                }
             }
+        }
+    }
+
+    function setElementData(element, sourceData, sourceDataType) {
+
+        if (element.name == 'ADDVI') {
+
+            if (sourceDataType == '1') {
+
+                element.setOriginalData(sourceData);
+                element.dataSetCount++;
+            }
+            else if (sourceDataType == '2') {
+
+                element.setData(sourceData);
+                element.dataSetCount++;
+            }
+            if (element.dataSetCount % 2 == 0) {
+
+                element.runningFlag = true;
+            }
+        }
+        else if (element.name == 'SignalGeneratorVI') {
+            if (sourceDataType == '1') {
+
+                element.amp = sourceData;
+                element.dataSetCount++;
+            }
+            else if (sourceDataType == '2') {
+
+                element.frequency = sourceData;
+                element.dataSetCount++;
+            }
+            if (element.dataSetCount % 2 == 0) {
+
+                element.phase += 10;
+                element.setData(element.amp, element.frequency, element.phase);
+                element.runningFlag = true;
+            }
+        }
+        else {
+
+            element.setData(sourceData);
+            element.runningFlag = true;
         }
     }
 
@@ -758,7 +974,6 @@
             } else if (outputType == 4) {
 
                 return element.positionOutput;  //输出位置数组
-
             }
         }
         else {
@@ -771,133 +986,6 @@
                 return element.output;  //输出数组
             }
         }
-    }
-
-    var stepResponse;
-
-    function setStepResponseData(type) {
-
-        if (dataSetBox) {
-
-            dataSetBox.close();
-        }
-
-        switch (parseInt(type)) {
-
-            case 1://比例
-                dataObject.ProportionalResponseVI[0].k1 = document.getElementById('ProportionalResponseVI-input').value;
-                stepResponse = dataObject.ProportionalResponseVI[0];
-                break;
-
-            case 2://积分
-                dataObject.IntegralResponseVI[0].k2 = document.getElementById('IntegralResponseVI-input').value;
-                stepResponse = dataObject.IntegralResponseVI[0];
-                break;
-
-            case 3://微分
-                dataObject.DifferentialResponseVI[0].k3 = document.getElementById('DifferentialResponseVI-input').value;
-                stepResponse = dataObject.DifferentialResponseVI[0];
-                break;
-
-            case 4://惯性
-                dataObject.InertiaResponseVI[0].k1 = document.getElementById('InertiaResponseVI-input').value;
-                stepResponse = dataObject.InertiaResponseVI[0];
-                break;
-
-            case 5://震荡
-                dataObject.OscillationResponseVI[0].k1 = document.getElementById('OscillationResponseVI-input-1').value;
-                dataObject.OscillationResponseVI[0].k2 = document.getElementById('OscillationResponseVI-input-2').value;
-                stepResponse = dataObject.OscillationResponseVI[0];
-                break;
-
-            case 6://比例积分
-                dataObject.ProportionalIntegralResponseVI[0].k1 = document.getElementById('ProportionalIntegralResponseVI-input-1').value;
-                dataObject.ProportionalIntegralResponseVI[0].k2 = document.getElementById('ProportionalIntegralResponseVI-input-2').value;
-                stepResponse = dataObject.ProportionalIntegralResponseVI[0];
-                break;
-
-            case 7://比例微分
-                dataObject.ProportionalDifferentialResponseVI[0].k1 = document.getElementById('ProportionalDifferentialResponseVI-input-1').value;
-                dataObject.ProportionalDifferentialResponseVI[0].k3 = document.getElementById('ProportionalDifferentialResponseVI-input-2').value;
-                stepResponse = dataObject.ProportionalDifferentialResponseVI[0];
-                break;
-
-            case 8://比例惯性
-                dataObject.ProportionalInertiaResponseVI[0].k1 = document.getElementById('ProportionalInertiaResponseVI-input-1').value;
-                dataObject.ProportionalInertiaResponseVI[0].k2 = document.getElementById('ProportionalInertiaResponseVI-input-2').value;
-                stepResponse = dataObject.ProportionalInertiaResponseVI[0];
-                break;
-        }
-
-        if (stepResponse.source[0] && stepResponse.target[0]) {
-
-            window.setInterval(onStepTimer, 50);
-        }
-        else {
-            G.alert('未正确连接！', 1, 1000);
-        }
-    }
-
-    function onStepTimer() {
-
-        var i;
-        stepResponse.source[0][0].setData(stepResponse.source[0][0].singleOutput);
-        stepResponse.setData(stepResponse.source[0][0].singleOutput);
-
-        if (stepResponse.target[0][0].name == 'WaveVI') {
-
-            stepResponse.target[0][0].setData(stepResponse.output, 1024);//输出信号波形控件赋值
-        }
-        for (i = 0; i < stepResponse.source[0][0].target[0].length; i++) {
-
-            if (stepResponse.source[0][0].target[i][0].name == 'WaveVI') {
-
-                stepResponse.source[0][0].target[i][0].setData(stepResponse.source[0][0].output, 1024);//输入信号波形控件赋值
-            }
-        }
-    }
-
-    function setSignalType(type, elementNumber) {
-
-        if (dataSetBox) {
-
-            dataSetBox.close();
-        }
-
-        dataObject.SignalGeneratorVI[elementNumber].signalType = type;
-        if (dataObject.SignalGeneratorVI[0].target[0]) {
-
-            window.setInterval(onSignalTimer, 100);
-        }
-    }
-
-    var amp = 1, frequency = 256, phase = 0;
-
-    function onSignalTimer() {
-
-        phase += 10;
-
-        if (dataObject.SignalGeneratorVI[0].source) {
-
-            for (var i = 0; i < dataObject.SignalGeneratorVI[0].source.length; i++) {
-
-                if (dataObject.SignalGeneratorVI[0].source[i][1] == '1') {
-
-                    amp = dataObject.SignalGeneratorVI[0].source[i][0].singleOutput;
-                }
-                else if (dataObject.SignalGeneratorVI[0].source[i][1] == '2') {
-
-                    frequency = dataObject.SignalGeneratorVI[0].source[i][0].singleOutput;
-                }
-            }
-        }
-
-        dataObject.SignalGeneratorVI[0].setData(amp, frequency, phase);
-        if (dataObject.SignalGeneratorVI[0].target[0][0].name == 'WaveVI') {
-
-            dataObject.SignalGeneratorVI[0].target[0][0].setData(dataObject.SignalGeneratorVI[0].output, dataObject.SignalGeneratorVI[0].output.length);
-        }
-
     }
 
     function allowDrop(e) {
