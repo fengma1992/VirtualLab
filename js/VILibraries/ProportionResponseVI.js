@@ -3,22 +3,22 @@
  */
 
 /**
- * 积分响应
+ * 比例响应
  * @param domElement
  * @constructor
  */
-function IntegralResponseVI(domElement) {
+function ProportionResponseVI(domElement) {
     'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
-    this.name = 'IntegralResponseVI';
-    this.cnText = '积分响应';
+    this.name = 'ProportionResponseVI';
+    this.cnText = '比例响应';
     this.runningFlag = false;
 
-    this.signalType = 2;
-    this.k1 = 0;
-    this.k2 = 1;
+    this.signalType = 1;
+    this.k1 = 1;
+    this.k2 = 0;
     this.k3 = 0;
     this.Fs = 1000;
     this.input = 0;
@@ -31,7 +31,6 @@ function IntegralResponseVI(domElement) {
     this.index = 0;
     this.output = [];
     this.outputCount = 2;
-    this.autoSave = true;
 
     //虚拟仪器中相连接的控件VI
     this.source = [];
@@ -45,31 +44,9 @@ function IntegralResponseVI(domElement) {
             return false;
         }
 
-        var v2, v21;
+        _this.singleOutput = _this.k1 * _this.input;
 
-        v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
-        _this.temp1 = v21;
-        v2 = _this.k2 * v21;
-
-
-        _this.singleOutput = v2;
-        _this.lastInput = _this.input;
-
-        if (_this.autoSave) {
-
-            _this.dataCollector(_this.singleOutput);
-        }
-
-        return _this.singleOutput;
-
-    };
-
-    /**
-     * 将输出数保存在数组内
-     * @param data singleOutput
-     */
-    this.dataCollector = function (data) {
-
+        //将输出数保存在数组内
         var i = 0;
         if (_this.index == 0) {
             for (i = 0; i < _this.dataLength; i++) {
@@ -77,16 +54,18 @@ function IntegralResponseVI(domElement) {
             }
         }
         if (_this.index <= (_this.dataLength - 1)) {
-            _this.output[_this.index] = data;
+            _this.output[_this.index] = _this.singleOutput;
             _this.index++;
         } else {
             for (i = 0; i < _this.dataLength - 1; i++) {
                 _this.output[i] = _this.output[i + 1];
             }
-            _this.output[_this.dataLength - 1] = data;
+            _this.output[_this.dataLength - 1] = _this.singleOutput;
         }
-    };
 
+        return _this.singleOutput;
+
+    };
 
     this.reset = function () {
         _this.lastInput = 0;
@@ -101,7 +80,7 @@ function IntegralResponseVI(domElement) {
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText('积分', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
         _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 

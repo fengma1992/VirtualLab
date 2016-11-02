@@ -3,23 +3,22 @@
  */
 
 /**
- * 比例积分响应
+ * 比例惯性响应
  * @param domElement
  * @constructor
  */
-function ProportionalIntegralResponseVI(domElement) {
+function ProportionInertiaResponseVI(domElement) {
     'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
-    this.name = 'ProportionalIntegralResponseVI';
-    this.cnText = '比例积分响应';
+    this.name = 'ProportionInertiaResponseVI';
+    this.cnText = '比例惯性响应';
     this.runningFlag = false;
 
-    this.signalType = 4;
+    this.signalType = 8;
     this.k1 = 1;
     this.k2 = 1;
-    this.k3 = 0;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;
@@ -44,18 +43,13 @@ function ProportionalIntegralResponseVI(domElement) {
             return false;
         }
 
-        var v1, v2, v21;
+        var v, E;
 
-        if (_this.signalType < 6) {
-            v1 = _this.k1 * _this.input;
-
-            v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
-            _this.temp1 = v21;
-            v2 = _this.k2 * v21;
-
-            _this.singleOutput = v1 + v2;
-            _this.lastInput = _this.input;
-        }
+        //一阶 X+1/(TS+1)
+        E = Math.exp(-1 / (_this.k1 * _this.Fs));
+        v = E * _this.temp1 + (1.0 - E) * _this.input;
+        _this.temp1 = v;
+        _this.singleOutput = v + _this.k2 * _this.input;//输出
 
         //将输出数保存在数组内
         var i = 0;
@@ -92,7 +86,7 @@ function ProportionalIntegralResponseVI(domElement) {
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
         _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-        _this.ctx.fillText('积分', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+        _this.ctx.fillText('惯性', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 
     this.draw();

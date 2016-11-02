@@ -13,12 +13,12 @@ function KnobVI(domElement) {
     var startX, startY, stopX, stopY;
     var roundCount = 0;
 
-    this.min = 0;
-    this.max = 1;
-    this.defaultValue = 1;
-    this.ratio = (this.max - this.min) / (Math.PI * 1.5);
+    this.minValue = 0;
+    this.maxValue = 100;
+    this.defaultValue = 100;
+    this.ratio = (this.maxValue - this.minValue) / (Math.PI * 1.5);
     this.singleOutput = this.defaultValue;
-    this.radian = (this.defaultValue - this.min) / this.ratio;
+    this.radian = (this.defaultValue - this.minValue) / this.ratio;
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
     this.name = 'KnobVI';
@@ -56,12 +56,12 @@ function KnobVI(domElement) {
      */
     this.setDataRange = function (minValue, maxValue, startValue) {
 
-        _this.min = isNaN(minValue) ? 0 : minValue;
-        _this.max = isNaN(maxValue) ? 1 : maxValue;
+        _this.minValue = isNaN(minValue) ? 0 : minValue;
+        _this.maxValue = isNaN(maxValue) ? 1 : maxValue;
         _this.defaultValue = isNaN(startValue) ? 0 : startValue;
-        _this.ratio = (_this.max - _this.min) / (Math.PI * 1.5);
+        _this.ratio = (_this.maxValue - _this.minValue) / (Math.PI * 1.5);
         this.setData(_this.defaultValue);
-        this.radian = (_this.defaultValue - _this.min) / _this.ratio;
+        this.radian = (_this.defaultValue - _this.minValue) / _this.ratio;
 
         DrawSpinner();
     };
@@ -115,8 +115,8 @@ function KnobVI(domElement) {
         _this.ctx.restore();  //恢复之前位置
         _this.ctx.beginPath();
         _this.ctx.font = "normal 14px Calibri";
-        _this.ctx.fillText(_this.min.toString(), 0, _this.height);
-        _this.ctx.fillText(_this.max.toString(), _this.width - 7 * _this.max.toString().length, _this.height); //字体大小为14
+        _this.ctx.fillText(_this.minValue.toString(), 0, _this.height);
+        _this.ctx.fillText(_this.maxValue.toString(), _this.width - 7 * _this.maxValue.toString().length, _this.height); //字体大小为14
         _this.ctx.closePath();
     }
 
@@ -175,7 +175,7 @@ function KnobVI(domElement) {
             else if (_this.radian > 270 / 360 * 2 * Math.PI) {
                 _this.radian = 270 / 180 * Math.PI;
             }
-            _this.setData(_this.radian * _this.ratio + parseFloat(_this.min));
+            _this.setData(_this.radian * _this.ratio + parseFloat(_this.minValue));
             DrawSpinner();
             startX = stopX;
             startY = stopY;

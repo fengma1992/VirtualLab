@@ -3,23 +3,23 @@
  */
 
 /**
- * 微分响应
+ * 积分响应
  * @param domElement
  * @constructor
  */
-function DifferentialResponseVI(domElement) {
+function IntegrationResponseVI(domElement) {
     'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
-    this.name = 'DifferentialResponseVI';
-    this.cnText = '微分响应';
+    this.name = 'IntegrationResponseVI';
+    this.cnText = '积分响应';
     this.runningFlag = false;
 
-    this.signalType = 3;
+    this.signalType = 2;
     this.k1 = 0;
-    this.k2 = 0;
-    this.k3 = 1;
+    this.k2 = 1;
+    this.k3 = 0;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;
@@ -45,8 +45,14 @@ function DifferentialResponseVI(domElement) {
             return false;
         }
 
+        var v2, v21;
 
-        _this.singleOutput = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;
+        v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
+        _this.temp1 = v21;
+        v2 = _this.k2 * v21;
+
+
+        _this.singleOutput = v2;
         _this.lastInput = _this.input;
 
         if (_this.autoSave) {
@@ -95,7 +101,7 @@ function DifferentialResponseVI(domElement) {
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText('微分', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText('积分', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
         _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 

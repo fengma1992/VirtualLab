@@ -58,19 +58,19 @@
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="ProportionalResponseVI-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="ProportionResponseVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="IntegralResponseVI-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="IntegrationResponseVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="DifferentialResponseVI-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="DifferentiationResponseVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
@@ -88,19 +88,19 @@
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="ProportionalIntegralResponseVI-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="ProportionIntegrationResponseVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="ProportionalDifferentialResponseVI-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="ProportionDifferentiationResponseVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
-        <canvas id="ProportionalInertiaResponseVI-canvas" class="draggable-element" width="45" height="45"
+        <canvas id="ProportionInertiaResponseVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="1"
                 draggable="true"
@@ -127,14 +127,14 @@
 <script src="js/VILibraries/TextVI.js"></script>
 <script src="js/VILibraries/WaveVI.js"></script>
 <!--*************阶跃响应************************-->
-<script src="js/VILibraries/DifferentialResponseVI.js"></script>
+<script src="js/VILibraries/DifferentiationResponseVI.js"></script>
 <script src="js/VILibraries/InertiaResponseVI.js"></script>
-<script src="js/VILibraries/IntegralResponseVI.js"></script>
+<script src="js/VILibraries/IntegrationResponseVI.js"></script>
 <script src="js/VILibraries/OscillationResponseVI.js"></script>
-<script src="js/VILibraries/ProportionalDifferentialResponseVI.js"></script>
-<script src="js/VILibraries/ProportionalInertiaResponseVI.js"></script>
-<script src="js/VILibraries/ProportionalIntegralResponseVI.js"></script>
-<script src="js/VILibraries/ProportionalResponseVI.js"></script>
+<script src="js/VILibraries/ProportionDifferentiationResponseVI.js"></script>
+<script src="js/VILibraries/ProportionInertiaResponseVI.js"></script>
+<script src="js/VILibraries/ProportionIntegrationResponseVI.js"></script>
+<script src="js/VILibraries/ProportionResponseVI.js"></script>
 <!--********************************************-->
 <!--三维显示库-->
 <script src="js/three.js"></script>
@@ -163,14 +163,14 @@
         PIDVICount: 0,
         RelayVICount: 0,
         TextVICount: 0,
-        ProportionalResponseVICount: 0,
-        IntegralResponseVICount: 0,
-        DifferentialResponseVICount: 0,
+        DifferentiationResponseVICount: 0,
         InertiaResponseVICount: 0,
+        IntegrationResponseVICount: 0,
         OscillationResponseVICount: 0,
-        ProportionalIntegralResponseVICount: 0,
-        ProportionalDifferentialResponseVICount: 0,
-        ProportionalInertiaResponseVICount: 0,
+        ProportionDifferentiationResponseVICount: 0,
+        ProportionInertiaResponseVICount: 0,
+        ProportionIntegrationResponseVICount: 0,
+        ProportionResponseVICount: 0,
         SignalGeneratorVICount: 0,
         THREE: [],
         BallBeamVI: [],
@@ -181,15 +181,15 @@
         PIDVI: [],
         RelayVI: [],
         TextVI: [],
-        ProportionalResponseVI: [],
-        IntegralResponseVI: [],
-        DifferentialResponseVI: [],
+        ProportionResponseVI: [],
+        IntegrationResponseVI: [],
+        DifferentiationResponseVI: [],
         InertiaResponseVI: [],
         OscillationResponseVI: [],
-        ProportionalIntegralResponseVI: [],
-        ProportionalDifferentialResponseVI: [],
-        ProportionalInertiaResponseVI: [],
-        SignalGeneratorVI: []
+        ProportionIntegrationResponseVI: [],
+        ProportionDifferentiationResponseVI: [],
+        ProportionInertiaResponseVI: [],
+        SignalGeneratorVI: [],
     };
 
     function init() {
@@ -202,14 +202,14 @@
         new SignalGeneratorVI(document.getElementById('SignalGeneratorVI-canvas'));
         new TextVI(document.getElementById('TextVI-canvas'));
         new WaveVI(document.getElementById('WaveVI-canvas'));
-        new ProportionalResponseVI(document.getElementById('ProportionalResponseVI-canvas'));
-        new IntegralResponseVI(document.getElementById('IntegralResponseVI-canvas'));
-        new DifferentialResponseVI(document.getElementById('DifferentialResponseVI-canvas'));
+        new ProportionResponseVI(document.getElementById('ProportionResponseVI-canvas'));
+        new IntegrationResponseVI(document.getElementById('IntegrationResponseVI-canvas'));
+        new DifferentiationResponseVI(document.getElementById('DifferentiationResponseVI-canvas'));
         new InertiaResponseVI(document.getElementById('InertiaResponseVI-canvas'));
         new OscillationResponseVI(document.getElementById('OscillationResponseVI-canvas'));
-        new ProportionalIntegralResponseVI(document.getElementById('ProportionalIntegralResponseVI-canvas'));
-        new ProportionalDifferentialResponseVI(document.getElementById('ProportionalDifferentialResponseVI-canvas'));
-        new ProportionalInertiaResponseVI(document.getElementById('ProportionalInertiaResponseVI-canvas'));
+        new ProportionIntegrationResponseVI(document.getElementById('ProportionIntegrationResponseVI-canvas'));
+        new ProportionDifferentiationResponseVI(document.getElementById('ProportionDifferentiationResponseVI-canvas'));
+        new ProportionInertiaResponseVI(document.getElementById('ProportionInertiaResponseVI-canvas'));
         ready();
         resize();
     }
@@ -531,14 +531,14 @@
             case 'AddVI':
                 return dataObject.AddVI;
 
-            case 'ProportionalResponseVI':
-                return dataObject.ProportionalResponseVI;
+            case 'ProportionResponseVI':
+                return dataObject.ProportionResponseVI;
 
-            case 'IntegralResponseVI':
-                return dataObject.IntegralResponseVI;
+            case 'IntegrationResponseVI':
+                return dataObject.IntegrationResponseVI;
 
-            case 'DifferentialResponseVI':
-                return dataObject.DifferentialResponseVI;
+            case 'DifferentiationResponseVI':
+                return dataObject.DifferentiationResponseVI;
 
             case 'InertiaResponseVI':
                 return dataObject.InertiaResponseVI;
@@ -546,14 +546,14 @@
             case 'OscillationResponseVI':
                 return dataObject.OscillationResponseVI;
 
-            case 'ProportionalIntegralResponseVI':
-                return dataObject.ProportionalIntegralResponseVI;
+            case 'ProportionIntegrationResponseVI':
+                return dataObject.ProportionIntegrationResponseVI;
 
-            case 'ProportionalDifferentialResponseVI':
-                return dataObject.ProportionalDifferentialResponseVI;
+            case 'ProportionDifferentiationResponseVI':
+                return dataObject.ProportionDifferentiationResponseVI;
 
-            case 'ProportionalInertiaResponseVI':
-                return dataObject.ProportionalInertiaResponseVI;
+            case 'ProportionInertiaResponseVI':
+                return dataObject.ProportionInertiaResponseVI;
 
             case 'SignalGeneratorVI':
                 return dataObject.SignalGeneratorVI;
@@ -570,7 +570,7 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">初值:</span><input type="number" id="AddVI-input" value="20" class="normalInput">' +
+                        '<span class="normalSpan">初值:</span><input type="number" id="AddVI-input" value="' + element.originalInput + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setAddVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -582,9 +582,9 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('请输入PID参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">P:</span><input type="number" id="PIDVI-input-1" value="20" class="normalInput">' +
-                        '<span class="normalSpan">I:</span><input type="number" id="PIDVI-input-2" value="0" class="normalInput">' +
-                        '<span class="normalSpan">D:</span><input type="number" id="PIDVI-input-3" value="20" class="normalInput">' +
+                        '<span class="normalSpan">P:</span><input type="number" id="PIDVI-input-1" value="' + element.P + '" class="normalInput">' +
+                        '<span class="normalSpan">I:</span><input type="number" id="PIDVI-input-2" value="' + element.I + '" class="normalInput">' +
+                        '<span class="normalSpan">D:</span><input type="number" id="PIDVI-input-3" value="' + element.D + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setPIDVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -596,7 +596,7 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('请输入保留小数位数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<input type="number" id="TextVI-input" value="1" class="normalInput">' +
+                        '<input type="number" id="TextVI-input" value="' + element.decimalPlace + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setTextVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -608,7 +608,7 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('请设置输出值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">初值:</span><input type="number" id="DCOutputVI-input" value="100" class="normalInput">' +
+                        '<span class="normalSpan">初值:</span><input type="number" id="DCOutputVI-input" value="' + element.singleOutput + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setDCOutputVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -620,46 +620,46 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">最小值:</span><input type="number" id="KnobVI-input-1" value="0" class="normalInput">' +
-                        '<span class="normalSpan">最大值:</span><input type="number" id="KnobVI-input-2" value="100" class="normalInput">' +
-                        '<span class="normalSpan">初值:</span><input type="number" id="KnobVI-input-3" value="100" class="normalInput">' +
+                        '<span class="normalSpan">最小值:</span><input type="number" id="KnobVI-input-1" value="' + element.minValue + '" class="normalInput">' +
+                        '<span class="normalSpan">最大值:</span><input type="number" id="KnobVI-input-2" value="' + element.maxValue + '" class="normalInput">' +
+                        '<span class="normalSpan">初值:</span><input type="number" id="KnobVI-input-3" value="' + element.defaultValue + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setKnobVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
                         });
                 break;
 
-            case 'ProportionalResponseVI':
+            case 'ProportionResponseVI':
 
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('比例响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalResponseVI-input" value="1.5" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setProportionalResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionResponseVI-input" value="' + element.k1 + '" class="normalInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
                         });
                 break;
 
-            case 'IntegralResponseVI':
+            case 'IntegrationResponseVI':
 
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K2:</span><input type="number" id="IntegralResponseVI-input" value="5" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setIntegralResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="IntegrationResponseVI-input" value="' + element.k2 + '" class="normalInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setIntegrationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
                         });
                 break;
 
-            case 'DifferentialResponseVI':
+            case 'DifferentiationResponseVI':
 
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K3:</span><input type="number" id="DifferentialResponseVI-input" value="0.0025" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setDifferentialResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '<span class="normalSpan">K3:</span><input type="number" id="DifferentiationResponseVI-input" value="0.0025" class="normalInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setDifferentiationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
                         });
@@ -690,40 +690,40 @@
                         });
                 break;
 
-            case 'ProportionalIntegralResponseVI':
+            case 'ProportionIntegrationResponseVI':
 
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('比例积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalIntegralResponseVI-input-1" value="1" class="normalInput">' +
-                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionalIntegralResponseVI-input-2" value="1" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setProportionalIntegralResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="1" class="normalInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="1" class="normalInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionIntegrationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
                         });
                 break;
 
-            case 'ProportionalDifferentialResponseVI':
+            case 'ProportionDifferentiationResponseVI':
 
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('比例微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalDifferentialResponseVI-input-1" value="1" class="normalInput">' +
-                        '<span class="normalSpan">K3:</span><input type="number" id="ProportionalDifferentialResponseVI-input-2" value="1" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setProportionalDifferentialResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="1" class="normalInput">' +
+                        '<span class="normalSpan">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="1" class="normalInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionDifferentiationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
                         });
                 break;
 
-            case 'ProportionalInertiaResponseVI':
+            case 'ProportionInertiaResponseVI':
 
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('比例惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionalInertiaResponseVI-input-1" value="1" class="normalInput">' +
-                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionalInertiaResponseVI-input-2" value="1" class="normalInput">' +
-                        '<button id="startBtn" class="normalBtn" onclick="setProportionalInertiaResponseVI(' + elementInfo[2] + ')">确定</button>' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="1" class="normalInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="1" class="normalInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setProportionInertiaResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
                         });
@@ -810,37 +810,37 @@
     /**
      * 比例
      */
-    function setProportionalResponseVI(elementNumber) {
+    function setProportionResponseVI(elementNumber) {
 
         closeBox();
 
-        dataObject.ProportionalResponseVI[elementNumber].k1 = document.getElementById('ProportionalResponseVI-input').value;
+        dataObject.ProportionResponseVI[elementNumber].k1 = document.getElementById('ProportionResponseVI-input').value;
 
-        findTimerExecutor(dataObject.ProportionalResponseVI[elementNumber]);
+        findTimerExecutor(dataObject.ProportionResponseVI[elementNumber]);
     }
 
     /**
      * 积分
      */
-    function setIntegralResponseVI(elementNumber) {
+    function setIntegrationResponseVI(elementNumber) {
 
         closeBox();
 
-        dataObject.IntegralResponseVI[elementNumber].k2 = document.getElementById('IntegralResponseVI-input').value;
+        dataObject.IntegrationResponseVI[elementNumber].k2 = document.getElementById('IntegrationResponseVI-input').value;
 
-        findTimerExecutor(dataObject.IntegralResponseVI[elementNumber]);
+        findTimerExecutor(dataObject.IntegrationResponseVI[elementNumber]);
     }
 
     /**
      * 微分
      */
-    function setDifferentialResponseVI(elementNumber) {
+    function setDifferentiationResponseVI(elementNumber) {
 
         closeBox();
 
-        dataObject.DifferentialResponseVI[elementNumber].k3 = document.getElementById('DifferentialResponseVI-input').value;
+        dataObject.DifferentiationResponseVI[elementNumber].k3 = document.getElementById('DifferentiationResponseVI-input').value;
 
-        findTimerExecutor(dataObject.DifferentialResponseVI[elementNumber]);
+        findTimerExecutor(dataObject.DifferentiationResponseVI[elementNumber]);
     }
 
     /**
@@ -871,40 +871,40 @@
     /**
      * 比例积分
      */
-    function setProportionalIntegralResponseVI(elementNumber) {
+    function setProportionIntegrationResponseVI(elementNumber) {
 
         closeBox();
 
-        dataObject.ProportionalIntegralResponseVI[elementNumber].k1 = document.getElementById('ProportionalIntegralResponseVI-input-1').value;
-        dataObject.ProportionalIntegralResponseVI[elementNumber].k2 = document.getElementById('ProportionalIntegralResponseVI-input-2').value;
+        dataObject.ProportionIntegrationResponseVI[elementNumber].k1 = document.getElementById('ProportionIntegrationResponseVI-input-1').value;
+        dataObject.ProportionIntegrationResponseVI[elementNumber].k2 = document.getElementById('ProportionIntegrationResponseVI-input-2').value;
 
-        findTimerExecutor(dataObject.ProportionalIntegralResponseVI[elementNumber]);
+        findTimerExecutor(dataObject.ProportionIntegrationResponseVI[elementNumber]);
     }
 
     /**
      * 比例微分
      */
-    function setProportionalDifferentialResponseVI(elementNumber) {
+    function setProportionDifferentiationResponseVI(elementNumber) {
 
         closeBox();
 
-        dataObject.ProportionalDifferentialResponseVI[elementNumber].k1 = document.getElementById('ProportionalDifferentialResponseVI-input-1').value;
-        dataObject.ProportionalDifferentialResponseVI[elementNumber].k3 = document.getElementById('ProportionalDifferentialResponseVI-input-2').value;
+        dataObject.ProportionDifferentiationResponseVI[elementNumber].k1 = document.getElementById('ProportionDifferentiationResponseVI-input-1').value;
+        dataObject.ProportionDifferentiationResponseVI[elementNumber].k3 = document.getElementById('ProportionDifferentiationResponseVI-input-2').value;
 
-        findTimerExecutor(dataObject.ProportionalDifferentialResponseVI[elementNumber]);
+        findTimerExecutor(dataObject.ProportionDifferentiationResponseVI[elementNumber]);
     }
 
     /**
      * 比例惯性
      */
-    function setProportionalInertiaResponseVI(elementNumber) {
+    function setProportionInertiaResponseVI(elementNumber) {
 
         closeBox();
 
-        dataObject.ProportionalInertiaResponseVI[elementNumber].k1 = document.getElementById('ProportionalInertiaResponseVI-input-1').value;
-        dataObject.ProportionalInertiaResponseVI[elementNumber].k2 = document.getElementById('ProportionalInertiaResponseVI-input-2').value;
+        dataObject.ProportionInertiaResponseVI[elementNumber].k1 = document.getElementById('ProportionInertiaResponseVI-input-1').value;
+        dataObject.ProportionInertiaResponseVI[elementNumber].k2 = document.getElementById('ProportionInertiaResponseVI-input-2').value;
 
-        findTimerExecutor(dataObject.ProportionalInertiaResponseVI[elementNumber]);
+        findTimerExecutor(dataObject.ProportionInertiaResponseVI[elementNumber]);
     }
 
     /**
@@ -1170,28 +1170,28 @@
                 newVICanvas.id = VICanvas.id + '-' + dataObject.RelayVICount++;
                 break;
 
-            case 'ProportionalResponseVI':
-                if (dataObject.ProportionalResponseVICount > 0) {
+            case 'ProportionResponseVI':
+                if (dataObject.ProportionResponseVICount > 0) {
                     G.alert('比例响应已存在！', 1, 1500);
                     return;
                 }
-                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionalResponseVICount++;
+                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionResponseVICount++;
                 break;
 
-            case 'IntegralResponseVI':
-                if (dataObject.IntegralResponseVICount > 0) {
+            case 'IntegrationResponseVI':
+                if (dataObject.IntegrationResponseVICount > 0) {
                     G.alert('积分响应已存在！', 1, 1500);
                     return;
                 }
-                newVICanvas.id = VICanvas.id + '-' + dataObject.IntegralResponseVICount++;
+                newVICanvas.id = VICanvas.id + '-' + dataObject.IntegrationResponseVICount++;
                 break;
 
-            case 'DifferentialResponseVI':
-                if (dataObject.DifferentialResponseVICount > 0) {
+            case 'DifferentiationResponseVI':
+                if (dataObject.DifferentiationResponseVICount > 0) {
                     G.alert('微分响应已存在！', 1, 1500);
                     return;
                 }
-                newVICanvas.id = VICanvas.id + '-' + dataObject.DifferentialResponseVICount++;
+                newVICanvas.id = VICanvas.id + '-' + dataObject.DifferentiationResponseVICount++;
                 break;
 
             case 'InertiaResponseVI':
@@ -1210,28 +1210,28 @@
                 newVICanvas.id = VICanvas.id + '-' + dataObject.OscillationResponseVICount++;
                 break;
 
-            case 'ProportionalIntegralResponseVI':
-                if (dataObject.ProportionalIntegralResponseVICount > 0) {
+            case 'ProportionIntegrationResponseVI':
+                if (dataObject.ProportionIntegrationResponseVICount > 0) {
                     G.alert('比例积分响应已存在！', 1, 1500);
                     return;
                 }
-                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionalIntegralResponseVICount++;
+                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionIntegrationResponseVICount++;
                 break;
 
-            case 'ProportionalDifferentialResponseVI':
-                if (dataObject.ProportionalDifferentialResponseVICount > 0) {
+            case 'ProportionDifferentiationResponseVI':
+                if (dataObject.ProportionDifferentiationResponseVICount > 0) {
                     G.alert('比例微分响应已存在！', 1, 1500);
                     return;
                 }
-                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionalDifferentialResponseVICount++;
+                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionDifferentiationResponseVICount++;
                 break;
 
-            case 'ProportionalInertiaResponseVI':
-                if (dataObject.ProportionalInertiaResponseVICount > 0) {
+            case 'ProportionInertiaResponseVI':
+                if (dataObject.ProportionInertiaResponseVICount > 0) {
                     G.alert('比例惯性响应已存在！', 1, 1500);
                     return;
                 }
-                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionalInertiaResponseVICount++;
+                newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionInertiaResponseVICount++;
                 break;
 
             case 'SignalGeneratorVI':
@@ -1280,8 +1280,8 @@
                 addEndpoints(canvas.id, ['RightMiddle'], [], -1, 0);
                 break;
 
-            case 'DifferentialResponseVI':
-                dataObject.DifferentialResponseVI.push(new DifferentialResponseVI(canvas));
+            case 'DifferentiationResponseVI':
+                dataObject.DifferentiationResponseVI.push(new DifferentiationResponseVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 
@@ -1290,8 +1290,8 @@
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 
-            case 'IntegralResponseVI':
-                dataObject.IntegralResponseVI.push(new IntegralResponseVI(canvas));
+            case 'IntegrationResponseVI':
+                dataObject.IntegrationResponseVI.push(new IntegrationResponseVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 
@@ -1310,23 +1310,23 @@
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 
-            case 'ProportionalDifferentialResponseVI':
-                dataObject.ProportionalDifferentialResponseVI.push(new ProportionalDifferentialResponseVI(canvas));
+            case 'ProportionDifferentiationResponseVI':
+                dataObject.ProportionDifferentiationResponseVI.push(new ProportionDifferentiationResponseVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 
-            case 'ProportionalInertiaResponseVI':
-                dataObject.ProportionalInertiaResponseVI.push(new ProportionalInertiaResponseVI(canvas));
+            case 'ProportionInertiaResponseVI':
+                dataObject.ProportionInertiaResponseVI.push(new ProportionInertiaResponseVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 
-            case 'ProportionalIntegralResponseVI':
-                dataObject.ProportionalIntegralResponseVI.push(new ProportionalIntegralResponseVI(canvas));
+            case 'ProportionIntegrationResponseVI':
+                dataObject.ProportionIntegrationResponseVI.push(new ProportionIntegrationResponseVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 
-            case 'ProportionalResponseVI':
-                dataObject.ProportionalResponseVI.push(new ProportionalResponseVI(canvas));
+            case 'ProportionResponseVI':
+                dataObject.ProportionResponseVI.push(new ProportionResponseVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 

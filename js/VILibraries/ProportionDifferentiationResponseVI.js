@@ -7,12 +7,12 @@
  * @param domElement
  * @constructor
  */
-function ProportionalDifferentialResponseVI(domElement) {
+function ProportionDifferentiationResponseVI(domElement) {
     'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
-    this.name = 'ProportionalDifferentialResponseVI';
+    this.name = 'ProportionDifferentiationResponseVI';
     this.cnText = '比例微分响应';
     this.runningFlag = false;
 

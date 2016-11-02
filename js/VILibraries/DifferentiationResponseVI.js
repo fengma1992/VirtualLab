@@ -3,23 +3,23 @@
  */
 
 /**
- * 比例响应
+ * 微分响应
  * @param domElement
  * @constructor
  */
-function ProportionalResponseVI(domElement) {
+function DifferentiationResponseVI(domElement) {
     'use strict';
     var _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
-    this.name = 'ProportionalResponseVI';
-    this.cnText = '比例响应';
+    this.name = 'DifferentiationResponseVI';
+    this.cnText = '微分响应';
     this.runningFlag = false;
 
-    this.signalType = 1;
-    this.k1 = 1;
+    this.signalType = 3;
+    this.k1 = 0;
     this.k2 = 0;
-    this.k3 = 0;
+    this.k3 = 1;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;
@@ -31,6 +31,7 @@ function ProportionalResponseVI(domElement) {
     this.index = 0;
     this.output = [];
     this.outputCount = 2;
+    this.autoSave = true;
 
     //虚拟仪器中相连接的控件VI
     this.source = [];
@@ -44,9 +45,25 @@ function ProportionalResponseVI(domElement) {
             return false;
         }
 
-        _this.singleOutput = _this.k1 * _this.input;
 
-        //将输出数保存在数组内
+        _this.singleOutput = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;
+        _this.lastInput = _this.input;
+
+        if (_this.autoSave) {
+
+            _this.dataCollector(_this.singleOutput);
+        }
+
+        return _this.singleOutput;
+
+    };
+
+    /**
+     * 将输出数保存在数组内
+     * @param data singleOutput
+     */
+    this.dataCollector = function (data) {
+
         var i = 0;
         if (_this.index == 0) {
             for (i = 0; i < _this.dataLength; i++) {
@@ -54,18 +71,16 @@ function ProportionalResponseVI(domElement) {
             }
         }
         if (_this.index <= (_this.dataLength - 1)) {
-            _this.output[_this.index] = _this.singleOutput;
+            _this.output[_this.index] = data;
             _this.index++;
         } else {
             for (i = 0; i < _this.dataLength - 1; i++) {
                 _this.output[i] = _this.output[i + 1];
             }
-            _this.output[_this.dataLength - 1] = _this.singleOutput;
+            _this.output[_this.dataLength - 1] = data;
         }
-
-        return _this.singleOutput;
-
     };
+
 
     this.reset = function () {
         _this.lastInput = 0;
@@ -80,7 +95,7 @@ function ProportionalResponseVI(domElement) {
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText('微分', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
         _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 
