@@ -31,6 +31,7 @@ function DCOutputVI(domElement) {
      */
     this.setData = function (data) {
 
+        data = typeof data === 'object' ? data[data.length - 1] : data;
         if (isNaN(data)) {
 
             return false;

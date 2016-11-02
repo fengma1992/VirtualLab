@@ -41,7 +41,7 @@
         <img class="loadingImg" src="img/loading.gif" alt="loading">
     </div>
 </div>
-<script src="js/VILibraries/ADDVI.js"></script>
+<script src="js/VILibraries/AddVI.js"></script>
 <script src="js/VILibraries/PIDVI.js"></script>
 <script src="js/VILibraries/BallBeamVI.js"></script>
 <script src="js/VILibraries/WaveVI.js"></script>
@@ -114,11 +114,11 @@
     function onTimer() {
 
         //加法器
-        addVI.setData(ballBeamVI.position);//输入球位置信号，输出位置偏差
+        addVI.setData(ballBeamVI.PIDPosition);//输入球位置信号，输出位置偏差
         //PID控制器
         PIDVI.setData(addVI.singleOutput);//输入位置偏差，输出杆角度
         //球杆模型
-        ballBeamVI.setInputAngle(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
+        ballBeamVI.setData(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
         //波形控件
         positionWave.setData(ballBeamVI.positionOutput, ballBeamVI.dataLength);
         angleWave.setData(ballBeamVI.angelOutput, ballBeamVI.dataLength);

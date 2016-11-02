@@ -53,7 +53,7 @@ function AddVI(domElement) {
         }
         _this.originalInput = originalInput;
         return _this.originalInput;
-    }
+    };
 
     this.reset = function () {
 

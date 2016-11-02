@@ -181,10 +181,10 @@ html {
 }
 
 .normalInput {
-    width: 50px;
+    width: 70px;
     font-size: 1.2em;
-    padding: 5px 5px;
-    text-align: center;
+    padding: 2px 2px;
+    text-align: left;
 }
 
 .normalSpan {
@@ -201,4 +201,12 @@ html {
 
 .VI-div {
     width: 80%;
+}
+
+.input-div {
+    padding: 5px 5px;
+    font-size: 1em;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }

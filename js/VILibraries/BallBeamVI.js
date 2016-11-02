@@ -3,16 +3,25 @@
  */
 
 'use strict';
-function BallBeamVI(domElement) {
+function BallBeamVI(domElement, drawFlag, loadingDiv) {
 
     var _this = this;
-    this.container = domElement;
-    this.ctx = domElement.getContext('2d');
+    if (drawFlag) {
+        BallBeamDraw(domElement, loadingDiv);
+    }
+    else {
+
+        _this.canvas = domElement;
+        _this.ctx = domElement.getContext('2d');
+        VIDraw();
+    }
     this.name = 'BallBeamVI';
     this.cnText = '球杆模型';
     this.runningFlag = false;
+    this.isStart = false;
 
     this.Fs = 50;
+    this.markPosition = 0;  //记录标记移动位置
     this.PIDAngle = 0;
     this.PIDPosition = 0;
     this.limit = true;
@@ -30,11 +39,12 @@ function BallBeamVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.source = [];
     this.target = [];
+
     /**
      *
      * @param angle 输入端口读取角度
      */
-    this.setInputAngle = function (angle) {
+    this.setData = function (angle) {
 
         angle = typeof angle === 'object' ? angle[angle.length - 1] : angle;
         if (isNaN(angle)) {
@@ -72,7 +82,7 @@ function BallBeamVI(domElement) {
         _this.u2 = u;
         _this.y2 = v;
         _this.PIDPosition = v;//向输出端口上写数据
-
+        setPosition(_this.PIDAngle * Math.PI / 180, _this.PIDPosition);
         _this.dataCollector(_this.PIDAngle, _this.PIDPosition);
 
         return [_this.PIDAngle, _this.PIDPosition];
@@ -108,26 +118,25 @@ function BallBeamVI(domElement) {
 
     this.reset = function () {
 
-        _this.angle = 0;
-        _this.position = 0;
+        _this.PIDAngle = 0;
+        _this.PIDPosition = 0;
         _this.limit = true;
         _this.u1 = 0;
         _this.u2 = 0;
         _this.y1 = 0;
         _this.y2 = 0;
         _this.index = 0;
+        setPosition(0, 0);
     };
 
-    this.draw = function () {
+    function VIDraw() {
         var img = new Image();
         img.src = 'img/BallBeam.png';
         img.onload = function () {
 
-            _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
+            _this.ctx.drawImage(img, 0, 0, _this.canvas.width, _this.canvas.height);
         };
-    };
-
-    this.draw();
+    }
 
 
     var camera, scene, renderer, controls, markControl, switchControl, resetControl,
@@ -143,7 +152,7 @@ function BallBeamVI(domElement) {
      * @param loadingDiv 三维加载时遮罩
      * @constructor
      */
-    this.BallBeamDraw = function (domElement, loadingDiv) {
+    function BallBeamDraw(domElement, loadingDiv) {
 
         renderer = new THREE.WebGLRenderer({
             canvas: domElement,
@@ -161,13 +170,8 @@ function BallBeamVI(domElement) {
         controls.enableZoom = true;
         controls.zoomSpeed = 1.2;
         controls.enableDamping = true;
-//        controls.minPolarAngle = Math.PI / 4;
-//        controls.maxPolarAngle = Math.PI * 3 / 4;
-//        controls.minAzimuthAngle = -Math.PI / 4;
-//        controls.maxAzimuthAngle = Math.PI / 4;
 
         scene = new THREE.Scene();
-
 
         var light = new THREE.AmbientLight(0x555555);
         scene.add(light);
@@ -178,7 +182,7 @@ function BallBeamVI(domElement) {
         light2.position.set(-4000, 4000, -4000);
         scene.add(light2);
 
-//use as a reference plane for ObjectControl
+        //use as a reference plane for ObjectControl
         var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
 
         //标记拖动控制
@@ -188,12 +192,12 @@ function BallBeamVI(domElement) {
 
         markControl.attachEvent('mouseOver', function () {
 
-            this.container.style.cursor = 'pointer';
+            renderer.domElement.style.cursor = 'pointer';
         });
 
         markControl.attachEvent('mouseOut', function () {
 
-            this.container.style.cursor = 'auto';
+            renderer.domElement.style.cursor = 'auto';
         });
 
         markControl.attachEvent('dragAndDrop', onBallBeamDrag);
@@ -201,7 +205,7 @@ function BallBeamVI(domElement) {
         markControl.attachEvent('mouseUp', function () {
 
             controls.enabled = true;
-            this.container.style.cursor = 'auto';
+            renderer.domElement.style.cursor = 'auto';
         });
 
         //开关控制
@@ -211,20 +215,19 @@ function BallBeamVI(domElement) {
 
         switchControl.attachEvent('mouseOver', function () {
 
-            this.container.style.cursor = 'pointer';
+            renderer.domElement.style.cursor = 'pointer';
         });
 
         switchControl.attachEvent('mouseOut', function () {
 
-            this.container.style.cursor = 'auto';
+            renderer.domElement.style.cursor = 'auto';
         });
 
-        var isStart = false;
         switchControl.attachEvent('onclick', function () {
 
-            if (!isStart) {
+            if (!_this.isStart) {
 
-                isStart = !isStart;
+                _this.isStart = true;
 
                 scene.remove(offButton);
                 switchControl.detach(offButton);
@@ -235,7 +238,7 @@ function BallBeamVI(domElement) {
 
             else {
 
-                isStart = !isStart;
+                _this.isStart = false;
 
                 scene.remove(onButton);
                 switchControl.detach(onButton);
@@ -252,23 +255,23 @@ function BallBeamVI(domElement) {
 
         resetControl.attachEvent('mouseOver', function () {
 
-            this.container.style.cursor = 'pointer';
+            renderer.domElement.style.cursor = 'pointer';
         });
 
         resetControl.attachEvent('mouseOut', function () {
 
-            this.container.style.cursor = 'auto';
+            renderer.domElement.style.cursor = 'auto';
         });
 
         resetControl.attachEvent('onclick', function () {
 
-            isStart = !isStart;
+            _this.isStart = false;
             scene.remove(onButton);
             switchControl.detach(onButton);
             scene.add(offButton);
             switchControl.attach(offButton);
             position = 0;
-            setPosition(0, 0);
+            _this.reset();
 
         });
 
@@ -405,18 +408,18 @@ function BallBeamVI(domElement) {
 
         ballBeamAnimate();
 
-        window.addEventListener('resize', function () {
-
-            camera.aspect = domElement.clientWidth / domElement.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(domElement.clientWidth, domElement.clientHeight);
-        });
-    };
+        // window.addEventListener('resize', function () {
+        //
+        //     camera.aspect = domElement.clientWidth / domElement.clientHeight;
+        //     camera.updateProjectionMatrix();
+        //     renderer.setSize(domElement.clientWidth, domElement.clientHeight);
+        // });
+    }
 
     function onBallBeamDrag() {
 
         controls.enabled = false;
-        this.container.style.cursor = 'move';
+        renderer.domElement.style.cursor = 'pointer';
         this.focused.position.y = this.previous.y;  //lock y direction
         position = this.focused.position.x;
         if (position < -120) {
@@ -429,6 +432,7 @@ function BallBeamVI(domElement) {
         }
 
         position = this.focused.position.x;
+        _this.markPosition = position;
     }
 
     function ballBeamAnimate() {

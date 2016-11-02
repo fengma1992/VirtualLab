@@ -22,8 +22,8 @@
     -o-box-shadow: 2px 2px 19px #aaa;
     -webkit-box-shadow: 2px 2px 19px #aaa;
     -moz-box-shadow: 2px 2px 19px #aaa;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
+    /*-moz-border-radius: 0.5em;*/
+    /*border-radius: 0.5em;*/
     opacity: 0.8;
     line-height: 80px;
     cursor: grab;
@@ -51,7 +51,7 @@
 }
 
 .draggable-div {
-    width: 100%;
+    width: 80%;
     height: 700px;
     border: 1px solid #CCC;
     background-color: white;
@@ -65,12 +65,12 @@
 
 .draggable-div .draggable-element {
     border: 1px solid #346789;
-    box-shadow: 2px 2px 19px #aaa;
-    -o-box-shadow: 2px 2px 19px #aaa;
-    -webkit-box-shadow: 2px 2px 19px #aaa;
-    -moz-box-shadow: 2px 2px 19px #aaa;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
+    /*box-shadow: 2px 2px 19px #aaa;*/
+    /*-o-box-shadow: 2px 2px 19px #aaa;*/
+    /*-webkit-box-shadow: 2px 2px 19px #aaa;*/
+    /*-moz-box-shadow: 2px 2px 19px #aaa;*/
+    /*-moz-border-radius: 0.5em;*/
+    /*border-radius: 0.5em;*/
     opacity: 0.8;
     line-height: 80px;
     cursor: pointer;
@@ -121,3 +121,4 @@
 /*color: white;*/
 /*border: 1px solid white;*/
 /*}*/
+
