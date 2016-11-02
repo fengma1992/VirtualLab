@@ -3,11 +3,11 @@
  */
 
 'use strict';
-function BallBeamVI(domElement, drawFlag, loadingDiv) {
+function BallBeamVI(domElement, drawFlag) {
 
     var _this = this;
     if (drawFlag) {
-        BallBeamDraw(domElement, loadingDiv);
+        BallBeamDraw(domElement);
     }
     else {
 
@@ -138,7 +138,6 @@ function BallBeamVI(domElement, drawFlag, loadingDiv) {
         };
     }
 
-
     var camera, scene, renderer, controls, markControl, switchControl, resetControl,
         beam, ball, mark, offButton, onButton, resetButton,
         position = 0;
@@ -146,14 +145,23 @@ function BallBeamVI(domElement, drawFlag, loadingDiv) {
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
         || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
+
     /**
      * 三维绘图
      * @param domElement HTML CANVAS
      * @param loadingDiv 三维加载时遮罩
      * @constructor
      */
-    function BallBeamDraw(domElement, loadingDiv) {
-
+    function BallBeamDraw(domElement) {
+        var loadingImg = document.createElement('img');
+        loadingImg.src = 'img/loading.gif';
+        loadingImg.style.width = '64px';
+        loadingImg.style.height = '64px';
+        loadingImg.style.position = 'absolute';
+        loadingImg.style.top = domElement.offsetTop + domElement.offsetHeight / 2 - 32 + 'px';
+        loadingImg.style.left = domElement.offsetLeft + domElement.offsetWidth / 2 - 32 + 'px';
+        loadingImg.style.zIndex = '1001';
+        domElement.parentNode.appendChild(loadingImg);
         renderer = new THREE.WebGLRenderer({
             canvas: domElement,
             antialias: true
@@ -279,11 +287,6 @@ function BallBeamVI(domElement, drawFlag, loadingDiv) {
 
         var objLoader = new THREE.OBJLoader();
 
-        if (loadingDiv) {
-
-            loadingDiv.style.display = 'flex';
-        }
-
         mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
 
             materials.preload();
@@ -377,11 +380,7 @@ function BallBeamVI(domElement, drawFlag, loadingDiv) {
                                                                 });
                                                                 resetButton = g;
 
-                                                                if (loadingDiv) {
-
-                                                                    loadingDiv.style.display = 'none';
-                                                                }
-
+                                                                loadingImg.style.display = 'none';
                                                                 scene.add(base);
                                                                 scene.add(beam);
                                                                 scene.add(ball);

@@ -116,9 +116,6 @@
     <div id="container" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)">
     </div>
 </div>
-<div id="loadingDiv" class="loadingDiv">
-    <img class="loadingImg" src="img/loading.gif" alt="loading">
-</div>
 <!--虚拟仪器库-->
 <script src="js/VILibraries/AddVI.js"></script>
 <script src="js/VILibraries/BallBeamVI.js"></script>
@@ -151,7 +148,6 @@
 <script src="js/popup.js"></script>
 <script>
 
-    var loadingDiv = document.getElementById('loadingDiv');
     var sideBar = document.getElementById('sideBar');
     var VIContainer = document.getElementById('container');
 
@@ -1275,7 +1271,7 @@
                 break;
 
             case 'BallBeamVI':
-                dataObject.BallBeamVI.push(new BallBeamVI(canvas, true, loadingDiv));
+                dataObject.BallBeamVI.push(new BallBeamVI(canvas, true));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
                 break;
 

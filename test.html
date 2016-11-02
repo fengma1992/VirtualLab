@@ -1,31 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html>
 <body>
 
-<script>
-    function getAngle(x1, y1, x2, y2) {
-        // 直角的边长
-        var x = x2 - x1;
-        var y = y2 - y1;
-        // 斜边长
-        var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        // 余弦
-        var cos = y / z;
-        // 弧度
-        var radian;
-        if (x >= 0)
-            radian = Math.acos(cos);
-        else
-            radian = Math.PI * 2 - Math.acos(cos);
+<p id="p1">Hello World!</p>
 
-        return radian;
-    }
-    var radian = getAngle(0, 0, 1, 1.732);
-    console.log(radian);
+<script>
+
+    var test = '<p>aaa</p>';
+    var pp = document.getElementById('pp');
+    pp.parentNode.appendChild(test);
 </script>
+
+<p id='pp'>上面的段落被一段脚本改变了。</p>
+
 </body>
 </html>
