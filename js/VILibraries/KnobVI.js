@@ -120,32 +120,94 @@ function KnobVI(domElement) {
         _this.ctx.closePath();
     }
 
-    this.mouseMove = function () {
-    }; // this.container.style.cursor = 'move';
 
+    var _mouseOverFlag = false;
+    var _mouseOutFlag = false;
+    var _dragAndDropFlag = false;
+    var _mouseUpFlag = false;
+    var _onclickFlag = false;
+    var _mouseMoveFlag = false;
+
+    this.dragAndDrop = function () {
+    };// this.container.style.cursor = 'move';
+    this.mouseOver = function () {
+    }; // this.container.style.cursor = 'pointer';
+    this.mouseOut = function () {
+    }; // this.container.style.cursor = 'auto';
     this.mouseUp = function () {
+    }; // this.container.style.cursor = 'auto';
+    this.mouseMove = function () {
+    };
+    this.onclick = function () {
     };
 
     this.attachEvent = function (event, handler) {
 
         switch (event) {
-            case 'mouseMove':
-                this.mouseMove = handler;
+            case 'mouseOver':
+                this.mouseOver = handler;
+                _mouseOverFlag = true;
+                break;
+            case 'mouseOut':
+                this.mouseOut = handler;
+                _mouseOutFlag = true;
+                break;
+            case 'dragAndDrop':
+                this.dragAndDrop = handler;
+                _dragAndDropFlag = true;
                 break;
             case 'mouseUp':
                 this.mouseUp = handler;
+                _mouseUpFlag = true;
+                break;
+            case 'onclick':
+                this.onclick = handler;
+                _onclickFlag = true;
+                break;
+            case 'mouseMove':
+                this.mouseMove = handler;
+                _mouseMoveFlag = true;
+                break;
                 break;
         }
     };
 
+    this.detachEvent = function (event) {
+
+        switch (event) {
+            case 'mouseOver':
+                _mouseOverFlag = false;
+                break;
+            case 'mouseOut':
+                _mouseOutFlag = false;
+                break;
+            case 'dragAndDrop':
+                _dragAndDropFlag = false;
+                break;
+            case 'mouseUp':
+                _mouseUpFlag = false;
+                break;
+            case 'onclick':
+                _onclickFlag = false;
+                break;
+            case 'mouseMove':
+                _mouseMoveFlag = false;
+                break;
+                break;
+        }
+
+    };
 
     function onMouseDown(event) {
 
         var tempData = rotateAxis(event.offsetX - _this.width / 2, -(event.offsetY - _this.height / 2), 135);
         startX = tempData[0];
         startY = tempData[1];
-        if ((startX * startX + startY * startY) <= _this.width / 2 * _this.width / 2 * 0.5)
+        if ((startX * startX + startY * startY) <= _this.width / 2 * _this.width / 2 * 0.5) {
+
             spinnerFlag = true;
+        }
+
     }
 
     function onMouseMove(event) {
@@ -179,7 +241,11 @@ function KnobVI(domElement) {
             DrawSpinner();
             startX = stopX;
             startY = stopY;
-            _this.mouseMove();
+
+            if (_mouseMoveFlag) {
+
+                _this.mouseMove();
+            }
         }
     }
 
@@ -187,7 +253,11 @@ function KnobVI(domElement) {
 
         spinnerFlag = false;
         roundCount = 0;
-        _this.mouseUp();
+
+        if (_mouseUpFlag) {
+
+            _this.mouseUp();
+        }
     }
 
     function calculateRadian(x1, y1, x2, y2) {

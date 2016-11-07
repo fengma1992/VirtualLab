@@ -18,12 +18,10 @@ function InertiaResponseVI(domElement) {
 
     this.signalType = 6;
     this.k1 = 1;
-    this.k2 = 0;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;
     this.temp1 = 0;
-    this.temp2 = 0;
     this.singleOutput = 0;
 
     this.dataLength = 1024;
@@ -36,9 +34,13 @@ function InertiaResponseVI(domElement) {
     this.source = [];
     this.target = [];
 
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
     this.setData = function (input) {
 
-        _this.input = typeof input === 'object' ? input[input.length - 1] : input;
+        _this.input = isArray(input) ? input[input.length - 1] : input;
         if (isNaN(_this.input)) {
 
             return false;
@@ -88,7 +90,6 @@ function InertiaResponseVI(domElement) {
     this.reset = function () {
         _this.lastInput = 0;
         _this.temp1 = 0;
-        _this.temp2 = 0;
         _this.index = 0;
     };
 

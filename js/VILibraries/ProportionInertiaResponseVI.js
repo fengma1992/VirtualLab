@@ -35,9 +35,13 @@ function ProportionInertiaResponseVI(domElement) {
     this.source = [];
     this.target = [];
 
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
     this.setData = function (input) {
 
-        _this.input = typeof input === 'object' ? input[input.length - 1] : input;
+        _this.input = isArray(input) ? input[input.length - 1] : input;
         if (isNaN(_this.input)) {
 
             return false;

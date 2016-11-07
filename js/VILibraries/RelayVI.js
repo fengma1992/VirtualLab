@@ -24,9 +24,13 @@ function RelayVI(domElement) {
     this.source = [];
     this.target = [];
 
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
     this.setData = function (input) {
 
-        input = typeof input === 'object' ? input[input.length - 1] : input;
+        input = isArray(input) ? input[input.length - 1] : input;
         if (isNaN(input)) {
 
             return false;

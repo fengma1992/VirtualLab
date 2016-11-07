@@ -132,13 +132,6 @@ html {
     height: 64px;
 }
 
-.normalBtn {
-    text-align: center;
-    font-size: 1.2em;
-    padding: 2px 10px;
-    margin: 2px 5px;
-}
-
 .rowFlexDiv {
     display: flex;
     flex-direction: row;
@@ -153,12 +146,6 @@ html {
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
-}
-
-.signalInput {
-    width: 80px;
-    height: 30px;
-    font-size: 1.2em;
 }
 
 #controlDiv {
@@ -180,6 +167,13 @@ html {
     float: right;
 }
 
+.normalBtn {
+    text-align: center;
+    font-size: 1.2em;
+    padding: 2px 10px;
+    margin: 2px 5px;
+}
+
 .normalInput {
     width: 70px;
     font-size: 1.2em;
@@ -190,6 +184,17 @@ html {
 .normalSpan {
     font-size: 1.2em;
     padding: 5px 5px;
+}
+
+.normalSelect {
+    font-size: 1.2em;
+    padding: 5px 5px;
+}
+
+.signalInput {
+    width: 80px;
+    height: 30px;
+    font-size: 1.2em;
 }
 
 .radioInput {

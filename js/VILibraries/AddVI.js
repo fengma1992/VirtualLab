@@ -31,9 +31,13 @@ function AddVI(domElement) {
     this.source = [];
     this.target = [];
 
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
     this.setData = function (latestInput) {
 
-        _this.latestInput = typeof latestInput === 'object' ? latestInput[latestInput.length - 1] : latestInput;
+        _this.latestInput = isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
         if (isNaN(_this.latestInput)) {
 
             return false;
@@ -46,7 +50,7 @@ function AddVI(domElement) {
 
     this.setOriginalData = function (originalInput) {
 
-        originalInput = typeof originalInput === 'object' ? originalInput[originalInput.length - 1] : originalInput;
+        originalInput = isArray(originalInput) ? originalInput[originalInput.length - 1] : originalInput;
         if (isNaN(originalInput)) {
 
             return false;
@@ -57,9 +61,9 @@ function AddVI(domElement) {
 
     this.reset = function () {
 
-        this.originalInput = 0;
-        this.latestInput = 0;
-        this.singleOutput = 0;
+        _this.originalInput = 0;
+        _this.latestInput = 0;
+        _this.singleOutput = 0;
         _this.index = 0;
     };
 

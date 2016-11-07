@@ -26,9 +26,11 @@ function SignalGeneratorVI(domElement) {
 
     /**
      * 信号产生函数
+     *  采样频率为11025Hz
      * @param amp 信号幅值
      * @param f 信号频率
      * @param phase 信号相位
+     *
      */
     this.setData = function (amp, f, phase) {
 
@@ -54,7 +56,7 @@ function SignalGeneratorVI(domElement) {
             case 1://正弦波
                 for (i = 0; i < _this.dataLength; i++) {
 
-                    _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i / FS + (2 * Math.PI * _this.phase) / 360);
+                    _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
                 }
                 break;
 

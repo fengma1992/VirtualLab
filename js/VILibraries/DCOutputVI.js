@@ -25,13 +25,17 @@ function DCOutputVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.target = [];
 
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
     /**
      * 将输出数保存在数组内
      * @param data singleOutput
      */
     this.setData = function (data) {
 
-        data = typeof data === 'object' ? data[data.length - 1] : data;
+        data = isArray(data) ? data[data.length - 1] : data;
         if (isNaN(data)) {
 
             return false;

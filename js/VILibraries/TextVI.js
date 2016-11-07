@@ -25,9 +25,13 @@ function TextVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.source = [];
 
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
     this.setData = function (latestInput) {
 
-        _this.latestInput = typeof latestInput === 'object' ? latestInput[latestInput.length - 1] : latestInput;
+        _this.latestInput = isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
         if (isNaN(_this.latestInput)) {
 
             return false;

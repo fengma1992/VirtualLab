@@ -40,13 +40,17 @@ function BallBeamVI(domElement, drawFlag) {
     this.source = [];
     this.target = [];
 
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
     /**
      *
      * @param angle 输入端口读取角度
      */
     this.setData = function (angle) {
 
-        angle = typeof angle === 'object' ? angle[angle.length - 1] : angle;
+        angle = isArray(angle) ? angle[angle.length - 1] : angle;
         if (isNaN(angle)) {
 
             return false;
@@ -116,18 +120,6 @@ function BallBeamVI(domElement, drawFlag) {
         }
     };
 
-    this.reset = function () {
-
-        _this.PIDAngle = 0;
-        _this.PIDPosition = 0;
-        _this.limit = true;
-        _this.u1 = 0;
-        _this.u2 = 0;
-        _this.y1 = 0;
-        _this.y2 = 0;
-        _this.index = 0;
-        setPosition(0, 0);
-    };
 
     function VIDraw() {
         var img = new Image();
@@ -139,7 +131,7 @@ function BallBeamVI(domElement, drawFlag) {
     }
 
     var camera, scene, renderer, controls, markControl, switchControl, resetControl,
-        beam, ball, mark, offButton, onButton, resetButton,
+        beam, ball, mark, offSwitch, onSwitch, resetButton,
         position = 0;
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
@@ -237,10 +229,10 @@ function BallBeamVI(domElement, drawFlag) {
 
                 _this.isStart = true;
 
-                scene.remove(offButton);
-                switchControl.detach(offButton);
-                scene.add(onButton);
-                switchControl.attach(onButton);
+                scene.remove(offSwitch);
+                switchControl.detach(offSwitch);
+                scene.add(onSwitch);
+                switchControl.attach(onSwitch);
 
             }
 
@@ -248,10 +240,10 @@ function BallBeamVI(domElement, drawFlag) {
 
                 _this.isStart = false;
 
-                scene.remove(onButton);
-                switchControl.detach(onButton);
-                scene.add(offButton);
-                switchControl.attach(offButton);
+                scene.remove(onSwitch);
+                switchControl.detach(onSwitch);
+                scene.add(offSwitch);
+                switchControl.attach(offSwitch);
             }
 
         });
@@ -274,10 +266,10 @@ function BallBeamVI(domElement, drawFlag) {
         resetControl.attachEvent('onclick', function () {
 
             _this.isStart = false;
-            scene.remove(onButton);
-            switchControl.detach(onButton);
-            scene.add(offButton);
-            switchControl.attach(offButton);
+            scene.remove(onSwitch);
+            switchControl.detach(onSwitch);
+            scene.add(offSwitch);
+            switchControl.attach(offSwitch);
             position = 0;
             _this.reset();
 
@@ -340,32 +332,32 @@ function BallBeamVI(domElement, drawFlag) {
                                             }
                                         });
                                         mark = d;
-                                        mtlLoader.load('assets/BallBeamControl/offButton.mtl', function (materials) {
+                                        mtlLoader.load('assets/BallBeamControl/offSwitch.mtl', function (materials) {
 
                                             materials.preload();
 
                                             objLoader.setMaterials(materials);
-                                            objLoader.load('assets/BallBeamControl/offButton.obj', function (e) {
+                                            objLoader.load('assets/BallBeamControl/offSwitch.obj', function (e) {
                                                 e.traverse(function (child) {
                                                     if (child instanceof THREE.Mesh) {
 
                                                         child.material.side = THREE.DoubleSide;
                                                     }
                                                 });
-                                                offButton = e;
-                                                mtlLoader.load('assets/BallBeamControl/onButton.mtl', function (materials) {
+                                                offSwitch = e;
+                                                mtlLoader.load('assets/BallBeamControl/onSwitch.mtl', function (materials) {
 
                                                     materials.preload();
 
                                                     objLoader.setMaterials(materials);
-                                                    objLoader.load('assets/BallBeamControl/onButton.obj', function (f) {
+                                                    objLoader.load('assets/BallBeamControl/onSwitch.obj', function (f) {
                                                         f.traverse(function (child) {
                                                             if (child instanceof THREE.Mesh) {
 
                                                                 child.material.side = THREE.DoubleSide;
                                                             }
                                                         });
-                                                        onButton = f;
+                                                        onSwitch = f;
                                                         mtlLoader.load('assets/BallBeamControl/resetButton.mtl', function (materials) {
 
                                                             materials.preload();
@@ -385,10 +377,10 @@ function BallBeamVI(domElement, drawFlag) {
                                                                 scene.add(beam);
                                                                 scene.add(ball);
                                                                 scene.add(mark);
-                                                                scene.add(offButton);
+                                                                scene.add(offSwitch);
                                                                 scene.add(resetButton);
                                                                 markControl.attach(mark);
-                                                                switchControl.attach(offButton);
+                                                                switchControl.attach(offSwitch);
                                                                 resetControl.attach(resetButton);
                                                             });
                                                         });
@@ -454,4 +446,16 @@ function BallBeamVI(domElement, drawFlag) {
         mark.position.x = position * Math.cos(angle);
     }
 
+    this.reset = function () {
+
+        _this.PIDAngle = 0;
+        _this.PIDPosition = 0;
+        _this.limit = true;
+        _this.u1 = 0;
+        _this.u2 = 0;
+        _this.y1 = 0;
+        _this.y2 = 0;
+        _this.index = 0;
+        setPosition(0, 0);
+    };
 }

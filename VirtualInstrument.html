@@ -17,7 +17,17 @@
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
+        <canvas id="OrbitWaveVI-canvas" class="draggable-element" width="104" height="90"
+                zoom="3"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
         <canvas id="BallBeamVI-canvas" class="draggable-element" width="162" height="90"
+                zoom="4"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="RotorExperimentalRigVI-canvas" class="draggable-element" width="162" height="90"
                 zoom="4"
                 draggable="true"
                 ondragstart="drag(event)">
@@ -29,6 +39,12 @@
                 ondragstart="drag(event)">
         </canvas>
         <canvas id="KnobVI-canvas" class="draggable-element" width="45" height="45"
+                ondblclick="showBox(this)"
+                zoom="3"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="RoundPanelVI-canvas" class="draggable-element" width="45" height="45"
                 ondblclick="showBox(this)"
                 zoom="3"
                 draggable="true"
@@ -121,9 +137,13 @@
 <script src="js/VILibraries/BallBeamVI.js"></script>
 <script src="js/VILibraries/DCOutputVI.js"></script>
 <script src="js/VILibraries/KnobVI.js"></script>
+<script src="js/VILibraries/OrbitWaveVI.js"></script>
 <script src="js/VILibraries/PIDVI.js"></script>
 <script src="js/VILibraries/RelayVI.js"></script>
+<script src="js/VILibraries/RotorExperimentalRigVI.js"></script>
+<script src="js/VILibraries/RoundPanelVI.js"></script>
 <script src="js/VILibraries/SignalGeneratorVI.js"></script>
+<script src="js/VILibraries/SignalProcessLib.js"></script>
 <script src="js/VILibraries/TextVI.js"></script>
 <script src="js/VILibraries/WaveVI.js"></script>
 <!--*************阶跃响应************************-->
@@ -160,8 +180,11 @@
         AddVICount: 0,
         DCOutputVICount: 0,
         KnobVICount: 0,
+        OrbitWaveVICount: 0,
         PIDVICount: 0,
         RelayVICount: 0,
+        RotorExperimentalRigVICount: 0,
+        RoundPanelVICount: 0,
         TextVICount: 0,
         DifferentiationResponseVICount: 0,
         InertiaResponseVICount: 0,
@@ -178,8 +201,11 @@
         AddVI: [],
         DCOutputVI: [],
         KnobVI: [],
+        OrbitWaveVI: [],
         PIDVI: [],
         RelayVI: [],
+        RotorExperimentalRigVI: [],
+        RoundPanelVI: [],
         TextVI: [],
         ProportionResponseVI: [],
         IntegrationResponseVI: [],
@@ -197,8 +223,11 @@
         new BallBeamVI(document.getElementById('BallBeamVI-canvas'));
         new DCOutputVI(document.getElementById('DCOutputVI-canvas'));
         new KnobVI(document.getElementById('KnobVI-canvas'));
+        new OrbitWaveVI(document.getElementById('OrbitWaveVI-canvas'));
         new PIDVI(document.getElementById('PIDVI-canvas'));
         new RelayVI(document.getElementById('RelayVI-canvas'));
+        new RotorExperimentalRigVI(document.getElementById('RotorExperimentalRigVI-canvas'));
+        new RoundPanelVI(document.getElementById('RoundPanelVI-canvas'));
         new SignalGeneratorVI(document.getElementById('SignalGeneratorVI-canvas'));
         new TextVI(document.getElementById('TextVI-canvas'));
         new WaveVI(document.getElementById('WaveVI-canvas'));
@@ -287,6 +316,42 @@
                                 if (checkedValue == -1) {
 
                                     if (connectionInfo) {
+
+                                        instance.detach(connectionInfo.connection);
+                                        connectionInfo = null;
+                                    }
+                                    closeBox();
+                                    G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
+                                    return;
+                                }
+
+                                sourceElement.target.push([targetElement, checkedValue]);
+                            });
+                }
+                else if (sourceElement.name == 'RotorExperimentalRigVI') {
+
+                    outputSetBox[0] = true;
+                    outputSetBox[1] = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                            '<div class="input-div">' +
+                            '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">时域信号<br>' +
+                            '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">频域信号<br>' +
+                            '</div>',
+                            1, function () {
+
+                                outputSetBox[0] = false;
+                                var outputType = document.getElementsByName('output-type');
+                                var checkedValue = -1;
+                                for (var i = 0; i < outputType.length; i++) {
+
+                                    if (outputType[i].checked == true) {
+
+                                        checkedValue = outputType[i].value;
+                                        break;
+                                    }
+                                }
+                                if (checkedValue == -1) {
+
+                                    if (connectionInfo != null && connectionInfo != undefined) {
 
                                         instance.detach(connectionInfo.connection);
                                         connectionInfo = null;
@@ -519,11 +584,20 @@
             case 'KnobVI':
                 return dataObject.KnobVI;
 
+            case 'OrbitWaveVI':
+                return dataObject.OrbitWaveVI;
+
             case 'PIDVI':
                 return dataObject.PIDVI;
 
             case 'RelayVI':
                 return dataObject.RelayVI;
+
+            case 'RotorExperimentalRigVI':
+                return dataObject.RotorExperimentalRigVI;
+
+            case 'RoundPanelVI':
+                return dataObject.RoundPanelVI;
 
             case 'TextVI':
                 return dataObject.TextVI;
@@ -560,9 +634,10 @@
         }
     }
 
-    function showBox(element) {
+    function showBox(VICanvas) {
 
-        var elementInfo = element.id.split('-');
+        var elementInfo = VICanvas.id.split('-');
+        var element = getObjectVIByName(elementInfo[0])[elementInfo[2]];
         switch (elementInfo[0]) {
 
             case 'AddVI':
@@ -629,6 +704,35 @@
                         });
                 break;
 
+            case 'RotorExperimentalRigVI':
+
+                dataSetBox[0] = true;
+                dataSetBox[1] = G.box('请设置输出信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div class="input-div">' +
+                        '<input type="radio" class="radioInput" name="RotorExperimentalRigVI-type" value="1" onclick="setRotorExperimentalRigVI(' + elementInfo[2] + ',this.value)">转速信号<br>' +
+                        '<input type="radio" class="radioInput" name="RotorExperimentalRigVI-type" value="2" onclick="setRotorExperimentalRigVI(' + elementInfo[2] + ',this.value)">加速度信号<br>' +
+                        '<input type="radio" class="radioInput" name="RotorExperimentalRigVI-type" value="3" onclick="setRotorExperimentalRigVI(' + elementInfo[2] + ',this.value)">轴心位移X信号<br>' +
+                        '<input type="radio" class="radioInput" name="RotorExperimentalRigVI-type" value="4" onclick="setRotorExperimentalRigVI(' + elementInfo[2] + ',this.value)">轴心位移Y信号<br>' +
+                        '</div>', 1, function () {
+                            dataSetBox[0] = false;
+                        });
+                break;
+
+            case 'RoundPanelVI':
+
+                dataSetBox[0] = true;
+                dataSetBox[1] = G.box('请设置初始参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                        '<div class="input-div">' +
+                        '<span class="normalSpan">标题:</span><input type="text" id="RoundPanelVI-input-1" value="' + element.title + '" class="normalInput">' +
+                        '<span class="normalSpan">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + element.unit + '" class="normalInput">' +
+                        '<span class="normalSpan">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + element.minValue + '" class="normalInput">' +
+                        '<span class="normalSpan">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + element.maxValue + '" class="normalInput">' +
+                        '<button id="startBtn" class="normalBtn" onclick="setRoundPanelVI(' + elementInfo[2] + ')">确定</button>' +
+                        '</div>', 1, function () {
+                            dataSetBox[0] = false;
+                        });
+                break;
+
             case 'ProportionResponseVI':
 
                 dataSetBox[0] = true;
@@ -658,7 +762,7 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K3:</span><input type="number" id="DifferentiationResponseVI-input" value="0.0025" class="normalInput">' +
+                        '<span class="normalSpan">K3:</span><input type="number" id="DifferentiationResponseVI-input" value="' + element.k3 + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setDifferentiationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -670,7 +774,7 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K:</span><input type="number" id="InertiaResponseVI-input" value="0.025" class="normalInput">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="InertiaResponseVI-input" value="' + element.k1 + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setInertiaResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -682,8 +786,8 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('震荡响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="50" class="normalInput">' +
-                        '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="0.05" class="normalInput">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="' + element.k1 + '" class="normalInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="' + element.k2 + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setOscillationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -695,8 +799,8 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('比例积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="1" class="normalInput">' +
-                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="1" class="normalInput">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="' + element.k1 + '" class="normalInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="' + element.k2 + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setProportionIntegrationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -708,8 +812,8 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('比例微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="1" class="normalInput">' +
-                        '<span class="normalSpan">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="1" class="normalInput">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="' + element.k1 + '" class="normalInput">' +
+                        '<span class="normalSpan">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="' + element.k3 + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setProportionDifferentiationResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -721,8 +825,8 @@
                 dataSetBox[0] = true;
                 dataSetBox[1] = G.box('比例惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                         '<div class="input-div">' +
-                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="1" class="normalInput">' +
-                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="1" class="normalInput">' +
+                        '<span class="normalSpan">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="' + element.k1 + '" class="normalInput">' +
+                        '<span class="normalSpan">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="' + element.k2 + '" class="normalInput">' +
                         '<button id="startBtn" class="normalBtn" onclick="setProportionInertiaResponseVI(' + elementInfo[2] + ')">确定</button>' +
                         '</div>', 1, function () {
                             dataSetBox[0] = false;
@@ -805,6 +909,29 @@
         dataObject.KnobVI[elementNumber].setDataRange(minValue, maxValue, defaultValue);
 
         findTimerExecutor(dataObject.KnobVI[elementNumber]);
+    }
+
+    function setRotorExperimentalRigVI(elementNumber, type) {
+
+        closeBox();
+
+        dataObject.RotorExperimentalRigVI[elementNumber].signalType = type;
+
+        findTimerExecutor(dataObject.RotorExperimentalRigVI[elementNumber]);
+    }
+
+    function setRoundPanelVI(elementNumber) {
+
+        closeBox();
+
+        var title = document.getElementById('RoundPanelVI-input-1').value;
+        var unit = document.getElementById('RoundPanelVI-input-2').value;
+        var minValue = document.getElementById('RoundPanelVI-input-3').value;
+        var maxValue = document.getElementById('RoundPanelVI-input-4').value;
+
+        dataObject.RoundPanelVI[elementNumber].setRange(minValue, maxValue, unit, title);
+
+        findTimerExecutor(dataObject.RoundPanelVI[elementNumber]);
     }
 
     /**
@@ -1162,12 +1289,28 @@
                 newVICanvas.id = VICanvas.id + '-' + dataObject.KnobVICount++;
                 break;
 
+            case 'OrbitWaveVI':
+                newVICanvas.id = VICanvas.id + '-' + dataObject.OrbitWaveVICount++;
+                break;
+
             case 'PIDVI':
                 newVICanvas.id = VICanvas.id + '-' + dataObject.PIDVICount++;
                 break;
 
             case 'RelayVI':
                 newVICanvas.id = VICanvas.id + '-' + dataObject.RelayVICount++;
+                break;
+
+            case 'RotorExperimentalRigVI':
+                if (dataObject.RotorExperimentalRigVICount > 0) {
+                    G.alert('转子实验台已添加！', 1, 1500);
+                    return;
+                }
+                newVICanvas.id = VICanvas.id + '-' + dataObject.RotorExperimentalRigVICount++;
+                break;
+
+            case 'RoundPanelVI':
+                newVICanvas.id = VICanvas.id + '-' + dataObject.RoundPanelVICount++;
                 break;
 
             case 'ProportionResponseVI':
@@ -1300,6 +1443,11 @@
                 addEndpoints(canvas.id, ['TopCenter'], [], -1, 0);
                 break;
 
+            case 'OrbitWaveVI':
+                dataObject.OrbitWaveVI.push(new OrbitWaveVI(canvas));
+                addEndpoints(canvas.id, [], ['LeftMiddle'], 0, 1);
+                break;
+
             case 'OscillationResponseVI':
                 dataObject.OscillationResponseVI.push(new OscillationResponseVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
@@ -1333,6 +1481,16 @@
             case 'RelayVI':
                 dataObject.RelayVI.push(new RelayVI(canvas));
                 addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                break;
+
+            case 'RotorExperimentalRigVI':
+                dataObject.RotorExperimentalRigVI.push(new RotorExperimentalRigVI(canvas, true));
+                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                break;
+
+            case 'RoundPanelVI':
+                dataObject.RoundPanelVI.push(new RoundPanelVI(canvas));
+                addEndpoints(canvas.id, [], ['BottomCenter'], 0, 1);
                 break;
 
             case 'SignalGeneratorVI':
