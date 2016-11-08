@@ -106,14 +106,9 @@ html {
     line-height: 30px;
 }
 
-#mainTable {
-    display: none;
-}
-
 #eChartDiv {
     width: 1000px;
     height: 400px;
-    display: none;
 }
 
 .loadingDiv {

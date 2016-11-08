@@ -19,7 +19,7 @@ function ProportionDifferentiationResponseVI(domElement) {
     this.signalType = 5;
     this.k1 = 1;
     this.k2 = 0;
-    this.k3 = 1;
+    this.k3 = 0.0025;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;

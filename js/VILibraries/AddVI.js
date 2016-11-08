@@ -43,7 +43,26 @@ function AddVI(domElement) {
             return false;
         }
         _this.singleOutput = _this.originalInput - _this.latestInput;
+        var i = 0;
+        // if (_this.index == 0) {
+        //
+        //     for (i = 0; i < _this.dataLength; i++) {
+        //
+        //         _this.output[i] = 0;
+        //     }
+        // }
+        if (_this.index <= (_this.dataLength - 1)) {
 
+            _this.output[_this.index] = _this.singleOutput;
+            _this.index++;
+        } else {
+
+            for (i = 0; i < _this.dataLength - 1; i++) {
+
+                _this.output[i] = _this.output[i + 1];
+            }
+            _this.output[_this.dataLength - 1] = _this.singleOutput;
+        }
 
         return _this.singleOutput;
     };

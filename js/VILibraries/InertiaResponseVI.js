@@ -17,7 +17,7 @@ function InertiaResponseVI(domElement) {
     this.runningFlag = false;
 
     this.signalType = 6;
-    this.k1 = 1;
+    this.k1 = 0.025;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;

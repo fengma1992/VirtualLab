@@ -17,7 +17,7 @@ function ProportionIntegrationResponseVI(domElement) {
     this.runningFlag = false;
 
     this.signalType = 4;
-    this.k1 = 1;
+    this.k1 = 1.5;
     this.k2 = 1;
     this.k3 = 0;
     this.Fs = 1000;

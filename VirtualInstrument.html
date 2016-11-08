@@ -294,11 +294,11 @@
                     outputSetBox[0] = true;
                     outputSetBox[1] = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                             '<div class="input-div">' +
-                            '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">反馈角度(单值)<br>' +
-                            '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">反馈位置(单值)<br>' +
+                            '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">反馈角度<br>' +
+                            '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">反馈位置<br>' +
                             '<input type="radio" class="radioInput" name="output-type" value="3" onclick="outputSetBox[1].close()">反馈角度(数组)<br>' +
                             '<input type="radio" class="radioInput" name="output-type" value="4" onclick="outputSetBox[1].close()">反馈位置(数组)<br>' +
-                            '<input type="radio" class="radioInput" name="output-type" value="5" onclick="outputSetBox[1].close()">标记位置(单值)<br>' +
+                            '<input type="radio" class="radioInput" name="output-type" value="5" onclick="outputSetBox[1].close()">标记位置<br>' +
                             '</div>',
                             1, function () {
 
@@ -335,6 +335,7 @@
                             '<div class="input-div">' +
                             '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">时域信号<br>' +
                             '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">频域信号<br>' +
+                            '<input type="radio" class="radioInput" name="output-type" value="3" onclick="outputSetBox[1].close()">轴心轨迹<br>' +
                             '</div>',
                             1, function () {
 
@@ -402,7 +403,7 @@
                 }
                 else {
 
-                    sourceElement.target.push([targetElement, 1]);  //单输出时默认输出单值
+                    sourceElement.target.push([targetElement, 1]);//默认输出单值
                 }
 
                 //对于多输入控件,进行输入端口判断
@@ -1211,16 +1212,15 @@
 
             if (outputType == 1) {
 
-                return element.PIDAngle;  //输出角度单值
+                return element.PIDAngle;  //输出角度
 
             } else if (outputType == 2) {
 
-                return element.PIDPosition;  //输出位置单值
+                return element.PIDPosition;  //输出位置
 
             } else if (outputType == 3) {
 
                 return element.angelOutput;  //输出角度数组
-
             } else if (outputType == 4) {
 
                 return element.positionOutput;  //输出位置数组
@@ -1230,14 +1230,31 @@
                 return element.markPosition;  //输出标记位置
             }
         }
+        else if (element.name == 'RotorExperimentalRigVI') {
+
+            if (outputType == 1) {
+
+                return element.signalOutput;  //输出时域信号
+
+            } else if (outputType == 2) {
+
+                return element.frequencyOutput;  //输出频域信号
+
+            } else if (outputType == 3) {
+
+                return element.orbitOutput;  //输出轴心位置
+
+            }
+        }
         else {
             if (outputType == 1) {
 
-                return element.singleOutput;  //输出单值
+                return element.signalOutput;  //输出单值
 
             } else if (outputType == 2) {
 
                 return element.output;  //输出数组
+
             }
         }
     }

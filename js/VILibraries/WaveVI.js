@@ -295,7 +295,7 @@ function WaveVI(domElement) {
         }
         _this.pointNum = len;
         var YMax = 0, YMin = 0, i;
-        for (i = 0; i < len; i++) {
+        for (i = 0; i < _this.pointNum; i++) {
 
             _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
             YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;

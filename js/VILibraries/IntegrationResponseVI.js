@@ -17,9 +17,7 @@ function IntegrationResponseVI(domElement) {
     this.runningFlag = false;
 
     this.signalType = 2;
-    this.k1 = 0;
-    this.k2 = 1;
-    this.k3 = 0;
+    this.k2 = 5;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;

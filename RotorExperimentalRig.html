@@ -59,7 +59,7 @@
 
     var orbitDataX = [], orbitDataY = [], signalData = [], frequencyData = [],
             rotateFrequency = 50,//每秒钟转速，即频率
-            sampleFrequency = 5120,
+            sampleFrequency = 10240,
             dataLength = 5120, dt = 1 / sampleFrequency, phase = 0,
             timer1, signalType = 1, runFlag = false;
     //VI部分变量
@@ -144,7 +144,7 @@
             orbitWaveVI.setData(orbitDataX, orbitDataY);
         }
         signalWaveVI.setData(signalData);
-        frequencyData = fft(1, 10, signalData);
+        frequencyData = fft(1, 12, signalData);
         frequencyWaveVI.setData(frequencyData);
     }
     function init() {

@@ -22,7 +22,7 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
 
     this.signalType = 1;
     this.rotateFrequency = 50;  //旋转频率
-    this.dataLength = 2048;
+    this.dataLength = 5120;
     this.index = 0;
     this.signalOutput = [];
     this.frequencyOutput = [];
@@ -80,7 +80,7 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
 
     }
 
-    function setData() {
+    function generateData() {
 
         var i;
         for (i = 0; i < _this.dataLength; i++) {
@@ -200,7 +200,7 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
 
                 timer1 = window.setInterval(function () {
                     phase += 36;
-                    setData();
+                    generateData();
                 }, 100);
                 var pivot = new THREE.Object3D();
                 pivot.add(rotor);

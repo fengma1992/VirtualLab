@@ -44,13 +44,13 @@ function DCOutputVI(domElement) {
         _this.singleOutput = data;
 
         var i = 0;
-        if (_this.index == 0) {
-
-            for (i = 0; i < _this.dataLength; i++) {
-
-                _this.output[i] = 0;
-            }
-        }
+        // if (_this.index == 0) {
+        //
+        //     for (i = 0; i < _this.dataLength; i++) {
+        //
+        //         _this.output[i] = 0;
+        //     }
+        // }
         if (_this.index <= (_this.dataLength - 1)) {
 
             _this.output[_this.index] = _this.singleOutput;
@@ -68,6 +68,7 @@ function DCOutputVI(domElement) {
     this.reset = function () {
 
         _this.index = 0;
+        _this.output = [];
     };
 
     this.draw = function () {

@@ -123,6 +123,9 @@
             loadingDiv = document.getElementById('loadingDiv');
 
     init();
+    //initial panel
+    panelInit();
+    panelAnimate();
 
     function init() {
 
@@ -210,10 +213,6 @@
 
                 isStart = !isStart;
 
-                //initial panel
-                mainTable.style.display = 'table';
-                panelInit(), panelAnimate();
-
                 scene.add(machineRay);
                 scene.remove(offSwitch);
                 switchControl.detach(offSwitch);
@@ -242,8 +241,6 @@
             else {
                 isStart = !isStart;
 
-                mainTable.style.display = 'none';
-                eChartDiv.style.display = 'none';
                 scene.remove(machineRay);
                 scene.remove(onSwitch);
                 switchControl.detach(onSwitch);
@@ -774,8 +771,7 @@
 
         option.series.data = relativeSumData;
 
-        eChartDiv.style.display = 'inherit';
-        var myChart = echarts.init(document.getElementById('eChartDiv'));
+        var myChart = echarts.init(eChartDiv);
         myChart.setOption(option);
         myChart.on('click', function (params) {
             if (dataArray.length > 6)   return;

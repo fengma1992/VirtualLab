@@ -17,8 +17,8 @@ function OscillationResponseVI(domElement) {
     this.runningFlag = false;
 
     this.signalType = 7;
-    this.k1 = 1;
-    this.k2 = 1;
+    this.k1 = 50;
+    this.k2 = 0.05;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;

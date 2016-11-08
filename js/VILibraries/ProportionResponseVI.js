@@ -17,9 +17,7 @@ function ProportionResponseVI(domElement) {
     this.runningFlag = false;
 
     this.signalType = 1;
-    this.k1 = 1;
-    this.k2 = 0;
-    this.k3 = 0;
+    this.k1 = 1.5;
     this.Fs = 1000;
     this.input = 0;
     this.lastInput = 0;

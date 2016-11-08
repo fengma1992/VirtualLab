@@ -183,8 +183,8 @@ function StepResponseGeneratorVI(domElement) {
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.fillStyle = 'black';
-        _this.ctx.fillText(_this.text.substring(0, 2), _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-        _this.ctx.fillText(_this.text.substring(2), _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+        _this.ctx.fillText(_this.cnText.substring(0, 2), _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+        _this.ctx.fillText(_this.cnText.substring(2), _this.container.width / 2 - 12, _this.container.height * 3 / 4);
     };
 
     this.draw();
