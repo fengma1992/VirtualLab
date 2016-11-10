@@ -1,45 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="1110-afternoon&#10;1、仪器控件整合；&#10;2、音频测试。">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/ButtonVI.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/VILibraries/VILibrary.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/Fengma.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/Fengma.xml" />
+    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RotorExperimentalRig.html" afterPath="$PROJECT_DIR$/RotorExperimentalRig.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VirtualInstrument.html" afterPath="$PROJECT_DIR$/VirtualInstrument.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/base.mtl" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/base.mtl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/base.obj" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/base.obj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/offSwitch.mtl" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/offSwitch.mtl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/offSwitch.obj" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/offSwitch.obj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/onSwitch.mtl" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/onSwitch.mtl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/onSwitch.obj" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/onSwitch.obj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/rotor.mtl" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/rotor.mtl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/RotorExperimentalRig/rotor.obj" afterPath="$PROJECT_DIR$/assets/RotorExperimentalRig/rotor.obj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/AddVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/AddVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/DCOutputVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/DCOutputVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/DifferentiationResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/DifferentiationResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/IntegrationResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/IntegrationResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/KnobVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/KnobVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/OrbitWaveVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/OrbitWaveVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/PIDVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/PIDVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionDifferentiationResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionDifferentiationResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionInertiaResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionInertiaResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionIntegrationResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionIntegrationResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionResponseVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/ProportionResponseVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/RelayVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/RelayVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/RotorExperimentalRigVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/RotorExperimentalRigVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/RoundPanelVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/RoundPanelVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/SignalProcessLib.js" afterPath="$PROJECT_DIR$/js/VILibraries/SignalProcessLib.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/WaveVI.js" afterPath="$PROJECT_DIR$/js/VILibraries/WaveVI.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test.html" afterPath="$PROJECT_DIR$/test.html" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -678,7 +641,7 @@
       <workItem from="1478525078127" duration="4628000" />
       <workItem from="1478569798224" duration="21835000" />
       <workItem from="1478657616678" duration="22714000" />
-      <workItem from="1478741822050" duration="14351000" />
+      <workItem from="1478741822050" duration="14395000" />
     </task>
     <task id="LOCAL-00001" summary="test&#10;">
       <created>1476862004763</created>
@@ -876,11 +839,18 @@
       <option name="project" value="LOCAL" />
       <updated>1478585140775</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="1110-afternoon&#10;1、仪器控件整合；&#10;2、音频测试。">
+      <created>1478765161506</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1478765161506</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="595189000" />
+    <option name="totallyTimeSpent" value="595233000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -893,13 +863,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1392405" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5042194" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4862869" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -910,7 +881,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32959402" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
