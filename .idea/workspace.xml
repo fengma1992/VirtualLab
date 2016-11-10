@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -147,7 +146,7 @@
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="552">
-              <caret line="23" column="49" selection-start-line="23" selection-start-column="49" selection-end-line="23" selection-end-column="49" />
+              <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -652,7 +651,7 @@
       <workItem from="1478525078127" duration="4628000" />
       <workItem from="1478569798224" duration="21835000" />
       <workItem from="1478657616678" duration="22714000" />
-      <workItem from="1478741822050" duration="14695000" />
+      <workItem from="1478741822050" duration="14816000" />
     </task>
     <task id="LOCAL-00001" summary="test&#10;">
       <created>1476862004763</created>
@@ -864,11 +863,18 @@
       <option name="project" value="LOCAL" />
       <updated>1478765187675</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="1110-afternoon&#10;index.html change">
+      <created>1478765499226</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1478765499226</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="595533000" />
+    <option name="totallyTimeSpent" value="595654000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -881,7 +887,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1392405" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
@@ -955,7 +961,8 @@
     <MESSAGE value="1107-afternoon&#10;1、add rotorexperimentalrig" />
     <MESSAGE value="1108-afternoon&#10;1、bugfix" />
     <MESSAGE value="1110-afternoon&#10;1、仪器控件整合；&#10;2、音频测试。" />
-    <option name="LAST_COMMIT_MESSAGE" value="1110-afternoon&#10;1、仪器控件整合；&#10;2、音频测试。" />
+    <MESSAGE value="1110-afternoon&#10;index.html change" />
+    <option name="LAST_COMMIT_MESSAGE" value="1110-afternoon&#10;index.html change" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1790,7 +1797,7 @@
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="552">
-          <caret line="23" column="49" selection-start-line="23" selection-start-column="49" selection-end-line="23" selection-end-column="49" />
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding />
         </state>
       </provider>
