@@ -45,6 +45,41 @@ function RoundPanelVI(domElement) {
         return Object.prototype.toString.call(obj) === '[object Array]';
     }
 
+    function parsePosition(angle) {
+
+        var position = [];
+        position[0] = _this.radius * 0.82 * Math.cos(angle);
+        position[1] = _this.radius * 0.82 * Math.sin(angle);
+        return position;
+    }
+
+    function dataFormation(data) {
+
+        data = parseFloat(data);
+        if (data == 0) {
+
+            return '0';
+        }
+        if (Math.abs(data) >= 1000) {
+
+            data = data / 1000;
+            data = data.toFixed(1).toString() + 'k';
+        }
+        else if (Math.abs(data) < 1000 && Math.abs(data) >= 100) {
+
+            data = data.toFixed(0).toString();
+        }
+        else if (Math.abs(data) < 100 && Math.abs(data) >= 10) {
+
+            data = data.toFixed(1).toString();
+        }
+        else if (Math.abs(data) < 10) {
+
+            data = data.toFixed(2).toString();
+        }
+        return data;
+    }
+
     this.setRange = function (minVal, maxVal, unitText, titleText) {
 
         minVal = isArray(minVal) ? minVal[minVal.length - 1] : minVal;
@@ -79,14 +114,14 @@ function RoundPanelVI(domElement) {
 
     this.setData = function (latestInput) {
 
-        latestInput = isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-        if (isNaN(latestInput)) {
+        _this.latestInput = isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+        if (isNaN(_this.latestInput)) {
 
             return false;
         }
-        latestInput = latestInput < _this.minValue ? _this.minValue : latestInput;
-        latestInput = latestInput > _this.maxValue ? _this.maxValue : latestInput;
-        _this.latestInput = parseFloat(latestInput).toFixed(2);
+        _this.latestInput = _this.latestInput < _this.minValue ? _this.minValue : _this.latestInput;
+        _this.latestInput = _this.latestInput > _this.maxValue ? _this.maxValue : _this.latestInput;
+        _this.latestInput = parseFloat(_this.latestInput).toFixed(2);
         _this.handAngle = Math.PI * 5 / 6 + _this.latestInput / _this.maxValue * _this.panelRangeAngle;
         _this.draw();
     };
@@ -106,6 +141,11 @@ function RoundPanelVI(domElement) {
         _this.ctx.fill();
         _this.ctx.restore();
 
+    };
+
+    this.reset = function () {
+
+        _this.latestInput = 0;
     };
 
     this.draw = function () {
@@ -200,47 +240,8 @@ function RoundPanelVI(domElement) {
         _this.ctx.stroke();
         _this.ctx.closePath();
         _this.drawHand();
-    }
-    ;
-    this.draw();
-
-    this.reset = function () {
-
-        _this.latestInput = 0;
     };
 
-    function parsePosition(angle) {
+    this.draw();
 
-        var position = [];
-        position[0] = _this.radius * 0.82 * Math.cos(angle);
-        position[1] = _this.radius * 0.82 * Math.sin(angle);
-        return position;
-    }
-
-    function dataFormation(data) {
-
-        data = parseFloat(data);
-        if (data == 0) {
-
-            return '0';
-        }
-        if (Math.abs(data) >= 1000) {
-
-            data = data / 1000;
-            data = data.toFixed(1).toString() + 'k';
-        }
-        else if (Math.abs(data) < 1000 && Math.abs(data) >= 100) {
-
-            data = data.toFixed(0).toString();
-        }
-        else if (Math.abs(data) < 100 && Math.abs(data) >= 10) {
-
-            data = data.toFixed(1).toString();
-        }
-        else if (Math.abs(data) < 10) {
-
-            data = data.toFixed(2).toString();
-        }
-        return data;
-    }
 }

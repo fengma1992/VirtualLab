@@ -19,24 +19,31 @@ function fft(dir, m, realPart, imgPart) {
 
         n *= 2;
     }
-
+    var real = realPart.slice(0);
+    var img;
     if (imgPart == undefined) {
-        imgPart = [];
+
+        img = [];
         for (i = 0; i < n; i++) {
-            imgPart.push(0);
+            img.push(0);
         }
     }
+    else {
+
+        img = imgPart.slice(0);
+    }
+
     /* Do the bit reversal */
     i2 = n >> 1;
     j = 0;
     for (i = 0; i < n - 1; i++) {
         if (i < j) {
-            tx = realPart[i];
-            ty = imgPart[i];
-            realPart[i] = realPart[j];
-            imgPart[i] = imgPart[j];
-            realPart[j] = tx;
-            imgPart[j] = ty;
+            tx = real[i];
+            ty = img[i];
+            real[i] = real[j];
+            img[i] = img[j];
+            real[j] = tx;
+            img[j] = ty;
         }
         k = i2;
         while (k <= j) {
@@ -57,12 +64,12 @@ function fft(dir, m, realPart, imgPart) {
         for (j = 0; j < l1; j++) {
             for (i = j; i < n; i += l2) {
                 i1 = i + l1;
-                t1 = u1 * realPart[i1] - u2 * imgPart[i1];
-                t2 = u1 * imgPart[i1] + u2 * realPart[i1];
-                realPart[i1] = realPart[i] - t1;
-                imgPart[i1] = imgPart[i] - t2;
-                realPart[i] += t1;
-                imgPart[i] += t2;
+                t1 = u1 * real[i1] - u2 * img[i1];
+                t2 = u1 * img[i1] + u2 * real[i1];
+                real[i1] = real[i] - t1;
+                img[i1] = img[i] - t2;
+                real[i] += t1;
+                img[i] += t2;
             }
             z = u1 * c1 - u2 * c2;
             u2 = u1 * c2 + u2 * c1;
@@ -78,15 +85,15 @@ function fft(dir, m, realPart, imgPart) {
     /* Scaling for forward transform */
     if (dir == 1) {
         for (i = 0; i < n; i++) {
-            realPart[i] /= n;
-            imgPart[i] /= n;
+            real[i] /= n;
+            img[i] /= n;
         }
     }
 
     var output = [];
     for (i = 0; i < n / 2; i++) {
 
-        output[i] = 2 * Math.sqrt(realPart[i] * realPart[i] + imgPart[i] * imgPart[i]);
+        output[i] = 2 * Math.sqrt(real[i] * real[i] + img[i] * img[i]);
     }
     return output;
 }

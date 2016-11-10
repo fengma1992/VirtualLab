@@ -3,31 +3,24 @@
  */
 
 'use strict';
-function RotorExperimentalRigVI(domElement, drawFlag) {
+function RotorExperimentalRigVI(domElement, draw3DFlag) {
 
     var _this = this;
-    if (drawFlag) {
-        RotorExperimentalRigDraw(domElement);
-    }
-    else {
-
-        _this.canvas = domElement;
-        _this.ctx = domElement.getContext('2d');
-        VIDraw();
-    }
     this.name = 'RotorExperimentalRigVI';
     this.cnText = '转子实验台';
     this.runningFlag = false;
     this.isStart = false;
 
     this.signalType = 1;
-    this.rotateFrequency = 50;  //旋转频率
-    this.dataLength = 5120;
+    this.rotateSpeed = 0;
+    this.dataLength = 2048;
     this.index = 0;
-    this.signalOutput = [];
-    this.frequencyOutput = [];
-    this.orbitOutput = [];
-    this.outputCount = 3;
+    this.rotateFrequency = 0;  //旋转频率
+    this.signalOutput = [0];
+    this.frequencyOutput = [0];
+    this.orbitXOutput = [0];
+    this.orbitYOutput = [0];
+    this.outputCount = 5;
 
     //虚拟仪器中相连接的控件VI
     this.source = [];
@@ -43,16 +36,24 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
      */
     this.setData = function (rotateSpeed) {
 
-        rotateSpeed = isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
-        if (isNaN(rotateSpeed)) {
+        _this.rotateSpeed = isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
+        if (isNaN(_this.rotateSpeed)) {
 
             return false;
         }
-        _this.rotateFrequency = rotateSpeed / 60;
+        _this.rotateFrequency = _this.rotateSpeed / 60;
     };
 
     this.reset = function () {
 
+        _this.signalType = 1;
+        _this.rotateSpeed = 0;
+        _this.index = 0;
+        _this.rotateFrequency = 0;  //旋转频率
+        _this.signalOutput = [0];
+        _this.frequencyOutput = [0];
+        _this.orbitXOutput = [0];
+        _this.orbitYOutput = [0];
     };
 
     function VIDraw() {
@@ -64,12 +65,91 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
         };
     }
 
-    var camera, scene, renderer, controls, rotor, offSwitch, onSwitch, switchControl,
-        timer1, timer2, rotateAngle = 0, phase = 0, sampleFrequency = 5120, dt = 1 / sampleFrequency,
-        orbitY = [], orbitX = [];
+    var camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl, loadedFlag = false,
+        timer1, timer2, rotateAngle = 0, phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency;
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
         || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+    if (draw3DFlag) {
+
+        var loadingImg = document.createElement('img');
+        loadingImg.src = 'img/loading.gif';
+        loadingImg.style.width = '64px';
+        loadingImg.style.height = '64px';
+        loadingImg.style.position = 'absolute';
+        loadingImg.style.top = domElement.offsetTop + domElement.offsetHeight / 2 - 32 + 'px';
+        loadingImg.style.left = domElement.offsetLeft + domElement.offsetWidth / 2 - 32 + 'px';
+        loadingImg.style.zIndex = '1001';
+        domElement.parentNode.appendChild(loadingImg);
+
+        var mtlLoader = new THREE.MTLLoader();
+        var objLoader = new THREE.OBJLoader();
+
+        mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {
+
+            materials.preload();
+
+            objLoader.setMaterials(materials);
+            objLoader.load('assets/RotorExperimentalRig/base.obj', function (a) {
+                a.traverse(function (child) {
+                    if (child instanceof THREE.Mesh) {
+
+                        child.material.side = THREE.DoubleSide;
+                    }
+                });
+                base = a;
+                mtlLoader.load('assets/RotorExperimentalRig/rotor.mtl', function (materials) {
+
+                    materials.preload();
+
+                    objLoader.setMaterials(materials);
+                    objLoader.load('assets/RotorExperimentalRig/rotor.obj', function (b) {
+                        b.traverse(function (child) {
+                            if (child instanceof THREE.Mesh) {
+
+                                child.material.side = THREE.DoubleSide;
+                            }
+                        });
+                        rotor = b;
+                        mtlLoader.load('assets/RotorExperimentalRig/offSwitch.mtl', function (materials) {
+
+                            materials.preload();
+
+                            objLoader.setMaterials(materials);
+                            objLoader.load('assets/RotorExperimentalRig/offSwitch.obj', function (c) {
+                                c.traverse(function (child) {
+                                    if (child instanceof THREE.Mesh) {
+
+                                        child.material.side = THREE.DoubleSide;
+                                    }
+                                });
+                                offSwitch = c;
+                                mtlLoader.load('assets/RotorExperimentalRig/onSwitch.mtl', function (materials) {
+
+                                    materials.preload();
+
+                                    objLoader.setMaterials(materials);
+                                    objLoader.load('assets/RotorExperimentalRig/onSwitch.obj', function (d) {
+                                        d.traverse(function (child) {
+                                            if (child instanceof THREE.Mesh) {
+
+                                                child.material.side = THREE.DoubleSide;
+                                            }
+                                        });
+                                        onSwitch = d;
+
+                                        loadedFlag = true;
+                                        loadingImg.style.display = 'none';
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
 
     function rotorAnimate() {
 
@@ -85,16 +165,14 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
         var i;
         for (i = 0; i < _this.dataLength; i++) {
 
-            orbitX[i] = 7.5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
+            _this.orbitXOutput[i] = 7.5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
                 4 * Math.sin(4 * Math.PI * _this.rotateFrequency * i * dt + 4 * Math.PI * phase / 360) + 2 * Math.random();
         }
         for (i = 0; i < _this.dataLength; i++) {
 
-            orbitY[i] = 7.5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * (phase + 90) / 360) +
+            _this.orbitYOutput[i] = 7.5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * (phase + 90) / 360) +
                 4 * Math.sin(4 * Math.PI * _this.rotateFrequency * i * dt + 4 * Math.PI * (phase + 90) / 360) + 2 * Math.random();
         }
-        _this.orbitOutput[0] = orbitX;
-        _this.orbitOutput[1] = orbitY;
         if (_this.signalType == 1) {//转速信号    正弦波
 
             for (i = 0; i < _this.dataLength; i++) {
@@ -112,34 +190,23 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
 
             for (i = 0; i < _this.dataLength; i++) {
 
-                _this.signalOutput[i] = orbitX[i];
+                _this.signalOutput[i] = _this.orbitXOutput[i];
             }
         } else if (_this.signalType == 4) {//位移Y信号
 
             for (i = 0; i < _this.dataLength; i++) {
 
-                _this.signalOutput[i] = orbitY[i];
+                _this.signalOutput[i] = _this.orbitYOutput[i];
             }
         }
-        _this.frequencyOutput = fft(1, 10, _this.signalOutput); //需SignalProcessLib
+        _this.frequencyOutput = fft(1, 12, _this.signalOutput.splice(0, 0, '')); //需SignalProcessLib
     }
 
     /**
      * 三维绘图
-     * @param domElement HTML CANVAS
-     * @param loadingDiv 三维加载时遮罩
      * @constructor
      */
-    function RotorExperimentalRigDraw(domElement) {
-        var loadingImg = document.createElement('img');
-        loadingImg.src = 'img/loading.gif';
-        loadingImg.style.width = '64px';
-        loadingImg.style.height = '64px';
-        loadingImg.style.position = 'absolute';
-        loadingImg.style.top = domElement.offsetTop + domElement.offsetHeight / 2 - 32 + 'px';
-        loadingImg.style.left = domElement.offsetLeft + domElement.offsetWidth / 2 - 32 + 'px';
-        loadingImg.style.zIndex = '1001';
-        domElement.parentNode.appendChild(loadingImg);
+    function RotorExperimentalRigDraw() {
 
         renderer = new THREE.WebGLRenderer({
             canvas: domElement,
@@ -202,13 +269,9 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
                     phase += 36;
                     generateData();
                 }, 100);
-                var pivot = new THREE.Object3D();
-                pivot.add(rotor);
-                scene.add(pivot);
                 timer2 = window.setInterval(function () {
-                    rotateAngle = 2 * Math.PI * _this.rotateFrequency * 60 / 10;
-                    pivot.rotation.x += 0.01;
-                }, 100);
+                    rotor.rotation.x += 2 * Math.PI * _this.rotateFrequency * 60 / 100;
+                }, 10);
 
             }
 
@@ -226,74 +289,10 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
 
         });
 
-        var mtlLoader = new THREE.MTLLoader();
-        var objLoader = new THREE.OBJLoader();
-
-        mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {
-
-            materials.preload();
-
-            objLoader.setMaterials(materials);
-            objLoader.load('assets/RotorExperimentalRig/base.obj', function (base) {
-                base.traverse(function (child) {
-                    if (child instanceof THREE.Mesh) {
-
-                        child.material.side = THREE.DoubleSide;
-                    }
-                });
-                mtlLoader.load('assets/RotorExperimentalRig/rotor.mtl', function (materials) {
-
-                    materials.preload();
-
-                    objLoader.setMaterials(materials);
-                    objLoader.load('assets/RotorExperimentalRig/rotor.obj', function (b) {
-                        b.traverse(function (child) {
-                            if (child instanceof THREE.Mesh) {
-
-                                child.material.side = THREE.DoubleSide;
-                            }
-                        });
-                        rotor = b;
-                        mtlLoader.load('assets/RotorExperimentalRig/offSwitch.mtl', function (materials) {
-
-                            materials.preload();
-
-                            objLoader.setMaterials(materials);
-                            objLoader.load('assets/RotorExperimentalRig/offSwitch.obj', function (c) {
-                                c.traverse(function (child) {
-                                    if (child instanceof THREE.Mesh) {
-
-                                        child.material.side = THREE.DoubleSide;
-                                    }
-                                });
-                                offSwitch = c;
-                                mtlLoader.load('assets/RotorExperimentalRig/onSwitch.mtl', function (materials) {
-
-                                    materials.preload();
-
-                                    objLoader.setMaterials(materials);
-                                    objLoader.load('assets/RotorExperimentalRig/onSwitch.obj', function (d) {
-                                        d.traverse(function (child) {
-                                            if (child instanceof THREE.Mesh) {
-
-                                                child.material.side = THREE.DoubleSide;
-                                            }
-                                        });
-                                        onSwitch = d;
-
-                                        loadingImg.style.display = 'none';
-                                        scene.add(base);
-                                        scene.add(rotor);
-                                        scene.add(offSwitch);
-                                        switchControl.attach(offSwitch);
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
+        scene.add(base);
+        scene.add(rotor);
+        scene.add(offSwitch);
+        switchControl.attach(offSwitch);
 
         rotorAnimate();
 
@@ -304,4 +303,25 @@ function RotorExperimentalRigVI(domElement, drawFlag) {
         //     renderer.setSize(domElement.clientWidth, domElement.clientHeight);
         // });
     }
+
+    this.draw = function () {
+
+        if (draw3DFlag) {
+
+            var timer = window.setInterval(function () {
+                if (loadedFlag) {
+
+                    new RotorExperimentalRigDraw();
+                    window.clearInterval(timer);
+                }
+            }, 100);
+        }
+        else {
+
+            _this.canvas = domElement;
+            _this.ctx = domElement.getContext('2d');
+            VIDraw();
+        }
+    };
+    this.draw();
 }

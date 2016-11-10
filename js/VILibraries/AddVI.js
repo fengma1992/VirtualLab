@@ -23,7 +23,7 @@ function AddVI(domElement) {
     this.originalInput = 0;
     this.latestInput = 0;
     this.singleOutput = 0;
-    this.output = [];
+    this.output = [0];
     this.outputCount = 2;
     this.inputCount = 2;
 
@@ -42,7 +42,7 @@ function AddVI(domElement) {
 
             return false;
         }
-        _this.singleOutput = _this.originalInput - _this.latestInput;
+        _this.singleOutput = parseFloat(_this.originalInput - _this.latestInput).toFixed(2);
         var i = 0;
         // if (_this.index == 0) {
         //
@@ -84,6 +84,7 @@ function AddVI(domElement) {
         _this.latestInput = 0;
         _this.singleOutput = 0;
         _this.index = 0;
+        _this.output = [0];
     };
 
     this.draw = function () {

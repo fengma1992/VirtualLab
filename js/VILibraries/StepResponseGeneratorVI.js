@@ -23,7 +23,7 @@ function StepResponseGeneratorVI(domElement) {
 
     this.dataLength = 1024;
     this.index = 0;
-    this.output = [];
+    this.output = [0];
     this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
@@ -175,6 +175,8 @@ function StepResponseGeneratorVI(domElement) {
         _this.temp1 = 0;
         _this.temp2 = 0;
         _this.index = 0;
+        _this.singleOutput = 0;
+        _this.output = [0];
     };
 
 

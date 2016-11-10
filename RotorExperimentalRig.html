@@ -58,9 +58,9 @@
     var startBtn = document.getElementById('startBtn');
 
     var orbitDataX = [], orbitDataY = [], signalData = [], frequencyData = [],
-            rotateFrequency = 50,//每秒钟转速，即频率
-            sampleFrequency = 10240,
-            dataLength = 5120, dt = 1 / sampleFrequency, phase = 0,
+            rotateFrequency = 4096 / 60,//每秒钟转速，即频率
+            sampleFrequency = 8192,
+            dataLength = 2048, dt = 1 / sampleFrequency, phase = 0,
             timer1, signalType = 1, runFlag = false;
     //VI部分变量
     var signalWaveVI = new WaveVI(signalCanvas);
@@ -80,9 +80,9 @@
 
     signalWaveVI.setAxisRangX(0, dataLength * dt);
     signalWaveVI.setLabel('时间/s', '幅值');
-    frequencyWaveVI.setAxisRangX(0, 5120);
+    frequencyWaveVI.setAxisRangX(0, 4096);
     frequencyWaveVI.setLabel('频率/Hz', '幅值');
-    knobVI.setDataRange(0, 6000, 3000); //转速表，调节转子试验台转速
+    knobVI.setDataRange(0, 6000, 4096); //转速表，调节转子试验台转速
     knobVI.attachEvent('mouseMove', function () {
 
         rotateFrequency = (knobVI.singleOutput / 60).toFixed(1);
@@ -98,7 +98,7 @@
         signalType = select.value;
     }
 
-    function setData() {
+    function setSignalData() {
 
         var i;
         if (signalType == 1) {//转速信号    正弦波
@@ -144,7 +144,7 @@
             orbitWaveVI.setData(orbitDataX, orbitDataY);
         }
         signalWaveVI.setData(signalData);
-        frequencyData = fft(1, 12, signalData);
+        frequencyData = fft(1, 11, signalData);
         frequencyWaveVI.setData(frequencyData);
     }
     function init() {
@@ -210,15 +210,11 @@
                 roundPanelVI.setData(rotateFrequency);
                 timer1 = window.setInterval(function () {
                     phase += 36;
-                    setData();
+                    setSignalData();
                 }, 100);
-                var pivot = new THREE.Object3D();
-                pivot.add(rotor);
-                scene.add(pivot);
                 timer2 = window.setInterval(function () {
-                    rotateAngle = 2 * Math.PI * rotateFrequency / 10;
-                    pivot.rotation.x += 0.01;
-                }, 100);
+                    rotor.rotation.x += 2 * Math.PI * rotateFrequency / 100;
+                }, 10);
 
             }
 

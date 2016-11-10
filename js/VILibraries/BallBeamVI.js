@@ -3,18 +3,9 @@
  */
 
 'use strict';
-function BallBeamVI(domElement, drawFlag) {
+function BallBeamVI(domElement, draw3DFlag) {
 
     var _this = this;
-    if (drawFlag) {
-        BallBeamDraw(domElement);
-    }
-    else {
-
-        _this.canvas = domElement;
-        _this.ctx = domElement.getContext('2d');
-        VIDraw();
-    }
     this.name = 'BallBeamVI';
     this.cnText = '球杆模型';
     this.runningFlag = false;
@@ -32,8 +23,8 @@ function BallBeamVI(domElement, drawFlag) {
 
     this.dataLength = 1024;
     this.index = 0;
-    this.angelOutput = [];
-    this.positionOutput = [];
+    this.angelOutput = [0];
+    this.positionOutput = [0];
     this.outputCount = 4;
 
     //虚拟仪器中相连接的控件VI
@@ -50,76 +41,66 @@ function BallBeamVI(domElement, drawFlag) {
      */
     this.setData = function (angle) {
 
-        angle = isArray(angle) ? angle[angle.length - 1] : angle;
-        if (isNaN(angle)) {
+        var inputAngle = isArray(angle) ? angle[angle.length - 1] : angle;
+        if (isNaN(inputAngle)) {
 
             return false;
         }
 
-        var u, v, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
-        u = angle;
+        var outputPosition, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
         if (_this.limit) {
-            if ((u - _this.PIDAngle) > angleMax) {
+            if ((inputAngle - _this.PIDAngle) > angleMax) {
 
-                u = _this.PIDAngle + angleMax;
+                inputAngle = _this.PIDAngle + angleMax;
             }
-            if ((_this.PIDAngle - u) > angleMax) {
+            if ((_this.PIDAngle - inputAngle) > angleMax) {
 
-                u = _this.PIDAngle - angleMax;
+                inputAngle = _this.PIDAngle - angleMax;
             }
-            if (u > 30) {
+            if (inputAngle > 30) {
 
-                u = 30;
+                inputAngle = 30;
             }
-            if (u < -30) {
+            if (inputAngle < -30) {
 
-                u = -30;
+                inputAngle = -30;
             }
         }
 
-        _this.PIDAngle = u;//向输出端口上写数据
-        v = _this.y1 + 0.5 * Ts * (u + _this.u1);
-        _this.u1 = u;
-        _this.y1 = v;
-        u = v;
-        v = _this.y2 + 0.5 * Ts * (u + _this.u2);
-        _this.u2 = u;
-        _this.y2 = v;
-        _this.PIDPosition = v;//向输出端口上写数据
-        setPosition(_this.PIDAngle * Math.PI / 180, _this.PIDPosition);
-        _this.dataCollector(_this.PIDAngle, _this.PIDPosition);
+        _this.PIDAngle = inputAngle;//向输出端口上写数据
+        outputPosition = _this.y1 + 0.5 * Ts * (inputAngle + _this.u1);
+        _this.u1 = inputAngle;
+        _this.y1 = outputPosition;
+        inputAngle = outputPosition;
+        outputPosition = parseFloat(Number(_this.y2) + Number(0.5 * Ts * (inputAngle + _this.u2))).toFixed(2);
+        _this.u2 = inputAngle;
+        _this.y2 = outputPosition;
+        _this.PIDPosition = outputPosition;//向输出端口上写数据
 
-        return [_this.PIDAngle, _this.PIDPosition];
-    };
-
-    /**
-     * 将输出数保存在数组内
-     * @param angel 输出角度
-     * @param position 输出位置
-     */
-    this.dataCollector = function (angel, position) {
-
+        //将输出数保存在数组内
         var i = 0;
-        if (_this.index == 0) {
-            for (i = 0; i < _this.dataLength - 1; i++) {
-                _this.angelOutput[i] = 0;
-                _this.positionOutput[i] = 0;
-            }
-        }
+        // if (_this.index == 0) {
+        //     for (i = 0; i < _this.dataLength - 1; i++) {
+        //         _this.angelOutput[i] = 0;
+        //         _this.positionOutput[i] = 0;
+        //     }
+        // }
         if (_this.index <= (_this.dataLength - 1)) {
-            _this.angelOutput[_this.index] = angel;
-            _this.positionOutput[_this.index] = position;
+            _this.angelOutput[_this.index] = _this.PIDAngle;
+            _this.positionOutput[_this.index] = _this.PIDPosition;
             _this.index++;
         } else {
             for (i = 0; i < _this.dataLength - 1; i++) {
                 _this.angelOutput[i] = _this.angelOutput[i + 1];
                 _this.positionOutput[i] = _this.positionOutput[i + 1];
             }
-            _this.angelOutput[_this.dataLength - 1] = angel;
-            _this.positionOutput[_this.dataLength - 1] = position;
+            _this.angelOutput[_this.dataLength - 1] = _this.PIDAngle;
+            _this.positionOutput[_this.dataLength - 1] = _this.PIDPosition;
         }
-    };
+        setPosition(_this.PIDAngle * Math.PI / 180, _this.PIDPosition);
 
+        return [_this.PIDAngle, _this.PIDPosition];
+    };
 
     function VIDraw() {
         var img = new Image();
@@ -131,20 +112,16 @@ function BallBeamVI(domElement, drawFlag) {
     }
 
     var camera, scene, renderer, controls, markControl, switchControl, resetControl,
-        beam, ball, mark, offSwitch, onSwitch, resetButton,
+        base, beam, ball, mark, offSwitch, onSwitch, resetButton, loadedFlag = false,
         position = 0;
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
         || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
 
-    /**
-     * 三维绘图
-     * @param domElement HTML CANVAS
-     * @param loadingDiv 三维加载时遮罩
-     * @constructor
-     */
-    function BallBeamDraw(domElement) {
+    if (draw3DFlag) {
+
+
         var loadingImg = document.createElement('img');
         loadingImg.src = 'img/loading.gif';
         loadingImg.style.width = '64px';
@@ -154,6 +131,127 @@ function BallBeamVI(domElement, drawFlag) {
         loadingImg.style.left = domElement.offsetLeft + domElement.offsetWidth / 2 - 32 + 'px';
         loadingImg.style.zIndex = '1001';
         domElement.parentNode.appendChild(loadingImg);
+
+        var mtlLoader = new THREE.MTLLoader();
+        var objLoader = new THREE.OBJLoader();
+
+        mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
+
+            materials.preload();
+
+            objLoader.setMaterials(materials);
+            objLoader.load('assets/BallBeamControl/base.obj', function (a) {
+
+                a.traverse(function (child) {
+                    if (child instanceof THREE.Mesh) {
+
+                        child.material.side = THREE.DoubleSide;
+                    }
+                });
+                base = a;
+                mtlLoader.load('assets/BallBeamControl/beam.mtl', function (materials) {
+
+                    materials.preload();
+
+                    objLoader.setMaterials(materials);
+                    objLoader.load('assets/BallBeamControl/beam.obj', function (b) {
+
+                        b.traverse(function (child) {
+                            if (child instanceof THREE.Mesh) {
+
+                                child.material.side = THREE.DoubleSide;
+                            }
+                        });
+                        beam = b;
+                        mtlLoader.load('assets/BallBeamControl/ball.mtl', function (materials) {
+
+                            materials.preload();
+
+                            objLoader.setMaterials(materials);
+                            objLoader.load('assets/BallBeamControl/ball.obj', function (c) {
+                                c.traverse(function (child) {
+                                    if (child instanceof THREE.Mesh) {
+
+                                        child.material.side = THREE.DoubleSide;
+                                    }
+                                });
+                                ball = c;
+                                mtlLoader.load('assets/BallBeamControl/mark.mtl', function (materials) {
+
+                                    materials.preload();
+
+                                    objLoader.setMaterials(materials);
+                                    objLoader.load('assets/BallBeamControl/mark.obj', function (d) {
+                                        d.traverse(function (child) {
+                                            if (child instanceof THREE.Mesh) {
+
+                                                child.material.side = THREE.DoubleSide;
+                                            }
+                                        });
+                                        mark = d;
+                                        mtlLoader.load('assets/BallBeamControl/offSwitch.mtl', function (materials) {
+
+                                            materials.preload();
+
+                                            objLoader.setMaterials(materials);
+                                            objLoader.load('assets/BallBeamControl/offSwitch.obj', function (e) {
+                                                e.traverse(function (child) {
+                                                    if (child instanceof THREE.Mesh) {
+
+                                                        child.material.side = THREE.DoubleSide;
+                                                    }
+                                                });
+                                                offSwitch = e;
+                                                mtlLoader.load('assets/BallBeamControl/onSwitch.mtl', function (materials) {
+
+                                                    materials.preload();
+
+                                                    objLoader.setMaterials(materials);
+                                                    objLoader.load('assets/BallBeamControl/onSwitch.obj', function (f) {
+                                                        f.traverse(function (child) {
+                                                            if (child instanceof THREE.Mesh) {
+
+                                                                child.material.side = THREE.DoubleSide;
+                                                            }
+                                                        });
+                                                        onSwitch = f;
+                                                        mtlLoader.load('assets/BallBeamControl/resetButton.mtl', function (materials) {
+
+                                                            materials.preload();
+
+                                                            objLoader.setMaterials(materials);
+                                                            objLoader.load('assets/BallBeamControl/resetButton.obj', function (g) {
+                                                                g.traverse(function (child) {
+                                                                    if (child instanceof THREE.Mesh) {
+
+                                                                        child.material.side = THREE.DoubleSide;
+                                                                    }
+                                                                });
+                                                                resetButton = g;
+                                                                loadedFlag = true;
+                                                                loadingImg.style.display = 'none';
+                                                            });
+                                                        });
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    /**
+     * 三维绘图
+     * @param domElement HTML CANVAS
+     * @constructor
+     */
+    function BallBeamDraw() {
         renderer = new THREE.WebGLRenderer({
             canvas: domElement,
             antialias: true
@@ -275,127 +373,15 @@ function BallBeamVI(domElement, drawFlag) {
 
         });
 
-        var mtlLoader = new THREE.MTLLoader();
-
-        var objLoader = new THREE.OBJLoader();
-
-        mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
-
-            materials.preload();
-
-            objLoader.setMaterials(materials);
-            objLoader.load('assets/BallBeamControl/base.obj', function (base) {
-
-                base.traverse(function (child) {
-                    if (child instanceof THREE.Mesh) {
-
-                        child.material.side = THREE.DoubleSide;
-                    }
-                });
-                mtlLoader.load('assets/BallBeamControl/beam.mtl', function (materials) {
-
-                    materials.preload();
-
-                    objLoader.setMaterials(materials);
-                    objLoader.load('assets/BallBeamControl/beam.obj', function (b) {
-
-                        b.traverse(function (child) {
-                            if (child instanceof THREE.Mesh) {
-
-                                child.material.side = THREE.DoubleSide;
-                            }
-                        });
-                        beam = b;
-                        mtlLoader.load('assets/BallBeamControl/ball.mtl', function (materials) {
-
-                            materials.preload();
-
-                            objLoader.setMaterials(materials);
-                            objLoader.load('assets/BallBeamControl/ball.obj', function (c) {
-                                c.traverse(function (child) {
-                                    if (child instanceof THREE.Mesh) {
-
-                                        child.material.side = THREE.DoubleSide;
-                                    }
-                                });
-                                ball = c;
-                                mtlLoader.load('assets/BallBeamControl/mark.mtl', function (materials) {
-
-                                    materials.preload();
-
-                                    objLoader.setMaterials(materials);
-                                    objLoader.load('assets/BallBeamControl/mark.obj', function (d) {
-                                        d.traverse(function (child) {
-                                            if (child instanceof THREE.Mesh) {
-
-                                                child.material.side = THREE.DoubleSide;
-                                            }
-                                        });
-                                        mark = d;
-                                        mtlLoader.load('assets/BallBeamControl/offSwitch.mtl', function (materials) {
-
-                                            materials.preload();
-
-                                            objLoader.setMaterials(materials);
-                                            objLoader.load('assets/BallBeamControl/offSwitch.obj', function (e) {
-                                                e.traverse(function (child) {
-                                                    if (child instanceof THREE.Mesh) {
-
-                                                        child.material.side = THREE.DoubleSide;
-                                                    }
-                                                });
-                                                offSwitch = e;
-                                                mtlLoader.load('assets/BallBeamControl/onSwitch.mtl', function (materials) {
-
-                                                    materials.preload();
-
-                                                    objLoader.setMaterials(materials);
-                                                    objLoader.load('assets/BallBeamControl/onSwitch.obj', function (f) {
-                                                        f.traverse(function (child) {
-                                                            if (child instanceof THREE.Mesh) {
-
-                                                                child.material.side = THREE.DoubleSide;
-                                                            }
-                                                        });
-                                                        onSwitch = f;
-                                                        mtlLoader.load('assets/BallBeamControl/resetButton.mtl', function (materials) {
-
-                                                            materials.preload();
-
-                                                            objLoader.setMaterials(materials);
-                                                            objLoader.load('assets/BallBeamControl/resetButton.obj', function (g) {
-                                                                g.traverse(function (child) {
-                                                                    if (child instanceof THREE.Mesh) {
-
-                                                                        child.material.side = THREE.DoubleSide;
-                                                                    }
-                                                                });
-                                                                resetButton = g;
-
-                                                                loadingImg.style.display = 'none';
-                                                                scene.add(base);
-                                                                scene.add(beam);
-                                                                scene.add(ball);
-                                                                scene.add(mark);
-                                                                scene.add(offSwitch);
-                                                                scene.add(resetButton);
-                                                                markControl.attach(mark);
-                                                                switchControl.attach(offSwitch);
-                                                                resetControl.attach(resetButton);
-                                                            });
-                                                        });
-                                                    });
-                                                });
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
+        scene.add(base);
+        scene.add(beam);
+        scene.add(ball);
+        scene.add(mark);
+        scene.add(offSwitch);
+        scene.add(resetButton);
+        markControl.attach(mark);
+        switchControl.attach(offSwitch);
+        resetControl.attach(resetButton);
 
         ballBeamAnimate();
 
@@ -423,7 +409,7 @@ function BallBeamVI(domElement, drawFlag) {
         }
 
         position = this.focused.position.x;
-        _this.markPosition = position;
+        _this.markPosition = parseFloat(position).toFixed(2);
     }
 
     function ballBeamAnimate() {
@@ -446,10 +432,33 @@ function BallBeamVI(domElement, drawFlag) {
         mark.position.x = position * Math.cos(angle);
     }
 
+    this.draw = function () {
+
+        if (draw3DFlag) {
+
+            var timer = window.setInterval(function () {
+                if (loadedFlag) {
+
+                    new BallBeamDraw();
+                    window.clearInterval(timer);
+                }
+            }, 100);
+        }
+        else {
+
+            _this.canvas = domElement;
+            _this.ctx = domElement.getContext('2d');
+            VIDraw();
+        }
+    };
+    this.draw();
+
     this.reset = function () {
 
         _this.PIDAngle = 0;
         _this.PIDPosition = 0;
+        this.angelOutput = [0];
+        this.positionOutput = [0];
         _this.limit = true;
         _this.u1 = 0;
         _this.u2 = 0;

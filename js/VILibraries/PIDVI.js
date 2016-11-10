@@ -17,17 +17,17 @@ function PIDVI(domElement) {
     this.runningFlag = false;
 
     this.input = 0;
+    this.lastInput = 0;
     this.singleOutput = 0;
     this.P = 1;
     this.I = 1;
     this.D = 1;
     this.Fs = 100;
-    this.u1 = 0;
-    this.y1 = 0;
+    this.temp1 = 0;
 
     this.dataLength = 1024;
     this.index = 0;
-    this.output = [];
+    this.output = [0];
     this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
@@ -50,25 +50,27 @@ function PIDVI(domElement) {
             return false;
         }
 
-        var v1, v2, v3, v21, u, Ts = 1.0 / _this.Fs;
+        var v1, v2, v3, v21;
 
-        u = _this.input;//从输入端口上读数
-        v1 = _this.P * u;
-        v21 = _this.y1 + 0.5 * Ts * (u + _this.u1);
-        _this.y1 = v21;
+        v1 = _this.P * _this.input;
+
+        v21 = _this.temp1 + 0.5 * (Number(_this.input) + Number(_this.lastInput)) / _this.Fs;
+        // console.log(v21);
+        _this.temp1 = v21;
         v2 = _this.I * v21;
-        v3 = _this.D * (u - _this.u1) / Ts;
-        _this.u1 = u;
-        _this.singleOutput = v1 + v2 + v3;//向输出端口上写数
 
+        v3 = _this.D * (_this.input - _this.lastInput) * _this.Fs;
+
+        _this.lastInput = _this.input;
+        _this.singleOutput = v1 + v2 + v3;
 
         //将输出数保存在数组内
         var i = 0;
-        if (_this.index == 0) {
-            for (i = 0; i < _this.dataLength; i++) {
-                _this.output[i] = 0;
-            }
-        }
+        // if (_this.index == 0) {
+        //     for (i = 0; i < _this.dataLength; i++) {
+        //         _this.output[i] = 0;
+        //     }
+        // }
         if (_this.index <= (_this.dataLength - 1)) {
             _this.output[_this.index] = _this.singleOutput;
             _this.index++;
@@ -86,14 +88,15 @@ function PIDVI(domElement) {
     this.reset = function () {
 
         _this.input = 0;
+        _this.lastInput = 0;
         _this.singleOutput = 0;
         _this.P = 1;
         _this.I = 1;
         _this.D = 1;
         _this.Fs = 100;
-        _this.u1 = 0;
-        _this.y1 = 0;
+        _this.temp1 = 0;
         _this.index = 0;
+        _this.output = [0];
     };
 
     this.draw = function () {

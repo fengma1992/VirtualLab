@@ -1,119 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>HTML5获取麦克风音频,输出到扬声器</title>
     <meta charset="UTF-8">
-    <title>典型信号的波形与频谱分析</title>
-    <link rel="stylesheet" href="css/main.css">
-
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
 </head>
 <body>
-<div class="mainDiv">
-    <canvas id="signalCanvas" width="1000" height="400"></canvas>
-    <div class="rowFlexDiv">
-        <canvas id="dataCanvas" width="40" height="40"></canvas>
-        <button id="sinBtn" class="normalBtn" onclick="setValue(1)">正弦波</button>
-        <button id="squareBtn" class="normalBtn" onclick="setValue(2)">方波</button>
-        <button id="triangleBtn" class="normalBtn" onclick="setValue(3)">三角波</button>
-        <button id="noiseBtn" class="normalBtn" onclick="setValue(4)">白噪声</button>
-        <button id="startBtn" class="normalBtn" onclick="start()">运行</button>
-    </div>
-    <div class="rowFlexDiv">
-        <div class="rowFlexDiv">
-            <canvas id="knobCanvas1" width="128" height="128"></canvas>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;幅值：</span>
-            <input id="ampInput" type="number" value="2" class="signalInput" onchange="setAmp()">
-        </div>
-        <div class="rowFlexDiv">
-            <canvas id="knobCanvas2" width="128" height="128"></canvas>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;频率：</span>
-            <input id="freqInput" type="number" value="100" class="signalInput" onchange="setFreq()">
-        </div>
-    </div>
-    <script src="js/VILibraries/WaveVI.js"></script>
-    <script src="js/VILibraries/SignalGeneratorVI.js"></script>
-    <script src="js/VILibraries/KnobVI.js"></script>
-    <script src="js/VILibraries/SignalProcessLib.js"></script>
-    <script>
-        var canvas = document.getElementById('signalCanvas');
-        var ampInput = document.getElementById('ampInput');
-        var freqInput = document.getElementById('freqInput');
-        var startBtn = document.getElementById('startBtn');
-        var dataCanvas = document.getElementById('dataCanvas');
-        startBtn.disabled = true;
+<input type="range" max="100" min="0" value="100" onmousemove="VolumeSample.changeVolume(this)">
+<input type="button" onclick="VolumeSample.play()" value="开始">
+<audio id="audio" autoplay="autoplay" controls="controls"></audio>
+<script type="text/javascript">
 
-        var wave = new WaveVI(canvas);
-        var data = new SignalGeneratorVI(dataCanvas);
-        var phrase, interval,
-                originalAmp = ampInput.value, amplitude = originalAmp,
-                originalFreq = freqInput.value, frequency = originalFreq, started = false;
+    var audio = document.getElementById('audio');
+    var context;
+    try {
+        context = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    catch (e) {
+        console.log("Your browser does not support AudioContext!");
+    }
+    var VolumeSample = {};
+    // Gain node needs to be mutated by volume control.
+    VolumeSample.gainNode = null;
 
-        function setValue(signalType) {
-            phrase = 0;
-            data.signalType = signalType;
-            setData();
-            startBtn.disabled = false;
+    VolumeSample.play = function () {
+        if (!context.createGain)
+            context.createGain = context.createGainNode;
+        this.gainNode = context.createGain();
+        var source;
+        navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia || navigator.msGetUserMedia);
+        if (navigator.getUserMedia) {
+            navigator.getUserMedia(
+                    {
+                        audio: true
+                    },
+                    function (stream) {
+                        source = context.createMediaStreamSource(stream);
+                        audio.srcObject = stream;
+                        // Connect source to a gain node
+//                        source.connect(VolumeSample.gainNode);
+//                        // Connect gain node to destination
+//                        VolumeSample.gainNode.connect(context.destination);
+//                        // Start playback in a loop
+//                        source.loop = true;
+//                        if (!source.start)
+//                            source.start = source.noteOn;
+//                        source.start(0);
+//                        this.source = source;
+                    },
+                    function (err) {
+                        console.log("The following gUM error occured: " + err);
+                    });
         }
-
-        function setData() {
-            data.setData(amplitude, frequency, phrase);
-            var fre = fft(1, 10, data.output);
-            wave.setAxisRangX(0, 11025 / 2);
-            wave.setData(fre, fre.length);
+        else {
+            console.log("getUserMedia not supported on your browser!");
         }
-        function start() {
-            if (!started) {
-                interval = window.setInterval(function () {
-                    phrase += 10;
-                    setData();
-                }, 100);
-                startBtn.innerText = '停止';
-                started = !started;
-            }
-            else {
-                window.clearInterval(interval);
-                startBtn.innerText = '运行';
-                started = !started;
-            }
+    };
+    var volume;
+    VolumeSample.changeVolume = function (element) {
+        if (volume == element.value)
+            return;
+
+        volume = element.value;
+        var fraction = parseInt(element.value) / parseInt(element.max);
+        // Let's use an x*x curve (x-squared) since simple linear (x) does not
+        // sound as good.
+        this.gainNode.gain.value = fraction * fraction;
+    };
+
+    VolumeSample.stop = function () {
+        if (!this.source.stop)
+            this.source.stop = source.noteOff;
+        this.source.stop(0);
+    };
+
+    VolumeSample.toggle = function () {
+        this.playing ? this.stop() : this.play();
+        this.playing = !this.playing;
+    };
+
+    function logValue(input) {
+
+        console.log(input.value);
+    }
+    function startAudio() {
+        try {
+            context = new (window.AudioContext || window.webkitAudioContext)();
         }
-        var knob1 = new KnobVI(document.getElementById('knobCanvas1'));
-        knob1.setDataRange(0, 100, originalAmp);
-
-        knob1.attachEvent('mouseMove', function () {
-            ampInput.value = knob1.singleOutput.toFixed(1);
-            amplitude = ampInput.value;
-
-            if (!started)setData();
-
-        });
-
-        var knob2 = new KnobVI(document.getElementById('knobCanvas2'));
-        knob2.setDataRange(0, 1000, originalFreq);
-
-        knob2.attachEvent('mouseMove', function () {
-            freqInput.value = knob2.singleOutput.toFixed(1);
-            frequency = freqInput.value;
-
-            if (!started)setData();
-        });
-
-        function setAmp() {
-            amplitude = parseFloat(ampInput.value).toFixed(1);
-            amplitude = amplitude > 100 ? 100 : amplitude;
-            ampInput.value = amplitude;
-            knob1.setData(amplitude);
-            if (!started)setData();
+        catch (e) {
+            console.log("Your browser does not support AudioContext!");
         }
-
-        function setFreq() {
-            frequency = parseFloat(freqInput.value).toFixed(1);
-            frequency = frequency > 1000 ? 1000 : frequency;
-            freqInput.value = frequency;
-            knob2.setData(frequency);
-            if (!started)setData();
+        navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia || navigator.msGetUserMedia);
+        if (navigator.getUserMedia) {
+            navigator.getUserMedia(
+                    {
+                        audio: true
+                    },
+                    function (stream) {
+                        var source = context.createMediaStreamSource(stream);
+                        var biquadFilter = context.createBiquadFilter();
+                        biquadFilter.type = "lowshelf";
+                        biquadFilter.frequency.value = 1000;
+                        biquadFilter.gain.value = 25;
+                        source.connect(biquadFilter);
+                        biquadFilter.connect(context.destination);
+                        source.stop(0);
+                    },
+                    function (err) {
+                        console.log("The following gUM error occured: " + err);
+                    });
         }
+        else {
+            console.log("getUserMedia not supported on your browser!");
+        }
+    }
 
-
-    </script>
-</div>
+</script>
 </body>
 </html>

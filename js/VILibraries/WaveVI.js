@@ -10,14 +10,14 @@
 function WaveVI(domElement) {
 
     var _this = this;
-    this.canvas = domElement;
-    this.ctx = this.canvas.getContext("2d");
+    this.container = domElement;
+    this.ctx = this.container.getContext("2d");
     this.name = 'WaveVI';
     this.cnText = '波形控件';
     this.runningFlag = false;
 
-    this.width = this.canvas.width; //对象宽度//
-    this.height = this.canvas.height; //对象高度//
+    this.width = this.container.width; //内框宽度//
+    this.height = this.container.height; //内框高度//
     //坐标单位//
     this.strLabelX = 'X';
     this.strLabelY = 'Y';
@@ -33,20 +33,19 @@ function WaveVI(domElement) {
     this.nRow = 4;
     this.nCol = 8;
     this.pointNum = 1023;
-    this.borderWidth = 5;
     this.drawRulerFlag = true;
 
     //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
 
-    this.offsetT = 5 + this.borderWidth;
-    this.offsetR = 5 + this.borderWidth;
+    this.offsetT = 10;
+    this.offsetR = 10;
 
-    this.offsetB = 5 + this.borderWidth;
-    this.offsetL = 5 + this.borderWidth;
+    this.offsetB = 10;
+    this.offsetL = 10;
     if ((_this.height >= 200) && (_this.width >= 200)) {
 
-        _this.offsetB = 30 + _this.borderWidth;
-        _this.offsetL = 38 + _this.borderWidth;
+        _this.offsetB = 35;
+        _this.offsetL = 42;
     }
     this.waveWidth = this.width - this.offsetL - this.offsetR;
     this.waveHeight = this.height - this.offsetT - this.offsetB;
@@ -67,7 +66,7 @@ function WaveVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.source = [];
 
-    this.paint = function () {
+    this.draw = function () {
 
         _this.drawBackground();
         _this.drawWave();
@@ -279,11 +278,8 @@ function WaveVI(domElement) {
     };
 
     this.reset = function () {
-        var i;
-        for (i = 0; i < len; i++) {
 
-            _this.bufferVal[i] = 0.0;
-        }
+        _this.bufferVal = [];
         _this.drawBackground();
     };
 
@@ -291,9 +287,13 @@ function WaveVI(domElement) {
 
         if (len == undefined) {
 
-            len = data.length > _this.pointNum ? data.length : _this.pointNum;
+            _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
         }
-        _this.pointNum = len;
+        else {
+
+            _this.pointNum = len;
+        }
+        // console.log(data);
         var YMax = 0, YMin = 0, i;
         for (i = 0; i < _this.pointNum; i++) {
 
@@ -319,7 +319,7 @@ function WaveVI(domElement) {
                 _this.YMinVal = -1;
             }
         }
-        _this.paint();
+        _this.draw();
     };
 
     this.setAxisRangX = function (xMin, xNax) {
@@ -434,8 +434,11 @@ function WaveVI(domElement) {
     };
 
     function onMouseMove(event) {
-        if (!_this.drawRulerFlag || _this.bufferVal.length == 0)
+
+        if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
+
             return;
+        }
         _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 1;
         _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 1;
 
@@ -445,22 +448,15 @@ function WaveVI(domElement) {
         if (_this.curPointX >= (_this.width - _this.offsetR)) {
             _this.curPointX = _this.width - _this.offsetR;
         }
-        _this.paint();
+        _this.draw();
         if (_mouseMoveFlag) {
             _this.mouseMove();
         }
     }
 
-    function onContainerMouseDown(event) {
-    }
-
-
-    function onContainerMouseUp(event) {
-    }
-
-    // this.canvas.addEventListener('mousedown', onContainerMouseDown, false);  // mouseDownListener
-    this.canvas.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    // this.canvas.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
+    // this.container.addEventListener('mousedown', onContainerMouseDown, false);  // mouseDownListener
+    this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
+    // this.container.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
 }
 
 

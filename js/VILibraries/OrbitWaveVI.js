@@ -9,6 +9,7 @@
  */
 function OrbitWaveVI(domElement) {
 
+    'use strict';
     var _this = this;
     this.canvas = domElement;
     this.ctx = this.canvas.getContext("2d");
@@ -189,15 +190,16 @@ function OrbitWaveVI(domElement) {
             ctx.strokeStyle = _this.fontColor;
             ctx.font = "normal 14px Calibri";
 
-            var xvalstep = (_this.MaxVal - _this.MinVal) / scaleXNum;
-            var yvalstep = (_this.MaxVal - _this.MinVal) / scaleYNum;
+            var xValStep = (_this.MaxVal - _this.MinVal) / scaleXNum;
+            var yValStep = (_this.MaxVal - _this.MinVal) / scaleYNum;
 
             ctx.fillStyle = _this.fontColor;
             var temp = 0;
+            var strLab;
             //横坐标刻度//
             for (i = 2; i < scaleXNum; i += 4) {
 
-                temp = _this.MinVal + xvalstep * i;
+                temp = _this.MinVal + xValStep * i;
                 if (Math.abs(temp) >= 1000) {
 
                     temp = temp / 1000;
@@ -220,7 +222,7 @@ function OrbitWaveVI(domElement) {
             //纵坐标刻度//
             for (i = 2; i < scaleYNum; i += 4) {
 
-                temp = _this.MaxVal - yvalstep * i;
+                temp = _this.MaxVal - yValStep * i;
                 if (Math.abs(temp) >= 1000) {
 
                     temp = temp / 1000;
@@ -284,6 +286,7 @@ function OrbitWaveVI(domElement) {
     };
 
     this.setData = function (dataX, dataY) {
+
         if ((dataX == null || undefined) || (dataY == null || undefined)) {
 
             return false;
@@ -420,8 +423,10 @@ function OrbitWaveVI(domElement) {
     };
 
     function onMouseMove(event) {
-        if (!_this.drawRulerFlag || _this.bufferValY.length == 0)
+        if (!_this.drawRulerFlag || _this.bufferValY.length == 0) {
+
             return;
+        }
         _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 5;
         _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 5;
 

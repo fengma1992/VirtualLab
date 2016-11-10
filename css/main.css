@@ -210,3 +210,10 @@ html {
     justify-content: space-around;
     align-items: center;
 }
+
+.grab-cursor {
+
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}

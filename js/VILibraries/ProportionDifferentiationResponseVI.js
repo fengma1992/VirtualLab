@@ -29,7 +29,7 @@ function ProportionDifferentiationResponseVI(domElement) {
 
     this.dataLength = 1024;
     this.index = 0;
-    this.output = [];
+    this.output = [0];
     this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
@@ -60,11 +60,11 @@ function ProportionDifferentiationResponseVI(domElement) {
 
         //将输出数保存在数组内
         var i = 0;
-        if (_this.index == 0) {
-            for (i = 0; i < _this.dataLength; i++) {
-                _this.output[i] = 0;
-            }
-        }
+        // if (_this.index == 0) {
+        //     for (i = 0; i < _this.dataLength; i++) {
+        //         _this.output[i] = 0;
+        //     }
+        // }
         if (_this.index <= (_this.dataLength - 1)) {
             _this.output[_this.index] = _this.singleOutput;
             _this.index++;
@@ -84,6 +84,8 @@ function ProportionDifferentiationResponseVI(domElement) {
         _this.temp1 = 0;
         _this.temp2 = 0;
         _this.index = 0;
+        _this.singleOutput = 0;
+        _this.output = [0];
     };
 
 

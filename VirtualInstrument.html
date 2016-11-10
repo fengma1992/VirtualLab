@@ -28,12 +28,18 @@
                 ondragstart="drag(event)">
         </canvas>
         <canvas id="RotorExperimentalRigVI-canvas" class="draggable-element" width="162" height="90"
+                ondblclick="showBox(this)"
                 zoom="4"
                 draggable="true"
                 ondragstart="drag(event)">
         </canvas>
         <canvas id="TextVI-canvas" class="draggable-element" width="104" height="45"
                 ondblclick="showBox(this)"
+                zoom="1"
+                draggable="true"
+                ondragstart="drag(event)">
+        </canvas>
+        <canvas id="ButtonVI-canvas" class="draggable-element" width="104" height="45"
                 zoom="1"
                 draggable="true"
                 ondragstart="drag(event)">
@@ -133,28 +139,8 @@
     </div>
 </div>
 <!--虚拟仪器库-->
-<script src="js/VILibraries/AddVI.js"></script>
-<script src="js/VILibraries/BallBeamVI.js"></script>
-<script src="js/VILibraries/DCOutputVI.js"></script>
-<script src="js/VILibraries/KnobVI.js"></script>
-<script src="js/VILibraries/OrbitWaveVI.js"></script>
-<script src="js/VILibraries/PIDVI.js"></script>
-<script src="js/VILibraries/RelayVI.js"></script>
-<script src="js/VILibraries/RotorExperimentalRigVI.js"></script>
-<script src="js/VILibraries/RoundPanelVI.js"></script>
-<script src="js/VILibraries/SignalGeneratorVI.js"></script>
+<script src="js/VILibraries/VILibrary.js"></script>
 <script src="js/VILibraries/SignalProcessLib.js"></script>
-<script src="js/VILibraries/TextVI.js"></script>
-<script src="js/VILibraries/WaveVI.js"></script>
-<!--*************阶跃响应************************-->
-<script src="js/VILibraries/DifferentiationResponseVI.js"></script>
-<script src="js/VILibraries/InertiaResponseVI.js"></script>
-<script src="js/VILibraries/IntegrationResponseVI.js"></script>
-<script src="js/VILibraries/OscillationResponseVI.js"></script>
-<script src="js/VILibraries/ProportionDifferentiationResponseVI.js"></script>
-<script src="js/VILibraries/ProportionInertiaResponseVI.js"></script>
-<script src="js/VILibraries/ProportionIntegrationResponseVI.js"></script>
-<script src="js/VILibraries/ProportionResponseVI.js"></script>
 <!--********************************************-->
 <!--三维显示库-->
 <script src="js/three.js"></script>
@@ -171,11 +157,12 @@
     var sideBar = document.getElementById('sideBar');
     var VIContainer = document.getElementById('container');
 
-    var instance;
+    var instance, mainTimer;
     var dataSetBox = [], inputSetBox = [], outputSetBox = [];
     var dataObject = {
         THREECount: 0,
         BallBeamVICount: 0,
+        ButtonVICount: 0,
         WaveVICount: 0,
         AddVICount: 0,
         DCOutputVICount: 0,
@@ -197,6 +184,7 @@
         SignalGeneratorVICount: 0,
         THREE: [],
         BallBeamVI: [],
+        ButtonVI: [],
         WaveVI: [],
         AddVI: [],
         DCOutputVI: [],
@@ -219,28 +207,29 @@
     };
 
     function init() {
-        new AddVI(document.getElementById('AddVI-canvas'));
-        new BallBeamVI(document.getElementById('BallBeamVI-canvas'));
-        new DCOutputVI(document.getElementById('DCOutputVI-canvas'));
-        new KnobVI(document.getElementById('KnobVI-canvas'));
-        new OrbitWaveVI(document.getElementById('OrbitWaveVI-canvas'));
-        new PIDVI(document.getElementById('PIDVI-canvas'));
-        new RelayVI(document.getElementById('RelayVI-canvas'));
-        new RotorExperimentalRigVI(document.getElementById('RotorExperimentalRigVI-canvas'));
-        new RoundPanelVI(document.getElementById('RoundPanelVI-canvas'));
-        new SignalGeneratorVI(document.getElementById('SignalGeneratorVI-canvas'));
-        new TextVI(document.getElementById('TextVI-canvas'));
-        new WaveVI(document.getElementById('WaveVI-canvas'));
-        new ProportionResponseVI(document.getElementById('ProportionResponseVI-canvas'));
-        new IntegrationResponseVI(document.getElementById('IntegrationResponseVI-canvas'));
-        new DifferentiationResponseVI(document.getElementById('DifferentiationResponseVI-canvas'));
-        new InertiaResponseVI(document.getElementById('InertiaResponseVI-canvas'));
-        new OscillationResponseVI(document.getElementById('OscillationResponseVI-canvas'));
-        new ProportionIntegrationResponseVI(document.getElementById('ProportionIntegrationResponseVI-canvas'));
-        new ProportionDifferentiationResponseVI(document.getElementById('ProportionDifferentiationResponseVI-canvas'));
-        new ProportionInertiaResponseVI(document.getElementById('ProportionInertiaResponseVI-canvas'));
+        new VILibrary.AddVI(document.getElementById('AddVI-canvas'));
+        new VILibrary.BallBeamVI(document.getElementById('BallBeamVI-canvas'));
+        new VILibrary.ButtonVI(document.getElementById('ButtonVI-canvas'));
+        new VILibrary.DCOutputVI(document.getElementById('DCOutputVI-canvas'));
+        new VILibrary.KnobVI(document.getElementById('KnobVI-canvas'));
+        new VILibrary.OrbitWaveVI(document.getElementById('OrbitWaveVI-canvas'));
+        new VILibrary.PIDVI(document.getElementById('PIDVI-canvas'));
+        new VILibrary.RelayVI(document.getElementById('RelayVI-canvas'));
+        new VILibrary.RotorExperimentalRigVI(document.getElementById('RotorExperimentalRigVI-canvas'));
+        new VILibrary.RoundPanelVI(document.getElementById('RoundPanelVI-canvas'));
+        new VILibrary.SignalGeneratorVI(document.getElementById('SignalGeneratorVI-canvas'));
+        new VILibrary.TextVI(document.getElementById('TextVI-canvas'));
+        new VILibrary.WaveVI(document.getElementById('WaveVI-canvas'));
+        new VILibrary.ProportionResponseVI(document.getElementById('ProportionResponseVI-canvas'));
+        new VILibrary.IntegrationResponseVI(document.getElementById('IntegrationResponseVI-canvas'));
+        new VILibrary.DifferentiationResponseVI(document.getElementById('DifferentiationResponseVI-canvas'));
+        new VILibrary.InertiaResponseVI(document.getElementById('InertiaResponseVI-canvas'));
+        new VILibrary.OscillationResponseVI(document.getElementById('OscillationResponseVI-canvas'));
+        new VILibrary.ProportionIntegrationResponseVI(document.getElementById('ProportionIntegrationResponseVI-canvas'));
+        new VILibrary.ProportionDifferentiationResponseVI(document.getElementById('ProportionDifferentiationResponseVI-canvas'));
+        new VILibrary.ProportionInertiaResponseVI(document.getElementById('ProportionInertiaResponseVI-canvas'));
         ready();
-        resize();
+        containerResize();
     }
 
     function ready() {
@@ -296,9 +285,7 @@
                             '<div class="input-div">' +
                             '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">反馈角度<br>' +
                             '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">反馈位置<br>' +
-                            '<input type="radio" class="radioInput" name="output-type" value="3" onclick="outputSetBox[1].close()">反馈角度(数组)<br>' +
-                            '<input type="radio" class="radioInput" name="output-type" value="4" onclick="outputSetBox[1].close()">反馈位置(数组)<br>' +
-                            '<input type="radio" class="radioInput" name="output-type" value="5" onclick="outputSetBox[1].close()">标记位置<br>' +
+                            '<input type="radio" class="radioInput" name="output-type" value="3" onclick="outputSetBox[1].close()">标记位置<br>' +
                             '</div>',
                             1, function () {
 
@@ -336,6 +323,7 @@
                             '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">时域信号<br>' +
                             '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">频域信号<br>' +
                             '<input type="radio" class="radioInput" name="output-type" value="3" onclick="outputSetBox[1].close()">轴心轨迹<br>' +
+                            '<input type="radio" class="radioInput" name="output-type" value="4" onclick="outputSetBox[1].close()">旋转频率<br>' +
                             '</div>',
                             1, function () {
 
@@ -365,45 +353,47 @@
                                 sourceElement.target.push([targetElement, checkedValue]);
                             });
                 }
-                else if (sourceElement.outputCount == 2) {
+//                else if (sourceElement.outputCount == 2) {
+//
+//                    outputSetBox[0] = true;
+//                    outputSetBox[1] = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+//                            '<div class="input-div">' +
+//                            '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">输出(单值)<br>' +
+//                            '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">输出(数组)<br>' +
+//                            '</div>',
+//                            1, function () {
+//
+//                                outputSetBox[0] = false;
+//                                var outputType = document.getElementsByName('output-type');
+//                                var checkedValue = -1;
+//                                for (var i = 0; i < outputType.length; i++) {
+//
+//                                    if (outputType[i].checked == true) {
+//
+//                                        checkedValue = outputType[i].value;
+//                                        break;
+//                                    }
+//                                }
+//                                if (checkedValue == -1) {
+//
+//                                    if (connectionInfo != null && connectionInfo != undefined) {
+//
+//                                        instance.detach(connectionInfo.connection);
+//                                        connectionInfo = null;
+//                                    }
+//                                    closeBox();
+//                                    G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
+//                                    return;
+//                                }
+//
+//                                sourceElement.target.push([targetElement, checkedValue]);
+//                            });
+//                }
 
-                    outputSetBox[0] = true;
-                    outputSetBox[1] = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                            '<div class="input-div">' +
-                            '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">输出(单值)<br>' +
-                            '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">输出(数组)<br>' +
-                            '</div>',
-                            1, function () {
-
-                                outputSetBox[0] = false;
-                                var outputType = document.getElementsByName('output-type');
-                                var checkedValue = -1;
-                                for (var i = 0; i < outputType.length; i++) {
-
-                                    if (outputType[i].checked == true) {
-
-                                        checkedValue = outputType[i].value;
-                                        break;
-                                    }
-                                }
-                                if (checkedValue == -1) {
-
-                                    if (connectionInfo != null && connectionInfo != undefined) {
-
-                                        instance.detach(connectionInfo.connection);
-                                        connectionInfo = null;
-                                    }
-                                    closeBox();
-                                    G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
-                                    return;
-                                }
-
-                                sourceElement.target.push([targetElement, checkedValue]);
-                            });
-                }
+                //默认输出数组
                 else {
 
-                    sourceElement.target.push([targetElement, 1]);//默认输出单值
+                    sourceElement.target.push([targetElement, 2]);
                 }
 
                 //对于多输入控件,进行输入端口判断
@@ -516,14 +506,13 @@
 
             // 绑定点击删除连线
             instance.bind('click', function (conn) {
-                        G.confirm("删除连接?", function (z) {
-                            if (z) {
+                G.confirm("删除连接?", function (z) {
+                    if (z) {
 
-                                instance.detach(conn);
-                            }
-                        }, 1);
+                        instance.detach(conn);
                     }
-            );
+                }, 1);
+            });
 
             //监听断开连线事件
             instance.bind('connectionDetached', function (connectionInfo) {
@@ -569,12 +558,23 @@
         return false;
     }
 
+    function checkIfThreeDVIStarted(threeDElement) {
+
+        if (threeDElement.isStart) {
+
+            findTimerExecutor(threeDElement);
+        }
+    }
+
     function getObjectVIByName(name) {
 
         switch (name) {
 
             case 'BallBeamVI':
                 return dataObject.BallBeamVI;
+
+            case 'ButtonVI':
+                return dataObject.ButtonVI;
 
             case 'WaveVI':
                 return dataObject.WaveVI;
@@ -1056,7 +1056,7 @@
             return;
         }
         var runningElementArr = [];
-        window.setInterval(function () {
+        mainTimer = window.setInterval(function () {
             onTimer(element, runningElementArr);
         }, 50);
     }
@@ -1086,12 +1086,27 @@
             runningElementArr.push(element);
         }
 
-        if (element.source == false || element.source == undefined) {
+        if (element.source == undefined) {
 
             if (!element.runningFlag) {
 
-                element.setData(element.singleOutput);  //直流输出等VI，直接重复赋值以生成输出数组
+                element.setData(element.singleOutput);  //直流输出等无输入接口VI，直接重复赋值以生成输出数组
                 element.runningFlag = true;
+            }
+
+            return false;
+        } else if (element.source == false) {
+
+            if (!element.runningFlag) {
+
+                window.clearInterval(mainTimer);
+                G.alert('连接未完成，请重试！', 1, 1500);
+                for (i = 0; i < runningElementArr.length; i++) {
+
+                    runningElementArr[i].runningFlag = false;
+                    runningElementArr[i].reset();
+                }
+                runningElementArr = [];
             }
 
             return false;
@@ -1128,8 +1143,7 @@
         if (element.target == false || element.target == undefined) {
 
             return false;
-        }
-        else {
+        } else {
 
             var i;
             for (i = 0; i < element.target.length; i++) {
@@ -1212,20 +1226,12 @@
 
             if (outputType == 1) {
 
-                return element.PIDAngle;  //输出角度
-
-            } else if (outputType == 2) {
-
-                return element.PIDPosition;  //输出位置
-
-            } else if (outputType == 3) {
-
                 return element.angelOutput;  //输出角度数组
-            } else if (outputType == 4) {
+            } else if (outputType == 2) {
 
                 return element.positionOutput;  //输出位置数组
 
-            } else if (outputType == 5) {
+            } else if (outputType == 3) {
 
                 return element.markPosition;  //输出标记位置
             }
@@ -1244,18 +1250,15 @@
 
                 return element.orbitOutput;  //输出轴心位置
 
+            } else if (outputType == 4) {
+
+                return element.rotateFrequency;  //输出旋转频率
+
             }
         }
         else {
-            if (outputType == 1) {
 
-                return element.signalOutput;  //输出单值
-
-            } else if (outputType == 2) {
-
-                return element.output;  //输出数组
-
-            }
+            return element.output;  //输出数组
         }
     }
 
@@ -1286,6 +1289,11 @@
                 }
                 newVICanvas.id = VICanvas.id + '-' + dataObject.BallBeamVICount++;
                 break;
+
+            case 'ButtonVI':
+                newVICanvas.id = VICanvas.id + '-' + dataObject.ButtonVICount++;
+                break;
+
             case 'WaveVI':
                 newVICanvas.id = VICanvas.id + '-' + dataObject.WaveVICount++;
                 break;
@@ -1410,14 +1418,6 @@
         VIDraw(newVICanvas);
     }
 
-    function checkIfThreeDVIStarted(threeDElement) {
-
-        if (threeDElement.isStart) {
-
-            findTimerExecutor(threeDElement);
-        }
-    }
-
     function VIDraw(canvas) {
 
         instance.getContainer().appendChild(canvas);
@@ -1426,117 +1426,120 @@
         switch (elementInfo[0]) {
 
             case 'AddVI':
-                dataObject.AddVI.push(new AddVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 2);
+                dataObject.AddVI.push(new VILibrary.AddVI(canvas));
+                addEndpoints(canvas.id, -1, 2);
                 break;
 
             case 'BallBeamVI':
-                dataObject.BallBeamVI.push(new BallBeamVI(canvas, true));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.BallBeamVI.push(new VILibrary.BallBeamVI(canvas, true));
+                addEndpoints(canvas.id, -1, 1);
+                break;
+
+            case 'ButtonVI':
+                dataObject.ButtonVI.push(new VILibrary.ButtonVI(canvas, true));
+                addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'DCOutputVI':
-                dataObject.DCOutputVI.push(new DCOutputVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], [], -1, 0);
+                dataObject.DCOutputVI.push(new VILibrary.DCOutputVI(canvas));
+                addEndpoints(canvas.id, -1, 0);
                 break;
 
             case 'DifferentiationResponseVI':
-                dataObject.DifferentiationResponseVI.push(new DifferentiationResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.DifferentiationResponseVI.push(new VILibrary.DifferentiationResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'InertiaResponseVI':
-                dataObject.InertiaResponseVI.push(new InertiaResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.InertiaResponseVI.push(new VILibrary.InertiaResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'IntegrationResponseVI':
-                dataObject.IntegrationResponseVI.push(new IntegrationResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.IntegrationResponseVI.push(new VILibrary.IntegrationResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'KnobVI':
-                dataObject.KnobVI.push(new KnobVI(canvas));
-                addEndpoints(canvas.id, ['TopCenter'], [], -1, 0);
+                dataObject.KnobVI.push(new VILibrary.KnobVI(canvas));
+                addEndpoints(canvas.id, -1, 0);
                 break;
 
             case 'OrbitWaveVI':
-                dataObject.OrbitWaveVI.push(new OrbitWaveVI(canvas));
-                addEndpoints(canvas.id, [], ['LeftMiddle'], 0, 1);
+                dataObject.OrbitWaveVI.push(new VILibrary.OrbitWaveVI(canvas));
+                addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'OscillationResponseVI':
-                dataObject.OscillationResponseVI.push(new OscillationResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.OscillationResponseVI.push(new VILibrary.OscillationResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'PIDVI':
-                dataObject.PIDVI.push(new PIDVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.PIDVI.push(new VILibrary.PIDVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionDifferentiationResponseVI':
-                dataObject.ProportionDifferentiationResponseVI.push(new ProportionDifferentiationResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.ProportionDifferentiationResponseVI.push(new VILibrary.ProportionDifferentiationResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionInertiaResponseVI':
-                dataObject.ProportionInertiaResponseVI.push(new ProportionInertiaResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.ProportionInertiaResponseVI.push(new VILibrary.ProportionInertiaResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionIntegrationResponseVI':
-                dataObject.ProportionIntegrationResponseVI.push(new ProportionIntegrationResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.ProportionIntegrationResponseVI.push(new VILibrary.ProportionIntegrationResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionResponseVI':
-                dataObject.ProportionResponseVI.push(new ProportionResponseVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.ProportionResponseVI.push(new VILibrary.ProportionResponseVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'RelayVI':
-                dataObject.RelayVI.push(new RelayVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.RelayVI.push(new VILibrary.RelayVI(canvas));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'RotorExperimentalRigVI':
-                dataObject.RotorExperimentalRigVI.push(new RotorExperimentalRigVI(canvas, true));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 1);
+                dataObject.RotorExperimentalRigVI.push(new VILibrary.RotorExperimentalRigVI(canvas, true));
+                addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'RoundPanelVI':
-                dataObject.RoundPanelVI.push(new RoundPanelVI(canvas));
-                addEndpoints(canvas.id, [], ['BottomCenter'], 0, 1);
+                dataObject.RoundPanelVI.push(new VILibrary.RoundPanelVI(canvas));
+                addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'SignalGeneratorVI':
-                dataObject.SignalGeneratorVI.push(new SignalGeneratorVI(canvas));
-                addEndpoints(canvas.id, ['RightMiddle'], ['LeftMiddle'], -1, 2);
+                dataObject.SignalGeneratorVI.push(new VILibrary.SignalGeneratorVI(canvas));
+                addEndpoints(canvas.id, -1, 2);
                 break;
 
             case 'TextVI':
-                dataObject.TextVI.push(new TextVI(canvas));
+                dataObject.TextVI.push(new VILibrary.TextVI(canvas));
                 dataObject.TextVI[dataObject.TextVICount - 1].setData(0);
-                addEndpoints(canvas.id, [], ['LeftMiddle'], 0, 1);
+                addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'WaveVI':
-                dataObject.WaveVI.push(new WaveVI(canvas));
-                addEndpoints(canvas.id, [], ['LeftMiddle'], 0, 1);
+                dataObject.WaveVI.push(new VILibrary.WaveVI(canvas));
+                addEndpoints(canvas.id, 0, 1);
                 break;
         }
     }
 
     /**
      *添加节点
-     * @param toId 元素ID
-     * @param sourceAnchors 输出节点
-     * @param targetAnchors 输入节点
+     * @param id 元素ID
      * @param sourcePointCount 输出节点允许最大连接数
      * @param targetPointCount 输入节点允许最大连接数
      */
-    function addEndpoints(toId, sourceAnchors, targetAnchors, sourcePointCount, targetPointCount) {
+    function addEndpoints(id, sourcePointCount, targetPointCount) {
 
         // this is the paint style for the connecting lines..
         var connectorPaintStyle = {
@@ -1598,40 +1601,52 @@
                             visible: false
                         }]
                     ]
-                };
+                },
+                sourceAnchors = [
+                    [0.2, 0, 0, -1, 0, 0, "foo"],
+                    [1, 0.2, 1, 0, 0, 0, "bar"],
+                    [0.8, 1, 0, 1, 0, 0, "baz"],
+                    [0, 0.8, -1, 0, 0, 0, "qux"]
+                ],
+                targetAnchors = [
+                    [0.6, 0, 0, -1],
+                    [1, 0.6, 1, 0],
+                    [0.4, 1, 0, 1],
+                    [0, 0.4, -1, 0]
+                ];
 
-        for (var i = 0; i < sourceAnchors.length; i++) {
+        if (sourcePointCount != 0) {
 
-            var sourceUUID = toId + '-' + sourceAnchors[i];
-            instance.addEndpoint(toId, sourceEndpoint, {anchor: sourceAnchors[i], uuid: sourceUUID});
+            instance.addEndpoint(id, sourceEndpoint, {anchor: sourceAnchors, uuid: 'source-' + id});
         }
-        for (var j = 0; j < targetAnchors.length; j++) {
+        if (targetPointCount != 0) {
 
-            var targetUUID = toId + '-' + targetAnchors[j];
-            instance.addEndpoint(toId, targetEndpoint, {anchor: targetAnchors[j], uuid: targetUUID});
+            instance.addEndpoint(id, targetEndpoint, {anchor: targetAnchors, uuid: 'target-' + id});
         }
     }
 
     /**
      * 右键点击锁定VI
      * @param e
-     * @param element
+     * @param canvas
      */
-    function toggleDrag(e, element) {
+    function toggleDrag(e, canvas) {
 
         e = e || window.event;
         e.preventDefault(); //阻止右键默认菜单
-        instance.toggleDraggable(element);
+        instance.toggleDraggable(canvas);
     }
 
-    window.addEventListener('resize', resize, false);
+    window.addEventListener('resize', containerResize, false);
 
-    function resize() {
+    function containerResize() {
 
         var height = document.documentElement.clientHeight * 0.95 > 600 ? document.documentElement.clientHeight * 0.95 : 600;
         sideBar.style.height = height + 'px';
         VIContainer.style.height = height + 'px';
     }
+
+
 </script>
 </body>
 </html>

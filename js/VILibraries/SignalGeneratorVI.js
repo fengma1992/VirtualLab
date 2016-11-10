@@ -17,7 +17,8 @@ function SignalGeneratorVI(domElement) {
     this.amp = 1;
     this.frequency = 256;
     this.signalType = 1;
-    this.output = [];
+    this.singleOutput = 0;
+    this.output = [0];
     this.outputCount = 2;
 
     //虚拟仪器中相连接的控件VI
@@ -58,6 +59,7 @@ function SignalGeneratorVI(domElement) {
 
                     _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
                 }
+                _this.singleOutput = _this.output[_this.dataLength - 1];
                 break;
 
             case 2://方波
@@ -76,6 +78,7 @@ function SignalGeneratorVI(domElement) {
                         _this.output[i] = _this.amp;
                     }
                 }
+                _this.singleOutput = _this.output[_this.dataLength - 1];
                 break;
 
             case 3://三角波
@@ -92,6 +95,7 @@ function SignalGeneratorVI(domElement) {
                         _this.output[i] = 3 * _this.amp - 4 * _this.amp * t1 / T;
                     }
                 }
+                _this.singleOutput = _this.output[_this.dataLength - 1];
                 break;
 
             case 4://白噪声
@@ -104,11 +108,14 @@ function SignalGeneratorVI(domElement) {
                     }
                     _this.output[i] = _this.amp * (t1 - 6 * t2) / (3 * t2);
                 }
+                _this.singleOutput = _this.output[_this.dataLength - 1];
                 break;
         }
     };
 
     this.reset = function () {
+        _this.singleOutput = 0;
+        _this.output = [0];
     };
 
     this.draw = function () {

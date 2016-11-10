@@ -19,19 +19,16 @@ function KnobVI(domElement) {
     this.ratio = (this.maxValue - this.minValue) / (Math.PI * 1.5);
     this.singleOutput = this.defaultValue;
     this.radian = (this.defaultValue - this.minValue) / this.ratio;
-    this.canvas = domElement;
-    this.ctx = this.canvas.getContext("2d");
+    this.container = domElement;
+    this.ctx = this.container.getContext("2d");
     this.name = 'KnobVI';
     this.cnText = '旋钮';
     this.runningFlag = false;
 
     this.dataLength = 1024;
     this.index = 0;
-    this.output = [];
+    this.output = [0];
     this.outputCount = 2;
-
-    this.width = this.canvas.width; //对象宽度//
-    this.height = this.canvas.height; //对象高度//
 
     //虚拟仪器中相连接的控件VI
     this.target = [];
@@ -42,7 +39,7 @@ function KnobVI(domElement) {
     knob_Spinner.src = "img/knob_Spinner.png";
 
     knob_Base.onload = knob_Spinner.onload = function () {
-        DrawSpinner();
+        _this.draw();
     };
     knob_Base.onerror = knob_Spinner.onerror = function () {
         console.log('error');
@@ -63,7 +60,7 @@ function KnobVI(domElement) {
         this.setData(_this.defaultValue);
         this.radian = (_this.defaultValue - _this.minValue) / _this.ratio;
 
-        DrawSpinner();
+        _this.draw();
     };
 
     this.setData = function (data) {
@@ -99,27 +96,28 @@ function KnobVI(domElement) {
     this.reset = function () {
 
         _this.index = 0;
+        _this.singleOutput = 0;
+        _this.output = [0];
     };
 
-    function DrawSpinner() {
+    this.draw = function () {
 
-        var xPos = _this.width / 2;
-        var yPos = _this.height / 2;
-        _this.ctx.clearRect(0, 0, _this.width, _this.height);
-        _this.ctx.drawImage(knob_Base, 0, 0, _this.width, _this.height);
+        var xPos = _this.container.width / 2;
+        var yPos = _this.container.height / 2;
+        _this.ctx.clearRect(0, 0, _this.container.width, _this.container.height);
+        _this.ctx.drawImage(knob_Base, 0, 0, _this.container.width, _this.container.height);
         _this.ctx.save();   //保存之前位置
         _this.ctx.translate(xPos, yPos);
         _this.ctx.rotate(_this.radian - 135 / 180 * Math.PI);  //旋转, 初始位置为左下角
         _this.ctx.translate(-xPos, -yPos);
-        _this.ctx.drawImage(knob_Spinner, 0, 0, _this.width, _this.height);
+        _this.ctx.drawImage(knob_Spinner, 0, 0, _this.container.width, _this.container.height);
         _this.ctx.restore();  //恢复之前位置
         _this.ctx.beginPath();
         _this.ctx.font = "normal 14px Calibri";
-        _this.ctx.fillText(_this.minValue.toString(), 0, _this.height);
-        _this.ctx.fillText(_this.maxValue.toString(), _this.width - 7 * _this.maxValue.toString().length, _this.height); //字体大小为14
+        _this.ctx.fillText(_this.minValue.toString(), 0, _this.container.height);
+        _this.ctx.fillText(_this.maxValue.toString(), _this.container.width - 7 * _this.maxValue.toString().length, _this.container.height); //字体大小为14
         _this.ctx.closePath();
-    }
-
+    };
 
     var _mouseOverFlag = false;
     var _mouseOutFlag = false;
@@ -200,10 +198,10 @@ function KnobVI(domElement) {
 
     function onMouseDown(event) {
 
-        var tempData = rotateAxis(event.offsetX - _this.width / 2, -(event.offsetY - _this.height / 2), 135);
+        var tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
         startX = tempData[0];
         startY = tempData[1];
-        if ((startX * startX + startY * startY) <= _this.width / 2 * _this.width / 2 * 0.5) {
+        if ((startX * startX + startY * startY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5) {
 
             spinnerFlag = true;
         }
@@ -212,13 +210,13 @@ function KnobVI(domElement) {
 
     function onMouseMove(event) {
 
-        var tempData = rotateAxis(event.offsetX - _this.width / 2, -(event.offsetY - _this.height / 2), 135);
+        var tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
         stopX = tempData[0];
         stopY = tempData[1];
-        if ((stopX * stopX + stopY * stopY) <= _this.width / 2 * _this.width / 2 * 0.5 && !spinnerFlag)
-            _this.canvas.style.cursor = 'pointer';
+        if ((stopX * stopX + stopY * stopY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5 && !spinnerFlag)
+            _this.container.style.cursor = 'pointer';
         else if (!spinnerFlag)
-            _this.canvas.style.cursor = 'auto';
+            _this.container.style.cursor = 'auto';
         if (spinnerFlag) {
 
             if (startY > 0 && stopY > 0) {
@@ -238,7 +236,7 @@ function KnobVI(domElement) {
                 _this.radian = 270 / 180 * Math.PI;
             }
             _this.setData(_this.radian * _this.ratio + parseFloat(_this.minValue));
-            DrawSpinner();
+            _this.draw();
             startX = stopX;
             startY = stopY;
 
@@ -290,8 +288,8 @@ function KnobVI(domElement) {
     }
 
 
-    this.canvas.addEventListener('mousemove', onMouseMove, false);
-    this.canvas.addEventListener('mousedown', onMouseDown, false);
-    this.canvas.addEventListener('mouseup', onMouseUp, false);
+    this.container.addEventListener('mousemove', onMouseMove, false);
+    this.container.addEventListener('mousedown', onMouseDown, false);
+    this.container.addEventListener('mouseup', onMouseUp, false);
 
 }
