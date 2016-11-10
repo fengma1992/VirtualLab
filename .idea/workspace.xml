@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,7 +26,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="VirtualInstrument.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VirtualInstrument.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/VirtualInstrument.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="240">
@@ -138,6 +139,16 @@
                 <marker date="1478764950086" expanded="true" signature="18284:18290" ph=" " />
                 <marker date="1478764950086" expanded="true" signature="18290:18296" ph=" " />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="552">
+              <caret line="23" column="49" selection-start-line="23" selection-start-column="49" selection-end-line="23" selection-end-column="49" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -324,7 +335,6 @@
         <option value="$PROJECT_DIR$/js/VILibraries/ProportionalIntegralResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/ProportionalResponseVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/ADDVI.js" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/css/draggable.css" />
         <option value="$PROJECT_DIR$/TestRoundPanel.html" />
         <option value="$PROJECT_DIR$/SignalGenerator.html" />
@@ -359,6 +369,7 @@
         <option value="$PROJECT_DIR$/js/VILibraries/WaveVI.js" />
         <option value="$PROJECT_DIR$/js/VILibraries/VILibrary.js" />
         <option value="$PROJECT_DIR$/VirtualInstrument.html" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
@@ -641,7 +652,7 @@
       <workItem from="1478525078127" duration="4628000" />
       <workItem from="1478569798224" duration="21835000" />
       <workItem from="1478657616678" duration="22714000" />
-      <workItem from="1478741822050" duration="14395000" />
+      <workItem from="1478741822050" duration="14695000" />
     </task>
     <task id="LOCAL-00001" summary="test&#10;">
       <created>1476862004763</created>
@@ -846,11 +857,18 @@
       <option name="project" value="LOCAL" />
       <updated>1478765161506</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="1110-afternoon&#10;1、仪器控件整合；&#10;2、音频测试。">
+      <created>1478765187675</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1478765187675</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="595233000" />
+    <option name="totallyTimeSpent" value="595533000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -863,7 +881,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1392405" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
@@ -1031,13 +1049,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
           <caret line="37" column="30" selection-start-line="37" selection-start-column="30" selection-end-line="37" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="14" column="37" selection-start-line="14" selection-start-column="37" selection-end-line="14" selection-end-column="37" />
         </state>
       </provider>
     </entry>
@@ -1773,6 +1784,14 @@
             <marker date="1478764950086" expanded="true" signature="18284:18290" ph=" " />
             <marker date="1478764950086" expanded="true" signature="18290:18296" ph=" " />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="552">
+          <caret line="23" column="49" selection-start-line="23" selection-start-column="49" selection-end-line="23" selection-end-column="49" />
+          <folding />
         </state>
       </provider>
     </entry>
