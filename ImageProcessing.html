@@ -29,9 +29,8 @@
     <!--<canvas id="canvas2" width="320" height="240"></canvas>-->
 
 </div>
-<script src="js/ECharts/echarts.js"></script>
-<script src="js/VILibraries/EChart_BarVI.js"></script>
 <script src="js/VILibraries/KnobVI.js"></script>
+<script src="js/VILibraries/BarVI.js"></script>
 <script type="text/javascript">
     var video = document.querySelector('video');
     var captureCanvas = document.getElementById('captureCanvas');
@@ -188,13 +187,9 @@
         var data = [], xAxis = [];
         for (var i = 0; i < 256; i++) {
             data.push(histogram[i] == undefined ? 0 : histogram[i]);
-            xAxis.push(i);
+            xAxis.push(i + 1);
         }
-        bar.option.title.text = '';
-        bar.option.legend.data[0] = '灰度值';
-        bar.option.series[0].name = '灰度值';
         bar.setData(data);
-        bar.setXAxis(xAxis);
     }
 
     function drawText(text, context) {

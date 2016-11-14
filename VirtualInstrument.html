@@ -207,27 +207,27 @@
     };
 
     function init() {
-        new VILibrary.AddVI(document.getElementById('AddVI-canvas'));
-        new VILibrary.BallBeamVI(document.getElementById('BallBeamVI-canvas'));
-        new VILibrary.ButtonVI(document.getElementById('ButtonVI-canvas'));
-        new VILibrary.DCOutputVI(document.getElementById('DCOutputVI-canvas'));
-        new VILibrary.KnobVI(document.getElementById('KnobVI-canvas'));
-        new VILibrary.OrbitWaveVI(document.getElementById('OrbitWaveVI-canvas'));
-        new VILibrary.PIDVI(document.getElementById('PIDVI-canvas'));
-        new VILibrary.RelayVI(document.getElementById('RelayVI-canvas'));
-        new VILibrary.RotorExperimentalRigVI(document.getElementById('RotorExperimentalRigVI-canvas'));
-        new VILibrary.RoundPanelVI(document.getElementById('RoundPanelVI-canvas'));
-        new VILibrary.SignalGeneratorVI(document.getElementById('SignalGeneratorVI-canvas'));
-        new VILibrary.TextVI(document.getElementById('TextVI-canvas'));
-        new VILibrary.WaveVI(document.getElementById('WaveVI-canvas'));
-        new VILibrary.ProportionResponseVI(document.getElementById('ProportionResponseVI-canvas'));
-        new VILibrary.IntegrationResponseVI(document.getElementById('IntegrationResponseVI-canvas'));
-        new VILibrary.DifferentiationResponseVI(document.getElementById('DifferentiationResponseVI-canvas'));
-        new VILibrary.InertiaResponseVI(document.getElementById('InertiaResponseVI-canvas'));
-        new VILibrary.OscillationResponseVI(document.getElementById('OscillationResponseVI-canvas'));
-        new VILibrary.ProportionIntegrationResponseVI(document.getElementById('ProportionIntegrationResponseVI-canvas'));
-        new VILibrary.ProportionDifferentiationResponseVI(document.getElementById('ProportionDifferentiationResponseVI-canvas'));
-        new VILibrary.ProportionInertiaResponseVI(document.getElementById('ProportionInertiaResponseVI-canvas'));
+        new VILibrary.VI.AddVI(document.getElementById('AddVI-canvas'));
+        new VILibrary.VI.BallBeamVI(document.getElementById('BallBeamVI-canvas'));
+        new VILibrary.VI.ButtonVI(document.getElementById('ButtonVI-canvas'));
+        new VILibrary.VI.DCOutputVI(document.getElementById('DCOutputVI-canvas'));
+        new VILibrary.VI.KnobVI(document.getElementById('KnobVI-canvas'));
+        new VILibrary.VI.OrbitWaveVI(document.getElementById('OrbitWaveVI-canvas'));
+        new VILibrary.VI.PIDVI(document.getElementById('PIDVI-canvas'));
+        new VILibrary.VI.RelayVI(document.getElementById('RelayVI-canvas'));
+        new VILibrary.VI.RotorExperimentalRigVI(document.getElementById('RotorExperimentalRigVI-canvas'));
+        new VILibrary.VI.RoundPanelVI(document.getElementById('RoundPanelVI-canvas'));
+        new VILibrary.VI.SignalGeneratorVI(document.getElementById('SignalGeneratorVI-canvas'));
+        new VILibrary.VI.TextVI(document.getElementById('TextVI-canvas'));
+        new VILibrary.VI.WaveVI(document.getElementById('WaveVI-canvas'));
+        new VILibrary.VI.ProportionResponseVI(document.getElementById('ProportionResponseVI-canvas'));
+        new VILibrary.VI.IntegrationResponseVI(document.getElementById('IntegrationResponseVI-canvas'));
+        new VILibrary.VI.DifferentiationResponseVI(document.getElementById('DifferentiationResponseVI-canvas'));
+        new VILibrary.VI.InertiaResponseVI(document.getElementById('InertiaResponseVI-canvas'));
+        new VILibrary.VI.OscillationResponseVI(document.getElementById('OscillationResponseVI-canvas'));
+        new VILibrary.VI.ProportionIntegrationResponseVI(document.getElementById('ProportionIntegrationResponseVI-canvas'));
+        new VILibrary.VI.ProportionDifferentiationResponseVI(document.getElementById('ProportionDifferentiationResponseVI-canvas'));
+        new VILibrary.VI.ProportionInertiaResponseVI(document.getElementById('ProportionInertiaResponseVI-canvas'));
         ready();
         containerResize();
     }
@@ -1426,108 +1426,108 @@
         switch (elementInfo[0]) {
 
             case 'AddVI':
-                dataObject.AddVI.push(new VILibrary.AddVI(canvas));
+                dataObject.AddVI.push(new VILibrary.VI.AddVI(canvas));
                 addEndpoints(canvas.id, -1, 2);
                 break;
 
             case 'BallBeamVI':
-                dataObject.BallBeamVI.push(new VILibrary.BallBeamVI(canvas, true));
+                dataObject.BallBeamVI.push(new VILibrary.VI.BallBeamVI(canvas, true));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ButtonVI':
-                dataObject.ButtonVI.push(new VILibrary.ButtonVI(canvas, true));
+                dataObject.ButtonVI.push(new VILibrary.VI.ButtonVI(canvas, true));
                 addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'DCOutputVI':
-                dataObject.DCOutputVI.push(new VILibrary.DCOutputVI(canvas));
+                dataObject.DCOutputVI.push(new VILibrary.VI.DCOutputVI(canvas));
                 addEndpoints(canvas.id, -1, 0);
                 break;
 
             case 'DifferentiationResponseVI':
-                dataObject.DifferentiationResponseVI.push(new VILibrary.DifferentiationResponseVI(canvas));
+                dataObject.DifferentiationResponseVI.push(new VILibrary.VI.DifferentiationResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'InertiaResponseVI':
-                dataObject.InertiaResponseVI.push(new VILibrary.InertiaResponseVI(canvas));
+                dataObject.InertiaResponseVI.push(new VILibrary.VI.InertiaResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'IntegrationResponseVI':
-                dataObject.IntegrationResponseVI.push(new VILibrary.IntegrationResponseVI(canvas));
+                dataObject.IntegrationResponseVI.push(new VILibrary.VI.IntegrationResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'KnobVI':
-                dataObject.KnobVI.push(new VILibrary.KnobVI(canvas));
+                dataObject.KnobVI.push(new VILibrary.VI.KnobVI(canvas));
                 addEndpoints(canvas.id, -1, 0);
                 break;
 
             case 'OrbitWaveVI':
-                dataObject.OrbitWaveVI.push(new VILibrary.OrbitWaveVI(canvas));
+                dataObject.OrbitWaveVI.push(new VILibrary.VI.OrbitWaveVI(canvas));
                 addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'OscillationResponseVI':
-                dataObject.OscillationResponseVI.push(new VILibrary.OscillationResponseVI(canvas));
+                dataObject.OscillationResponseVI.push(new VILibrary.VI.OscillationResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'PIDVI':
-                dataObject.PIDVI.push(new VILibrary.PIDVI(canvas));
+                dataObject.PIDVI.push(new VILibrary.VI.PIDVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionDifferentiationResponseVI':
-                dataObject.ProportionDifferentiationResponseVI.push(new VILibrary.ProportionDifferentiationResponseVI(canvas));
+                dataObject.ProportionDifferentiationResponseVI.push(new VILibrary.VI.ProportionDifferentiationResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionInertiaResponseVI':
-                dataObject.ProportionInertiaResponseVI.push(new VILibrary.ProportionInertiaResponseVI(canvas));
+                dataObject.ProportionInertiaResponseVI.push(new VILibrary.VI.ProportionInertiaResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionIntegrationResponseVI':
-                dataObject.ProportionIntegrationResponseVI.push(new VILibrary.ProportionIntegrationResponseVI(canvas));
+                dataObject.ProportionIntegrationResponseVI.push(new VILibrary.VI.ProportionIntegrationResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'ProportionResponseVI':
-                dataObject.ProportionResponseVI.push(new VILibrary.ProportionResponseVI(canvas));
+                dataObject.ProportionResponseVI.push(new VILibrary.VI.ProportionResponseVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'RelayVI':
-                dataObject.RelayVI.push(new VILibrary.RelayVI(canvas));
+                dataObject.RelayVI.push(new VILibrary.VI.RelayVI(canvas));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'RotorExperimentalRigVI':
-                dataObject.RotorExperimentalRigVI.push(new VILibrary.RotorExperimentalRigVI(canvas, true));
+                dataObject.RotorExperimentalRigVI.push(new VILibrary.VI.RotorExperimentalRigVI(canvas, true));
                 addEndpoints(canvas.id, -1, 1);
                 break;
 
             case 'RoundPanelVI':
-                dataObject.RoundPanelVI.push(new VILibrary.RoundPanelVI(canvas));
+                dataObject.RoundPanelVI.push(new VILibrary.VI.RoundPanelVI(canvas));
                 addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'SignalGeneratorVI':
-                dataObject.SignalGeneratorVI.push(new VILibrary.SignalGeneratorVI(canvas));
+                dataObject.SignalGeneratorVI.push(new VILibrary.VI.SignalGeneratorVI(canvas));
                 addEndpoints(canvas.id, -1, 2);
                 break;
 
             case 'TextVI':
-                dataObject.TextVI.push(new VILibrary.TextVI(canvas));
+                dataObject.TextVI.push(new VILibrary.VI.TextVI(canvas));
                 dataObject.TextVI[dataObject.TextVICount - 1].setData(0);
                 addEndpoints(canvas.id, 0, 1);
                 break;
 
             case 'WaveVI':
-                dataObject.WaveVI.push(new VILibrary.WaveVI(canvas));
+                dataObject.WaveVI.push(new VILibrary.VI.WaveVI(canvas));
                 addEndpoints(canvas.id, 0, 1);
                 break;
         }

@@ -55,7 +55,8 @@ function AddVI(domElement) {
 
             _this.output[_this.index] = _this.singleOutput;
             _this.index++;
-        } else {
+        }
+        else {
 
             for (i = 0; i < _this.dataLength - 1; i++) {
 

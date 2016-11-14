@@ -11,14 +11,14 @@ function OrbitWaveVI(domElement) {
 
     'use strict';
     var _this = this;
-    this.canvas = domElement;
-    this.ctx = this.canvas.getContext("2d");
+    this.container = domElement;
+    this.ctx = this.container.getContext("2d");
     this.name = 'OrbitWaveVI';
     this.cnText = '轨迹控件';
     this.runningFlag = false;
 
-    this.width = this.canvas.width; //对象宽度//
-    this.height = this.canvas.height; //对象高度//
+    this.width = this.container.width; //对象宽度//
+    this.height = this.container.height; //对象高度//
     //坐标单位//
     this.strLabelX = 'X';
     this.strLabelY = 'Y';
@@ -251,6 +251,14 @@ function OrbitWaveVI(domElement) {
 
     this.drawRuler = function () {
 
+        if (_this.curPointX <= _this.offsetL) {
+
+            return;
+        }
+        if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
+
+            return;
+        }
         //画标尺//
         _this.ctx.beginPath();
         _this.ctx.lineWidth = 1;
@@ -445,9 +453,9 @@ function OrbitWaveVI(domElement) {
     function onContainerMouseUp(event) {
     }
 
-    // this.canvas.addEventListener('mousedown', onContainerMouseDown, false);  // mouseDownListener
-    this.canvas.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    // this.canvas.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
+    // this.container.addEventListener('mousedown', onContainerMouseDown, false);  // mouseDownListener
+    this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
+    // this.container.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
 }
 
 

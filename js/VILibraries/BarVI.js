@@ -1,38 +1,24 @@
-﻿/**
- * Created by Fengma on 2016/10/9.
+/**
+ * Created by Fengma on 2016/11/10.
  */
 
-/**
- *  数据显示控件  绘制一维波形图等
- * @param domElement    HTML5中CANVAS对象
- * @constructor
- */
-function WaveVI(domElement) {
+'use strict';
+function BarVI(domElement) {
 
     var _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
-    this.name = 'WaveVI';
-    this.cnText = '波形控件';
+    this.name = 'BarVI';
+    this.cnText = '柱状图';
     this.runningFlag = false;
 
-    this.width = this.container.width; //内框宽度//
-    this.height = this.container.height; //内框高度//
-    //坐标单位//
-    this.strLabelX = 'X';
-    this.strLabelY = 'Y';
-
     //坐标数值//
-    this.maxValX = 1023;
-    this.minValX = 0;
-    this.maxValY = 10;
-    this.minValY = -10;
+    this.labelX = [];
+    this.maxValY = 100;
+    this.minValY = 0;
     this.autoZoom = true;
 
-    //网格行列数//
-    this.nRow = 4;
-    this.nCol = 8;
-    this.pointNum = 1023;
+    this.pointNum = 100;
     this.drawRulerFlag = true;
 
     //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
@@ -42,21 +28,23 @@ function WaveVI(domElement) {
 
     this.offsetB = 10;
     this.offsetL = 10;
-    if ((_this.height >= 200) && (_this.width >= 200)) {
+    if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
 
         _this.offsetB = 35;
         _this.offsetL = 42;
     }
-    this.waveWidth = this.width - this.offsetL - this.offsetR;
-    this.waveHeight = this.height - this.offsetT - this.offsetB;
+    this.waveWidth = this.container.width - this.offsetL - this.offsetR;
+    this.waveHeight = this.container.height - this.offsetT - this.offsetB;
+    this.ratioX = this.waveWidth / this.pointNum;
+    this.ratioY = this.waveHeight / (this.maxValY - this.minValY);
 
     //颜色选型//
-    this.bgColor = "RGB(249, 250, 249)";
-    this.screenColor = "RGB(61, 132, 185)";
-    this.gridColor = "RGB(200, 200, 200)";
+    this.bgColor = "RGB(255, 255, 255)";
+    this.screenColor = 'RGB(255,253,246)';
+    this.gridColor = "RGB(204, 204, 204)";
     this.fontColor = "RGB(0, 0, 0)";
-    this.signalColor = "RGB(255, 255, 0)";
-    this.rulerColor = "RGB(255, 255, 255)";
+    this.signalColor = "RGB(255, 100, 100)";
+    this.rulerColor = "RGB(255, 100, 100)";
 
     //缓冲数组
     this.bufferVal = [];
@@ -76,40 +64,25 @@ function WaveVI(domElement) {
         }
     };
 
+    function drawRec(x, y, w, h) {
+
+        _this.ctx.beginPath();
+        _this.ctx.fillStyle = _this.signalColor;
+        _this.ctx.fillRect(x, y, w, h);
+        _this.ctx.closePath();
+    }
+
     this.drawWave = function () {
 
-        var ratioX = _this.waveWidth / (_this.pointNum - 1);
-        var ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
-        var pointX = [];
-        var pointY = [];
-
-        var i;
+        var i, barHeight, x, y;
+        //绘制柱状图
         for (i = 0; i < _this.pointNum; i++) {
 
-            pointX[i] = _this.offsetL + i * ratioX;
-            pointY[i] = _this.offsetT + (_this.maxValY - _this.bufferVal[i]) * ratioY;
-            if (pointY[i] < _this.offsetT) {
-
-                pointY[i] = _this.offsetT;
-            }
-            if (pointY[i] > (_this.offsetT + _this.waveHeight)) {
-
-                pointY[i] = _this.offsetT + _this.waveHeight;
-            }
+            x = _this.offsetL + i * _this.ratioX;
+            barHeight = _this.bufferVal[i] * _this.ratioY;
+            y = _this.offsetT + _this.waveHeight - barHeight;
+            drawRec(x + 0.1 * _this.ratioX, y, _this.ratioX * 0.8, barHeight, true);
         }
-        //绘制波形曲线
-        _this.ctx.beginPath();
-        _this.ctx.lineWidth = 2;
-        _this.ctx.lineCap = "round";
-        _this.ctx.strokeStyle = _this.signalColor;
-        _this.ctx.moveTo(pointX[0], pointY[0]);
-        for (i = 1; i < _this.pointNum; i++) {
-
-            _this.ctx.lineTo(pointX[i], pointY[i]);
-        }
-        _this.ctx.stroke();
-        _this.ctx.closePath();
-        _this.ctx.save();
     };
 
     this.drawBackground = function () {
@@ -122,22 +95,21 @@ function WaveVI(domElement) {
         ctx.fillStyle = _this.bgColor;
         ctx.lineWidth = 3;
         ctx.strokeStyle = "RGB(25, 25, 25)";
-        ctx.fillRect(0, 0, _this.width, _this.height);
-        ctx.strokeRect(3, 3, _this.width - 6, _this.height - 6);
+        ctx.fillRect(0, 0, _this.container.width, _this.container.height);
+        ctx.strokeRect(3, 3, _this.container.width - 6, _this.container.height - 6);
         ctx.closePath();
 
         //画网格矩形边框和填充
         ctx.beginPath();
         ctx.fillStyle = _this.screenColor;
         ctx.lineWidth = 1;
-        ctx.strokeStyle = _this.gridColor;
+        ctx.strokeStyle = 'RGB(0, 0, 0)';
         ctx.fillRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
-        ctx.strokeRect(_this.offsetL + 0.5, _this.offsetT + 0.5, _this.waveWidth, _this.waveHeight);
+        ctx.strokeRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
         ctx.closePath();
 
-        var nRow = _this.nRow;
-        var nCol = _this.nCol;
-        var divX = _this.waveWidth / nCol;
+        //网格行数
+        var nRow = _this.container.height / 50;
         var divY = _this.waveHeight / nRow;
 
         ctx.beginPath();
@@ -145,27 +117,21 @@ function WaveVI(domElement) {
         ctx.lineCap = "round";
         ctx.strokeStyle = _this.gridColor;
 
-        var i, j;
+        var i;
         //绘制横向网格线
         for (i = 1; i < nRow; i++) {
 
             ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
-            ctx.lineTo(_this.width - _this.offsetR, divY * i + _this.offsetT);
-        }
-        //绘制纵向网格线
-        for (j = 1; j < nCol; j++) {
-
-            ctx.moveTo(divX * j + _this.offsetL, _this.offsetT);
-            ctx.lineTo(divX * j + _this.offsetL, _this.height - _this.offsetB);
+            ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
         }
         ctx.stroke();
         ctx.closePath();
 
-        if ((_this.height >= 200) && (_this.width >= 200)) {
+        if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
 
             //绘制横纵刻度
-            var scaleYNum = 8;
-            var scaleXNum = 16;
+            var scaleYNum = _this.container.height / 50;
+            var scaleXNum = _this.container.width / 50;
             var scaleYStep = _this.waveHeight / scaleYNum;
             var scaleXStep = _this.waveWidth / scaleXNum;
             ctx.beginPath();
@@ -173,81 +139,49 @@ function WaveVI(domElement) {
             ctx.strokeStyle = _this.fontColor;
             //画纵刻度
             var k;
-            for (k = 2; k < scaleYNum; k += 2) {
-
+            for (k = 2; k <= scaleYNum; k += 2) {
 
                 ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
                 ctx.lineTo(_this.offsetL, _this.offsetT + k * scaleYStep);
 
             }
-            //画横刻度
-            for (k = 2; k < scaleXNum; k += 2) {
-
-
-                ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
-                ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 7);
-
-            }
+            // //画横刻度
+            // for (k = 0; k < scaleXNum; k += 2) {
+            //
+            //
+            //     ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
+            //     ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 7);
+            //
+            // }
             ctx.stroke();
             ctx.closePath();
             ////////////////画数字字体////////////////
             ctx.font = "normal 12px Calibri";
 
-            var strLab;
-            //横标签//
-            strLab = _this.strLabelX;
-            ctx.fillText(strLab, _this.width - _this.offsetR - strLab.length * 6 - 10, _this.height - _this.offsetB + 20);
-
-            //纵标签//
-            strLab = _this.strLabelY;
-            ctx.fillText(strLab, strLab.length * 6, _this.offsetT + 12);
-
-            var xvalstep = (_this.maxValX - _this.minValX) / scaleXNum;
-            var yvalstep = (_this.maxValY - _this.minValY) / scaleYNum;
+            var valStepX = _this.pointNum / scaleXNum;
+            var valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
 
             ctx.fillStyle = _this.fontColor;
             var temp = 0;
+            if (_this.labelX.length < _this.pointNum) {
+
+                for (i = 0; i < _this.pointNum; i++) {
+
+                    _this.labelX[i] = i;
+                }
+            }
             //横坐标刻度//
-            for (i = 2; i < scaleXNum; i += 2) {
+            for (i = 0; i < scaleXNum; i += 2) {
 
-                temp = _this.minValX + xvalstep * i;
-                if (Math.abs(temp) >= 1000) {
-
-                    temp = temp / 1000;
-                    strLab = temp.toFixed(1).toString() + 'k';
-                }
-                else if (Math.abs(temp) < 1000 && Math.abs(temp) >= 100) {
-
-                    strLab = temp.toFixed(0).toString();
-                }
-                else if (Math.abs(temp) < 100 && Math.abs(temp) >= 10) {
-
-                    strLab = temp.toFixed(1).toString();
-                }
-                else if (Math.abs(temp) < 10) {
-
-                    strLab = temp.toFixed(2).toString();
-                }
-                ctx.fillText(strLab, _this.offsetL + scaleXStep * i - 9, _this.height - 10);
+                temp = _this.labelX[parseInt(valStepX * i)];
+                ctx.fillText(temp, _this.offsetL + scaleXStep * i - 9 + _this.ratioX / 2, _this.container.height - 10);
             }
             //纵坐标刻度//
-            for (i = 2; i < scaleYNum; i += 2) {
+            for (i = 2; i <= scaleYNum; i += 2) {
 
-                temp = _this.maxValY - yvalstep * i;
-                if (Math.abs(temp) >= 1000) {
+                temp = _this.maxValY - valStepY * i;
 
-                    temp = temp / 1000;
-                    strLab = temp.toFixed(1).toString() + 'k';
-                }
-                else if (Math.abs(temp) < 1000 && Math.abs(temp) >= 10) {
-
-                    strLab = temp.toFixed(0).toString();
-                }
-                else if (Math.abs(temp) < 10) {
-
-                    strLab = temp.toFixed(1).toString();
-                }
-                ctx.fillText(strLab, _this.offsetL - 35, _this.offsetT + scaleYStep * i + 5);
+                ctx.fillText(fixNumber(temp), _this.offsetL - 35, _this.offsetT + scaleYStep * i + 5);
             }
             ctx.closePath();
             ctx.save();
@@ -258,12 +192,13 @@ function WaveVI(domElement) {
 
     this.drawRuler = function () {
 
-        if (_this.curPointX <= _this.offsetL) {
+        //是否缝隙间不绘制标尺
+        // if ((_this.curPointX + 0.1 * _this.ratioX - _this.offsetL ) % _this.ratioX < 0.2 * _this.ratioX) {
+        //
+        //     return;
+        // }
 
-            return;
-        }
         if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
-
             return;
         }
         //画标尺//
@@ -276,12 +211,12 @@ function WaveVI(domElement) {
 
         //竖标尺//
         _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
-        _this.ctx.lineTo(_this.curPointX + 0.5, _this.height - _this.offsetB);
+        _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
         _this.ctx.stroke();
-        var curPointX = ((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth).toFixed(2);
-        var curPointY = parseFloat(_this.bufferVal[((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth).toFixed(0)]).toFixed(2);
-        _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')',
-            _this.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
+        var curPointX = ((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth).toFixed(0) - 1;
+        var curPointY = fixNumber(_this.bufferVal[curPointX]);
+        _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
+            _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
         _this.ctx.closePath();
     };
 
@@ -301,7 +236,7 @@ function WaveVI(domElement) {
 
             _this.pointNum = len;
         }
-        // console.log(data);
+
         var YMax = 0, YMin = 0, i;
         for (i = 0; i < _this.pointNum; i++) {
 
@@ -311,36 +246,23 @@ function WaveVI(domElement) {
         }
         if (_this.autoZoom) {
 
-            if ((_this.maxValY <= YMax) || (_this.maxValY - YMax > 5 * (YMax - YMin))) {
-
-                _this.maxValY = 2 * YMax - YMin;
-                _this.minValY = 2 * YMin - YMax;
-            }
-            if ((_this.minValY >= YMin) || (YMin - _this.maxValY > 5 * (YMax - YMin))) {
-
-                _this.maxValY = 2 * YMax - YMin;
-                _this.minValY = 2 * YMin - YMax;
-            }
-            if (YMax < 0.01 && YMin > -0.01) {
-
-                _this.maxValY = 1;
-                _this.minValY = -1;
-            }
+            _this.setAxisRangY(YMin, 1.2 * YMax);
         }
+        _this.ratioX = _this.waveWidth / _this.pointNum;
+        _this.ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
         _this.draw();
-    };
-
-    this.setAxisRangX = function (xMin, xNax) {
-
-        _this.minValX = xMin;
-        _this.maxValX = xNax;
-        _this.drawBackground();
     };
 
     this.setAxisRangY = function (yMin, yMax) {
 
         _this.minValY = yMin;
         _this.maxValY = yMax;
+        _this.drawBackground();
+    };
+
+    this.setAxisX = function (labelX) {
+
+        _this.labelX = labelX;
         _this.drawBackground();
     };
 
@@ -441,6 +363,43 @@ function WaveVI(domElement) {
 
     };
 
+    function fixNumber(num) {
+
+        var strLab;
+        if (Math.abs(num) >= 1000) {
+
+            num = num / 1000;
+            strLab = num.toFixed(1).toString() + 'k';
+        }
+        else if (Math.abs(num) < 1000 && Math.abs(num) >= 100) {
+
+            strLab = num.toFixed(0).toString();
+        }
+        else if (Math.abs(num) < 100 && Math.abs(num) >= 10) {
+
+            if (Math.abs(num) - Math.abs(num).toFixed(0) < 0.01) {
+
+                strLab = num.toFixed(0).toString();
+            }
+            else {
+
+                strLab = num.toFixed(1).toString();
+            }
+        }
+        else if (Math.abs(num) < 10) {
+
+            if (Math.abs(num) - Math.abs(num).toFixed(0) < 0.01) {
+
+                strLab = num.toFixed(0).toString();
+            }
+            else {
+
+                strLab = num.toFixed(2).toString();
+            }
+        }
+        return strLab;
+    }
+
     function onMouseMove(event) {
 
         if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
@@ -451,10 +410,12 @@ function WaveVI(domElement) {
         _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 1;
 
         if (_this.curPointX <= _this.offsetL) {
+
             _this.curPointX = _this.offsetL;
         }
-        if (_this.curPointX >= (_this.width - _this.offsetR)) {
-            _this.curPointX = _this.width - _this.offsetR;
+        if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
+
+            _this.curPointX = _this.container.width - _this.offsetR;
         }
         _this.draw();
         if (_mouseMoveFlag) {
@@ -466,11 +427,3 @@ function WaveVI(domElement) {
     this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
     // this.container.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
 }
-
-
-
-
-
-
-
-
