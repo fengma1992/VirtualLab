@@ -151,6 +151,9 @@ VILibrary.VI = {
         this.ctx = domElement.getContext('2d');
         this.name = 'AddVI';
         this.cnText = '加法器';
+        this.runningFlag = false;
+        this.originalInputSetFlag = false;
+        this.lastInputSetFlag = false;
 
         this.dataLength = 1024;
         this.index = 0;
@@ -231,6 +234,7 @@ VILibrary.VI = {
         this.ctx = domElement.getContext('2d');
         this.name = 'AudioVI';
         this.cnText = '麦克风';
+        this.runningFlag = false;
         this.fillStyle = 'silver';
 
         let audioCtx = new (window.AudioContext || webkitAudioContext)();
@@ -342,6 +346,7 @@ VILibrary.VI = {
         const _this = this;
         this.name = 'BallBeamVI';
         this.cnText = '球杆模型';
+        this.runningFlag = false;
         this.isStart = false;
 
         this.Fs = 50;
@@ -796,8 +801,15 @@ VILibrary.VI = {
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'ButtonVI';
-        this.cnText = '启动';
+        this.cnText = '开关';
+        this.runningFlag = false;
         this.fillStyle = 'silver';
+
+        //虚拟仪器中相连接的控件VI
+        this.source = [];
+
+        this.setData = function (data) {
+        };
 
         this.reset = function () {
 
@@ -811,10 +823,30 @@ VILibrary.VI = {
             _this.ctx.fillStyle = _this.fillStyle;
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
             _this.ctx.fillStyle = 'black';
-            _this.ctx.fillText(_this.cnText, _this.container.width / 2 - 11, _this.container.height / 2 + 6);
+            _this.ctx.fillText('开始', _this.container.width / 2 - 11, _this.container.height / 2 + 6);
         };
 
         this.draw();
+
+        this.container.addEventListener('click', function () {
+
+            if (_this.source.length > 0) {
+
+                if (!_this.runningFlag) {
+
+                    _this.runningFlag = true;
+                    _this.fillStyle = 'orange';
+                    _this.cnText = '停止';
+                }
+                else {
+
+                    _this.runningFlag = false;
+                    _this.fillStyle = 'silver';
+                    _this.cnText = '开始';
+                }
+                _this.draw();
+            }
+        }, false);
     },
 
     DCOutputVI: function (domElement) {
@@ -824,6 +856,7 @@ VILibrary.VI = {
         this.ctx = domElement.getContext('2d');
         this.name = 'DCOutputVI';
         this.cnText = '直流输出';
+        this.runningFlag = false;
 
         this.dataLength = 1024;
         this.index = 0;
@@ -890,6 +923,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'DifferentiationResponseVI';
         this.cnText = '微分响应';
+        this.runningFlag = false;
 
         this.signalType = 3;
         this.k3 = 0.0025;
@@ -965,6 +999,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'FFTVI';
         this.cnText = 'FFT';
+        this.runningFlag = false;
 
         this.output = [0];
         this.outputCount = 1;
@@ -1008,6 +1043,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'InertiaResponseVI';
         this.cnText = '惯性响应';
+        this.runningFlag = false;
 
         this.signalType = 6;
         this.k1 = 0.025;
@@ -1086,6 +1122,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'IntegrationResponseVI';
         this.cnText = '积分响应';
+        this.runningFlag = false;
 
         this.signalType = 2;
         this.k2 = 5;
@@ -1167,6 +1204,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'KnobVI';
         this.cnText = '旋钮';
+        this.runningFlag = false;
 
         this.minValue = 0;
         this.maxValue = 100;
@@ -1177,7 +1215,7 @@ VILibrary.VI = {
 
         this.dataLength = 1024;
         this.index = 0;
-        this.output = [100];
+        this.output = [0];
         this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
@@ -1211,19 +1249,9 @@ VILibrary.VI = {
          */
         this.setDataRange = function (minValue, maxValue, startValue) {
 
-            let minVal = Number.isNaN(minValue) ? 0 : minValue;
-            let maxVal = Number.isNaN(maxValue) ? 1 : maxValue;
-            let startVal = Number.isNaN(startValue) ? 0 : startValue;
-            if (minVal >= maxVal || startVal < minVal || startVal > maxVal) {
-
-                console.log('KnobVI: DataRange set error!');
-                return false;
-            }
-
-            _this.minValue = minVal;
-            _this.maxValue = maxVal;
-            _this.defaultValue = startVal;
-
+            _this.minValue = Number.isNaN(minValue) ? 0 : minValue;
+            _this.maxValue = Number.isNaN(maxValue) ? 1 : maxValue;
+            _this.defaultValue = Number.isNaN(startValue) ? 0 : startValue;
             _this.ratio = (_this.maxValue - _this.minValue) / (Math.PI * 1.5);
             this.setData(_this.defaultValue);
             this.radian = (_this.defaultValue - _this.minValue) / _this.ratio;
@@ -1235,14 +1263,9 @@ VILibrary.VI = {
 
             if (Number.isNaN(data)) {
 
-                console.log('KnobVI: Not a number!');
                 return false;
             }
-            if (data < _this.minValue || data > _this.maxValue) {
 
-                console.log('KnobVI: Out of range!');
-                return false;
-            }
             _this.singleOutput = data;
 
             let i = 0;
@@ -1263,8 +1286,8 @@ VILibrary.VI = {
         this.reset = function () {
 
             _this.index = 0;
-            _this.singleOutput = _this.defaultValue;
-            _this.output = [100];
+            _this.singleOutput = 0;
+            _this.output = [0];
         };
 
         this.draw = function () {
@@ -1462,6 +1485,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'OrbitWaveVI';
         this.cnText = '轨迹控件';
+        this.runningFlag = false;
 
         //坐标单位//
         this.strLabelX = 'X';
@@ -1858,6 +1882,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'OscillationResponseVI';
         this.cnText = '震荡响应';
+        this.runningFlag = false;
 
         this.signalType = 7;
         this.k1 = 50;
@@ -1947,6 +1972,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext('2d');
         this.name = 'PIDVI';
         this.cnText = 'PID';
+        this.runningFlag = false;
 
         this.input = 0;
         this.lastInput = 0;
@@ -2044,6 +2070,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionDifferentiationResponseVI';
         this.cnText = '比例微分响应';
+        this.runningFlag = false;
 
         this.signalType = 5;
         this.k1 = 1;
@@ -2130,6 +2157,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionInertiaResponseVI';
         this.cnText = '比例惯性响应';
+        this.runningFlag = false;
 
         this.signalType = 8;
         this.k1 = 0.025;
@@ -2215,6 +2243,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionIntegrationResponseVI';
         this.cnText = '比例积分响应';
+        this.runningFlag = false;
 
         this.signalType = 4;
         this.k1 = 1.5;
@@ -2307,6 +2336,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionResponseVI';
         this.cnText = '比例响应';
+        this.runningFlag = false;
 
         this.signalType = 1;
         this.k1 = 1.5;
@@ -2385,7 +2415,8 @@ VILibrary.VI = {
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'RelayVI';
-        this.cnText = '存储器';
+        this.cnText = '中继器';
+        this.runningFlag = false;
         this.input = 0;
         this.singleOutput = 0;
         this.dataLength = 1024;
@@ -2436,7 +2467,7 @@ VILibrary.VI = {
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
             _this.ctx.fillStyle = 'black';
-            _this.ctx.fillText(this.cnText, _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+            _this.ctx.fillText('中继器', _this.container.width / 2 - 18, _this.container.height / 2 + 6);
         };
 
         this.draw();
@@ -2447,6 +2478,7 @@ VILibrary.VI = {
         const _this = this;
         this.name = 'RotorExperimentalRigVI';
         this.cnText = '转子实验台';
+        this.runningFlag = false;
         this.isStart = false;
 
         this.signalType = 1;
@@ -2776,6 +2808,7 @@ VILibrary.VI = {
 
         this.name = 'RoundPanelVI';
         this.cnText = '圆表盘';
+        this.runningFlag = false;
         this.latestInput = 0;
         this.handAngle = Math.PI * 5 / 6;
         this.panelRangeAngle = Math.PI * 4 / 3;
@@ -3004,6 +3037,7 @@ VILibrary.VI = {
         this.ctx = domElement.getContext('2d');
         this.name = 'SignalGeneratorVI';
         this.cnText = '信号发生器';
+        this.runningFlag = false;
         this.ampSetFlag = false;
         this.frequencySetFlag = false;
 
@@ -3030,6 +3064,7 @@ VILibrary.VI = {
          *
          */
         this.setData = function (amp, f, phase) {
+            console.log('setData');
             _this.amp = Array.isArray(amp) ? amp[amp.length - 1] : amp;
             _this.frequency = Array.isArray(f) ? f[f.length - 1] : f;
             _this.phase = Array.isArray(phase) ? phase[phase.length - 1] : phase;
@@ -3138,6 +3173,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'StepResponseGeneratorVI';
         this.cnText = '阶跃响应';
+        this.runningFlag = false;
 
         this.signalType = 0;
         this.k1 = 1;
@@ -3327,6 +3363,7 @@ VILibrary.VI = {
         this.ctx = domElement.getContext('2d');
         this.name = 'TextVI';
         this.cnText = '文本框';
+        this.runningFlag = false;
 
         this.latestInput = 0;
         this.decimalPlace = 1;
@@ -3383,6 +3420,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'WaveVI';
         this.cnText = '波形控件';
+        this.runningFlag = false;
 
         //坐标单位//
         this.strLabelX = 'X';
@@ -3797,6 +3835,7 @@ VILibrary.VI = {
         this.ctx = this.container.getContext("2d");
         this.name = 'BarVI';
         this.cnText = '柱状图';
+        this.runningFlag = false;
 
         //坐标数值//
         this.labelX = [];
