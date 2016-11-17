@@ -9,7 +9,8 @@
  */
 function WaveVI(domElement) {
 
-    var _this = this;
+    'use strict';
+    const _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'WaveVI';
@@ -78,12 +79,12 @@ function WaveVI(domElement) {
 
     this.drawWave = function () {
 
-        var ratioX = _this.waveWidth / (_this.pointNum - 1);
-        var ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
-        var pointX = [];
-        var pointY = [];
+        let ratioX = _this.waveWidth / (_this.pointNum - 1);
+        let ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
+        let pointX = [];
+        let pointY = [];
 
-        var i;
+        let i;
         for (i = 0; i < _this.pointNum; i++) {
 
             pointX[i] = _this.offsetL + i * ratioX;
@@ -114,7 +115,7 @@ function WaveVI(domElement) {
 
     this.drawBackground = function () {
 
-        var ctx = _this.ctx;
+        let ctx = _this.ctx;
         //刷背景//
         ctx.beginPath();
         /* 将这个渐变设置为fillStyle */
@@ -135,17 +136,17 @@ function WaveVI(domElement) {
         ctx.strokeRect(_this.offsetL + 0.5, _this.offsetT + 0.5, _this.waveWidth, _this.waveHeight);
         ctx.closePath();
 
-        var nRow = _this.nRow;
-        var nCol = _this.nCol;
-        var divX = _this.waveWidth / nCol;
-        var divY = _this.waveHeight / nRow;
+        let nRow = _this.nRow;
+        let nCol = _this.nCol;
+        let divX = _this.waveWidth / nCol;
+        let divY = _this.waveHeight / nRow;
 
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.lineCap = "round";
         ctx.strokeStyle = _this.gridColor;
 
-        var i, j;
+        let i, j;
         //绘制横向网格线
         for (i = 1; i < nRow; i++) {
 
@@ -164,15 +165,15 @@ function WaveVI(domElement) {
         if ((_this.height >= 200) && (_this.width >= 200)) {
 
             //绘制横纵刻度
-            var scaleYNum = 8;
-            var scaleXNum = 16;
-            var scaleYStep = _this.waveHeight / scaleYNum;
-            var scaleXStep = _this.waveWidth / scaleXNum;
+            let scaleYNum = 8;
+            let scaleXNum = 16;
+            let scaleYStep = _this.waveHeight / scaleYNum;
+            let scaleXStep = _this.waveWidth / scaleXNum;
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = _this.fontColor;
             //画纵刻度
-            var k;
+            let k;
             for (k = 2; k < scaleYNum; k += 2) {
 
 
@@ -193,7 +194,7 @@ function WaveVI(domElement) {
             ////////////////画数字字体////////////////
             ctx.font = "normal 12px Calibri";
 
-            var strLab;
+            let strLab;
             //横标签//
             strLab = _this.strLabelX;
             ctx.fillText(strLab, _this.width - _this.offsetR - strLab.length * 6 - 10, _this.height - _this.offsetB + 20);
@@ -202,11 +203,11 @@ function WaveVI(domElement) {
             strLab = _this.strLabelY;
             ctx.fillText(strLab, strLab.length * 6, _this.offsetT + 12);
 
-            var xvalstep = (_this.maxValX - _this.minValX) / scaleXNum;
-            var yvalstep = (_this.maxValY - _this.minValY) / scaleYNum;
+            let xvalstep = (_this.maxValX - _this.minValX) / scaleXNum;
+            let yvalstep = (_this.maxValY - _this.minValY) / scaleYNum;
 
             ctx.fillStyle = _this.fontColor;
-            var temp = 0;
+            let temp = 0;
             //横坐标刻度//
             for (i = 2; i < scaleXNum; i += 2) {
 
@@ -278,8 +279,9 @@ function WaveVI(domElement) {
         _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
         _this.ctx.lineTo(_this.curPointX + 0.5, _this.height - _this.offsetB);
         _this.ctx.stroke();
-        var curPointX = ((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth).toFixed(2);
-        var curPointY = parseFloat(_this.bufferVal[((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth).toFixed(0)]).toFixed(2);
+        let curPointX = ((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth).toFixed(2);
+        let curPointY = parseFloat(_this.bufferVal[((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth).toFixed(0)])
+        .toFixed(2);
         _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')',
             _this.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
         _this.ctx.closePath();
@@ -301,8 +303,7 @@ function WaveVI(domElement) {
 
             _this.pointNum = len;
         }
-        // console.log(data);
-        var YMax = 0, YMin = 0, i;
+        let YMax = 0, YMin = 0, i;
         for (i = 0; i < _this.pointNum; i++) {
 
             _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
@@ -364,12 +365,12 @@ function WaveVI(domElement) {
         _this.drawBackground();
     };
 
-    var _mouseOverFlag = false;
-    var _mouseOutFlag = false;
-    var _dragAndDropFlag = false;
-    var _mouseUpFlag = false;
-    var _onclickFlag = false;
-    var _mouseMoveFlag = false;
+    let _mouseOverFlag = false;
+    let _mouseOutFlag = false;
+    let _dragAndDropFlag = false;
+    let _mouseUpFlag = false;
+    let _onclickFlag = false;
+    let _mouseMoveFlag = false;
 
     this.dragAndDrop = function () {
     };// this.container.style.cursor = 'move';
@@ -411,7 +412,6 @@ function WaveVI(domElement) {
                 this.mouseMove = handler;
                 _mouseMoveFlag = true;
                 break;
-                break;
         }
     };
 
@@ -436,19 +436,18 @@ function WaveVI(domElement) {
             case 'mouseMove':
                 _mouseMoveFlag = false;
                 break;
-                break;
         }
 
     };
 
     function onMouseMove(event) {
 
-        if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
+        if (!_this.drawRulerFlag || _this.bufferVal.length === 0) {
 
             return;
         }
-        _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 1;
-        _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 1;
+        _this.curPointX = event.offsetX === undefined ? event.layerX : event.offsetX - 1;
+        _this.curPointY = event.offsetY === undefined ? event.layerY : event.offsetY - 1;
 
         if (_this.curPointX <= _this.offsetL) {
             _this.curPointX = _this.offsetL;

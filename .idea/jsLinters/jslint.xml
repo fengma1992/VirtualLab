@@ -2,6 +2,7 @@
 <project version="4">
   <component name="JSLintConfiguration" json="true">
     <option bitwise="true" />
+    <option es6="true" />
     <option eval="true" />
     <option for="true" />
     <option maxerr="50" />

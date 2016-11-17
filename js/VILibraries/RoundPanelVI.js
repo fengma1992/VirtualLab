@@ -10,7 +10,7 @@
 function RoundPanelVI(domElement) {
 
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.width = domElement.width;
@@ -41,13 +41,9 @@ function RoundPanelVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.source = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     function parsePosition(angle) {
 
-        var position = [];
+        let position = [];
         position[0] = _this.radius * 0.82 * Math.cos(angle);
         position[1] = _this.radius * 0.82 * Math.sin(angle);
         return position;
@@ -82,13 +78,13 @@ function RoundPanelVI(domElement) {
 
     this.setRange = function (minVal, maxVal, unitText, titleText) {
 
-        minVal = isArray(minVal) ? minVal[minVal.length - 1] : minVal;
-        if (isNaN(minVal)) {
+        minVal = Array.isArray(minVal) ? minVal[minVal.length - 1] : minVal;
+        if (Number.isNaN(minVal)) {
 
             return false;
         }
-        maxVal = isArray(maxVal) ? maxVal[maxVal.length - 1] : maxVal;
-        if (isNaN(maxVal)) {
+        maxVal = Array.isArray(maxVal) ? maxVal[maxVal.length - 1] : maxVal;
+        if (Number.isNaN(maxVal)) {
 
             return false;
         }
@@ -114,8 +110,8 @@ function RoundPanelVI(domElement) {
 
     this.setData = function (latestInput) {
 
-        _this.latestInput = isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-        if (isNaN(_this.latestInput)) {
+        _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+        if (Number.isNaN(_this.latestInput)) {
 
             return false;
         }
@@ -183,13 +179,13 @@ function RoundPanelVI(domElement) {
             _this.ctx.lineWidth = 1;
         }
         _this.ctx.strokeStyle = _this.screenColor;
-        var i, j;
+        let i, j;
         // 保存
         _this.ctx.save();
         // 位移到目标点
         _this.ctx.translate(this.R, this.R);
 
-        var rotateAngle = Math.PI * 5 / 6, position, markStr, fontSize;
+        let rotateAngle = Math.PI * 5 / 6, position, markStr, fontSize;
         _this.ctx.font = 'normal ' + _this.fontSize / 2 + 'px Microsoft YaHei';
         fontSize = /\d+/.exec(_this.ctx.font)[0];
         for (i = 0; i <= _this.bigSectionNum; i++) {

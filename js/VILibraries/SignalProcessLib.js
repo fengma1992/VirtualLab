@@ -13,14 +13,14 @@
 function fft(dir, m, realPart, imgPart) {
     'use strict';
     //trace('Getting FFT');
-    var n, i, i1, j, k, i2, l, l1, l2, c1, c2, tx, ty, t1, t2, u1, u2, z;
+    let n, i, i1, j, k, i2, l, l1, l2, c1, c2, tx, ty, t1, t2, u1, u2, z;
     n = 1;
     for (i = 0; i < m; i++) {
 
         n *= 2;
     }
-    var real = realPart.slice(0);
-    var img;
+    let real = realPart.slice(0);
+    let img;
     if (imgPart == undefined) {
 
         img = [];
@@ -90,7 +90,7 @@ function fft(dir, m, realPart, imgPart) {
         }
     }
 
-    var output = [];
+    let output = [];
     for (i = 0; i < n / 2; i++) {
 
         output[i] = 2 * Math.sqrt(real[i] * real[i] + img[i] * img[i]);

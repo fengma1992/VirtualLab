@@ -35,7 +35,6 @@
         <img class="loadingImg" src="img/loading.gif" alt="loading">
     </div>
 </div>
-<script src="js/VILibraries/EChart_RoundPanelVI.js"></script>
 <script src="js/VILibraries/KnobVI.js"></script>
 <script src="js/VILibraries/OrbitWaveVI.js"></script>
 <script src="js/VILibraries/WaveVI.js"></script>
@@ -48,28 +47,29 @@
 <script src="js/ObjectControls.js"></script>
 
 <script>
-    var loadingDiv = document.getElementById('loadingDiv');
-    var mainCanvas = document.getElementById('mainCanvas');
-    var signalCanvas = document.getElementById('signalCanvas');
-    var frequencyCanvas = document.getElementById('frequencyCanvas');
-    var orbitWaveCanvas = document.getElementById('orbitCanvas');
-    var knobCanvas = document.getElementById('knobCanvas');
-    var roundPanelCanvas = document.getElementById('roundPanelCanvas');
-    var startBtn = document.getElementById('startBtn');
+    'use strict';
+    let loadingDiv = document.getElementById('loadingDiv');
+    let mainCanvas = document.getElementById('mainCanvas');
+    let signalCanvas = document.getElementById('signalCanvas');
+    let frequencyCanvas = document.getElementById('frequencyCanvas');
+    let orbitWaveCanvas = document.getElementById('orbitCanvas');
+    let knobCanvas = document.getElementById('knobCanvas');
+    let roundPanelCanvas = document.getElementById('roundPanelCanvas');
+    let startBtn = document.getElementById('startBtn');
 
-    var orbitDataX = [], orbitDataY = [], signalData = [], frequencyData = [],
+    let orbitDataX = [], orbitDataY = [], signalData = [], frequencyData = [],
             rotateFrequency = 4096 / 60,//每秒钟转速，即频率
             sampleFrequency = 8192,
             dataLength = 2048, dt = 1 / sampleFrequency, phase = 0,
             timer1, signalType = 1, runFlag = false;
     //VI部分变量
-    var signalWaveVI = new WaveVI(signalCanvas);
-    var frequencyWaveVI = new WaveVI(frequencyCanvas);
-    var orbitWaveVI = new OrbitWaveVI(orbitWaveCanvas);
-    var knobVI = new KnobVI(knobCanvas);
-    var roundPanelVI = new RoundPanelVI(roundPanelCanvas);
+    let signalWaveVI = new WaveVI(signalCanvas);
+    let frequencyWaveVI = new WaveVI(frequencyCanvas);
+    let orbitWaveVI = new OrbitWaveVI(orbitWaveCanvas);
+    let knobVI = new KnobVI(knobCanvas);
+    let roundPanelVI = new RoundPanelVI(roundPanelCanvas);
     //3D部分变量
-    var camera, scene, renderer, controls, rotor, offSwitch, onSwitch, switchControl, timer2, axis = new THREE.Vector3(1, 0, 0), rotateAngle = 0;
+    let camera, scene, renderer, controls, rotor, offSwitch, onSwitch, switchControl, timer2, axis = new THREE.Vector3(1, 0, 0), rotateAngle = 0;
 
     window.requestAnimationFrame = window.requestAnimationFrame
             || window.mozRequestAnimationFrame
@@ -100,7 +100,7 @@
 
     function setSignalData() {
 
-        var i;
+        let i;
         if (signalType == 1) {//转速信号    正弦波
 
             for (i = 0; i < dataLength; i++) {
@@ -168,18 +168,17 @@
 
         scene = new THREE.Scene();
 
-
-        var light = new THREE.AmbientLight(0x555555);
+        let light = new THREE.AmbientLight(0x555555);
         scene.add(light);
-        var light1 = new THREE.DirectionalLight(0xffffff, 1);
+        let light1 = new THREE.DirectionalLight(0xffffff, 1);
         light1.position.set(4000, 4000, 4000);
         scene.add(light1);
-        var light2 = new THREE.DirectionalLight(0xffffff, 1);
+        let light2 = new THREE.DirectionalLight(0xffffff, 1);
         light2.position.set(-4000, 4000, -4000);
         scene.add(light2);
 
         //use as a reference plane for ObjectControl
-        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
+        let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
 
         //开关控制
         switchControl = new ObjectControls(camera, renderer.domElement);
@@ -232,8 +231,8 @@
 
         });
 
-        var mtlLoader = new THREE.MTLLoader();
-        var objLoader = new THREE.OBJLoader();
+        let mtlLoader = new THREE.MTLLoader();
+        let objLoader = new THREE.OBJLoader();
 
         loadingDiv.style.display = 'flex';
         mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {

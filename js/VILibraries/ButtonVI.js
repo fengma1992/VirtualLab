@@ -9,7 +9,7 @@
  */
 function ButtonVI(domElement) {
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'ButtonVI';

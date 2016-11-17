@@ -8,10 +8,11 @@
  * @constructor
  */
 function KnobVI(domElement) {
-    var _this = this;
-    var spinnerFlag = false;
-    var startX, startY, stopX, stopY;
-    var roundCount = 0;
+    'use strict';
+    const _this = this;
+    let spinnerFlag = false;
+    let startX, startY, stopX, stopY;
+    let roundCount = 0;
 
     this.minValue = 0;
     this.maxValue = 100;
@@ -33,16 +34,21 @@ function KnobVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.target = [];
 
-
-    var knob_Base = new Image(), knob_Spinner = new Image();
+    let knob_Base = new Image(), knob_Spinner = new Image();
     knob_Base.src = "img/knob_Base.png";
     knob_Spinner.src = "img/knob_Spinner.png";
 
-    knob_Base.onload = knob_Spinner.onload = function () {
+    knob_Base.onload = function () {
         _this.draw();
     };
-    knob_Base.onerror = knob_Spinner.onerror = function () {
-        console.log('error');
+    knob_Spinner.onload = function () {
+        _this.draw();
+    };
+    knob_Base.onerror = function (e) {
+        console.log('error:' + e);
+    };
+    knob_Spinner.onerror = function (e) {
+        console.log('error:' + e);
     };
 
     /**
@@ -53,9 +59,9 @@ function KnobVI(domElement) {
      */
     this.setDataRange = function (minValue, maxValue, startValue) {
 
-        _this.minValue = isNaN(minValue) ? 0 : minValue;
-        _this.maxValue = isNaN(maxValue) ? 1 : maxValue;
-        _this.defaultValue = isNaN(startValue) ? 0 : startValue;
+        _this.minValue = Number.isNaN(minValue) ? 0 : minValue;
+        _this.maxValue = Number.isNaN(maxValue) ? 1 : maxValue;
+        _this.defaultValue = Number.isNaN(startValue) ? 0 : startValue;
         _this.ratio = (_this.maxValue - _this.minValue) / (Math.PI * 1.5);
         this.setData(_this.defaultValue);
         this.radian = (_this.defaultValue - _this.minValue) / _this.ratio;
@@ -65,14 +71,14 @@ function KnobVI(domElement) {
 
     this.setData = function (data) {
 
-        if (isNaN(data)) {
+        if (Number.isNaN(data)) {
 
             return false;
         }
 
         _this.singleOutput = data;
 
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //
         //     for (i = 0; i < _this.dataLength; i++) {
@@ -84,7 +90,8 @@ function KnobVI(domElement) {
 
             _this.output[_this.index] = _this.singleOutput;
             _this.index++;
-        } else {
+        }
+        else {
             for (i = 0; i < _this.dataLength - 1; i++) {
 
                 _this.output[i] = _this.output[i + 1];
@@ -102,8 +109,8 @@ function KnobVI(domElement) {
 
     this.draw = function () {
 
-        var xPos = _this.container.width / 2;
-        var yPos = _this.container.height / 2;
+        let xPos = _this.container.width / 2;
+        let yPos = _this.container.height / 2;
         _this.ctx.clearRect(0, 0, _this.container.width, _this.container.height);
         _this.ctx.drawImage(knob_Base, 0, 0, _this.container.width, _this.container.height);
         _this.ctx.save();   //保存之前位置
@@ -119,12 +126,12 @@ function KnobVI(domElement) {
         _this.ctx.closePath();
     };
 
-    var _mouseOverFlag = false;
-    var _mouseOutFlag = false;
-    var _dragAndDropFlag = false;
-    var _mouseUpFlag = false;
-    var _onclickFlag = false;
-    var _mouseMoveFlag = false;
+    let _mouseOverFlag = false;
+    let _mouseOutFlag = false;
+    let _dragAndDropFlag = false;
+    let _mouseUpFlag = false;
+    let _onclickFlag = false;
+    let _mouseMoveFlag = false;
 
     this.dragAndDrop = function () {
     };// this.container.style.cursor = 'move';
@@ -198,7 +205,7 @@ function KnobVI(domElement) {
 
     function onMouseDown(event) {
 
-        var tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
+        let tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
         startX = tempData[0];
         startY = tempData[1];
         if ((startX * startX + startY * startY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5) {
@@ -210,13 +217,17 @@ function KnobVI(domElement) {
 
     function onMouseMove(event) {
 
-        var tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
+        let tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
         stopX = tempData[0];
         stopY = tempData[1];
-        if ((stopX * stopX + stopY * stopY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5 && !spinnerFlag)
+        if ((stopX * stopX + stopY * stopY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5 && !spinnerFlag) {
+
             _this.container.style.cursor = 'pointer';
-        else if (!spinnerFlag)
+        }
+        else if (!spinnerFlag) {
+
             _this.container.style.cursor = 'auto';
+        }
         if (spinnerFlag) {
 
             if (startY > 0 && stopY > 0) {
@@ -260,18 +271,20 @@ function KnobVI(domElement) {
 
     function calculateRadian(x1, y1, x2, y2) {
         // 直角的边长
-        var x = x2 - x1;
-        var y = y2 - y1;
+        let x = x2 - x1;
+        let y = y2 - y1;
         // 斜边长
-        var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        let z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
         // 余弦
-        var cos = y / z;
+        let cos = y / z;
         // 弧度
-        var radian;
-        if (x >= 0)
+        let radian;
+        if (x >= 0) {
             radian = Math.acos(cos);
-        else
+        }
+        else {
             radian = Math.PI * 2 - Math.acos(cos);
+        }
         return radian;
     }
 
@@ -283,10 +296,9 @@ function KnobVI(domElement) {
      * @returns {[x1, y1]}
      */
     function rotateAxis(x, y, angle) {
-        var radian = angle / 180 * Math.PI;
+        let radian = angle / 180 * Math.PI;
         return [Math.sin(radian) * y + Math.cos(radian) * x, Math.cos(radian) * y - Math.sin(radian) * x];
     }
-
 
     this.container.addEventListener('mousemove', onMouseMove, false);
     this.container.addEventListener('mousedown', onMouseDown, false);

@@ -5,7 +5,7 @@
 'use strict';
 function RotorExperimentalRigVI(domElement, draw3DFlag) {
 
-    var _this = this;
+    const _this = this;
     this.name = 'RotorExperimentalRigVI';
     this.cnText = '转子实验台';
     this.runningFlag = false;
@@ -26,18 +26,14 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     /**
      *设置转速
      * @param rotateSpeed 输入端口读取转速
      */
     this.setData = function (rotateSpeed) {
 
-        _this.rotateSpeed = isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
-        if (isNaN(_this.rotateSpeed)) {
+        _this.rotateSpeed = Array.isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
+        if (Number.isNaN(_this.rotateSpeed)) {
 
             return false;
         }
@@ -57,7 +53,7 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
     };
 
     function VIDraw() {
-        var img = new Image();
+        let img = new Image();
         img.src = 'img/RotorExperimentalRig.png';
         img.onload = function () {
 
@@ -65,7 +61,7 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
         };
     }
 
-    var camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl, loadedFlag = false,
+    let camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl, loadedFlag = false,
         timer1, timer2, rotateAngle = 0, phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency;
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
@@ -73,7 +69,7 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
 
     if (draw3DFlag) {
 
-        var loadingImg = document.createElement('img');
+        let loadingImg = document.createElement('img');
         loadingImg.src = 'img/loading.gif';
         loadingImg.style.width = '64px';
         loadingImg.style.height = '64px';
@@ -83,8 +79,8 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
         loadingImg.style.zIndex = '1001';
         domElement.parentNode.appendChild(loadingImg);
 
-        var mtlLoader = new THREE.MTLLoader();
-        var objLoader = new THREE.OBJLoader();
+        let mtlLoader = new THREE.MTLLoader();
+        let objLoader = new THREE.OBJLoader();
 
         mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {
 
@@ -162,7 +158,7 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
 
     function generateData() {
 
-        var i;
+        let i;
         for (i = 0; i < _this.dataLength; i++) {
 
             _this.orbitXOutput[i] = 7.5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
@@ -227,17 +223,17 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
 
         scene = new THREE.Scene();
 
-        var light = new THREE.AmbientLight(0x555555);
+        let light = new THREE.AmbientLight(0x555555);
         scene.add(light);
-        var light1 = new THREE.DirectionalLight(0xffffff, 1);
+        let light1 = new THREE.DirectionalLight(0xffffff, 1);
         light1.position.set(4000, 4000, 4000);
         scene.add(light1);
-        var light2 = new THREE.DirectionalLight(0xffffff, 1);
+        let light2 = new THREE.DirectionalLight(0xffffff, 1);
         light2.position.set(-4000, 4000, -4000);
         scene.add(light2);
 
         //use as a reference plane for ObjectControl
-        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
+        let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
 
         //开关控制
         switchControl = new ObjectControls(camera, renderer.domElement);
@@ -308,7 +304,7 @@ function RotorExperimentalRigVI(domElement, draw3DFlag) {
 
         if (draw3DFlag) {
 
-            var timer = window.setInterval(function () {
+            let timer = window.setInterval(function () {
                 if (loadedFlag) {
 
                     new RotorExperimentalRigDraw();

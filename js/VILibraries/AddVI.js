@@ -10,7 +10,7 @@
 function AddVI(domElement) {
 
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'AddVI';
@@ -31,19 +31,15 @@ function AddVI(domElement) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     this.setData = function (latestInput) {
 
-        _this.latestInput = isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-        if (isNaN(_this.latestInput)) {
+        _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+        if (Number.isNaN(_this.latestInput)) {
 
             return false;
         }
         _this.singleOutput = parseFloat(_this.originalInput - _this.latestInput).toFixed(2);
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //
         //     for (i = 0; i < _this.dataLength; i++) {
@@ -70,8 +66,8 @@ function AddVI(domElement) {
 
     this.setOriginalData = function (originalInput) {
 
-        originalInput = isArray(originalInput) ? originalInput[originalInput.length - 1] : originalInput;
-        if (isNaN(originalInput)) {
+        originalInput = Array.isArray(originalInput) ? originalInput[originalInput.length - 1] : originalInput;
+        if (Number.isNaN(originalInput)) {
 
             return false;
         }

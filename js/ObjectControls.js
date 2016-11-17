@@ -10,19 +10,20 @@
 // this.event = intersects[0];
 // this.event.item - number of the selected object
 
+'use strict';
 THREE.Object3D.userDataParent = null;
 THREE.Mesh.userDataParent = null;
 
-ObjectControls = function (camera, domElement) {
+let ObjectControls = function (camera, domElement) {
 
-    var _this = this;
+    const _this = this;
 
     this.camera = camera;
     this.container = ( domElement !== undefined ) ? domElement : document;
 
     this.focused = null; // focused object
     this.previous = new THREE.Vector3(); // store the previous position of focused object
-    var _DisplaceMouseOvered = null; //  object
+    let _DisplaceMouseOvered = null; //  object
     this.mouseOvered = null; // mouseOver Object
 
     this.raycaster = new THREE.Raycaster();
@@ -48,8 +49,8 @@ ObjectControls = function (camera, domElement) {
     this.enabled = true;
 
     this.objects = [];
-    var _DisplaceIntersects = [];
-    var _DisplaceIntersectsMap = [];
+    let _DisplaceIntersects = [];
+    let _DisplaceIntersectsMap = [];
     this.intersects = [];
     this.intersectsMap = [];
 
@@ -76,7 +77,7 @@ ObjectControls = function (camera, domElement) {
 
             this.objects.push(object);
 
-            for (var i = 0; i < object.children.length; i++) {
+            for (let i = 0; i < object.children.length; i++) {
                 object.children[i].userDataParent = object;
             }
         }
@@ -85,17 +86,17 @@ ObjectControls = function (camera, domElement) {
 
     this.detach = function (object) {
 
-        var item = _this.objects.indexOf(object);
+        let item = _this.objects.indexOf(object);
         this.objects.splice(item, 1);
 
     };
 
-    var _mouseOverFlag = false;
-    var _mouseOutFlag = false;
-    var _dragAndDropFlag = false;
-    var _mouseUpFlag = false;
-    var _onclickFlag = false;
-    var _mouseMoveFlag = false;
+    let _mouseOverFlag = false;
+    let _mouseOutFlag = false;
+    let _dragAndDropFlag = false;
+    let _mouseUpFlag = false;
+    let _onclickFlag = false;
+    let _mouseMoveFlag = false;
 
     this.attachEvent = function (event, handler) {
 
@@ -194,8 +195,8 @@ ObjectControls = function (camera, domElement) {
 
     function getMousePos(event) {
         if (_this.enabled) {
-            var x = event.offsetX == undefined ? event.layerX : event.offsetX;
-            var y = event.offsetY == undefined ? event.layerY : event.offsetY;
+            let x = event.offsetX == undefined ? event.layerX : event.offsetX;
+            let y = event.offsetY == undefined ? event.layerY : event.offsetY;
 
             //change the zero point form top-left corner to center of the container and normalize the coordinate
             _this._mouse.x = ( ( x ) / _this.container.width ) * 2 - 1;
@@ -225,7 +226,7 @@ ObjectControls = function (camera, domElement) {
 
                     try {
                         if (_this.offsetUse) {
-                            var pos = new THREE.Vector3().copy(_this.focused.position);
+                            let pos = new THREE.Vector3().copy(_this.focused.position);
                             pos.x = pos.x / _this.scale.x;
                             pos.y = pos.y / _this.scale.y;
                             pos.z = pos.z / _this.scale.z;
@@ -259,7 +260,7 @@ ObjectControls = function (camera, domElement) {
                 _DisplaceIntersectsMap = _this.raycaster.intersectObject(_this.map);
                 //_this._setMap();
                 try {
-                    var pos = new THREE.Vector3().copy(_DisplaceIntersectsMap[0].point.sub(_this.offset));
+                    let pos = new THREE.Vector3().copy(_DisplaceIntersectsMap[0].point.sub(_this.offset));
                     pos.x *= _this.scale.x;
                     pos.y *= _this.scale.y;
                     pos.z *= _this.scale.z;
@@ -302,16 +303,16 @@ ObjectControls = function (camera, domElement) {
 
         if (_this.focused) {
             if (_this.collidable) {
-                var originPoint = _this.focused.position.clone();
-                for (var vertexIndex = 0; vertexIndex < _this.focused.geometry.vertices.length; vertexIndex++) {
+                let originPoint = _this.focused.position.clone();
+                for (let vertexIndex = 0; vertexIndex < _this.focused.geometry.vertices.length; vertexIndex++) {
 
-                    var localVertex = _this.focused.geometry.vertices[vertexIndex].clone();
-                    var globalVertex = _this.focused.localToWorld(localVertex);
-                    var directionVector = new THREE.Vector3().copy(globalVertex);
+                    let localVertex = _this.focused.geometry.vertices[vertexIndex].clone();
+                    let globalVertex = _this.focused.localToWorld(localVertex);
+                    let directionVector = new THREE.Vector3().copy(globalVertex);
                     directionVector.sub(_this.focused.position);
 
                     _this.raycaster.set(originPoint, directionVector.clone().normalize());
-                    var collisionResults = _this.raycaster.intersectObjects(_this.collidableEntities);
+                    let collisionResults = _this.raycaster.intersectObjects(_this.collidableEntities);
 
                     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
                         _this.collision();

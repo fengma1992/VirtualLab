@@ -11,7 +11,7 @@
 function RelayVI(domElement) {
 
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'RelayVI';
@@ -28,33 +28,33 @@ function RelayVI(domElement) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     this.setData = function (input) {
 
-        _this.input = isArray(input) ? input[input.length - 1] : input;
-        if (isNaN(_this.input)) {
+        if (Array.isArray(input)) {
 
-            return false;
+            _this.singleOutput = input[input.length - 1];
+            this.output = input;
         }
-        _this.singleOutput = _this.input;
+        else {
 
-        var i = 0;
-        // if (_this.index == 0) {
-        //     for (i = 0; i < _this.dataLength; i++) {
-        //         _this.output[i] = 0;
-        //     }
-        // }
-        if (_this.index <= (_this.dataLength - 1)) {
-            _this.output[_this.index] = _this.singleOutput;
-            _this.index++;
-        } else {
-            for (i = 0; i < _this.dataLength - 1; i++) {
-                _this.output[i] = _this.output[i + 1];
+            _this.input = input;
+            if (Number.isNaN(_this.input)) {
+
+                return false;
             }
-            _this.output[_this.dataLength - 1] = _this.singleOutput;
+            _this.singleOutput = _this.input;
+
+            let i = 0;
+            if (_this.index <= (_this.dataLength - 1)) {
+                _this.output[_this.index] = _this.singleOutput;
+                _this.index += 1;
+            }
+            else {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    _this.output[i] = _this.output[i + 1];
+                }
+                _this.output[_this.dataLength - 1] = _this.singleOutput;
+            }
         }
         return _this.singleOutput;
     };

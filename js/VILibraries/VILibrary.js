@@ -3,13 +3,13 @@
  */
 
 'use strict';
-var VILibrary = {REVISION: '1'};
+let VILibrary = {REVISION: '1'};
 
 VILibrary.InternalFunction = {
 
     fixNumber: function (num) {
 
-        var strLab;
+        let strLab;
         if (Math.abs(num) >= 1000) {
 
             num = num / 1000;
@@ -42,6 +42,101 @@ VILibrary.InternalFunction = {
             }
         }
         return strLab;
+    },
+
+    /**
+     * FFT算法
+     * @param dir
+     * @param m 采样点数，多余输入数据时剩余部分置0
+     * @param realPart
+     * @param imgPart   对于实数据时留空
+     * @returns {Array}
+     */
+    fft: function (dir, m, realPart, imgPart) {
+        //trace('Getting FFT');
+        let n, i, i1, j, k, i2, l, l1, l2, c1, c2, tx, ty, t1, t2, u1, u2, z;
+        n = 1;
+        for (i = 0; i < m; i += 1) {
+
+            n *= 2;
+        }
+        let real = realPart.slice(0);
+        let img;
+        if (imgPart === undefined) {
+
+            img = [];
+            for (i = 0; i < n; i += 1) {
+                img.push(0);
+            }
+        }
+        else {
+
+            img = imgPart.slice(0);
+        }
+
+        /* Do the bit reversal */
+        i2 = n >> 1;
+        j = 0;
+        for (i = 0; i < n - 1; i += 1) {
+            if (i < j) {
+                tx = real[i];
+                ty = img[i];
+                real[i] = real[j];
+                img[i] = img[j];
+                real[j] = tx;
+                img[j] = ty;
+            }
+            k = i2;
+            while (k <= j) {
+                j -= k;
+                k >>= 1;
+            }
+            j += k;
+        }
+        /* Compute the FFT */
+        c1 = -1.0;
+        c2 = 0.0;
+        l2 = 1;
+        for (l = 0; l < m; l += 1) {
+            l1 = l2;
+            l2 <<= 1;
+            u1 = 1.0;
+            u2 = 0.0;
+            for (j = 0; j < l1; j += 1) {
+                for (i = j; i < n; i += l2) {
+                    i1 = i + l1;
+                    t1 = u1 * real[i1] - u2 * img[i1];
+                    t2 = u1 * img[i1] + u2 * real[i1];
+                    real[i1] = real[i] - t1;
+                    img[i1] = img[i] - t2;
+                    real[i] += t1;
+                    img[i] += t2;
+                }
+                z = u1 * c1 - u2 * c2;
+                u2 = u1 * c2 + u2 * c1;
+                u1 = z;
+            }
+            c2 = Math.sqrt((1.0 - c1) * 0.5);
+            if (dir == 1) {
+
+                c2 = -c2;
+            }
+            c1 = Math.sqrt((1.0 + c1) * 0.5);
+        }
+        /* Scaling for forward transform */
+        if (dir == 1) {
+            for (i = 0; i < n; i += 1) {
+                real[i] /= n;
+                img[i] /= n;
+            }
+        }
+
+        let output = [];
+        for (i = 0; i < n / 2; i += 1) {
+
+            output[i] = 2 * Math.sqrt(real[i] * real[i] + img[i] * img[i]);
+        }
+        return output;
     }
 };
 
@@ -51,13 +146,14 @@ VILibrary.VI = {
 
     AddVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'AddVI';
         this.cnText = '加法器';
         this.runningFlag = false;
-        this.dataSetCount = 0;
+        this.originalInputSetFlag = false;
+        this.lastInputSetFlag = false;
 
         this.dataLength = 1024;
         this.index = 0;
@@ -75,21 +171,21 @@ VILibrary.VI = {
         this.setData = function (latestInput) {
 
             _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-            if (isNaN(_this.latestInput)) {
+            if (Number.isNaN(_this.latestInput)) {
 
                 return false;
             }
             _this.singleOutput = parseFloat(_this.originalInput - _this.latestInput).toFixed(2);
 
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
 
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
 
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
 
                     _this.output[i] = _this.output[i + 1];
                 }
@@ -102,7 +198,7 @@ VILibrary.VI = {
         this.setOriginalData = function (originalInput) {
 
             originalInput = Array.isArray(originalInput) ? originalInput[originalInput.length - 1] : originalInput;
-            if (isNaN(originalInput)) {
+            if (Number.isNaN(originalInput)) {
 
                 return false;
             }
@@ -131,9 +227,123 @@ VILibrary.VI = {
 
     },
 
+    AudioVI: function (domElement) {
+
+        const _this = this;
+        this.container = domElement;
+        this.ctx = domElement.getContext('2d');
+        this.name = 'AudioVI';
+        this.cnText = '麦克风';
+        this.runningFlag = false;
+        this.fillStyle = 'silver';
+
+        let audioCtx = new (window.AudioContext || webkitAudioContext)();
+        let analyser = audioCtx.createAnalyser();
+        let source;
+        this.output = [0];
+        this.outputCount = 1;
+
+        //虚拟仪器中相连接的控件VI
+        this.target = [];
+
+        navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia
+        || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+
+        function start () {
+
+            //main block for doing the audio recording
+
+            if (navigator.getUserMedia) {
+                console.log('getUserMedia supported.');
+
+                let constraints = {audio: true};
+
+                let onSuccess = function (stream) {
+
+                    source = audioCtx.createMediaStreamSource(stream);
+
+                    analyser.fftSize = 2048;
+                    let bufferLength = analyser.frequencyBinCount;//数据长度为1024
+                    let dataArray = new Uint8Array(bufferLength);
+
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    function getData () {
+
+                        window.requestAnimationFrame(getData);
+                        analyser.getByteTimeDomainData(dataArray);//填入数据
+                        _this.output = dataArray;
+                    }
+
+                    getData();
+                    _this.runningFlag = true;
+                    _this.fillStyle = 'orange';
+                };
+                let onError = function (err) {
+                    alert('The following error occured: ' + err);
+                };
+
+                navigator.getUserMedia(constraints, onSuccess, onError);
+            }
+            else {
+                console.log('getUserMedia not supported on your browser!');
+            }
+        }
+
+        function stop () {
+
+            source.disconnect(analyser);
+            analyser.disconnect(audioCtx.destination);
+            _this.runningFlag = false;
+            _this.fillStyle = 'silver';
+        }
+
+        /**
+         * 将输出数保存在数组内
+         * @param data singleOutput
+         */
+        this.setData = function (data) {
+
+        };
+
+        this.reset = function () {
+
+            _this.output = [0];
+        };
+
+        this.draw = function () {
+
+            let img = new Image();
+            img.src = 'img/mic.png';
+            img.onload = function () {
+
+                _this.ctx.fillStyle = _this.fillStyle;
+                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
+                _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
+            };
+        };
+
+        this.draw();
+
+        this.container.addEventListener('click', function () {
+
+            if (_this.target.length > 0) {
+
+                if (!_this.runningFlag) {
+
+                    start();
+                }
+                else {
+                    stop();
+                }
+                _this.draw();
+            }
+        }, false);
+    },
+
     BallBeamVI: function (domElement, draw3DFlag) {
 
-        var _this = this;
+        const _this = this;
         this.name = 'BallBeamVI';
         this.cnText = '球杆模型';
         this.runningFlag = false;
@@ -159,19 +369,30 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        function setPosition (ang, pos) {
+            let angle = -ang;//角度为逆时针旋转
+            beam.rotation.z = angle;
+            ball.rotation.z = angle;
+            mark.rotation.z = angle;
+            ball.position.y = pos * Math.sin(angle);
+            ball.position.x = pos * Math.cos(angle);
+            mark.position.y = position * Math.sin(angle);
+            mark.position.x = position * Math.cos(angle);
+        }
+
         /**
          *
          * @param angle 输入端口读取角度
          */
         this.setData = function (angle) {
 
-            var inputAngle = Array.isArray(angle) ? angle[angle.length - 1] : angle;
-            if (isNaN(inputAngle)) {
+            let inputAngle = Array.isArray(angle) ? angle[angle.length - 1] : angle;
+            if (Number.isNaN(inputAngle)) {
 
                 return false;
             }
 
-            var outputPosition, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
+            let outputPosition, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
             if (_this.limit) {
                 if ((inputAngle - _this.PIDAngle) > angleMax) {
 
@@ -202,14 +423,14 @@ VILibrary.VI = {
             _this.PIDPosition = outputPosition;//向输出端口上写数据
 
             //将输出数保存在数组内
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
                 _this.angelOutput[_this.index] = _this.PIDAngle;
                 _this.positionOutput[_this.index] = _this.PIDPosition;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
                     _this.angelOutput[i] = _this.angelOutput[i + 1];
                     _this.positionOutput[i] = _this.positionOutput[i + 1];
                 }
@@ -221,8 +442,8 @@ VILibrary.VI = {
             return [_this.PIDAngle, _this.PIDPosition];
         };
 
-        function VIDraw() {
-            var img = new Image();
+        function VIDraw () {
+            let img = new Image();
             img.src = 'img/BallBeam.png';
             img.onload = function () {
 
@@ -230,7 +451,7 @@ VILibrary.VI = {
             };
         }
 
-        var camera, scene, renderer, controls, markControl, switchControl, resetControl,
+        let camera, scene, renderer, controls, markControl, switchControl, resetControl,
             base, beam, ball, mark, offSwitch, onSwitch, resetButton, loadedFlag = false,
             position = 0;
 
@@ -239,7 +460,7 @@ VILibrary.VI = {
 
         if (draw3DFlag) {
 
-            var loadingImg = document.createElement('img');
+            let loadingImg = document.createElement('img');
             loadingImg.src = 'img/loading.gif';
             loadingImg.style.width = '64px';
             loadingImg.style.height = '64px';
@@ -249,8 +470,8 @@ VILibrary.VI = {
             loadingImg.style.zIndex = '1001';
             domElement.parentNode.appendChild(loadingImg);
 
-            var mtlLoader = new THREE.MTLLoader();
-            var objLoader = new THREE.OBJLoader();
+            let mtlLoader = new THREE.MTLLoader();
+            let objLoader = new THREE.OBJLoader();
 
             mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
 
@@ -366,7 +587,7 @@ VILibrary.VI = {
         /**
          * 三维绘图
          */
-        function BallBeamDraw() {
+        function BallBeamDraw () {
             renderer = new THREE.WebGLRenderer({
                 canvas: domElement,
                 antialias: true
@@ -386,17 +607,17 @@ VILibrary.VI = {
 
             scene = new THREE.Scene();
 
-            var light = new THREE.AmbientLight(0x555555);
+            let light = new THREE.AmbientLight(0x555555);
             scene.add(light);
-            var light1 = new THREE.DirectionalLight(0xffffff, 1);
+            let light1 = new THREE.DirectionalLight(0xffffff, 1);
             light1.position.set(4000, 4000, 4000);
             scene.add(light1);
-            var light2 = new THREE.DirectionalLight(0xffffff, 1);
+            let light2 = new THREE.DirectionalLight(0xffffff, 1);
             light2.position.set(-4000, 4000, -4000);
             scene.add(light2);
 
             //use as a reference plane for ObjectControl
-            var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
+            let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
 
             //标记拖动控制
             markControl = new ObjectControls(camera, renderer.domElement);
@@ -508,7 +729,7 @@ VILibrary.VI = {
             // });
         }
 
-        function onBallBeamDrag() {
+        function onBallBeamDrag () {
 
             controls.enabled = false;
             renderer.domElement.style.cursor = 'pointer';
@@ -527,7 +748,7 @@ VILibrary.VI = {
             _this.markPosition = parseFloat(position).toFixed(2);
         }
 
-        function ballBeamAnimate() {
+        function ballBeamAnimate () {
 
             window.requestAnimationFrame(ballBeamAnimate);
             markControl.update();
@@ -536,23 +757,12 @@ VILibrary.VI = {
 
         }
 
-        function setPosition(ang, pos) {
-            var angle = -ang;//角度为逆时针旋转
-            beam.rotation.z = angle;
-            ball.rotation.z = angle;
-            mark.rotation.z = angle;
-            ball.position.y = pos * Math.sin(angle);
-            ball.position.x = pos * Math.cos(angle);
-            mark.position.y = position * Math.sin(angle);
-            mark.position.x = position * Math.cos(angle);
-        }
-
         this.reset = function () {
 
             _this.PIDAngle = 0;
             _this.PIDPosition = 0;
-            this.angelOutput = [0];
-            this.positionOutput = [0];
+            _this.angelOutput = [0];
+            _this.positionOutput = [0];
             _this.limit = true;
             _this.u1 = 0;
             _this.u2 = 0;
@@ -566,7 +776,7 @@ VILibrary.VI = {
 
             if (draw3DFlag) {
 
-                var timer = window.setInterval(function () {
+                let timer = window.setInterval(function () {
                     if (loadedFlag) {
 
                         new BallBeamDraw();
@@ -587,7 +797,7 @@ VILibrary.VI = {
 
     ButtonVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'ButtonVI';
@@ -620,7 +830,7 @@ VILibrary.VI = {
 
         this.container.addEventListener('click', function () {
 
-            if (_this.source != false) {
+            if (_this.source.length > 0) {
 
                 if (!_this.runningFlag) {
 
@@ -641,7 +851,7 @@ VILibrary.VI = {
 
     DCOutputVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'DCOutputVI';
@@ -663,23 +873,23 @@ VILibrary.VI = {
          */
         this.setData = function (data) {
 
-            var temp = Array.isArray(data) ? data[data.length - 1] : data;
-            if (isNaN(temp)) {
+            let temp = Array.isArray(data) ? data[data.length - 1] : data;
+            if (Number.isNaN(temp)) {
 
                 return false;
             }
 
             _this.singleOutput = temp;
 
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
 
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
 
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
 
                     _this.output[i] = _this.output[i + 1];
                 }
@@ -708,7 +918,7 @@ VILibrary.VI = {
 
     DifferentiationResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'DifferentiationResponseVI';
@@ -736,7 +946,7 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
@@ -744,13 +954,13 @@ VILibrary.VI = {
             _this.singleOutput = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;
             _this.lastInput = _this.input;
 
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -782,9 +992,53 @@ VILibrary.VI = {
 
     },
 
+    FFTVI: function (domElement) {
+
+        const _this = this;
+        this.container = domElement;
+        this.ctx = this.container.getContext("2d");
+        this.name = 'FFTVI';
+        this.cnText = 'FFT';
+        this.runningFlag = false;
+
+        this.output = [0];
+        this.outputCount = 1;
+
+        //虚拟仪器中相连接的控件VI
+        this.source = [];
+        this.target = [];
+
+        this.setData = function (input) {
+
+            if (!Array.isArray(input)) {
+
+                return;
+            }
+            _this.output = VILibrary.InternalFunction.fft(1, 10, input);
+            console.log(_this.output);
+            return _this.output;
+
+        };
+
+        this.reset = function () {
+
+            _this.output = [0];
+        };
+
+        this.draw = function () {
+            _this.ctx.font = 'normal 12px Microsoft YaHei';
+            _this.ctx.fillStyle = 'orange';
+            _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
+            _this.ctx.fillStyle = 'black';
+            _this.ctx.fillText('FFT', _this.container.width / 2 - 11, _this.container.height / 2 + 6);
+        };
+        this.draw();
+
+    },
+
     InertiaResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'InertiaResponseVI';
@@ -811,12 +1065,12 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
 
-            var v, E;
+            let v, E;
 
             //一阶 1/(TS+1)
             E = Math.exp(-1 / (_this.k1 * _this.Fs));
@@ -824,13 +1078,13 @@ VILibrary.VI = {
             _this.temp1 = v;
             _this.singleOutput = v;//输出
 
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -863,7 +1117,7 @@ VILibrary.VI = {
 
     IntegrationResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'IntegrationResponseVI';
@@ -891,12 +1145,12 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
 
-            var v2, v21;
+            let v2, v21;
 
             v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
             _this.temp1 = v21;
@@ -905,13 +1159,13 @@ VILibrary.VI = {
             _this.singleOutput = v2;
             _this.lastInput = _this.input;
 
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -944,7 +1198,7 @@ VILibrary.VI = {
 
     KnobVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
 
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -967,18 +1221,24 @@ VILibrary.VI = {
         //虚拟仪器中相连接的控件VI
         this.target = [];
 
-        var spinnerFlag = false;
-        var startX, startY, stopX, stopY;
-        var roundCount = 0;
-        var knob_Base = new Image(), knob_Spinner = new Image();
+        let spinnerFlag = false;
+        let startX, startY, stopX, stopY;
+        let roundCount = 0;
+        let knob_Base = new Image(), knob_Spinner = new Image();
         knob_Base.src = "img/knob_Base.png";
         knob_Spinner.src = "img/knob_Spinner.png";
 
-        knob_Base.onload = knob_Spinner.onload = function () {
+        knob_Base.onload = function () {
             _this.draw();
         };
-        knob_Base.onerror = knob_Spinner.onerror = function () {
-            console.log('error');
+        knob_Spinner.onload = function () {
+            _this.draw();
+        };
+        knob_Base.onerror = function (e) {
+            console.log('error:' + e);
+        };
+        knob_Spinner.onerror = function (e) {
+            console.log('error:' + e);
         };
 
         /**
@@ -989,9 +1249,9 @@ VILibrary.VI = {
          */
         this.setDataRange = function (minValue, maxValue, startValue) {
 
-            _this.minValue = isNaN(minValue) ? 0 : minValue;
-            _this.maxValue = isNaN(maxValue) ? 1 : maxValue;
-            _this.defaultValue = isNaN(startValue) ? 0 : startValue;
+            _this.minValue = Number.isNaN(minValue) ? 0 : minValue;
+            _this.maxValue = Number.isNaN(maxValue) ? 1 : maxValue;
+            _this.defaultValue = Number.isNaN(startValue) ? 0 : startValue;
             _this.ratio = (_this.maxValue - _this.minValue) / (Math.PI * 1.5);
             this.setData(_this.defaultValue);
             this.radian = (_this.defaultValue - _this.minValue) / _this.ratio;
@@ -1001,21 +1261,21 @@ VILibrary.VI = {
 
         this.setData = function (data) {
 
-            if (isNaN(data)) {
+            if (Number.isNaN(data)) {
 
                 return false;
             }
 
             _this.singleOutput = data;
 
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
 
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
 
                     _this.output[i] = _this.output[i + 1];
                 }
@@ -1032,8 +1292,8 @@ VILibrary.VI = {
 
         this.draw = function () {
 
-            var xPos = _this.container.width / 2;
-            var yPos = _this.container.height / 2;
+            let xPos = _this.container.width / 2;
+            let yPos = _this.container.height / 2;
             _this.ctx.clearRect(0, 0, _this.container.width, _this.container.height);
             _this.ctx.drawImage(knob_Base, 0, 0, _this.container.width, _this.container.height);
             _this.ctx.save();   //保存之前位置
@@ -1049,12 +1309,12 @@ VILibrary.VI = {
             _this.ctx.closePath();
         };
 
-        var _mouseOverFlag = false;
-        var _mouseOutFlag = false;
-        var _dragAndDropFlag = false;
-        var _mouseUpFlag = false;
-        var _onclickFlag = false;
-        var _mouseMoveFlag = false;
+        let _mouseOverFlag = false;
+        let _mouseOutFlag = false;
+        let _dragAndDropFlag = false;
+        let _mouseUpFlag = false;
+        let _onclickFlag = false;
+        let _mouseMoveFlag = false;
 
         this.dragAndDrop = function () {
         };// this.container.style.cursor = 'move';
@@ -1096,7 +1356,6 @@ VILibrary.VI = {
                     this.mouseMove = handler;
                     _mouseMoveFlag = true;
                     break;
-                    break;
             }
         };
 
@@ -1121,14 +1380,13 @@ VILibrary.VI = {
                 case 'mouseMove':
                     _mouseMoveFlag = false;
                     break;
-                    break;
             }
 
         };
 
-        function onMouseDown(event) {
+        function onMouseDown (event) {
 
-            var tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
+            let tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
             startX = tempData[0];
             startY = tempData[1];
             if ((startX * startX + startY * startY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5) {
@@ -1138,9 +1396,9 @@ VILibrary.VI = {
 
         }
 
-        function onMouseMove(event) {
+        function onMouseMove (event) {
 
-            var tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
+            let tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
             stopX = tempData[0];
             stopY = tempData[1];
             if ((stopX * stopX + stopY * stopY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5 && !spinnerFlag) {
@@ -1153,7 +1411,7 @@ VILibrary.VI = {
 
                 if (startY > 0 && stopY > 0) {
                     if (startX < 0 && stopX >= 0) {
-                        roundCount++;
+                        roundCount += 1;
                     }
                     else if (startX > 0 && stopX <= 0) {
                         roundCount--;
@@ -1179,7 +1437,7 @@ VILibrary.VI = {
             }
         }
 
-        function onMouseUp(event) {
+        function onMouseUp (event) {
 
             spinnerFlag = false;
             roundCount = 0;
@@ -1190,16 +1448,16 @@ VILibrary.VI = {
             }
         }
 
-        function calculateRadian(x1, y1, x2, y2) {
+        function calculateRadian (x1, y1, x2, y2) {
             // 直角的边长
-            var x = x2 - x1;
-            var y = y2 - y1;
+            let x = x2 - x1;
+            let y = y2 - y1;
             // 斜边长
-            var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+            let z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
             // 余弦
-            var cos = y / z;
+            let cos = y / z;
             // 弧度
-            var radian;
+            let radian;
             if (x >= 0) {
                 radian = Math.acos(cos);
             }
@@ -1216,8 +1474,8 @@ VILibrary.VI = {
          * @param angle
          * @returns {[x1, y1]}
          */
-        function rotateAxis(x, y, angle) {
-            var radian = angle / 180 * Math.PI;
+        function rotateAxis (x, y, angle) {
+            let radian = angle / 180 * Math.PI;
             return [Math.sin(radian) * y + Math.cos(radian) * x, Math.cos(radian) * y - Math.sin(radian) * x];
         }
 
@@ -1228,7 +1486,7 @@ VILibrary.VI = {
 
     OrbitWaveVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'OrbitWaveVI';
@@ -1295,13 +1553,13 @@ VILibrary.VI = {
 
         this.drawWave = function () {
 
-            var ratioX = _this.waveWidth / (_this.MaxVal - _this.MinVal);
-            var ratioY = _this.waveHeight / (_this.MaxVal - _this.MinVal);
-            var pointX = [];
-            var pointY = [];
+            let ratioX = _this.waveWidth / (_this.MaxVal - _this.MinVal);
+            let ratioY = _this.waveHeight / (_this.MaxVal - _this.MinVal);
+            let pointX = [];
+            let pointY = [];
 
-            var i;
-            for (i = 0; i < _this.pointNum; i++) {
+            let i;
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 pointX[i] = _this.offsetL + (_this.bufferValX[i] - _this.MinVal) * ratioX;
                 pointY[i] = _this.offsetT + (_this.MaxVal - _this.bufferValY[i]) * ratioY;
@@ -1319,7 +1577,7 @@ VILibrary.VI = {
             _this.ctx.lineWidth = 2;
             _this.ctx.lineCap = "round";
             _this.ctx.strokeStyle = _this.signalColor;
-            for (i = 1; i < _this.pointNum; i++) {
+            for (i = 1; i < _this.pointNum; i += 1) {
 
                 _this.ctx.moveTo(pointX[i - 1], pointY[i - 1]);
                 _this.ctx.lineTo(pointX[i], pointY[i]);
@@ -1331,7 +1589,7 @@ VILibrary.VI = {
 
         this.drawBackground = function () {
 
-            var ctx = _this.ctx;
+            let ctx = _this.ctx;
             //刷背景//
             ctx.beginPath();
             /* 将这个渐变设置为fillStyle */
@@ -1353,18 +1611,18 @@ VILibrary.VI = {
             ctx.strokeRect(_this.offsetL + 0.5, _this.offsetT + 0.5, _this.waveWidth, _this.waveHeight);
             ctx.closePath();
 
-            var nRow = _this.nRow;
-            var nCol = _this.nCol;
-            var divX = _this.waveWidth / nCol;
-            var divY = _this.waveHeight / nRow;
+            let nRow = _this.nRow;
+            let nCol = _this.nCol;
+            let divX = _this.waveWidth / nCol;
+            let divY = _this.waveHeight / nRow;
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.lineCap = "round";
             ctx.strokeStyle = _this.gridColor;
 
-            var i, j;
+            let i, j;
             //绘制横向网格线
-            for (i = 1; i < nRow; i++) {
+            for (i = 1; i < nRow; i += 1) {
                 if (i == 4) {
 
                     ctx.lineWidth = 10;
@@ -1377,7 +1635,7 @@ VILibrary.VI = {
                 ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
             }
             //绘制纵向网格线
-            for (j = 1; j < nCol; j++) {
+            for (j = 1; j < nCol; j += 1) {
 
                 if (i == 4) {
 
@@ -1396,67 +1654,32 @@ VILibrary.VI = {
 
             if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
                 //绘制横纵刻度
-                var scaleYNum = 20;
-                var scaleXNum = 20;
-                var scaleYStep = _this.waveHeight / scaleYNum;
-                var scaleXStep = _this.waveWidth / scaleXNum;
+                let scaleYNum = 20;
+                let scaleXNum = 20;
+                let scaleYStep = _this.waveHeight / scaleYNum;
+                let scaleXStep = _this.waveWidth / scaleXNum;
                 ////////////////画数字字体////////////////
                 ctx.beginPath();
                 ctx.lineWidth = 1;
                 ctx.strokeStyle = _this.fontColor;
                 ctx.font = "normal 14px Calibri";
 
-                var xValStep = (_this.MaxVal - _this.MinVal) / scaleXNum;
-                var yValStep = (_this.MaxVal - _this.MinVal) / scaleYNum;
+                let xValStep = (_this.MaxVal - _this.MinVal) / scaleXNum;
+                let yValStep = (_this.MaxVal - _this.MinVal) / scaleYNum;
 
                 ctx.fillStyle = _this.fontColor;
-                var temp = 0;
-                var strLab;
+                let temp = 0;
                 //横坐标刻度//
                 for (i = 2; i < scaleXNum; i += 4) {
 
                     temp = _this.MinVal + xValStep * i;
-                    if (Math.abs(temp) >= 1000) {
-
-                        temp = temp / 1000;
-                        strLab = temp.toFixed(1).toString() + 'k';
-                    }
-                    else if (Math.abs(temp) < 1000 && Math.abs(temp) >= 100) {
-
-                        strLab = temp.toFixed(0).toString();
-                    }
-                    else if (Math.abs(temp) < 100 && Math.abs(temp) >= 10) {
-
-                        strLab = temp.toFixed(1).toString();
-                    }
-                    else if (Math.abs(temp) < 10) {
-
-                        strLab = temp.toFixed(1).toString();
-                    }
-                    ctx.fillText(strLab, _this.offsetL + scaleXStep * i - 9, _this.container.height - 10);
+                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9, _this.container.height - 10);
                 }
                 //纵坐标刻度//
                 for (i = 2; i < scaleYNum; i += 4) {
 
                     temp = _this.MaxVal - yValStep * i;
-                    if (Math.abs(temp) >= 1000) {
-
-                        temp = temp / 1000;
-                        strLab = temp.toFixed(1).toString() + 'k';
-                    }
-                    else if (Math.abs(temp) < 1000 && Math.abs(temp) >= 100) {
-
-                        strLab = temp.toFixed(0).toString();
-                    }
-                    else if (Math.abs(temp) < 100 && Math.abs(temp) >= 10) {
-
-                        strLab = temp.toFixed(1).toString();
-                    }
-                    else if (Math.abs(temp) < 10) {
-
-                        strLab = temp.toFixed(1).toString();
-                    }
-                    ctx.fillText(strLab, _this.offsetL - 30, _this.offsetT + scaleYStep * i + 5);
+                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 30, _this.offsetT + scaleYStep * i + 5);
                 }
                 ctx.closePath();
                 ctx.save();
@@ -1479,10 +1702,11 @@ VILibrary.VI = {
             _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
             _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
             _this.ctx.stroke();
-            var i;
-            var curPointX = ((_this.curPointX - _this.offsetL) * (_this.MaxVal - _this.MinVal) / _this.waveWidth + _this.MinVal).toFixed(1);
-            var curPointY = [];
-            for (i = 0; i < _this.pointNum; i++) {
+            let i;
+            let curPointX = parseFloat((_this.curPointX - _this.offsetL) * (_this.MaxVal - _this.MinVal) / _this.waveWidth + _this.MinVal)
+            .toFixed(1);
+            let curPointY = [];
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 if (parseFloat(_this.bufferValX[i]).toFixed(1) === curPointX) {
 
@@ -1493,7 +1717,7 @@ VILibrary.VI = {
                     }
                 }
             }
-            for (i = 0; i < curPointY.length; i++) {
+            for (i = 0; i < curPointY.length; i += 1) {
 
                 _this.ctx.fillText('(' + curPointX + ', ' + curPointY[i] + ')',
                     _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15 + i * 15);
@@ -1509,19 +1733,19 @@ VILibrary.VI = {
             }
 
             _this.pointNum = dataX.length > dataY.length ? dataY.length : dataX.length; //取较短的数据长度
-            if (isNaN(_this.pointNum)) {
+            if (Number.isNaN(_this.pointNum)) {
 
                 return false;
             }
-            var XMax = 0, XMin = 0, YMax = 0, YMin = 0;
-            var i;
-            for (i = 0; i < _this.pointNum; i++) {
+            let XMax = 0, XMin = 0, YMax = 0, YMin = 0;
+            let i;
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 _this.bufferValY[i] = dataY[i] == undefined ? 0 : dataY[i];
                 YMax = YMax < _this.bufferValY[i] ? _this.bufferValY[i] : YMax;
                 YMin = YMin > _this.bufferValY[i] ? _this.bufferValY[i] : YMin;
             }
-            for (i = 0; i < _this.pointNum; i++) {
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 _this.bufferValX[i] = dataX[i] == undefined ? 0 : dataX[i];
                 XMax = XMax < _this.bufferValX[i] ? _this.bufferValX[i] : XMax;
@@ -1529,8 +1753,8 @@ VILibrary.VI = {
             }
             if (_this.autoZoom) {
 
-                var XYMax = YMax > XMax ? YMax : XMax;
-                var XYMin = YMin > XMin ? XMin : YMin;
+                let XYMax = YMax > XMax ? YMax : XMax;
+                let XYMin = YMin > XMin ? XMin : YMin;
                 if ((_this.MaxVal <= XYMax) || (_this.MaxVal - XYMax > 5 * (XYMax - XYMin))) {
 
                     _this.MaxVal = 2 * XYMax - XYMin;
@@ -1565,8 +1789,8 @@ VILibrary.VI = {
         };
 
         this.reset = function () {
-            var i;
-            for (i = 0; i < _this.pointNum; i++) {
+            let i;
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 _this.bufferValY[i] = 0.0;
                 _this.bufferValX[i] = 0.0;
@@ -1574,12 +1798,12 @@ VILibrary.VI = {
             _this.drawBackground();
         };
 
-        var _mouseOverFlag = false;
-        var _mouseOutFlag = false;
-        var _dragAndDropFlag = false;
-        var _mouseUpFlag = false;
-        var _onclickFlag = false;
-        var _mouseMoveFlag = false;
+        let _mouseOverFlag = false;
+        let _mouseOutFlag = false;
+        let _dragAndDropFlag = false;
+        let _mouseUpFlag = false;
+        let _onclickFlag = false;
+        let _mouseMoveFlag = false;
 
         this.attachEvent = function (event, handler) {
 
@@ -1608,7 +1832,6 @@ VILibrary.VI = {
                     this.mouseMove = handler;
                     _mouseMoveFlag = true;
                     break;
-                    break;
             }
         };
 
@@ -1633,12 +1856,12 @@ VILibrary.VI = {
                 case 'mouseMove':
                     _mouseMoveFlag = false;
                     break;
-                    break;
             }
 
         };
 
-        function onMouseMove(event) {
+        function onMouseMove (event) {
+
             if (!_this.drawRulerFlag || _this.bufferValY.length == 0) {
 
                 return;
@@ -1660,7 +1883,7 @@ VILibrary.VI = {
 
     OscillationResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'OscillationResponseVI';
@@ -1689,12 +1912,12 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
 
-            var v, a1, b1;
+            let v, a1, b1;
 
             //二阶 W^2/(S^2+2gWS+W^2)
             if (_this.k2 > 1) {
@@ -1709,13 +1932,13 @@ VILibrary.VI = {
             _this.singleOutput = v;//输出
 
             //将输出数保存在数组内
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -1750,7 +1973,7 @@ VILibrary.VI = {
 
     PIDVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext('2d');
         this.name = 'PIDVI';
@@ -1782,12 +2005,12 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
 
-            var v1, v2, v3, v21;
+            let v1, v2, v3, v21;
 
             v1 = _this.P * _this.input;
 
@@ -1802,18 +2025,16 @@ VILibrary.VI = {
             _this.singleOutput = v1 + v2 + v3;
 
             //将输出数保存在数组内
-            var i = 0;
-            // if (_this.index == 0) {
-            //     for (i = 0; i < _this.dataLength; i++) {
-            //         _this.output[i] = 0;
-            //     }
-            // }
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
+
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
+
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -1837,6 +2058,7 @@ VILibrary.VI = {
         };
 
         this.draw = function () {
+
             _this.ctx.font = "normal 12px Microsoft YaHei";
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -1849,7 +2071,7 @@ VILibrary.VI = {
 
     ProportionDifferentiationResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionDifferentiationResponseVI';
@@ -1879,12 +2101,12 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
 
-            var v1, v3;
+            let v1, v3;
 
             v1 = _this.k1 * _this.input;
 
@@ -1894,13 +2116,16 @@ VILibrary.VI = {
             _this.lastInput = _this.input;
 
             //将输出数保存在数组内
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
+
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
+
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -1933,7 +2158,7 @@ VILibrary.VI = {
 
     ProportionInertiaResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionInertiaResponseVI';
@@ -1961,12 +2186,12 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
 
-            var v, E;
+            let v, E;
 
             //一阶 X+1/(TS+1)
             E = Math.exp(-1 / (_this.k1 * _this.Fs));
@@ -1975,13 +2200,16 @@ VILibrary.VI = {
             _this.singleOutput = v + _this.k2 * _this.input;//输出
 
             //将输出数保存在数组内
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
+
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
+
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -1992,6 +2220,7 @@ VILibrary.VI = {
         };
 
         this.reset = function () {
+
             _this.lastInput = 0;
             _this.temp1 = 0;
             _this.temp2 = 0;
@@ -2001,6 +2230,7 @@ VILibrary.VI = {
         };
 
         this.draw = function () {
+
             _this.ctx.font = 'normal 12px Microsoft YaHei';
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -2014,7 +2244,7 @@ VILibrary.VI = {
 
     ProportionIntegrationResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionIntegrationResponseVI';
@@ -2044,12 +2274,12 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
 
-            var v1, v2, v21;
+            let v1, v2, v21;
 
             if (_this.signalType < 6) {
                 v1 = _this.k1 * _this.input;
@@ -2063,18 +2293,16 @@ VILibrary.VI = {
             }
 
             //将输出数保存在数组内
-            var i = 0;
-            // if (_this.index == 0) {
-            //     for (i = 0; i < _this.dataLength; i++) {
-            //         _this.output[i] = 0;
-            //     }
-            // }
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
+
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
+
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -2085,6 +2313,7 @@ VILibrary.VI = {
         };
 
         this.reset = function () {
+
             _this.lastInput = 0;
             _this.temp1 = 0;
             _this.temp2 = 0;
@@ -2094,6 +2323,7 @@ VILibrary.VI = {
         };
 
         this.draw = function () {
+
             _this.ctx.font = 'normal 12px Microsoft YaHei';
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -2107,7 +2337,7 @@ VILibrary.VI = {
 
     ProportionResponseVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'ProportionResponseVI';
@@ -2135,7 +2365,7 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
@@ -2143,13 +2373,16 @@ VILibrary.VI = {
             _this.singleOutput = _this.k1 * _this.input;
 
             //将输出数保存在数组内
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
+
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
+
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -2160,6 +2393,7 @@ VILibrary.VI = {
         };
 
         this.reset = function () {
+
             _this.lastInput = 0;
             _this.temp1 = 0;
             _this.temp2 = 0;
@@ -2169,6 +2403,7 @@ VILibrary.VI = {
         };
 
         this.draw = function () {
+
             _this.ctx.font = 'normal 12px Microsoft YaHei';
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -2182,7 +2417,7 @@ VILibrary.VI = {
 
     RelayVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'RelayVI';
@@ -2202,19 +2437,22 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
             _this.singleOutput = _this.input;
 
-            var i = 0;
+            let i = 0;
             if (_this.index <= (_this.dataLength - 1)) {
+
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
+
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -2230,6 +2468,7 @@ VILibrary.VI = {
         };
 
         this.draw = function () {
+
             _this.ctx.font = "normal 12px Microsoft YaHei";
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -2242,7 +2481,7 @@ VILibrary.VI = {
 
     RotorExperimentalRigVI: function (domElement, draw3DFlag) {
 
-        var _this = this;
+        const _this = this;
         this.name = 'RotorExperimentalRigVI';
         this.cnText = '转子实验台';
         this.runningFlag = false;
@@ -2270,15 +2509,16 @@ VILibrary.VI = {
         this.setData = function (rotateSpeed) {
 
             _this.rotateSpeed = Array.isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
-            if (isNaN(_this.rotateSpeed)) {
+            if (Number.isNaN(_this.rotateSpeed)) {
 
                 return false;
             }
             _this.rotateFrequency = _this.rotateSpeed / 60;
         };
 
-        function VIDraw() {
-            var img = new Image();
+        function VIDraw () {
+
+            let img = new Image();
             img.src = 'img/RotorExperimentalRig.png';
             img.onload = function () {
 
@@ -2286,7 +2526,7 @@ VILibrary.VI = {
             };
         }
 
-        var camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl, loadedFlag = false,
+        let camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl, loadedFlag = false,
             timer1, timer2, phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency;
 
         window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
@@ -2294,7 +2534,7 @@ VILibrary.VI = {
 
         if (draw3DFlag) {
 
-            var loadingImg = document.createElement('img');
+            let loadingImg = document.createElement('img');
             loadingImg.src = 'img/loading.gif';
             loadingImg.style.width = '64px';
             loadingImg.style.height = '64px';
@@ -2304,8 +2544,8 @@ VILibrary.VI = {
             loadingImg.style.zIndex = '1001';
             domElement.parentNode.appendChild(loadingImg);
 
-            var mtlLoader = new THREE.MTLLoader();
-            var objLoader = new THREE.OBJLoader();
+            let mtlLoader = new THREE.MTLLoader();
+            let objLoader = new THREE.OBJLoader();
 
             mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {
 
@@ -2372,7 +2612,7 @@ VILibrary.VI = {
             });
         }
 
-        function rotorAnimate() {
+        function rotorAnimate () {
 
             window.requestAnimationFrame(rotorAnimate);
             switchControl.update();
@@ -2381,29 +2621,29 @@ VILibrary.VI = {
 
         }
 
-        function generateData() {
+        function generateData () {
 
-            var i;
-            for (i = 0; i < _this.dataLength; i++) {
+            let i;
+            for (i = 0; i < _this.dataLength; i += 1) {
 
                 _this.orbitXOutput[i] = 7.5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
                     4 * Math.sin(4 * Math.PI * _this.rotateFrequency * i * dt + 4 * Math.PI * phase / 360) + 2 * Math.random();
             }
-            for (i = 0; i < _this.dataLength; i++) {
+            for (i = 0; i < _this.dataLength; i += 1) {
 
                 _this.orbitYOutput[i] = 7.5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * (phase + 90) / 360) +
                     4 * Math.sin(4 * Math.PI * _this.rotateFrequency * i * dt + 4 * Math.PI * (phase + 90) / 360) + 2 * Math.random();
             }
             if (_this.signalType == 1) {//转速信号    正弦波
 
-                for (i = 0; i < _this.dataLength; i++) {
+                for (i = 0; i < _this.dataLength; i += 1) {
 
                     _this.signalOutput[i] = 5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * phase / 360);
                 }
             }
             else if (_this.signalType == 2) {//加速度信号
 
-                for (i = 0; i < _this.dataLength; i++) {
+                for (i = 0; i < _this.dataLength; i += 1) {
 
                     _this.signalOutput[i] = 5 * Math.sin(2 * Math.PI * _this.rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
                         6 * Math.sin(4 * Math.PI * _this.rotateFrequency * i * dt + 4 * Math.PI * phase / 360) + 2 * Math.random();
@@ -2411,14 +2651,14 @@ VILibrary.VI = {
             }
             else if (_this.signalType == 3) {//位移X信号
 
-                for (i = 0; i < _this.dataLength; i++) {
+                for (i = 0; i < _this.dataLength; i += 1) {
 
                     _this.signalOutput[i] = _this.orbitXOutput[i];
                 }
             }
             else if (_this.signalType == 4) {//位移Y信号
 
-                for (i = 0; i < _this.dataLength; i++) {
+                for (i = 0; i < _this.dataLength; i += 1) {
 
                     _this.signalOutput[i] = _this.orbitYOutput[i];
                 }
@@ -2430,7 +2670,7 @@ VILibrary.VI = {
          * 三维绘图
          * @constructor
          */
-        function RotorExperimentalRigDraw() {
+        function RotorExperimentalRigDraw () {
 
             renderer = new THREE.WebGLRenderer({
                 canvas: domElement,
@@ -2451,17 +2691,17 @@ VILibrary.VI = {
 
             scene = new THREE.Scene();
 
-            var light = new THREE.AmbientLight(0x555555);
+            let light = new THREE.AmbientLight(0x555555);
             scene.add(light);
-            var light1 = new THREE.DirectionalLight(0xffffff, 1);
+            let light1 = new THREE.DirectionalLight(0xffffff, 1);
             light1.position.set(4000, 4000, 4000);
             scene.add(light1);
-            var light2 = new THREE.DirectionalLight(0xffffff, 1);
+            let light2 = new THREE.DirectionalLight(0xffffff, 1);
             light2.position.set(-4000, 4000, -4000);
             scene.add(light2);
 
             //use as a reference plane for ObjectControl
-            var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
+            let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
 
             //开关控制
             switchControl = new ObjectControls(camera, renderer.domElement);
@@ -2490,10 +2730,12 @@ VILibrary.VI = {
                     switchControl.attach(onSwitch);
 
                     timer1 = window.setInterval(function () {
+
                         phase += 36;
                         generateData();
                     }, 100);
                     timer2 = window.setInterval(function () {
+
                         rotor.rotation.x += 2 * Math.PI * _this.rotateFrequency * 60 / 100;
                     }, 10);
 
@@ -2544,7 +2786,7 @@ VILibrary.VI = {
 
             if (draw3DFlag) {
 
-                var timer = window.setInterval(function () {
+                let timer = window.setInterval(function () {
                     if (loadedFlag) {
 
                         new RotorExperimentalRigDraw();
@@ -2564,7 +2806,7 @@ VILibrary.VI = {
 
     RoundPanelVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext('2d');
         this.R = _this.container.width > _this.container.height ? _this.container.height / 2 : _this.container.width / 2;
@@ -2593,15 +2835,15 @@ VILibrary.VI = {
         //虚拟仪器中相连接的控件VI
         this.source = [];
 
-        function parsePosition(angle) {
+        function parsePosition (angle) {
 
-            var position = [];
+            let position = [];
             position[0] = _this.radius * 0.82 * Math.cos(angle);
             position[1] = _this.radius * 0.82 * Math.sin(angle);
             return position;
         }
 
-        function dataFormation(data) {
+        function dataFormation (data) {
 
             data = parseFloat(data);
             if (data == 0) {
@@ -2631,12 +2873,12 @@ VILibrary.VI = {
         this.setRange = function (minVal, maxVal, unitText, titleText) {
 
             minVal = Array.isArray(minVal) ? minVal[minVal.length - 1] : minVal;
-            if (isNaN(minVal)) {
+            if (Number.isNaN(minVal)) {
 
                 return false;
             }
             maxVal = Array.isArray(maxVal) ? maxVal[maxVal.length - 1] : maxVal;
-            if (isNaN(maxVal)) {
+            if (Number.isNaN(maxVal)) {
 
                 return false;
             }
@@ -2663,7 +2905,7 @@ VILibrary.VI = {
         this.setData = function (latestInput) {
 
             _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-            if (isNaN(_this.latestInput)) {
+            if (Number.isNaN(_this.latestInput)) {
 
                 return false;
             }
@@ -2731,16 +2973,16 @@ VILibrary.VI = {
                 _this.ctx.lineWidth = 1;
             }
             _this.ctx.strokeStyle = _this.screenColor;
-            var i, j;
+            let i, j;
             // 保存
             _this.ctx.save();
             // 位移到目标点
             _this.ctx.translate(this.R, this.R);
 
-            var rotateAngle = Math.PI * 5 / 6, position, markStr, fontSize;
+            let rotateAngle = Math.PI * 5 / 6, position, markStr, fontSize;
             _this.ctx.font = 'normal ' + _this.fontSize / 2 + 'px Microsoft YaHei';
             fontSize = /\d+/.exec(_this.ctx.font)[0];
-            for (i = 0; i <= _this.bigSectionNum; i++) {
+            for (i = 0; i <= _this.bigSectionNum; i += 1) {
 
                 _this.ctx.save();
                 _this.ctx.rotate(rotateAngle);
@@ -2749,7 +2991,7 @@ VILibrary.VI = {
                 _this.ctx.restore();
 
                 if (_this.R > 100) {
-                    for (j = 1; j < _this.smallSectionNum; j++) {
+                    for (j = 1; j < _this.smallSectionNum; j += 1) {
 
                         if (i == _this.bigSectionNum) {
                             break;
@@ -2796,13 +3038,14 @@ VILibrary.VI = {
 
     SignalGeneratorVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'SignalGeneratorVI';
         this.cnText = '信号发生器';
         this.runningFlag = false;
-        this.dataSetCount = 0;
+        this.ampSetFlag = false;
+        this.frequencySetFlag = false;
 
         this.dataLength = 1024;
         this.phase = 0;
@@ -2812,6 +3055,7 @@ VILibrary.VI = {
         this.singleOutput = 0;
         this.output = [0];
         this.outputCount = 2;
+        this.inputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2826,19 +3070,23 @@ VILibrary.VI = {
          *
          */
         this.setData = function (amp, f, phase) {
+            console.log('setData');
+            _this.amp = Array.isArray(amp) ? amp[amp.length - 1] : amp;
+            _this.frequency = Array.isArray(f) ? f[f.length - 1] : f;
+            _this.phase = Array.isArray(phase) ? phase[phase.length - 1] : phase;
+            if (Number.isNaN(_this.amp) || Number.isNaN(_this.frequency) || Number.isNaN(_this.phase)) {
 
-            _this.amp = (isNaN(amp) || !amp) ? _this.amp : amp;
-            _this.frequency = (isNaN(f) || !f) ? _this.frequency : f;
-            _this.phase = (isNaN(phase) || !phase) ? _this.phase : phase;
-            var FS = 11025;
-            var i, j;
-            var T = 1 / _this.frequency;//周期
-            var dt = 1 / FS;//采样周期
-            var t, t1, t2, t3;
+                return false;
+            }
+            let FS = 11025;
+            let i, j;
+            let T = 1 / _this.frequency;//周期
+            let dt = 1 / FS;//采样周期
+            let t, t1, t2, t3;
 
             if (_this.frequency <= 0) {
 
-                for (i = 0; i < _this.dataLength; i++) {
+                for (i = 0; i < _this.dataLength; i += 1) {
 
                     _this.output[i] = 0;
                 }
@@ -2847,7 +3095,7 @@ VILibrary.VI = {
 
             switch (parseInt(_this.signalType)) {
                 case 1://正弦波
-                    for (i = 0; i < _this.dataLength; i++) {
+                    for (i = 0; i < _this.dataLength; i += 1) {
 
                         _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
                     }
@@ -2857,7 +3105,7 @@ VILibrary.VI = {
                 case 2://方波
                     t1 = T / 2;//半周期时长
                     t3 = T * _this.phase / 360.0;
-                    for (i = 0; i < _this.dataLength; i++) {
+                    for (i = 0; i < _this.dataLength; i += 1) {
 
                         t = i * dt + t3;
                         t2 = t - Math.floor(t / T) * T;
@@ -2875,7 +3123,7 @@ VILibrary.VI = {
 
                 case 3://三角波
                     t3 = T * _this.phase / 360.0;
-                    for (i = 0; i < _this.dataLength; i++) {
+                    for (i = 0; i < _this.dataLength; i += 1) {
 
                         t = i * dt + t3;
                         t2 = parseInt(t / T);
@@ -2892,9 +3140,9 @@ VILibrary.VI = {
 
                 case 4://白噪声
                     t2 = 32767;// 0 -- 0x7fff
-                    for (i = 0; i < _this.dataLength; i++) {
+                    for (i = 0; i < _this.dataLength; i += 1) {
                         t1 = 0;
-                        for (j = 0; j < 12; j++) {
+                        for (j = 0; j < 12; j += 1) {
 
                             t1 += (t2 * Math.random());
                         }
@@ -2906,11 +3154,13 @@ VILibrary.VI = {
         };
 
         this.reset = function () {
+
             _this.singleOutput = 0;
             _this.output = [0];
         };
 
         this.draw = function () {
+
             _this.ctx.font = "normal 12px Microsoft YaHei";
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -2924,7 +3174,7 @@ VILibrary.VI = {
 
     StepResponseGeneratorVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'StepResponseGeneratorVI';
@@ -2954,11 +3204,11 @@ VILibrary.VI = {
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-            if (isNaN(_this.input)) {
+            if (Number.isNaN(_this.input)) {
 
                 return false;
             }
-            var v, v1, v2, v21, v3, E, a1, b1;
+            let v, v1, v2, v21, v3, E, a1, b1;
 
             if (_this.signalType < 6) {
                 v1 = _this.k1 * _this.input;
@@ -3002,18 +3252,18 @@ VILibrary.VI = {
             }
 
             //将输出数保存在数组内
-            var i = 0;
+            let i = 0;
             if (_this.index == 0) {
-                for (i = 0; i < _this.dataLength; i++) {
+                for (i = 0; i < _this.dataLength; i += 1) {
                     _this.output[i] = 0;
                 }
             }
             if (_this.index <= (_this.dataLength - 1)) {
                 _this.output[_this.index] = _this.singleOutput;
-                _this.index++;
+                _this.index += 1;
             }
             else {
-                for (i = 0; i < _this.dataLength - 1; i++) {
+                for (i = 0; i < _this.dataLength - 1; i += 1) {
                     _this.output[i] = _this.output[i + 1];
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
@@ -3090,6 +3340,7 @@ VILibrary.VI = {
         };
 
         this.reset = function () {
+
             _this.lastInput = 0;
             _this.temp1 = 0;
             _this.temp2 = 0;
@@ -3099,6 +3350,7 @@ VILibrary.VI = {
         };
 
         this.draw = function () {
+
             _this.ctx.font = 'normal 12px Microsoft YaHei';
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -3112,7 +3364,7 @@ VILibrary.VI = {
 
     TextVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
         this.name = 'TextVI';
@@ -3128,12 +3380,12 @@ VILibrary.VI = {
         this.setData = function (latestInput) {
 
             _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-            if (isNaN(_this.latestInput)) {
+            if (Number.isNaN(_this.latestInput)) {
 
                 return false;
             }
 
-            var str = parseFloat(_this.latestInput).toFixed(_this.decimalPlace);
+            let str = parseFloat(_this.latestInput).toFixed(_this.decimalPlace);
             _this.ctx.font = "normal 12px Microsoft YaHei";
             _this.ctx.fillStyle = 'orange';
             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
@@ -3149,9 +3401,9 @@ VILibrary.VI = {
 
         this.reset = function () {
 
-            this.originalInput = 0;
-            this.latestInput = 0;
-            this.singleOutput = 0;
+            _this.originalInput = 0;
+            _this.latestInput = 0;
+            _this.singleOutput = 0;
             _this.index = 0;
         };
 
@@ -3169,7 +3421,7 @@ VILibrary.VI = {
 
     WaveVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'WaveVI';
@@ -3236,13 +3488,13 @@ VILibrary.VI = {
 
         this.drawWave = function () {
 
-            var ratioX = _this.waveWidth / (_this.pointNum - 1);
-            var ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
-            var pointX = [];
-            var pointY = [];
+            let ratioX = _this.waveWidth / (_this.pointNum - 1);
+            let ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
+            let pointX = [];
+            let pointY = [];
 
-            var i;
-            for (i = 0; i < _this.pointNum; i++) {
+            let i;
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 pointX[i] = _this.offsetL + i * ratioX;
                 pointY[i] = _this.offsetT + (_this.maxValY - _this.bufferVal[i]) * ratioY;
@@ -3261,7 +3513,7 @@ VILibrary.VI = {
             _this.ctx.lineCap = "round";
             _this.ctx.strokeStyle = _this.signalColor;
             _this.ctx.moveTo(pointX[0], pointY[0]);
-            for (i = 1; i < _this.pointNum; i++) {
+            for (i = 1; i < _this.pointNum; i += 1) {
 
                 _this.ctx.lineTo(pointX[i], pointY[i]);
             }
@@ -3272,7 +3524,7 @@ VILibrary.VI = {
 
         this.drawBackground = function () {
 
-            var ctx = _this.ctx;
+            let ctx = _this.ctx;
             //刷背景//
             ctx.beginPath();
             /* 将这个渐变设置为fillStyle */
@@ -3293,25 +3545,25 @@ VILibrary.VI = {
             ctx.strokeRect(_this.offsetL + 0.5, _this.offsetT + 0.5, _this.waveWidth, _this.waveHeight);
             ctx.closePath();
 
-            var nRow = _this.nRow;
-            var nCol = _this.nCol;
-            var divX = _this.waveWidth / nCol;
-            var divY = _this.waveHeight / nRow;
+            let nRow = _this.nRow;
+            let nCol = _this.nCol;
+            let divX = _this.waveWidth / nCol;
+            let divY = _this.waveHeight / nRow;
 
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.lineCap = "round";
             ctx.strokeStyle = _this.gridColor;
 
-            var i, j;
+            let i, j;
             //绘制横向网格线
-            for (i = 1; i < nRow; i++) {
+            for (i = 1; i < nRow; i += 1) {
 
                 ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
                 ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
             }
             //绘制纵向网格线
-            for (j = 1; j < nCol; j++) {
+            for (j = 1; j < nCol; j += 1) {
 
                 ctx.moveTo(divX * j + _this.offsetL, _this.offsetT);
                 ctx.lineTo(divX * j + _this.offsetL, _this.container.height - _this.offsetB);
@@ -3322,15 +3574,15 @@ VILibrary.VI = {
             if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
 
                 //绘制横纵刻度
-                var scaleYNum = 8;
-                var scaleXNum = 16;
-                var scaleYStep = _this.waveHeight / scaleYNum;
-                var scaleXStep = _this.waveWidth / scaleXNum;
+                let scaleYNum = 8;
+                let scaleXNum = 16;
+                let scaleYStep = _this.waveHeight / scaleYNum;
+                let scaleXStep = _this.waveWidth / scaleXNum;
                 ctx.beginPath();
                 ctx.lineWidth = 1;
                 ctx.strokeStyle = _this.fontColor;
                 //画纵刻度
-                var k;
+                let k;
                 for (k = 2; k < scaleYNum; k += 2) {
 
                     ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
@@ -3349,7 +3601,7 @@ VILibrary.VI = {
                 ////////////////画数字字体////////////////
                 ctx.font = "normal 12px Calibri";
 
-                var strLab;
+                let strLab;
                 //横标签//
                 strLab = _this.strLabelX;
                 ctx.fillText(strLab, _this.container.width - _this.offsetR - strLab.length * 6 - 10, _this.container.height - _this.offsetB + 20);
@@ -3358,11 +3610,11 @@ VILibrary.VI = {
                 strLab = _this.strLabelY;
                 ctx.fillText(strLab, strLab.length * 6, _this.offsetT + 12);
 
-                var valStepX = (_this.maxValX - _this.minValX) / scaleXNum;
-                var valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
+                let valStepX = (_this.maxValX - _this.minValX) / scaleXNum;
+                let valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
 
                 ctx.fillStyle = _this.fontColor;
-                var temp = 0;
+                let temp = 0;
                 //横坐标刻度//
                 for (i = 2; i < scaleXNum; i += 2) {
 
@@ -3396,8 +3648,9 @@ VILibrary.VI = {
             _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
             _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
             _this.ctx.stroke();
-            var curPointX = ((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth).toFixed(2);
-            var curPointY = parseFloat(_this.bufferVal[((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth).toFixed(0)]).toFixed(2);
+            let curPointX = ((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth).toFixed(2);
+            let curPointY = parseFloat(_this.bufferVal[((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth).toFixed(0)])
+            .toFixed(2);
             _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')',
                 _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
             _this.ctx.closePath();
@@ -3419,8 +3672,8 @@ VILibrary.VI = {
 
                 _this.pointNum = len;
             }
-            var YMax = 0, YMin = 0, i;
-            for (i = 0; i < _this.pointNum; i++) {
+            let YMax = 0, YMin = 0, i;
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
                 YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
@@ -3481,12 +3734,12 @@ VILibrary.VI = {
             _this.drawBackground();
         };
 
-        var _mouseOverFlag = false;
-        var _mouseOutFlag = false;
-        var _dragAndDropFlag = false;
-        var _mouseUpFlag = false;
-        var _onclickFlag = false;
-        var _mouseMoveFlag = false;
+        let _mouseOverFlag = false;
+        let _mouseOutFlag = false;
+        let _dragAndDropFlag = false;
+        let _mouseUpFlag = false;
+        let _onclickFlag = false;
+        let _mouseMoveFlag = false;
 
         this.dragAndDrop = function () {
         };// this.container.style.cursor = 'move';
@@ -3558,7 +3811,7 @@ VILibrary.VI = {
 
         };
 
-        function onMouseMove(event) {
+        function onMouseMove (event) {
 
             if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
 
@@ -3584,7 +3837,7 @@ VILibrary.VI = {
 
     BarVI: function (domElement) {
 
-        var _this = this;
+        const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'BarVI';
@@ -3643,7 +3896,7 @@ VILibrary.VI = {
             }
         };
 
-        function drawRec(x, y, w, h) {
+        function drawRec (x, y, w, h) {
 
             _this.ctx.beginPath();
             _this.ctx.fillStyle = _this.signalColor;
@@ -3653,9 +3906,9 @@ VILibrary.VI = {
 
         this.drawWave = function () {
 
-            var i, barHeight, x, y;
+            let i, barHeight, x, y;
             //绘制柱状图
-            for (i = 0; i < _this.pointNum; i++) {
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 x = _this.offsetL + i * _this.ratioX;
                 barHeight = _this.bufferVal[i] * _this.ratioY;
@@ -3666,7 +3919,7 @@ VILibrary.VI = {
 
         this.drawBackground = function () {
 
-            var ctx = _this.ctx;
+            let ctx = _this.ctx;
             //刷背景//
             ctx.beginPath();
             /* 将这个渐变设置为fillStyle */
@@ -3688,17 +3941,17 @@ VILibrary.VI = {
             ctx.closePath();
 
             //网格行数
-            var nRow = _this.container.height / 50;
-            var divY = _this.waveHeight / nRow;
+            let nRow = _this.container.height / 50;
+            let divY = _this.waveHeight / nRow;
 
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.lineCap = "round";
             ctx.strokeStyle = _this.gridColor;
 
-            var i;
+            let i;
             //绘制横向网格线
-            for (i = 1; i < nRow; i++) {
+            for (i = 1; i < nRow; i += 1) {
 
                 ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
                 ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
@@ -3709,15 +3962,15 @@ VILibrary.VI = {
             if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
 
                 //绘制横纵刻度
-                var scaleYNum = _this.container.height / 50;
-                var scaleXNum = _this.container.width / 50;
-                var scaleYStep = _this.waveHeight / scaleYNum;
-                var scaleXStep = _this.waveWidth / scaleXNum;
+                let scaleYNum = _this.container.height / 50;
+                let scaleXNum = _this.container.width / 50;
+                let scaleYStep = _this.waveHeight / scaleYNum;
+                let scaleXStep = _this.waveWidth / scaleXNum;
                 ctx.beginPath();
                 ctx.lineWidth = 1;
                 ctx.strokeStyle = _this.fontColor;
                 //画纵刻度
-                var k;
+                let k;
                 for (k = 2; k <= scaleYNum; k += 2) {
 
                     ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
@@ -3737,14 +3990,14 @@ VILibrary.VI = {
                 ////////////////画数字字体////////////////
                 ctx.font = "normal 12px Calibri";
 
-                var valStepX = _this.pointNum / scaleXNum;
-                var valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
+                let valStepX = _this.pointNum / scaleXNum;
+                let valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
 
                 ctx.fillStyle = _this.fontColor;
-                var temp = 0;
+                let temp = 0;
                 if (_this.labelX.length < _this.pointNum) {
 
-                    for (i = 0; i < _this.pointNum; i++) {
+                    for (i = 0; i < _this.pointNum; i += 1) {
 
                         _this.labelX[i] = i;
                     }
@@ -3792,8 +4045,8 @@ VILibrary.VI = {
             _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
             _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
             _this.ctx.stroke();
-            var curPointX = ((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth).toFixed(0) - 1;
-            var curPointY = VILibrary.InternalFunction.fixNumber(_this.bufferVal[curPointX]);
+            let curPointX = ((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth).toFixed(0) - 1;
+            let curPointY = VILibrary.InternalFunction.fixNumber(_this.bufferVal[curPointX]);
             _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
                 _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
             _this.ctx.closePath();
@@ -3816,8 +4069,8 @@ VILibrary.VI = {
                 _this.pointNum = len;
             }
 
-            var YMax = 0, YMin = 0, i;
-            for (i = 0; i < _this.pointNum; i++) {
+            let YMax = 0, YMin = 0, i;
+            for (i = 0; i < _this.pointNum; i += 1) {
 
                 _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
                 YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
@@ -3865,12 +4118,12 @@ VILibrary.VI = {
             _this.drawBackground();
         };
 
-        var _mouseOverFlag = false;
-        var _mouseOutFlag = false;
-        var _dragAndDropFlag = false;
-        var _mouseUpFlag = false;
-        var _onclickFlag = false;
-        var _mouseMoveFlag = false;
+        let _mouseOverFlag = false;
+        let _mouseOutFlag = false;
+        let _dragAndDropFlag = false;
+        let _mouseUpFlag = false;
+        let _onclickFlag = false;
+        let _mouseMoveFlag = false;
 
         this.dragAndDrop = function () {
         };// this.container.style.cursor = 'move';
@@ -3912,7 +4165,6 @@ VILibrary.VI = {
                     this.mouseMove = handler;
                     _mouseMoveFlag = true;
                     break;
-                    break;
             }
         };
 
@@ -3937,12 +4189,11 @@ VILibrary.VI = {
                 case 'mouseMove':
                     _mouseMoveFlag = false;
                     break;
-                    break;
             }
 
         };
 
-        function onMouseMove(event) {
+        function onMouseMove (event) {
 
             if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
 
@@ -3965,8 +4216,6 @@ VILibrary.VI = {
             }
         }
 
-        // this.container.addEventListener('mousedown', onContainerMouseDown, false);  // mouseDownListener
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-        // this.container.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
     }
 };

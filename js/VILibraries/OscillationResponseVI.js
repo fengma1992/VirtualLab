@@ -9,7 +9,7 @@
  */
 function OscillationResponseVI(domElement) {
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'OscillationResponseVI';
@@ -35,19 +35,15 @@ function OscillationResponseVI(domElement) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     this.setData = function (input) {
 
-        _this.input = isArray(input) ? input[input.length - 1] : input;
-        if (isNaN(_this.input)) {
+        _this.input = Array.isArray(input) ? input[input.length - 1] : input;
+        if (Number.isNaN(_this.input)) {
 
             return false;
         }
 
-        var v, a1, b1;
+        let v, a1, b1;
 
         //二阶 W^2/(S^2+2gWS+W^2)
         if (_this.k2 > 1) {
@@ -63,7 +59,7 @@ function OscillationResponseVI(domElement) {
 
 
         //将输出数保存在数组内
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //     for (i = 0; i < _this.dataLength; i++) {
         //         _this.output[i] = 0;

@@ -9,7 +9,7 @@
  */
 function IntegrationResponseVI(domElement) {
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'IntegrationResponseVI';
@@ -34,19 +34,15 @@ function IntegrationResponseVI(domElement) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     this.setData = function (input) {
 
-        _this.input = isArray(input) ? input[input.length - 1] : input;
-        if (isNaN(_this.input)) {
+        _this.input = Array.isArray(input) ? input[input.length - 1] : input;
+        if (Number.isNaN(_this.input)) {
 
             return false;
         }
 
-        var v2, v21;
+        let v2, v21;
 
         v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
         _this.temp1 = v21;
@@ -56,8 +52,7 @@ function IntegrationResponseVI(domElement) {
         _this.singleOutput = v2;
         _this.lastInput = _this.input;
 
-
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //     for (i = 0; i < _this.dataLength; i++) {
         //         _this.output[i] = 0;

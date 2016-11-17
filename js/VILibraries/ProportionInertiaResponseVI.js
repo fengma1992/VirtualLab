@@ -9,7 +9,7 @@
  */
 function ProportionInertiaResponseVI(domElement) {
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'ProportionInertiaResponseVI';
@@ -35,19 +35,15 @@ function ProportionInertiaResponseVI(domElement) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     this.setData = function (input) {
 
-        _this.input = isArray(input) ? input[input.length - 1] : input;
-        if (isNaN(_this.input)) {
+        _this.input = Array.isArray(input) ? input[input.length - 1] : input;
+        if (Number.isNaN(_this.input)) {
 
             return false;
         }
 
-        var v, E;
+        let v, E;
 
         //一阶 X+1/(TS+1)
         E = Math.exp(-1 / (_this.k1 * _this.Fs));
@@ -56,7 +52,7 @@ function ProportionInertiaResponseVI(domElement) {
         _this.singleOutput = v + _this.k2 * _this.input;//输出
 
         //将输出数保存在数组内
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //     for (i = 0; i < _this.dataLength; i++) {
         //         _this.output[i] = 0;

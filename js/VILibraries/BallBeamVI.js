@@ -5,7 +5,7 @@
 'use strict';
 function BallBeamVI(domElement, draw3DFlag) {
 
-    var _this = this;
+    const _this = this;
     this.name = 'BallBeamVI';
     this.cnText = '球杆模型';
     this.runningFlag = false;
@@ -31,23 +31,19 @@ function BallBeamVI(domElement, draw3DFlag) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     /**
      *
      * @param angle 输入端口读取角度
      */
     this.setData = function (angle) {
 
-        var inputAngle = isArray(angle) ? angle[angle.length - 1] : angle;
-        if (isNaN(inputAngle)) {
+        let inputAngle = Array.isArray(angle) ? angle[angle.length - 1] : angle;
+        if (Number.isNaN(inputAngle)) {
 
             return false;
         }
 
-        var outputPosition, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
+        let outputPosition, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
         if (_this.limit) {
             if ((inputAngle - _this.PIDAngle) > angleMax) {
 
@@ -78,7 +74,7 @@ function BallBeamVI(domElement, draw3DFlag) {
         _this.PIDPosition = outputPosition;//向输出端口上写数据
 
         //将输出数保存在数组内
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //     for (i = 0; i < _this.dataLength - 1; i++) {
         //         _this.angelOutput[i] = 0;
@@ -103,7 +99,7 @@ function BallBeamVI(domElement, draw3DFlag) {
     };
 
     function VIDraw() {
-        var img = new Image();
+        let img = new Image();
         img.src = 'img/BallBeam.png';
         img.onload = function () {
 
@@ -111,7 +107,7 @@ function BallBeamVI(domElement, draw3DFlag) {
         };
     }
 
-    var camera, scene, renderer, controls, markControl, switchControl, resetControl,
+    let camera, scene, renderer, controls, markControl, switchControl, resetControl,
         base, beam, ball, mark, offSwitch, onSwitch, resetButton, loadedFlag = false,
         position = 0;
 
@@ -121,8 +117,7 @@ function BallBeamVI(domElement, draw3DFlag) {
 
     if (draw3DFlag) {
 
-
-        var loadingImg = document.createElement('img');
+        let loadingImg = document.createElement('img');
         loadingImg.src = 'img/loading.gif';
         loadingImg.style.width = '64px';
         loadingImg.style.height = '64px';
@@ -132,8 +127,8 @@ function BallBeamVI(domElement, draw3DFlag) {
         loadingImg.style.zIndex = '1001';
         domElement.parentNode.appendChild(loadingImg);
 
-        var mtlLoader = new THREE.MTLLoader();
-        var objLoader = new THREE.OBJLoader();
+        let mtlLoader = new THREE.MTLLoader();
+        let objLoader = new THREE.OBJLoader();
 
         mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
 
@@ -271,17 +266,17 @@ function BallBeamVI(domElement, draw3DFlag) {
 
         scene = new THREE.Scene();
 
-        var light = new THREE.AmbientLight(0x555555);
+        let light = new THREE.AmbientLight(0x555555);
         scene.add(light);
-        var light1 = new THREE.DirectionalLight(0xffffff, 1);
+        let light1 = new THREE.DirectionalLight(0xffffff, 1);
         light1.position.set(4000, 4000, 4000);
         scene.add(light1);
-        var light2 = new THREE.DirectionalLight(0xffffff, 1);
+        let light2 = new THREE.DirectionalLight(0xffffff, 1);
         light2.position.set(-4000, 4000, -4000);
         scene.add(light2);
 
         //use as a reference plane for ObjectControl
-        var plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
+        let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
 
         //标记拖动控制
         markControl = new ObjectControls(camera, renderer.domElement);
@@ -422,7 +417,7 @@ function BallBeamVI(domElement, draw3DFlag) {
     }
 
     function setPosition(ang, pos) {
-        var angle = -ang;//角度为逆时针旋转
+        let angle = -ang;//角度为逆时针旋转
         beam.rotation.z = angle;
         ball.rotation.z = angle;
         mark.rotation.z = angle;
@@ -436,7 +431,7 @@ function BallBeamVI(domElement, draw3DFlag) {
 
         if (draw3DFlag) {
 
-            var timer = window.setInterval(function () {
+            let timer = window.setInterval(function () {
                 if (loadedFlag) {
 
                     new BallBeamDraw();
@@ -457,8 +452,8 @@ function BallBeamVI(domElement, draw3DFlag) {
 
         _this.PIDAngle = 0;
         _this.PIDPosition = 0;
-        this.angelOutput = [0];
-        this.positionOutput = [0];
+        _this.angelOutput = [0];
+        _this.positionOutput = [0];
         _this.limit = true;
         _this.u1 = 0;
         _this.u2 = 0;

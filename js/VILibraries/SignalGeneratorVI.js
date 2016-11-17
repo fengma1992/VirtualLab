@@ -4,7 +4,7 @@
 
 function SignalGeneratorVI(domElement) {
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'SignalGeneratorVI';
@@ -35,14 +35,14 @@ function SignalGeneratorVI(domElement) {
      */
     this.setData = function (amp, f, phase) {
 
-        _this.amp = (isNaN(amp) || !amp) ? _this.amp : amp;
-        _this.frequency = (isNaN(f) || !f) ? _this.frequency : f;
-        _this.phase = (isNaN(phase) || !phase) ? _this.phase : phase;
-        var FS = 11025;
-        var i, j;
-        var T = 1 / _this.frequency;//周期
-        var dt = 1 / FS;//采样周期
-        var t, t1, t2, t3;
+        _this.amp = (Number.isNaN(amp) || !amp) ? _this.amp : amp;
+        _this.frequency = (Number.isNaN(f) || !f) ? _this.frequency : f;
+        _this.phase = (Number.isNaN(phase) || !phase) ? _this.phase : phase;
+        let FS = 11025;
+        let i, j;
+        let T = 1 / _this.frequency;//周期
+        let dt = 1 / FS;//采样周期
+        let t, t1, t2, t3;
 
         if (_this.frequency <= 0) {
 

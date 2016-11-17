@@ -9,7 +9,8 @@
  */
 function PIDVI(domElement) {
 
-    var _this = this;
+    'use strict';
+    const _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext('2d');
     this.name = 'PIDVI';
@@ -34,28 +35,23 @@ function PIDVI(domElement) {
     this.source = [];
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     /**
      *
      * @param input 从输入端读取的数据
      */
     this.setData = function (input) {
 
-        _this.input = isArray(input) ? input[input.length - 1] : input;
-        if (isNaN(_this.input)) {
+        _this.input = Array.isArray(input) ? input[input.length - 1] : input;
+        if (Number.isNaN(_this.input)) {
 
             return false;
         }
 
-        var v1, v2, v3, v21;
+        let v1, v2, v3, v21;
 
         v1 = _this.P * _this.input;
 
         v21 = _this.temp1 + 0.5 * (Number(_this.input) + Number(_this.lastInput)) / _this.Fs;
-        // console.log(v21);
         _this.temp1 = v21;
         v2 = _this.I * v21;
 
@@ -65,7 +61,7 @@ function PIDVI(domElement) {
         _this.singleOutput = v1 + v2 + v3;
 
         //将输出数保存在数组内
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //     for (i = 0; i < _this.dataLength; i++) {
         //         _this.output[i] = 0;

@@ -10,7 +10,7 @@
 function OrbitWaveVI(domElement) {
 
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'OrbitWaveVI';
@@ -79,12 +79,12 @@ function OrbitWaveVI(domElement) {
 
     this.drawWave = function () {
 
-        var ratioX = _this.waveWidth / (_this.MaxVal - _this.MinVal);
-        var ratioY = _this.waveHeight / (_this.MaxVal - _this.MinVal);
-        var pointX = [];
-        var pointY = [];
+        let ratioX = _this.waveWidth / (_this.MaxVal - _this.MinVal);
+        let ratioY = _this.waveHeight / (_this.MaxVal - _this.MinVal);
+        let pointX = [];
+        let pointY = [];
 
-        var i;
+        let i;
         for (i = 0; i < _this.pointNum; i++) {
 
             pointX[i] = _this.offsetL + (_this.bufferValX[i] - _this.MinVal) * ratioX;
@@ -115,7 +115,7 @@ function OrbitWaveVI(domElement) {
 
     this.drawBackground = function () {
 
-        var ctx = _this.ctx;
+        let ctx = _this.ctx;
         //刷背景//
         ctx.beginPath();
         /* 将这个渐变设置为fillStyle */
@@ -137,16 +137,16 @@ function OrbitWaveVI(domElement) {
         ctx.strokeRect(_this.offsetL + 0.5, _this.offsetT + 0.5, _this.waveWidth, _this.waveHeight);
         ctx.closePath();
 
-        var nRow = _this.nRow;
-        var nCol = _this.nCol;
-        var divX = _this.waveWidth / nCol;
-        var divY = _this.waveHeight / nRow;
+        let nRow = _this.nRow;
+        let nCol = _this.nCol;
+        let divX = _this.waveWidth / nCol;
+        let divY = _this.waveHeight / nRow;
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.lineCap = "round";
         ctx.strokeStyle = _this.gridColor;
 
-        var i, j;
+        let i, j;
         //绘制横向网格线
         for (i = 1; i < nRow; i++) {
             if (i == 4) {
@@ -180,22 +180,22 @@ function OrbitWaveVI(domElement) {
 
         if ((_this.height >= 200) && (_this.width >= 200)) {
             //绘制横纵刻度
-            var scaleYNum = 20;
-            var scaleXNum = 20;
-            var scaleYStep = _this.waveHeight / scaleYNum;
-            var scaleXStep = _this.waveWidth / scaleXNum;
+            let scaleYNum = 20;
+            let scaleXNum = 20;
+            let scaleYStep = _this.waveHeight / scaleYNum;
+            let scaleXStep = _this.waveWidth / scaleXNum;
             ////////////////画数字字体////////////////
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = _this.fontColor;
             ctx.font = "normal 14px Calibri";
 
-            var xValStep = (_this.MaxVal - _this.MinVal) / scaleXNum;
-            var yValStep = (_this.MaxVal - _this.MinVal) / scaleYNum;
+            let xValStep = (_this.MaxVal - _this.MinVal) / scaleXNum;
+            let yValStep = (_this.MaxVal - _this.MinVal) / scaleYNum;
 
             ctx.fillStyle = _this.fontColor;
-            var temp = 0;
-            var strLab;
+            let temp = 0;
+            let strLab;
             //横坐标刻度//
             for (i = 2; i < scaleXNum; i += 4) {
 
@@ -271,9 +271,9 @@ function OrbitWaveVI(domElement) {
         _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
         _this.ctx.lineTo(_this.curPointX + 0.5, _this.height - _this.offsetB);
         _this.ctx.stroke();
-        var i;
-        var curPointX = ((_this.curPointX - _this.offsetL) * (_this.MaxVal - _this.MinVal) / _this.waveWidth + _this.MinVal).toFixed(1);
-        var curPointY = [];
+        let i;
+        let curPointX = ((_this.curPointX - _this.offsetL) * (_this.MaxVal - _this.MinVal) / _this.waveWidth + _this.MinVal).toFixed(1);
+        let curPointY = [];
         for (i = 0; i < _this.pointNum; i++) {
 
             if (parseFloat(_this.bufferValX[i]).toFixed(1) === curPointX) {
@@ -301,12 +301,12 @@ function OrbitWaveVI(domElement) {
         }
 
         _this.pointNum = dataX.length > dataY.length ? dataY.length : dataX.length; //取较短的数据长度
-        if (isNaN(_this.pointNum)) {
+        if (Number.isNaN(_this.pointNum)) {
 
             return false;
         }
-        var XMax = 0, XMin = 0, YMax = 0, YMin = 0;
-        var i;
+        let XMax = 0, XMin = 0, YMax = 0, YMin = 0;
+        let i;
         for (i = 0; i < _this.pointNum; i++) {
 
             _this.bufferValY[i] = dataY[i] == undefined ? 0 : dataY[i];
@@ -321,8 +321,8 @@ function OrbitWaveVI(domElement) {
         }
         if (_this.autoZoom) {
 
-            var XYMax = YMax > XMax ? YMax : XMax;
-            var XYMin = YMin > XMin ? XMin : YMin;
+            let XYMax = YMax > XMax ? YMax : XMax;
+            let XYMin = YMin > XMin ? XMin : YMin;
             if ((_this.MaxVal <= XYMax) || (_this.MaxVal - XYMax > 5 * (XYMax - XYMin))) {
 
                 _this.MaxVal = 2 * XYMax - XYMin;
@@ -357,7 +357,7 @@ function OrbitWaveVI(domElement) {
     };
 
     this.reset = function () {
-        var i;
+        let i;
         for (i = 0; i < _this.pointNum; i++) {
 
             _this.bufferValY[i] = 0.0;
@@ -366,12 +366,12 @@ function OrbitWaveVI(domElement) {
         _this.drawBackground();
     };
 
-    var _mouseOverFlag = false;
-    var _mouseOutFlag = false;
-    var _dragAndDropFlag = false;
-    var _mouseUpFlag = false;
-    var _onclickFlag = false;
-    var _mouseMoveFlag = false;
+    let _mouseOverFlag = false;
+    let _mouseOutFlag = false;
+    let _dragAndDropFlag = false;
+    let _mouseUpFlag = false;
+    let _onclickFlag = false;
+    let _mouseMoveFlag = false;
 
     this.attachEvent = function (event, handler) {
 
@@ -431,11 +431,11 @@ function OrbitWaveVI(domElement) {
     };
 
     function onMouseMove(event) {
-        if (!_this.drawRulerFlag || _this.bufferValY.length == 0) {
+        if (!_this.drawRulerFlag || _this.bufferValY.length === 0) {
 
             return;
         }
-        _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 5;
+        _this.curPointX = event.offsetX === undefined ? event.layerX : event.offsetX - 5;
         _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 5;
 
         if (_this.curPointX <= _this.offsetL) {
@@ -447,15 +447,7 @@ function OrbitWaveVI(domElement) {
         _this.paint();
     }
 
-    function onContainerMouseDown(event) {
-    }
-
-    function onContainerMouseUp(event) {
-    }
-
-    // this.container.addEventListener('mousedown', onContainerMouseDown, false);  // mouseDownListener
     this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    // this.container.addEventListener('mouseup', onContainerMouseUp, false);  // mouseUpListener
 }
 
 

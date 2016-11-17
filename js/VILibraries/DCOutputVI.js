@@ -9,7 +9,7 @@
  */
 function DCOutputVI(domElement) {
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'DCOutputVI';
@@ -25,25 +25,21 @@ function DCOutputVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.target = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     /**
      * 将输出数保存在数组内
      * @param data singleOutput
      */
     this.setData = function (data) {
 
-        var temp = isArray(data) ? data[data.length - 1] : data;
-        if (isNaN(temp)) {
+        let temp = Array.isArray(data) ? data[data.length - 1] : data;
+        if (Number.isNaN(temp)) {
 
             return false;
         }
 
         _this.singleOutput = temp;
 
-        var i = 0;
+        let i = 0;
         // if (_this.index == 0) {
         //
         //     for (i = 0; i < _this.dataLength; i++) {

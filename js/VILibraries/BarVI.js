@@ -5,7 +5,7 @@
 'use strict';
 function BarVI(domElement) {
 
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = this.container.getContext("2d");
     this.name = 'BarVI';
@@ -72,9 +72,46 @@ function BarVI(domElement) {
         _this.ctx.closePath();
     }
 
+    function fixNumber (num) {
+
+        let strLab;
+        if (Math.abs(num) >= 1000) {
+
+            num = num / 1000;
+            strLab = num.toFixed(1).toString() + 'k';
+        }
+        else if (Math.abs(num) < 1000 && Math.abs(num) >= 100) {
+
+            strLab = num.toFixed(0).toString();
+        }
+        else if (Math.abs(num) < 100 && Math.abs(num) >= 10) {
+
+            if (Math.abs(num) - Math.abs(num).toFixed(0) < 0.01) {
+
+                strLab = num.toFixed(0).toString();
+            }
+            else {
+
+                strLab = num.toFixed(1).toString();
+            }
+        }
+        else if (Math.abs(num) < 10) {
+
+            if (Math.abs(num) - Math.abs(num).toFixed(0) < 0.01) {
+
+                strLab = num.toFixed(0).toString();
+            }
+            else {
+
+                strLab = num.toFixed(2).toString();
+            }
+        }
+        return strLab;
+    }
+
     this.drawWave = function () {
 
-        var i, barHeight, x, y;
+        let i, barHeight, x, y;
         //绘制柱状图
         for (i = 0; i < _this.pointNum; i++) {
 
@@ -87,7 +124,7 @@ function BarVI(domElement) {
 
     this.drawBackground = function () {
 
-        var ctx = _this.ctx;
+        let ctx = _this.ctx;
         //刷背景//
         ctx.beginPath();
         /* 将这个渐变设置为fillStyle */
@@ -109,15 +146,15 @@ function BarVI(domElement) {
         ctx.closePath();
 
         //网格行数
-        var nRow = _this.container.height / 50;
-        var divY = _this.waveHeight / nRow;
+        let nRow = _this.container.height / 50;
+        let divY = _this.waveHeight / nRow;
 
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.lineCap = "round";
         ctx.strokeStyle = _this.gridColor;
 
-        var i;
+        let i;
         //绘制横向网格线
         for (i = 1; i < nRow; i++) {
 
@@ -130,15 +167,15 @@ function BarVI(domElement) {
         if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
 
             //绘制横纵刻度
-            var scaleYNum = _this.container.height / 50;
-            var scaleXNum = _this.container.width / 50;
-            var scaleYStep = _this.waveHeight / scaleYNum;
-            var scaleXStep = _this.waveWidth / scaleXNum;
+            let scaleYNum = _this.container.height / 50;
+            let scaleXNum = _this.container.width / 50;
+            let scaleYStep = _this.waveHeight / scaleYNum;
+            let scaleXStep = _this.waveWidth / scaleXNum;
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = _this.fontColor;
             //画纵刻度
-            var k;
+            let k;
             for (k = 2; k <= scaleYNum; k += 2) {
 
                 ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
@@ -158,11 +195,11 @@ function BarVI(domElement) {
             ////////////////画数字字体////////////////
             ctx.font = "normal 12px Calibri";
 
-            var valStepX = _this.pointNum / scaleXNum;
-            var valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
+            let valStepX = _this.pointNum / scaleXNum;
+            let valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
 
             ctx.fillStyle = _this.fontColor;
-            var temp = 0;
+            let temp = 0;
             if (_this.labelX.length < _this.pointNum) {
 
                 for (i = 0; i < _this.pointNum; i++) {
@@ -174,7 +211,7 @@ function BarVI(domElement) {
             for (i = 0; i < scaleXNum; i += 2) {
 
                 temp = _this.labelX[parseInt(valStepX * i)];
-                ctx.fillText(temp, _this.offsetL + scaleXStep * i - 9 + _this.ratioX / 2, _this.container.height - 10);
+                ctx.fillText(temp.toString(), _this.offsetL + scaleXStep * i - 9 + _this.ratioX / 2, _this.container.height - 10);
             }
             //纵坐标刻度//
             for (i = 2; i <= scaleYNum; i += 2) {
@@ -213,8 +250,8 @@ function BarVI(domElement) {
         _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
         _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
         _this.ctx.stroke();
-        var curPointX = ((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth).toFixed(0) - 1;
-        var curPointY = fixNumber(_this.bufferVal[curPointX]);
+        let curPointX = ((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth).toFixed(0) - 1;
+        let curPointY = fixNumber(_this.bufferVal[curPointX]);
         _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
             _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
         _this.ctx.closePath();
@@ -237,7 +274,7 @@ function BarVI(domElement) {
             _this.pointNum = len;
         }
 
-        var YMax = 0, YMin = 0, i;
+        let YMax = 0, YMin = 0, i;
         for (i = 0; i < _this.pointNum; i++) {
 
             _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
@@ -286,12 +323,12 @@ function BarVI(domElement) {
         _this.drawBackground();
     };
 
-    var _mouseOverFlag = false;
-    var _mouseOutFlag = false;
-    var _dragAndDropFlag = false;
-    var _mouseUpFlag = false;
-    var _onclickFlag = false;
-    var _mouseMoveFlag = false;
+    let _mouseOverFlag = false;
+    let _mouseOutFlag = false;
+    let _dragAndDropFlag = false;
+    let _mouseUpFlag = false;
+    let _onclickFlag = false;
+    let _mouseMoveFlag = false;
 
     this.dragAndDrop = function () {
     };// this.container.style.cursor = 'move';
@@ -363,51 +400,15 @@ function BarVI(domElement) {
 
     };
 
-    function fixNumber(num) {
-
-        var strLab;
-        if (Math.abs(num) >= 1000) {
-
-            num = num / 1000;
-            strLab = num.toFixed(1).toString() + 'k';
-        }
-        else if (Math.abs(num) < 1000 && Math.abs(num) >= 100) {
-
-            strLab = num.toFixed(0).toString();
-        }
-        else if (Math.abs(num) < 100 && Math.abs(num) >= 10) {
-
-            if (Math.abs(num) - Math.abs(num).toFixed(0) < 0.01) {
-
-                strLab = num.toFixed(0).toString();
-            }
-            else {
-
-                strLab = num.toFixed(1).toString();
-            }
-        }
-        else if (Math.abs(num) < 10) {
-
-            if (Math.abs(num) - Math.abs(num).toFixed(0) < 0.01) {
-
-                strLab = num.toFixed(0).toString();
-            }
-            else {
-
-                strLab = num.toFixed(2).toString();
-            }
-        }
-        return strLab;
-    }
 
     function onMouseMove(event) {
 
-        if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
+        if (!_this.drawRulerFlag || _this.bufferVal.length === 0) {
 
             return;
         }
-        _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 1;
-        _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 1;
+        _this.curPointX = event.offsetX === undefined ? event.layerX : event.offsetX - 1;
+        _this.curPointY = event.offsetY === undefined ? event.layerY : event.offsetY - 1;
 
         if (_this.curPointX <= _this.offsetL) {
 

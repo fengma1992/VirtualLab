@@ -11,7 +11,7 @@
 function TextVI(domElement) {
 
     'use strict';
-    var _this = this;
+    const _this = this;
     this.container = domElement;
     this.ctx = domElement.getContext('2d');
     this.name = 'TextVI';
@@ -25,19 +25,15 @@ function TextVI(domElement) {
     //虚拟仪器中相连接的控件VI
     this.source = [];
 
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
     this.setData = function (latestInput) {
 
-        _this.latestInput = isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-        if (isNaN(_this.latestInput)) {
+        _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+        if (Number.isNaN(_this.latestInput)) {
 
             return false;
         }
 
-        var str = parseFloat(_this.latestInput).toFixed(_this.decimalPlace);
+        let str = parseFloat(_this.latestInput).toFixed(_this.decimalPlace);
         _this.ctx.font = "normal 12px Microsoft YaHei";
         _this.ctx.fillStyle = 'orange';
         _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
