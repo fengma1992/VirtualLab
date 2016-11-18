@@ -232,6 +232,7 @@ VILibrary.VI = {
         this.name = 'AudioVI';
         this.cnText = '麦克风';
         this.fillStyle = 'silver';
+        this.runningFlag = false;
 
         let audioCtx = new (window.AudioContext || webkitAudioContext)();
         let analyser = audioCtx.createAnalyser();
@@ -250,7 +251,7 @@ VILibrary.VI = {
             //main block for doing the audio recording
 
             if (navigator.getUserMedia) {
-                console.log('getUserMedia supported.');
+                console.log('AudioVI: getUserMedia supported.');
 
                 let constraints = {audio: true};
 
@@ -258,31 +259,33 @@ VILibrary.VI = {
 
                     source = audioCtx.createMediaStreamSource(stream);
 
-                    analyser.fftSize = 2048;
+                    analyser.fftSize = 4096;
                     let bufferLength = analyser.frequencyBinCount;//数据长度为1024
                     let dataArray = new Uint8Array(bufferLength);
 
+                    console.log('bufferLength:' + bufferLength);
                     source.connect(analyser);
                     analyser.connect(audioCtx.destination);
                     function getData () {
 
                         window.requestAnimationFrame(getData);
-                        analyser.getByteTimeDomainData(dataArray);//填入数据
+                        analyser.getByteFrequencyDomainData(dataArray);//填入数据
                         _this.output = dataArray;
                     }
 
                     getData();
                     _this.runningFlag = true;
                     _this.fillStyle = 'orange';
+                    _this.draw();
                 };
                 let onError = function (err) {
-                    alert('The following error occured: ' + err);
+                    alert('AudioVI: The following error occured: ' + err);
                 };
 
                 navigator.getUserMedia(constraints, onSuccess, onError);
             }
             else {
-                console.log('getUserMedia not supported on your browser!');
+                console.log('AudioVI: getUserMedia not supported on your browser!');
             }
         }
 
@@ -292,15 +295,9 @@ VILibrary.VI = {
             analyser.disconnect(audioCtx.destination);
             _this.runningFlag = false;
             _this.fillStyle = 'silver';
+            _this.draw();
         }
 
-        /**
-         * 将输出数保存在数组内
-         * @param data singleOutput
-         */
-        this.setData = function (data) {
-
-        };
 
         this.reset = function () {
 
@@ -332,7 +329,6 @@ VILibrary.VI = {
                 else {
                     stop();
                 }
-                _this.draw();
             }
         }, false);
     },
@@ -979,8 +975,8 @@ VILibrary.VI = {
 
                 return;
             }
-            _this.output = VILibrary.InternalFunction.fft(1, 10, input);
-            console.log(_this.output);
+            _this.output = VILibrary.InternalFunction.fft(1, 11, input);
+            console.log('FFTVI:' + _this.output);
             return _this.output;
 
         };
@@ -1197,10 +1193,10 @@ VILibrary.VI = {
             _this.draw();
         };
         knob_Base.onerror = function (e) {
-            console.log('error:' + e);
+            console.log('KnobVI: Error:' + e);
         };
         knob_Spinner.onerror = function (e) {
-            console.log('error:' + e);
+            console.log('KnobVI: Error:' + e);
         };
 
         /**
@@ -1983,7 +1979,6 @@ VILibrary.VI = {
             v1 = _this.P * _this.input;
 
             v21 = _this.temp1 + 0.5 * (Number(_this.input) + Number(_this.lastInput)) / _this.Fs;
-            // console.log(v21);
             _this.temp1 = v21;
             v2 = _this.I * v21;
 
@@ -3015,7 +3010,6 @@ VILibrary.VI = {
         this.singleOutput = 0;
         this.output = [0];
         this.outputCount = 2;
-        this.inputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
