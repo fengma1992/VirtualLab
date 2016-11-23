@@ -468,9 +468,6 @@ function setRoundPanelVI (VINumber) {
     closeBox();
 }
 
-/**
- * 比例
- */
 function setProportionResponseVI (VINumber) {
 
     dataObject.ProportionResponseVI[VINumber].k1 = document.getElementById('ProportionResponseVI-input').value;
@@ -478,9 +475,6 @@ function setProportionResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 积分
- */
 function setIntegrationResponseVI (VINumber) {
 
     dataObject.IntegrationResponseVI[VINumber].k2 = document.getElementById('IntegrationResponseVI-input').value;
@@ -488,9 +482,6 @@ function setIntegrationResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 微分
- */
 function setDifferentiationResponseVI (VINumber) {
 
     dataObject.DifferentiationResponseVI[VINumber].k3 = document.getElementById('DifferentiationResponseVI-input').value;
@@ -498,9 +489,6 @@ function setDifferentiationResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 惯性
- */
 function setInertiaResponseVI (VINumber) {
 
     dataObject.InertiaResponseVI[VINumber].k1 = document.getElementById('InertiaResponseVI-input').value;
@@ -508,9 +496,6 @@ function setInertiaResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 震荡
- */
 function setOscillationResponseVI (VINumber) {
 
     dataObject.OscillationResponseVI[VINumber].k1 = document.getElementById('OscillationResponseVI-input-1').value;
@@ -519,9 +504,6 @@ function setOscillationResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 比例积分
- */
 function setProportionIntegrationResponseVI (VINumber) {
 
     dataObject.ProportionIntegrationResponseVI[VINumber].k1 = document.getElementById('ProportionIntegrationResponseVI-input-1').value;
@@ -530,9 +512,6 @@ function setProportionIntegrationResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 比例微分
- */
 function setProportionDifferentiationResponseVI (VINumber) {
 
     dataObject.ProportionDifferentiationResponseVI[VINumber].k1 = document.getElementById('ProportionDifferentiationResponseVI-input-1').value;
@@ -541,9 +520,6 @@ function setProportionDifferentiationResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 比例惯性
- */
 function setProportionInertiaResponseVI (VINumber) {
 
     dataObject.ProportionInertiaResponseVI[VINumber].k1 = document.getElementById('ProportionInertiaResponseVI-input-1').value;
@@ -552,9 +528,6 @@ function setProportionInertiaResponseVI (VINumber) {
     closeBox();
 }
 
-/**
- * 信号发生器
- */
 function setSignalGeneratorVI (VINumber, type) {
 
     dataObject.SignalGeneratorVI[VINumber].signalType = type;
@@ -1264,42 +1237,6 @@ function ready () {
                         sourceElement.target.push([targetElement, checkedValue]);
                     });
             }
-            //                else if (sourceElement.outputCount == 2) {
-            //
-            //                    outputSetBox[0] = true;
-            //                    outputSetBox[1] = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-            //                            '<div class="input-div">' +
-            //                            '<input type="radio" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">输出(单值)<br>' +
-            //                            '<input type="radio" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">输出(数组)<br>' +
-            //                            '</div>',
-            //                            1, function () {
-            //
-            //                                outputSetBox[0] = false;
-            //                                let outputType = document.getElementsByName('output-type');
-            //                                let checkedValue = -1;
-            //                                for (let i = 0; i < outputType.length; i++) {
-            //
-            //                                    if (outputType[i].checked == true) {
-            //
-            //                                        checkedValue = outputType[i].value;
-            //                                        break;
-            //                                    }
-            //                                }
-            //                                if (checkedValue == -1) {
-            //
-            //                                    if (connectionInfo != null && connectionInfo != undefined) {
-            //
-            //                                        instance.detach(connectionInfo.connection);
-            //                                        connectionInfo = null;
-            //                                    }
-            //                                    closeBox();
-            //                                    G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
-            //                                    return;
-            //                                }
-            //
-            //                                sourceElement.target.push([targetElement, checkedValue]);
-            //                            });
-            //                }
 
             //默认输出数组
             else {

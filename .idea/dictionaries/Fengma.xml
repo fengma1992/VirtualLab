@@ -13,6 +13,7 @@
       <w>mousemove</w>
       <w>mouseover</w>
       <w>mouseup</w>
+      <w>ondataavailable</w>
       <w>onerror</w>
       <w>onload</w>
       <w>pidvi</w>

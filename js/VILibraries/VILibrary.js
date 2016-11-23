@@ -3,7 +3,8 @@
  */
 
 'use strict';
-let VILibrary = {REVISION: '1'};
+
+let VILibrary = {REVISION: '1.0'};
 
 VILibrary.InternalFunction = {
 
@@ -117,14 +118,14 @@ VILibrary.InternalFunction = {
                 u1 = z;
             }
             c2 = Math.sqrt((1.0 - c1) * 0.5);
-            if (dir == 1) {
+            if (dir === 1) {
 
                 c2 = -c2;
             }
             c1 = Math.sqrt((1.0 + c1) * 0.5);
         }
         /* Scaling for forward transform */
-        if (dir == 1) {
+        if (dir === 1) {
             for (i = 0; i < n; i += 1) {
                 real[i] /= n;
                 img[i] /= n;
@@ -142,8 +143,6 @@ VILibrary.InternalFunction = {
 
 VILibrary.VI = {
 
-    VINumber: 23,
-
     AddVI: function (domElement) {
 
         const _this = this;
@@ -158,8 +157,6 @@ VILibrary.VI = {
         this.latestInput = 0;
         this.singleOutput = 0;
         this.output = [0];
-        this.outputCount = 2;
-        this.inputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -234,70 +231,81 @@ VILibrary.VI = {
         this.fillStyle = 'silver';
         this.runningFlag = false;
 
-        let audioCtx = new (window.AudioContext || webkitAudioContext)();
-        let analyser = audioCtx.createAnalyser();
-        let source;
+        this.dataLength = 2048;
         this.output = [0];
-        this.outputCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
 
-        navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia
-        || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+        let mediaRecorder, audioCtx = new (window.AudioContext || webkitAudioContext)(), source;
 
         function start () {
+            // Older browsers might not implement mediaDevices at all, so we set an empty object first
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
 
-            //main block for doing the audio recording
+            // Some browsers partially implement mediaDevices. We can't just assign an object
+            // with getUserMedia as it would overwrite existing properties.
+            // Here, we will just add the getUserMedia property if it's missing.
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function (constraints) {
 
-            if (navigator.getUserMedia) {
-                console.log('AudioVI: getUserMedia supported.');
+                    // First get ahold of the legacy getUserMedia, if present
+                    let getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
 
-                let constraints = {audio: true};
-
-                let onSuccess = function (stream) {
-
-                    source = audioCtx.createMediaStreamSource(stream);
-
-                    analyser.fftSize = 4096;
-                    let bufferLength = analyser.frequencyBinCount;//数据长度为1024
-                    let dataArray = new Uint8Array(bufferLength);
-
-                    console.log('bufferLength:' + bufferLength);
-                    source.connect(analyser);
-                    analyser.connect(audioCtx.destination);
-                    function getData () {
-
-                        window.requestAnimationFrame(getData);
-                        analyser.getByteFrequencyDomainData(dataArray);//填入数据
-                        _this.output = dataArray;
+                    // Some browsers just don't implement it - return a rejected promise with an error
+                    // to keep a consistent interface
+                    if (!getUserMedia) {
+                        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
                     }
 
-                    getData();
-                    _this.runningFlag = true;
-                    _this.fillStyle = 'orange';
-                    _this.draw();
+                    // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+                    return new Promise(function (resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
                 };
-                let onError = function (err) {
-                    alert('AudioVI: The following error occured: ' + err);
+            }
+
+            navigator.mediaDevices.getUserMedia({audio: true}).then(function (stream) {
+                console.log('AudioVI: getUserMedia supported.');
+
+                //音频输出
+                source = audioCtx.createMediaStreamSource(stream);
+                source.connect(audioCtx.destination);
+                //数据存储
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                console.log(mediaRecorder.state);
+
+                mediaRecorder.ondataavailable = function (e) {
+
+                    _this.output.push(e.data);
+                    if (_this.output.length > _this.dataLength) {
+
+                        _this.output.shift();
+                    }
                 };
 
-                navigator.getUserMedia(constraints, onSuccess, onError);
-            }
-            else {
-                console.log('AudioVI: getUserMedia not supported on your browser!');
-            }
+                _this.runningFlag = true;
+                _this.fillStyle = 'red';
+                _this.draw();
+            }).catch(function (err) {
+                console.log(err.name + ": " + err.message);
+            });
         }
 
         function stop () {
 
-            source.disconnect(analyser);
-            analyser.disconnect(audioCtx.destination);
+            //切断音频输出
+            source.disconnect(audioCtx.destination);
+            //停止数据存储
+            mediaRecorder.stop();
+            console.log(mediaRecorder.state);
             _this.runningFlag = false;
             _this.fillStyle = 'silver';
             _this.draw();
         }
-
 
         this.reset = function () {
 
@@ -354,11 +362,14 @@ VILibrary.VI = {
         this.index = 0;
         this.angelOutput = [0];
         this.positionOutput = [0];
-        this.outputCount = 4;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        let camera, scene, renderer, controls, markControl, switchControl, resetControl,
+            base, beam, ball, mark, offSwitch, onSwitch, resetButton, loadedFlag = false,
+            position = 0;
 
         function setPosition (ang, pos) {
             let angle = -ang;//角度为逆时针旋转
@@ -441,13 +452,6 @@ VILibrary.VI = {
                 _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
             };
         }
-
-        let camera, scene, renderer, controls, markControl, switchControl, resetControl,
-            base, beam, ball, mark, offSwitch, onSwitch, resetButton, loadedFlag = false,
-            position = 0;
-
-        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
-            || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
         if (draw3DFlag) {
 
@@ -739,6 +743,8 @@ VILibrary.VI = {
             _this.markPosition = parseFloat(position).toFixed(2);
         }
 
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
         function ballBeamAnimate () {
 
             window.requestAnimationFrame(ballBeamAnimate);
@@ -825,7 +831,6 @@ VILibrary.VI = {
         this.index = 0;
         this.singleOutput = 100;//输出初值
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
@@ -899,7 +904,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -963,7 +967,6 @@ VILibrary.VI = {
         this.cnText = 'FFT';
 
         this.output = [0];
-        this.outputCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1016,7 +1019,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1095,7 +1097,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1174,7 +1175,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [100];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
@@ -1868,7 +1868,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1956,7 +1955,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2054,7 +2052,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2139,7 +2136,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2225,7 +2221,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2315,7 +2310,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2386,7 +2380,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2453,7 +2446,6 @@ VILibrary.VI = {
         this.frequencyOutput = [0];
         this.orbitXOutput = [0];
         this.orbitYOutput = [0];
-        this.outputCount = 5;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2485,9 +2477,6 @@ VILibrary.VI = {
 
         let camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl, loadedFlag = false,
             timer1, timer2, phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency;
-
-        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
-            || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
         if (draw3DFlag) {
 
@@ -2568,7 +2557,8 @@ VILibrary.VI = {
                 });
             });
         }
-
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
         function rotorAnimate () {
 
             window.requestAnimationFrame(rotorAnimate);
@@ -2786,7 +2776,7 @@ VILibrary.VI = {
         this.borderColor = "RGB(100,100,100)";
 
         this.fontColor = "RGB(0, 0, 0)";
-        this.fontSize = (16 * _this.radius / 150).toFixed(0);
+        this.fontSize = parseInt(16 * _this.radius / 150);
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3009,7 +2999,6 @@ VILibrary.VI = {
         this.signalType = 1;
         this.singleOutput = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3147,7 +3136,6 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
-        this.outputCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3598,8 +3586,9 @@ VILibrary.VI = {
             _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
             _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
             _this.ctx.stroke();
-            let curPointX = ((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth).toFixed(2);
-            let curPointY = parseFloat(_this.bufferVal[((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth).toFixed(0)])
+            let curPointX = parseFloat((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth)
+            .toFixed(2);
+            let curPointY = parseFloat(_this.bufferVal[parseInt((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth)])
             .toFixed(2);
             _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')',
                 _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
@@ -3730,7 +3719,6 @@ VILibrary.VI = {
                 case 'mouseMove':
                     this.mouseMove = handler;
                     _mouseMoveFlag = true;
-                    break;
                     break;
             }
         };
@@ -3993,7 +3981,7 @@ VILibrary.VI = {
             _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
             _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
             _this.ctx.stroke();
-            let curPointX = ((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth).toFixed(0) - 1;
+            let curPointX = parseInt((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth) - 1;
             let curPointY = VILibrary.InternalFunction.fixNumber(_this.bufferVal[curPointX]);
             _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
                 _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
@@ -4159,5 +4147,8 @@ VILibrary.VI = {
         }
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    }
+    },
+
+    length: 23
+
 };
