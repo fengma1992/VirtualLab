@@ -237,7 +237,24 @@ VILibrary.VI = {
         //虚拟仪器中相连接的控件VI
         this.target = [];
 
-        let mediaRecorder, audioCtx = new (window.AudioContext || webkitAudioContext)(), source;
+        this.draw = function () {
+
+            let img = new Image();
+            img.src = 'img/mic.png';
+            img.onload = function () {
+
+                _this.ctx.fillStyle = _this.fillStyle;
+                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
+                _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
+            };
+        };
+
+        this.draw();
+
+        let audioCtx = new (window.AudioContext || webkitAudioContext)(),
+            source, analyser = audioCtx.createAnalyser(), animationNumber;
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
         function start () {
             // Older browsers might not implement mediaDevices at all, so we set an empty object first
@@ -268,29 +285,31 @@ VILibrary.VI = {
             }
 
             navigator.mediaDevices.getUserMedia({audio: true}).then(function (stream) {
-                console.log('AudioVI: getUserMedia supported.');
+                    console.log('AudioVI: getUserMedia supported.');
 
-                //音频输出
-                source = audioCtx.createMediaStreamSource(stream);
-                source.connect(audioCtx.destination);
-                //数据存储
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-                console.log(mediaRecorder.state);
+                    //音频输出
+                    source = audioCtx.createMediaStreamSource(stream);
+                    analyser.fftSize = _this.dataLength;
+                    let bufferLength = analyser.frequencyBinCount;
+                    let dataArray = new Uint8Array(bufferLength);
 
-                mediaRecorder.ondataavailable = function (e) {
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    function getData () {
 
-                    _this.output.push(e.data);
-                    if (_this.output.length > _this.dataLength) {
+                        animationNumber = window.requestAnimationFrame(getData);
 
-                        _this.output.shift();
+                        analyser.getByteTimeDomainData(dataArray);
+                        _this.output = Array.from(dataArray);
                     }
-                };
 
-                _this.runningFlag = true;
-                _this.fillStyle = 'red';
-                _this.draw();
-            }).catch(function (err) {
+                    getData();
+
+                    _this.runningFlag = true;
+                    _this.fillStyle = 'red';
+                    _this.draw();
+                }
+            ).catch(function (err) {
                 console.log(err.name + ": " + err.message);
             });
         }
@@ -298,10 +317,10 @@ VILibrary.VI = {
         function stop () {
 
             //切断音频输出
-            source.disconnect(audioCtx.destination);
+            analyser.disconnect(audioCtx.destination);
+            window.cancelAnimationFrame(animationNumber);
             //停止数据存储
-            mediaRecorder.stop();
-            console.log(mediaRecorder.state);
+            // mediaRecorder.stop();
             _this.runningFlag = false;
             _this.fillStyle = 'silver';
             _this.draw();
@@ -311,20 +330,6 @@ VILibrary.VI = {
 
             _this.output = [0];
         };
-
-        this.draw = function () {
-
-            let img = new Image();
-            img.src = 'img/mic.png';
-            img.onload = function () {
-
-                _this.ctx.fillStyle = _this.fillStyle;
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
-            };
-        };
-
-        this.draw();
 
         this.container.addEventListener('click', function () {
 
@@ -790,7 +795,8 @@ VILibrary.VI = {
         };
         this.draw();
 
-    },
+    }
+    ,
 
     ButtonVI: function (domElement) {
 
@@ -817,7 +823,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     DCOutputVI: function (domElement) {
 
@@ -882,7 +889,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     DifferentiationResponseVI: function (domElement) {
 
@@ -956,7 +964,8 @@ VILibrary.VI = {
 
         this.draw();
 
-    },
+    }
+    ,
 
     FFTVI: function (domElement) {
 
@@ -998,7 +1007,8 @@ VILibrary.VI = {
         };
         this.draw();
 
-    },
+    }
+    ,
 
     InertiaResponseVI: function (domElement) {
 
@@ -1075,7 +1085,8 @@ VILibrary.VI = {
 
         this.draw();
 
-    },
+    }
+    ,
 
     IntegrationResponseVI: function (domElement) {
 
@@ -1154,7 +1165,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     KnobVI: function (domElement) {
 
@@ -1449,7 +1461,8 @@ VILibrary.VI = {
         this.container.addEventListener('mousemove', onMouseMove, false);
         this.container.addEventListener('mousedown', onMouseDown, false);
         this.container.addEventListener('mouseup', onMouseUp, false);
-    },
+    }
+    ,
 
     OrbitWaveVI: function (domElement) {
 
@@ -1845,7 +1858,8 @@ VILibrary.VI = {
         }
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    },
+    }
+    ,
 
     OscillationResponseVI: function (domElement) {
 
@@ -1933,7 +1947,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     PIDVI: function (domElement) {
 
@@ -2028,7 +2043,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     ProportionDifferentiationResponseVI: function (domElement) {
 
@@ -2113,7 +2129,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     ProportionInertiaResponseVI: function (domElement) {
 
@@ -2197,7 +2214,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     ProportionIntegrationResponseVI: function (domElement) {
 
@@ -2288,7 +2306,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     ProportionResponseVI: function (domElement) {
 
@@ -2366,7 +2385,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     RelayVI: function (domElement) {
 
@@ -2428,7 +2448,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     RotorExperimentalRigVI: function (domElement, draw3DFlag) {
 
@@ -2749,7 +2770,8 @@ VILibrary.VI = {
             }
         };
         this.draw();
-    },
+    }
+    ,
 
     RoundPanelVI: function (domElement) {
 
@@ -2980,7 +3002,8 @@ VILibrary.VI = {
 
         this.draw();
 
-    },
+    }
+    ,
 
     SignalGeneratorVI: function (domElement) {
 
@@ -3112,7 +3135,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     StepResponseGeneratorVI: function (domElement) {
 
@@ -3300,7 +3324,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     TextVI: function (domElement) {
 
@@ -3356,7 +3381,8 @@ VILibrary.VI = {
         };
 
         this.draw();
-    },
+    }
+    ,
 
     WaveVI: function (domElement) {
 
@@ -3770,7 +3796,8 @@ VILibrary.VI = {
         }
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    },
+    }
+    ,
 
     BarVI: function (domElement) {
 
@@ -4147,8 +4174,10 @@ VILibrary.VI = {
         }
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    },
+    }
+    ,
 
     length: 23
 
-};
+}
+;
