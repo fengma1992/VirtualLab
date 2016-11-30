@@ -4,11 +4,10 @@
 
 'use strict';
 
-const sideBar = document.getElementById('sideBar');
-const VIContainer = document.getElementById('VIContainer');
+const sideBar = $('#sideBar');
+const VIContainer = $('#VIContainer');
 
 let instance, mainTimer;
-let dataSetBox = [], inputSetBox = [], outputSetBox = [];//用于记录弹出框ID
 let bindInfoArr = [];//二维数组，第二维分别记录输出VI、输入VI
 let setVIDataIndex = 0;
 let dataObject = {
@@ -59,13 +58,13 @@ let dataObject = {
     ProportionIntegrationResponseVI: [],
     ProportionDifferentiationResponseVI: [],
     ProportionInertiaResponseVI: [],
-    SignalGeneratorVI: [],
+    SignalGeneratorVI: []
 };
 
 function checkIfTargetValueBound (targetElement, checkedValue) {
 
     let i;
-    for (i = 0; i < targetElement.source.length; i++) {
+    for (i = 0; i < targetElement.source.length; i += 1) {
 
         if (targetElement.source[i][1] == checkedValue) {
             return targetElement.source[i][0].cnText;
@@ -88,7 +87,7 @@ function deleteBindInfoFromArr (sourceElement, targetElement) {
 
     if (bindInfoArr.indexOf([sourceElement, targetElement]) !== -1) {
 
-        bindInfoArr.splice(index, 1);
+        bindInfoArr.splice(bindInfoArr.indexOf([sourceElement, targetElement]), 1);
     }
 }
 
@@ -100,469 +99,303 @@ function checkIfThreeDVIStarted (threeDElement) {
     }
 }
 
-function getObjectVIByName (name) {
+function getObjectVIById (id) {
 
-    switch (name) {
+    let VIInfo = id.split('-');
+    switch (VIInfo[0]) {
 
         case 'AddVI':
-            return dataObject.AddVI;
+            return dataObject.AddVI[VIInfo[1]];
 
         case 'AudioVI':
-            return dataObject.AudioVI;
+            return dataObject.AudioVI[VIInfo[1]];
 
         case 'BallBeamVI':
-            return dataObject.BallBeamVI;
+            return dataObject.BallBeamVI[VIInfo[1]];
 
         case 'ButtonVI':
-            return dataObject.ButtonVI;
+            return dataObject.ButtonVI[VIInfo[1]];
 
         case 'DCOutputVI':
-            return dataObject.DCOutputVI;
+            return dataObject.DCOutputVI[VIInfo[1]];
 
         case 'FFTVI':
-            return dataObject.FFTVI;
+            return dataObject.FFTVI[VIInfo[1]];
 
         case 'KnobVI':
-            return dataObject.KnobVI;
+            return dataObject.KnobVI[VIInfo[1]];
 
         case 'OrbitWaveVI':
-            return dataObject.OrbitWaveVI;
+            return dataObject.OrbitWaveVI[VIInfo[1]];
 
         case 'PIDVI':
-            return dataObject.PIDVI;
+            return dataObject.PIDVI[VIInfo[1]];
 
         case 'RelayVI':
-            return dataObject.RelayVI;
+            return dataObject.RelayVI[VIInfo[1]];
 
         case 'RotorExperimentalRigVI':
-            return dataObject.RotorExperimentalRigVI;
+            return dataObject.RotorExperimentalRigVI[VIInfo[1]];
 
         case 'RoundPanelVI':
-            return dataObject.RoundPanelVI;
+            return dataObject.RoundPanelVI[VIInfo[1]];
 
         case 'TextVI':
-            return dataObject.TextVI;
+            return dataObject.TextVI[VIInfo[1]];
 
         case 'ProportionResponseVI':
-            return dataObject.ProportionResponseVI;
+            return dataObject.ProportionResponseVI[VIInfo[1]];
 
         case 'IntegrationResponseVI':
-            return dataObject.IntegrationResponseVI;
+            return dataObject.IntegrationResponseVI[VIInfo[1]];
 
         case 'DifferentiationResponseVI':
-            return dataObject.DifferentiationResponseVI;
+            return dataObject.DifferentiationResponseVI[VIInfo[1]];
 
         case 'InertiaResponseVI':
-            return dataObject.InertiaResponseVI;
+            return dataObject.InertiaResponseVI[VIInfo[1]];
 
         case 'OscillationResponseVI':
-            return dataObject.OscillationResponseVI;
+            return dataObject.OscillationResponseVI[VIInfo[1]];
 
         case 'ProportionIntegrationResponseVI':
-            return dataObject.ProportionIntegrationResponseVI;
+            return dataObject.ProportionIntegrationResponseVI[VIInfo[1]];
 
         case 'ProportionDifferentiationResponseVI':
-            return dataObject.ProportionDifferentiationResponseVI;
+            return dataObject.ProportionDifferentiationResponseVI[VIInfo[1]];
 
         case 'ProportionInertiaResponseVI':
-            return dataObject.ProportionInertiaResponseVI;
+            return dataObject.ProportionInertiaResponseVI[VIInfo[1]];
 
         case 'SignalGeneratorVI':
-            return dataObject.SignalGeneratorVI;
+            return dataObject.SignalGeneratorVI[VIInfo[1]];
 
         case 'WaveVI':
-            return dataObject.WaveVI;
+            return dataObject.WaveVI[VIInfo[1]];
     }
 }
 
 function showBox (VICanvas) {
 
-    let VIInfo = VICanvas.id.split('-');
-    let VI = getObjectVIByName(VIInfo[0])[VIInfo[2]];
-    switch (VIInfo[0]) {
+    let canvasId = VICanvas.id;
+    let VI = getObjectVIById(canvasId);
+
+    switch (canvasId.split('-')[0]) {
 
         case 'AddVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">初值:</span><input type="number" id="AddVI-input" value="' + VI.originalInput + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setAddVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'PIDVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请输入PID参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请输入PID参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">P:</span><input type="number" id="PIDVI-input-1" value="' + VI.P + '" class="normalInput">' +
                 '<span class="normalSpan">I:</span><input type="number" id="PIDVI-input-2" value="' + VI.I + '" class="normalInput">' +
                 '<span class="normalSpan">D:</span><input type="number" id="PIDVI-input-3" value="' + VI.D + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setPIDVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'TextVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请输入保留小数位数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请输入保留小数位数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<input type="number" id="TextVI-input" value="' + VI.decimalPlace + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setTextVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'DCOutputVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请设置输出值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请设置输出值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">初值:</span><input type="number" id="DCOutputVI-input" value="' + VI.singleOutput + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setDCOutputVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'KnobVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">最小值:</span><input type="number" id="KnobVI-input-1" value="' + VI.minValue + '" class="normalInput">' +
                 '<span class="normalSpan">最大值:</span><input type="number" id="KnobVI-input-2" value="' + VI.maxValue + '" class="normalInput">' +
                 '<span class="normalSpan">初值:</span><input type="number" id="KnobVI-input-3" value="' + VI.defaultValue + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setKnobVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'RotorExperimentalRigVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请设置输出信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请设置输出信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
-                '<div><input type="radio" id="type1" class="radioInput" name="RotorExperimentalRigVI-type" value="1" onclick="setRotorExperimentalRigVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type1" class="radioInput" name="RotorExperimentalRigVI-type" value="1" onclick="B.close()">' +
                 '<label class="input-label" for="type1">转速信号</label></div>' +
-                '<div><input type="radio" id="type2" class="radioInput" name="RotorExperimentalRigVI-type" value="2" onclick="setRotorExperimentalRigVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type2" class="radioInput" name="RotorExperimentalRigVI-type" value="2" onclick="B.close()">' +
                 '<label class="input-label" for="type2">加速度信号</label></div>' +
-                '<div><input type="radio" id="type3" class="radioInput" name="RotorExperimentalRigVI-type" value="3" onclick="setRotorExperimentalRigVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type3" class="radioInput" name="RotorExperimentalRigVI-type" value="3" onclick="B.close()">' +
                 '<label class="input-label" for="type3">轴心位移X信号</label></div>' +
-                '<div><input type="radio" id="type4" class="radioInput" name="RotorExperimentalRigVI-type" value="4" onclick="setRotorExperimentalRigVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type4" class="radioInput" name="RotorExperimentalRigVI-type" value="4" onclick="B.close()">' +
                 '<label class="input-label" for="type4">轴心位移Y信号</label></div>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'RoundPanelVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请设置初始参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请设置初始参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">标题:</span><input type="text" id="RoundPanelVI-input-1" value="' + VI.title + '" class="normalInput">' +
                 '<span class="normalSpan">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + VI.unit + '" class="normalInput">' +
                 '<span class="normalSpan">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + VI.minValue + '" class="normalInput">' +
                 '<span class="normalSpan">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + VI.maxValue + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setRoundPanelVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'ProportionResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('比例响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('比例响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K1:</span><input type="number" id="ProportionResponseVI-input" value="' + VI.k1 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setProportionResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'IntegrationResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K2:</span><input type="number" id="IntegrationResponseVI-input" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setIntegrationResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'DifferentiationResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K3:</span><input type="number" id="DifferentiationResponseVI-input" value="' + VI.k3 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setDifferentiationResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'InertiaResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K1:</span><input type="number" id="InertiaResponseVI-input" value="' + VI.k1 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setInertiaResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'OscillationResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('震荡响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('震荡响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
                 '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setOscillationResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'ProportionIntegrationResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('比例积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('比例积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
                 '<span class="normalSpan">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setProportionIntegrationResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'ProportionDifferentiationResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('比例微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('比例微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
                 '<span class="normalSpan">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="' + VI.k3 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setProportionDifferentiationResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'ProportionInertiaResponseVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('比例惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('比例惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
                 '<span class="normalSpan">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
                 '<span class="normalSpan">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="setProportionInertiaResponseVI(' + VIInfo[2] + ')">确定</button>' +
+                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
 
         case 'SignalGeneratorVI':
 
-            dataSetBox[0] = true;
-            dataSetBox[1] = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+            window.B = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                 '<div class="input-div">' +
-                '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" onclick="setSignalGeneratorVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" onclick="B.close()">' +
                 '<label class="input-label" for="type1">正弦波</label></div>' +
-                '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" onclick="setSignalGeneratorVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" onclick="B.close()">' +
                 '<label class="input-label" for="type2">方波</label></div>' +
-                '<div><input type="radio" id="type3" class="radioInput" name="SignalGeneratorVI-type" value="3" onclick="setSignalGeneratorVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type3" class="radioInput" name="SignalGeneratorVI-type" value="3" onclick="B.close()">' +
                 '<label class="input-label" for="type3">三角波</label></div>' +
-                '<div><input type="radio" id="type4" class="radioInput" name="SignalGeneratorVI-type" value="4" onclick="setSignalGeneratorVI(' + VIInfo[2] + ',this.value)">' +
+                '<div><input type="radio" id="type4" class="radioInput" name="SignalGeneratorVI-type" value="4" onclick="B.close()">' +
                 '<label class="input-label" for="type4">白噪声</label></div>' +
                 '</div>', 1, function () {
-                    dataSetBox[0] = false;
+
+                    getObjectVIById(canvasId).setInitialData();
                 });
             break;
-    }
-}
-
-function closeBox () {
-    if (dataSetBox[0]) {
-        dataSetBox[1].close();
-    }
-    if (inputSetBox[0]) {
-        inputSetBox[1].close();
-    }
-    if (outputSetBox[0]) {
-        outputSetBox[1].close();
-    }
-}
-
-function setAddVI (VINumber) {
-
-    dataObject.AddVI[VINumber].setOriginalData(document.getElementById('AddVI-input').value);
-
-    closeBox();
-}
-
-function setPIDVI (VINumber) {
-
-    dataObject.PIDVI[VINumber].P = document.getElementById('PIDVI-input-1').value;
-    dataObject.PIDVI[VINumber].I = document.getElementById('PIDVI-input-2').value;
-    dataObject.PIDVI[VINumber].D = document.getElementById('PIDVI-input-3').value;
-
-    closeBox();
-}
-
-function setTextVI (VINumber) {
-
-    dataObject.TextVI[VINumber].setDecimalPlace(document.getElementById('TextVI-input').value);
-
-    closeBox();
-}
-
-function setDCOutputVI (VINumber) {
-
-    dataObject.DCOutputVI[VINumber].setData(document.getElementById('DCOutputVI-input').value);
-
-    closeBox();
-}
-
-function setKnobVI (VINumber) {
-
-    let minValue = Number(document.getElementById('KnobVI-input-1').value);
-    let maxValue = Number(document.getElementById('KnobVI-input-2').value);
-    let defaultValue = Number(document.getElementById('KnobVI-input-3').value);
-    dataObject.KnobVI[VINumber].setDataRange(minValue, maxValue, defaultValue);
-
-    closeBox();
-}
-
-function setRotorExperimentalRigVI (VINumber, type) {
-
-    dataObject.RotorExperimentalRigVI[VINumber].signalType = type;
-
-    closeBox();
-}
-
-function setRoundPanelVI (VINumber) {
-
-    let title = document.getElementById('RoundPanelVI-input-1').value;
-    let unit = document.getElementById('RoundPanelVI-input-2').value;
-    let minValue = document.getElementById('RoundPanelVI-input-3').value;
-    let maxValue = document.getElementById('RoundPanelVI-input-4').value;
-    dataObject.RoundPanelVI[VINumber].setRange(minValue, maxValue, unit, title);
-
-    closeBox();
-}
-
-function setProportionResponseVI (VINumber) {
-
-    dataObject.ProportionResponseVI[VINumber].k1 = document.getElementById('ProportionResponseVI-input').value;
-
-    closeBox();
-}
-
-function setIntegrationResponseVI (VINumber) {
-
-    dataObject.IntegrationResponseVI[VINumber].k2 = document.getElementById('IntegrationResponseVI-input').value;
-
-    closeBox();
-}
-
-function setDifferentiationResponseVI (VINumber) {
-
-    dataObject.DifferentiationResponseVI[VINumber].k3 = document.getElementById('DifferentiationResponseVI-input').value;
-
-    closeBox();
-}
-
-function setInertiaResponseVI (VINumber) {
-
-    dataObject.InertiaResponseVI[VINumber].k1 = document.getElementById('InertiaResponseVI-input').value;
-
-    closeBox();
-}
-
-function setOscillationResponseVI (VINumber) {
-
-    dataObject.OscillationResponseVI[VINumber].k1 = document.getElementById('OscillationResponseVI-input-1').value;
-    dataObject.OscillationResponseVI[VINumber].k2 = document.getElementById('OscillationResponseVI-input-2').value;
-
-    closeBox();
-}
-
-function setProportionIntegrationResponseVI (VINumber) {
-
-    dataObject.ProportionIntegrationResponseVI[VINumber].k1 = document.getElementById('ProportionIntegrationResponseVI-input-1').value;
-    dataObject.ProportionIntegrationResponseVI[VINumber].k2 = document.getElementById('ProportionIntegrationResponseVI-input-2').value;
-
-    closeBox();
-}
-
-function setProportionDifferentiationResponseVI (VINumber) {
-
-    dataObject.ProportionDifferentiationResponseVI[VINumber].k1 = document.getElementById('ProportionDifferentiationResponseVI-input-1').value;
-    dataObject.ProportionDifferentiationResponseVI[VINumber].k3 = document.getElementById('ProportionDifferentiationResponseVI-input-2').value;
-
-    closeBox();
-}
-
-function setProportionInertiaResponseVI (VINumber) {
-
-    dataObject.ProportionInertiaResponseVI[VINumber].k1 = document.getElementById('ProportionInertiaResponseVI-input-1').value;
-    dataObject.ProportionInertiaResponseVI[VINumber].k2 = document.getElementById('ProportionInertiaResponseVI-input-2').value;
-
-    closeBox();
-}
-
-function setSignalGeneratorVI (VINumber, type) {
-
-    dataObject.SignalGeneratorVI[VINumber].signalType = type;
-
-    closeBox();
-}
-
-//用于开关VI来控制全局启停
-function toggleStart (VICanvas) {
-
-    let VIInfo = VICanvas.id.split('-');
-    let buttonVI = getObjectVIByName(VIInfo[0])[VIInfo[2]];
-
-    if (buttonVI.cnText === '启动') {
-
-        buttonVI.cnText = '停止';
-        buttonVI.fillStyle = 'red';
-        buttonVI.draw();
-
-        mainTimer = window.setInterval(function () {
-            if (bindInfoArr.length === 0) {
-
-                window.clearInterval(mainTimer);
-                return false;
-            }
-            setData();
-        }, 50);
-    }
-    else {
-
-        buttonVI.fillStyle = 'silver';
-        buttonVI.cnText = '启动';
-        buttonVI.draw();
-
-        window.clearInterval(mainTimer);
     }
 }
 
@@ -606,40 +439,40 @@ function setVIData (VI, sourceData, sourceDataType) {
 
 function getOutput (VI, outputType) {
 
-    if (VI.name == 'BallBeamVI') {
+    if (VI.name === 'BallBeamVI') {
 
         if (outputType == 1) {
 
             return VI.angelOutput;  //输出角度数组
         }
-        else if (outputType == 2) {
+        if (outputType == 2) {
 
             return VI.positionOutput;  //输出位置数组
 
         }
-        else if (outputType == 3) {
+        if (outputType == 3) {
 
             return VI.markPosition;  //输出标记位置
         }
     }
-    else if (VI.name == 'RotorExperimentalRigVI') {
+    else if (VI.name === 'RotorExperimentalRigVI') {
 
         if (outputType == 1) {
 
             return VI.signalOutput;  //输出时域信号
 
         }
-        else if (outputType == 2) {
+        if (outputType == 2) {
 
             return VI.frequencyOutput;  //输出频域信号
 
         }
-        else if (outputType == 3) {
+        if (outputType == 3) {
 
             return VI.orbitOutput;  //输出轴心位置
 
         }
-        else if (outputType == 4) {
+        if (outputType == 4) {
 
             return VI.rotateFrequency;  //输出旋转频率
 
@@ -655,14 +488,14 @@ function setData () {
 
     if (setVIDataIndex > 0) {
 
-        return;
+        return false;
     }
 
-    for (setVIDataIndex = 0; setVIDataIndex < bindInfoArr.length; setVIDataIndex++) {
+    for (setVIDataIndex = 0; setVIDataIndex < bindInfoArr.length; setVIDataIndex += 1) {
 
         let i, sourceData, sourceDataType;
         //查找sourceVI的输出参数
-        for (i = 0; i < bindInfoArr[setVIDataIndex][0].target.length; i++) {
+        for (i = 0; i < bindInfoArr[setVIDataIndex][0].target.length; i += 1) {
 
             if (bindInfoArr[setVIDataIndex][0].target[i][0] == bindInfoArr[setVIDataIndex][1]) {
 
@@ -672,7 +505,7 @@ function setData () {
         }
 
         //查找targetVI的输入参数类型
-        for (i = 0; i < bindInfoArr[setVIDataIndex][1].source.length; i++) {
+        for (i = 0; i < bindInfoArr[setVIDataIndex][1].source.length; i += 1) {
 
             if (bindInfoArr[setVIDataIndex][1].source[i][0] == bindInfoArr[setVIDataIndex][0]) {
 
@@ -684,6 +517,36 @@ function setData () {
     }
 
     setVIDataIndex = 0;
+}
+
+//用于开关VI来控制全局启停
+function toggleStart (VICanvas) {
+
+    let buttonVI = getObjectVIById(VICanvas.id);
+
+    if (buttonVI.cnText === '启动') {
+
+        buttonVI.cnText = '停止';
+        buttonVI.fillStyle = 'red';
+        buttonVI.draw();
+
+        mainTimer = window.setInterval(function () {
+            if (bindInfoArr.length === 0) {
+
+                window.clearInterval(mainTimer);
+                return false;
+            }
+            setData();
+        }, 50);
+    }
+    else {
+
+        buttonVI.fillStyle = 'silver';
+        buttonVI.cnText = '启动';
+        buttonVI.draw();
+
+        window.clearInterval(mainTimer);
+    }
 }
 
 function allowDrop (e) {
@@ -700,12 +563,18 @@ function drop (e) {
 
     e.preventDefault();
     let VICanvas = document.getElementById(e.dataTransfer.getData('Text'));
-    let newVICanvas = document.createElement('canvas');
-    for (let i = 0; i < VICanvas.attributes.length - 3; i++) {//后三个属性为侧栏中拖动属性，主VI界面不需要
+    let newVICanvas = document.createElement('canvas'), i;
+    for (i = 0; i < VICanvas.attributes.length - 3; i += 1) {//后三个属性为侧栏中拖动属性，主VI界面不需要
 
         newVICanvas.setAttribute(VICanvas.attributes.item(i).nodeName, VICanvas.getAttribute(VICanvas.attributes.item(i).nodeName));
     }
-    switch (VICanvas.id.split('-')[0]) {
+    newVICanvas.setAttribute('oncontextmenu', 'toggleDrag(event, this)');
+    newVICanvas.width = VICanvas.width * VICanvas.getAttribute('zoom');
+    newVICanvas.height = VICanvas.height * VICanvas.getAttribute('zoom');
+    newVICanvas.style.left = (e.offsetX - newVICanvas.width / 2) + 'px';
+    newVICanvas.style.top = (e.offsetY - newVICanvas.height / 2) + 'px';
+
+    switch (VICanvas.id) {
 
         case 'AddVI':
             newVICanvas.id = VICanvas.id + '-' + dataObject.AddVICount++;
@@ -714,7 +583,7 @@ function drop (e) {
         case 'AudioVI':
             if (dataObject.AudioVICount > 0) {
                 G.alert('麦克风已添加！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.AudioVICount++;
             break;
@@ -722,7 +591,7 @@ function drop (e) {
         case 'BallBeamVI':
             if (dataObject.BallBeamVICount > 0) {
                 G.alert('球杆实验已添加！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.BallBeamVICount++;
             break;
@@ -730,7 +599,7 @@ function drop (e) {
         case 'ButtonVI':
             if (dataObject.ButtonVICount > 0) {
                 G.alert('开关已添加！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.ButtonVICount++;
             newVICanvas.setAttribute('onclick', 'toggleStart(this)');//向开关绑定启动函数
@@ -771,7 +640,7 @@ function drop (e) {
         case 'RotorExperimentalRigVI':
             if (dataObject.RotorExperimentalRigVICount > 0) {
                 G.alert('转子实验台已添加！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.RotorExperimentalRigVICount++;
             break;
@@ -783,7 +652,7 @@ function drop (e) {
         case 'ProportionResponseVI':
             if (dataObject.ProportionResponseVICount > 0) {
                 G.alert('比例响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionResponseVICount++;
             break;
@@ -791,7 +660,7 @@ function drop (e) {
         case 'IntegrationResponseVI':
             if (dataObject.IntegrationResponseVICount > 0) {
                 G.alert('积分响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.IntegrationResponseVICount++;
             break;
@@ -799,7 +668,7 @@ function drop (e) {
         case 'DifferentiationResponseVI':
             if (dataObject.DifferentiationResponseVICount > 0) {
                 G.alert('微分响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.DifferentiationResponseVICount++;
             break;
@@ -807,7 +676,7 @@ function drop (e) {
         case 'InertiaResponseVI':
             if (dataObject.InertiaResponseVICount > 0) {
                 G.alert('惯性响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.InertiaResponseVICount++;
             break;
@@ -815,7 +684,7 @@ function drop (e) {
         case 'OscillationResponseVI':
             if (dataObject.OscillationResponseVICount > 0) {
                 G.alert('震荡响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.OscillationResponseVICount++;
             break;
@@ -823,7 +692,7 @@ function drop (e) {
         case 'ProportionIntegrationResponseVI':
             if (dataObject.ProportionIntegrationResponseVICount > 0) {
                 G.alert('比例积分响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionIntegrationResponseVICount++;
             break;
@@ -831,7 +700,7 @@ function drop (e) {
         case 'ProportionDifferentiationResponseVI':
             if (dataObject.ProportionDifferentiationResponseVICount > 0) {
                 G.alert('比例微分响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionDifferentiationResponseVICount++;
             break;
@@ -839,7 +708,7 @@ function drop (e) {
         case 'ProportionInertiaResponseVI':
             if (dataObject.ProportionInertiaResponseVICount > 0) {
                 G.alert('比例惯性响应已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionInertiaResponseVICount++;
             break;
@@ -847,16 +716,11 @@ function drop (e) {
         case 'SignalGeneratorVI':
             if (dataObject.SignalGeneratorVICount > 0) {
                 G.alert('信号发生器已存在！', 1, 1500);
-                return;
+                return false;
             }
             newVICanvas.id = VICanvas.id + '-' + dataObject.SignalGeneratorVICount++;
             break;
     }
-    newVICanvas.setAttribute('oncontextmenu', 'toggleDrag(event, this)');
-    newVICanvas.width = VICanvas.width * VICanvas.getAttribute('zoom');
-    newVICanvas.height = VICanvas.height * VICanvas.getAttribute('zoom');
-    newVICanvas.style.left = (e.offsetX - newVICanvas.width / 2) + 'px';
-    newVICanvas.style.top = (e.offsetY - newVICanvas.height / 2) + 'px';
     VIDraw(newVICanvas);
 }
 
@@ -1102,7 +966,7 @@ function createCanvas (id, className, width, height, zoomValue, showBoxFlag) {
     canvas.setAttribute('zoom', zoomValue);
     canvas.setAttribute('draggable', 'true');
     canvas.setAttribute('ondragstart', 'drag(event)');
-    sideBar.appendChild(canvas);
+    sideBar.append(canvas);
     return canvas;
 
 }
@@ -1122,10 +986,10 @@ function ready () {
                 length: 11,
                 id: 'ARROW',
                 events: {
-                    click: function () {
+                    // click: function () {
                         //                            alert('you clicked on the arrow overlay')
                         //点击箭头事件
-                    }
+                    // }
                 }
             }]
         ],
@@ -1147,47 +1011,33 @@ function ready () {
         // 监听连线事件
         instance.bind('connection', function (connectionInfo) {
 
-            let sourceArr = connectionInfo.connection.sourceId.split('-');
-            let targetArr = connectionInfo.connection.targetId.split('-');
-            let sourceElement = getObjectVIByName(sourceArr[0])[sourceArr[2]];
-            let targetElement = getObjectVIByName(targetArr[0])[targetArr[2]];
+            let sourceElement = getObjectVIById(connectionInfo.connection.sourceId);
+            let targetElement = getObjectVIById(connectionInfo.connection.targetId);
 
             //对多输出控件判断
             if (sourceElement.name == 'BallBeamVI') {
 
-                outputSetBox[0] = true;
-                outputSetBox[1] = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="O.close()">' +
                     '<label class="input-label" for="type1">反馈角度</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type2" class="radioInput" name="output-type" value="2" onclick="O.close()">' +
                     '<label class="input-label" for="type2">反馈位置</label></div>' +
-                    '<div><input type="radio" id="type3" class="radioInput" name="output-type" value="3" onclick="outputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type3" class="radioInput" name="output-type" value="3" onclick="O.close()">' +
                     '<label class="input-label" for="type3">标记位置</label></div>' +
                     '</div>',
                     1, function () {
 
-                        outputSetBox[0] = false;
-                        let outputType = document.getElementsByName('output-type');
-                        let checkedValue = -1, i;
-                        for (i = 0; i < outputType.length; i++) {
-
-                            if (outputType[i].checked == true) {
-
-                                checkedValue = outputType[i].value;
-                                break;
-                            }
-                        }
-                        if (checkedValue == -1) {
+                        let checkedValue = $('input[name=output-type]:checked').val();
+                        if (!checkedValue) {
 
                             if (connectionInfo) {
 
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            closeBox();
                             G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
-                            return;
+                            return false;
                         }
 
                         addBindInfoToArr(sourceElement, targetElement);
@@ -1196,41 +1046,29 @@ function ready () {
             }
             else if (sourceElement.name == 'RotorExperimentalRigVI') {
 
-                outputSetBox[0] = true;
-                outputSetBox[1] = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="outputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="O.close()">' +
                     '<label class="input-label" for="type1">时域信号</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="output-type" value="2" onclick="outputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type2" class="radioInput" name="output-type" value="2" onclick="O.close()">' +
                     '<label class="input-label" for="type2">频域信号</label></div>' +
-                    '<div><input type="radio" id="type3" class="radioInput" name="output-type" value="3" onclick="outputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type3" class="radioInput" name="output-type" value="3" onclick="O.close()">' +
                     '<label class="input-label" for="type3">轴心轨迹</label></div>' +
-                    '<div><input type="radio" id="type4" class="radioInput" name="output-type" value="4" onclick="outputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type4" class="radioInput" name="output-type" value="4" onclick="O.close()">' +
                     '<label class="input-label" for="type4">旋转频率</label></div>' +
                     '</div>',
                     1, function () {
 
-                        outputSetBox[0] = false;
-                        let outputType = document.getElementsByName('output-type');
-                        let checkedValue = -1;
-                        for (let i = 0; i < outputType.length; i++) {
-
-                            if (outputType[i].checked == true) {
-
-                                checkedValue = outputType[i].value;
-                                break;
-                            }
-                        }
-                        if (checkedValue == -1) {
+                        let checkedValue = $('input[name=output-type]:checked').val();
+                        if (!checkedValue) {
 
                             if (connectionInfo != null && connectionInfo != undefined) {
 
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            closeBox();
                             G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
-                            return;
+                            return false;
                         }
 
                         addBindInfoToArr(sourceElement, targetElement);
@@ -1248,37 +1086,26 @@ function ready () {
             //对于多输入控件,进行输入端口判断
             if (targetElement.name == 'AddVI') {
 
-                inputSetBox[0] = true;
-                inputSetBox[1] = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="AddVI-type" value="1" alt="初值" onclick="inputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type1" class="radioInput" name="AddVI-type" value="1" alt="初值" onclick="I.close()">' +
                     '<label class="input-label" for="type1">初值</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="AddVI-type" value="2" alt="反馈值" onclick="inputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type2" class="radioInput" name="AddVI-type" value="2" alt="反馈值" onclick="I.close()">' +
                     '<label class="input-label" for="type2">反馈值</label></div>' +
                     '</div>',
                     1, function () {
 
-                        inputSetBox[0] = false;
-                        let inputType = document.getElementsByName('AddVI-type');
-                        let checkedValue = -1, i;
-                        for (i = 0; i < inputType.length; i++) {
-
-                            if (inputType[i].checked == true) {
-
-                                checkedValue = inputType[i].value;
-                                break;
-                            }
-                        }
-                        if (checkedValue == -1) {
+                        let checkedRadio = $('input[name=AddVI-type]:checked');
+                        let checkedValue = checkedRadio.val();
+                        if (!checkedValue) {
 
                             if (connectionInfo) {
 
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            closeBox();
                             G.alert('未选择' + targetElement.cnText + '输入参数！', 1, 1500);
-                            return;
+                            return false;
                         }
                         let name = checkIfTargetValueBound(targetElement, checkedValue);    //检测此输入端口是否已与其他VI连接
                         if (name) {
@@ -1288,9 +1115,8 @@ function ready () {
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            closeBox();
-                            G.alert(targetElement.cnText + inputType[i].alt + '已与' + name + '绑定！', 1, 1500);
-                            return;
+                            G.alert(targetElement.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
+                            return false;
                         }
                         addBindInfoToArr(sourceElement, targetElement);
                         targetElement.source.push([sourceElement, checkedValue]);
@@ -1299,36 +1125,26 @@ function ready () {
             }
             else if (targetElement.name == 'SignalGeneratorVI') {
 
-                inputSetBox[0] = true;
-                inputSetBox[1] = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" alt="幅值" onclick="inputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" alt="幅值" onclick="I.close()">' +
                     '<label class="input-label" for="type1">幅值</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" alt="频率" onclick="inputSetBox[1].close()">' +
+                    '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" alt="频率" onclick="I.close()">' +
                     '<label class="input-label" for="type2">频率</label></div>' +
                     '</div>',
                     1, function () {
 
-                        inputSetBox[0] = false;
-                        let inputType = document.getElementsByName('SignalGeneratorVI-type');
-                        let checkedValue = -1, i;
-                        for (i = 0; i < inputType.length; i++) {
-
-                            if (inputType[i].checked == true) {
-
-                                checkedValue = inputType[i].value;
-                            }
-                        }
-                        if (checkedValue == -1) {
+                        let checkedRadio = $('input[name=SignalGeneratorVI-type]:checked');
+                        let checkedValue = checkedRadio.val();
+                        if (!checkedValue) {
 
                             if (connectionInfo) {
 
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            closeBox();
                             G.alert('未选择' + targetElement.cnText + '输入参数！', 1, 1500);
-                            return;
+                            return false;
                         }
                         let name = checkIfTargetValueBound(targetElement, checkedValue);    //检测此输入端口是否已与其他VI连接
                         if (name) {
@@ -1338,9 +1154,8 @@ function ready () {
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            closeBox();
-                            G.alert(targetElement.cnText + inputType[i].alt + '已与' + name + '绑定！', 1, 1500);
-                            return;
+                            G.alert(targetElement.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
+                            return false;
                         }
                         addBindInfoToArr(sourceElement, targetElement);
                         targetElement.source.push([sourceElement, checkedValue]);
@@ -1351,12 +1166,6 @@ function ready () {
 
                 addBindInfoToArr(sourceElement, targetElement);
                 targetElement.source[0] = [sourceElement, 0];
-                if (targetElement.name == 'BallBeamVI') {
-
-                    window.setInterval(function () {
-                        checkIfThreeDVIStarted(targetElement)
-                    }, 1000);
-                }
             }
         });
 
@@ -1373,13 +1182,11 @@ function ready () {
         //监听断开连线事件
         instance.bind('connectionDetached', function (connectionInfo) {
 
-            let sourceArr = connectionInfo.connection.sourceId.split('-');
-            let targetArr = connectionInfo.connection.targetId.split('-');
-            let sourceElement = getObjectVIByName(sourceArr[0])[sourceArr[2]];
-            let targetElement = getObjectVIByName(targetArr[0])[targetArr[2]];
+            let sourceElement = getObjectVIById(connectionInfo.connection.sourceId);
+            let targetElement = getObjectVIById(connectionInfo.connection.targetId);
 
             let i;
-            for (i = 0; i < sourceElement.target.length; i++) {
+            for (i = 0; i < sourceElement.target.length; i += 1) {
 
                 if (sourceElement.target[i][0] == targetElement) {
 
@@ -1387,7 +1194,7 @@ function ready () {
                     break;
                 }
             }
-            for (i = 0; i < targetElement.source.length; i++) {
+            for (i = 0; i < targetElement.source.length; i += 1) {
 
                 if (targetElement.source[i][0] == sourceElement) {
 
@@ -1405,36 +1212,36 @@ function ready () {
 
 function containerResize () {
 
-    let height = document.documentElement.clientHeight * 0.95 > 600 ? document.documentElement.clientHeight * 0.95 : 600;
-    sideBar.style.height = height + 'px';
-    VIContainer.style.height = height + 'px';
+    let height = window.innerWidth * 0.95 > 600 ? window.innerHeight * 0.95 : 600;
+    sideBar.css('height', height);
+    VIContainer.css('height', height);
 }
 
 function init () {
 
-    new VILibrary.VI.AudioVI(createCanvas('AudioVI-canvas', 'draggable-element', 104, 90, 1, false));
-    new VILibrary.VI.OrbitWaveVI(createCanvas('OrbitWaveVI-canvas', 'draggable-element', 104, 90, 3, false));
-    new VILibrary.VI.WaveVI(createCanvas('WaveVI-canvas', 'draggable-element', 162, 90, 3, false));
-    new VILibrary.VI.BallBeamVI(createCanvas('BallBeamVI-canvas', 'draggable-element', 162, 90, 4, false));
-    new VILibrary.VI.RotorExperimentalRigVI(createCanvas('RotorExperimentalRigVI-canvas', 'draggable-element', 162, 90, 4, false));
-    new VILibrary.VI.TextVI(createCanvas('TextVI-canvas', 'draggable-element', 104, 45, 1, true));
-    new VILibrary.VI.ButtonVI(createCanvas('ButtonVI-canvas', 'draggable-element', 104, 45, 1, false));
-    new VILibrary.VI.KnobVI(createCanvas('KnobVI-canvas', 'draggable-element', 45, 45, 3, true));
-    new VILibrary.VI.RoundPanelVI(createCanvas('RoundPanelVI-canvas', 'draggable-element', 45, 45, 3, true));
-    new VILibrary.VI.FFTVI(createCanvas('FFTVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.AddVI(createCanvas('AddVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.DCOutputVI(createCanvas('DCOutputVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.PIDVI(createCanvas('PIDVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.RelayVI(createCanvas('RelayVI-canvas', 'draggable-element', 45, 45, 1, false));
-    new VILibrary.VI.ProportionResponseVI(createCanvas('ProportionResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.IntegrationResponseVI(createCanvas('IntegrationResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.DifferentiationResponseVI(createCanvas('DifferentiationResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.InertiaResponseVI(createCanvas('InertiaResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.OscillationResponseVI(createCanvas('OscillationResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.ProportionIntegrationResponseVI(createCanvas('ProportionIntegrationResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.ProportionDifferentiationResponseVI(createCanvas('ProportionDifferentiationResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.ProportionInertiaResponseVI(createCanvas('ProportionInertiaResponseVI-canvas', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.SignalGeneratorVI(createCanvas('SignalGeneratorVI-canvas', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.AudioVI(createCanvas('AudioVI', 'draggable-element', 104, 90, 1, false));
+    new VILibrary.VI.OrbitWaveVI(createCanvas('OrbitWaveVI', 'draggable-element', 104, 90, 3, false));
+    new VILibrary.VI.WaveVI(createCanvas('WaveVI', 'draggable-element', 162, 90, 3, false));
+    new VILibrary.VI.BallBeamVI(createCanvas('BallBeamVI', 'draggable-element', 162, 90, 4, false));
+    new VILibrary.VI.RotorExperimentalRigVI(createCanvas('RotorExperimentalRigVI', 'draggable-element', 162, 90, 4, false));
+    new VILibrary.VI.TextVI(createCanvas('TextVI', 'draggable-element', 104, 45, 1, true));
+    new VILibrary.VI.ButtonVI(createCanvas('ButtonVI', 'draggable-element', 104, 45, 1, false));
+    new VILibrary.VI.KnobVI(createCanvas('KnobVI', 'draggable-element', 45, 45, 3, true));
+    new VILibrary.VI.RoundPanelVI(createCanvas('RoundPanelVI', 'draggable-element', 45, 45, 3, true));
+    new VILibrary.VI.FFTVI(createCanvas('FFTVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.AddVI(createCanvas('AddVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.DCOutputVI(createCanvas('DCOutputVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.PIDVI(createCanvas('PIDVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.RelayVI(createCanvas('RelayVI', 'draggable-element', 45, 45, 1, false));
+    new VILibrary.VI.ProportionResponseVI(createCanvas('ProportionResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.IntegrationResponseVI(createCanvas('IntegrationResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.DifferentiationResponseVI(createCanvas('DifferentiationResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.InertiaResponseVI(createCanvas('InertiaResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.OscillationResponseVI(createCanvas('OscillationResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.ProportionIntegrationResponseVI(createCanvas('ProportionIntegrationResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.ProportionDifferentiationResponseVI(createCanvas('ProportionDifferentiationResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.ProportionInertiaResponseVI(createCanvas('ProportionInertiaResponseVI', 'draggable-element', 45, 45, 1, true));
+    new VILibrary.VI.SignalGeneratorVI(createCanvas('SignalGeneratorVI', 'draggable-element', 45, 45, 1, true));
 
     ready();
     containerResize();

@@ -13,7 +13,9 @@
       <w>mousemove</w>
       <w>mouseover</w>
       <w>mouseup</w>
+      <w>oncontextmenu</w>
       <w>ondataavailable</w>
+      <w>ondragstart</w>
       <w>onerror</w>
       <w>onload</w>
       <w>pidvi</w>

@@ -200,6 +200,11 @@ VILibrary.VI = {
             return _this.originalInput;
         };
 
+        this.setInitialData = function () {
+
+            _this.setOriginalData($('#AddVI-input').val());
+        };
+
         this.reset = function () {
 
             _this.originalInput = 0;
@@ -237,16 +242,19 @@ VILibrary.VI = {
         //虚拟仪器中相连接的控件VI
         this.target = [];
 
+        let img = new Image();
         this.draw = function () {
 
-            let img = new Image();
-            img.src = 'img/mic.png';
-            img.onload = function () {
+            new Promise(function (resolve, reject) {
+
+                img.src = 'img/mic.png';
+                img.onload = resolve;
+            }).then(function () {
 
                 _this.ctx.fillStyle = _this.fillStyle;
                 _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
                 _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
-            };
+            });
         };
 
         this.draw();
@@ -351,7 +359,6 @@ VILibrary.VI = {
         const _this = this;
         this.name = 'BallBeamVI';
         this.cnText = '球杆模型';
-        this.isStart = false;
 
         this.Fs = 50;
         this.markPosition = 0;  //记录标记移动位置
@@ -372,9 +379,7 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
-        let camera, scene, renderer, controls, markControl, switchControl, resetControl,
-            base, beam, ball, mark, offSwitch, onSwitch, resetButton, loadedFlag = false,
-            position = 0;
+        let camera, scene, renderer, controls, markControl, base, beam, ball, mark, loadedFlag = false, position = 0;
 
         function setPosition (ang, pos) {
             let angle = -ang;//角度为逆时针旋转
@@ -527,53 +532,8 @@ VILibrary.VI = {
                                                 }
                                             });
                                             mark = d;
-                                            mtlLoader.load('assets/BallBeamControl/offSwitch.mtl', function (materials) {
-
-                                                materials.preload();
-
-                                                objLoader.setMaterials(materials);
-                                                objLoader.load('assets/BallBeamControl/offSwitch.obj', function (e) {
-                                                    e.traverse(function (child) {
-                                                        if (child instanceof THREE.Mesh) {
-
-                                                            child.material.side = THREE.DoubleSide;
-                                                        }
-                                                    });
-                                                    offSwitch = e;
-                                                    mtlLoader.load('assets/BallBeamControl/onSwitch.mtl', function (materials) {
-
-                                                        materials.preload();
-
-                                                        objLoader.setMaterials(materials);
-                                                        objLoader.load('assets/BallBeamControl/onSwitch.obj', function (f) {
-                                                            f.traverse(function (child) {
-                                                                if (child instanceof THREE.Mesh) {
-
-                                                                    child.material.side = THREE.DoubleSide;
-                                                                }
-                                                            });
-                                                            onSwitch = f;
-                                                            mtlLoader.load('assets/BallBeamControl/resetButton.mtl', function (materials) {
-
-                                                                materials.preload();
-
-                                                                objLoader.setMaterials(materials);
-                                                                objLoader.load('assets/BallBeamControl/resetButton.obj', function (g) {
-                                                                    g.traverse(function (child) {
-                                                                        if (child instanceof THREE.Mesh) {
-
-                                                                            child.material.side = THREE.DoubleSide;
-                                                                        }
-                                                                    });
-                                                                    resetButton = g;
-                                                                    loadedFlag = true;
-                                                                    loadingImg.style.display = 'none';
-                                                                });
-                                                            });
-                                                        });
-                                                    });
-                                                });
-                                            });
+                                            loadedFlag = true;
+                                            loadingImg.style.display = 'none';
                                         });
                                     });
                                 });
@@ -642,82 +602,12 @@ VILibrary.VI = {
                 renderer.domElement.style.cursor = 'auto';
             });
 
-            //开关控制
-            switchControl = new ObjectControls(camera, renderer.domElement);
-            switchControl.map = plane;
-            switchControl.offsetUse = true;
-
-            switchControl.attachEvent('mouseOver', function () {
-
-                renderer.domElement.style.cursor = 'pointer';
-            });
-
-            switchControl.attachEvent('mouseOut', function () {
-
-                renderer.domElement.style.cursor = 'auto';
-            });
-
-            switchControl.attachEvent('onclick', function () {
-
-                if (!_this.isStart) {
-
-                    _this.isStart = true;
-
-                    scene.remove(offSwitch);
-                    switchControl.detach(offSwitch);
-                    scene.add(onSwitch);
-                    switchControl.attach(onSwitch);
-
-                }
-
-                else {
-
-                    _this.isStart = false;
-
-                    scene.remove(onSwitch);
-                    switchControl.detach(onSwitch);
-                    scene.add(offSwitch);
-                    switchControl.attach(offSwitch);
-                }
-
-            });
-
-            //重置开关
-            resetControl = new ObjectControls(camera, renderer.domElement);
-            resetControl.map = plane;
-            resetControl.offsetUse = true;
-
-            resetControl.attachEvent('mouseOver', function () {
-
-                renderer.domElement.style.cursor = 'pointer';
-            });
-
-            resetControl.attachEvent('mouseOut', function () {
-
-                renderer.domElement.style.cursor = 'auto';
-            });
-
-            resetControl.attachEvent('onclick', function () {
-
-                _this.isStart = false;
-                scene.remove(onSwitch);
-                switchControl.detach(onSwitch);
-                scene.add(offSwitch);
-                switchControl.attach(offSwitch);
-                position = 0;
-                _this.reset();
-
-            });
 
             scene.add(base);
             scene.add(beam);
             scene.add(ball);
             scene.add(mark);
-            scene.add(offSwitch);
-            scene.add(resetButton);
             markControl.attach(mark);
-            switchControl.attach(offSwitch);
-            resetControl.attach(resetButton);
 
             ballBeamAnimate();
 
@@ -750,6 +640,7 @@ VILibrary.VI = {
 
         window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
             || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
         function ballBeamAnimate () {
 
             window.requestAnimationFrame(ballBeamAnimate);
@@ -793,10 +684,10 @@ VILibrary.VI = {
                 VIDraw();
             }
         };
+
         this.draw();
 
-    }
-    ,
+    },
 
     ButtonVI: function (domElement) {
 
@@ -823,8 +714,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     DCOutputVI: function (domElement) {
 
@@ -872,6 +762,11 @@ VILibrary.VI = {
             }
         };
 
+        this.setInitialData = function () {
+
+            _this.setData($('#DCOutputVI-input').val());
+        };
+
         this.reset = function () {
 
             _this.index = 0;
@@ -889,8 +784,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     DifferentiationResponseVI: function (domElement) {
 
@@ -944,6 +838,11 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k3 = $('#DifferentiationResponseVI-input').val();
+        };
+
         this.reset = function () {
             _this.lastInput = 0;
             _this.temp1 = 0;
@@ -964,8 +863,7 @@ VILibrary.VI = {
 
         this.draw();
 
-    }
-    ,
+    },
 
     FFTVI: function (domElement) {
 
@@ -1007,8 +905,7 @@ VILibrary.VI = {
         };
         this.draw();
 
-    }
-    ,
+    },
 
     InertiaResponseVI: function (domElement) {
 
@@ -1066,6 +963,11 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k1 = $('#InertiaResponseVI-input').val();
+        };
+
         this.reset = function () {
             _this.lastInput = 0;
             _this.temp1 = 0;
@@ -1085,8 +987,7 @@ VILibrary.VI = {
 
         this.draw();
 
-    }
-    ,
+    },
 
     IntegrationResponseVI: function (domElement) {
 
@@ -1146,6 +1047,11 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k2 = $('#IntegrationResponseVI-input').val();
+        };
+
         this.reset = function () {
             _this.lastInput = 0;
             _this.temp1 = 0;
@@ -1165,8 +1071,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     KnobVI: function (domElement) {
 
@@ -1195,21 +1100,21 @@ VILibrary.VI = {
         let startX, startY, stopX, stopY;
         let roundCount = 0;
         let knob_Base = new Image(), knob_Spinner = new Image();
-        knob_Base.src = "img/knob_Base.png";
-        knob_Spinner.src = "img/knob_Spinner.png";
 
-        knob_Base.onload = function () {
-            _this.draw();
-        };
-        knob_Spinner.onload = function () {
-            _this.draw();
-        };
-        knob_Base.onerror = function (e) {
-            console.log('KnobVI: Error:' + e);
-        };
-        knob_Spinner.onerror = function (e) {
-            console.log('KnobVI: Error:' + e);
-        };
+        let p1 = new Promise(function (resolve, reject) {
+
+            knob_Base.src = "img/knob_Base.png";
+            knob_Base.onload = resolve;
+            knob_Base.onerror = reject;
+        });
+        let p2 = new Promise(function (resolve, reject) {
+
+            knob_Spinner.src = "img/knob_Spinner.png";
+            knob_Spinner.onload = resolve;
+            knob_Spinner.onerror = reject;
+        });
+        Promise.all([p1, p2]).then(function () { _this.draw(); })
+               .catch(function (e) { console.log('KnobVI: Error:' + e); });
 
         /**
          *设置旋钮初始参数
@@ -1266,6 +1171,14 @@ VILibrary.VI = {
                 }
                 _this.output[_this.dataLength - 1] = _this.singleOutput;
             }
+        };
+
+        this.setInitialData = function () {
+
+            let minValue = Number($('#KnobVI-input-1').val());
+            let maxValue = Number($('#KnobVI-input-2').val());
+            let defaultValue = Number($('#KnobVI-input-3').val());
+            _this.setDataRange(minValue, maxValue, defaultValue);
         };
 
         this.reset = function () {
@@ -1461,8 +1374,7 @@ VILibrary.VI = {
         this.container.addEventListener('mousemove', onMouseMove, false);
         this.container.addEventListener('mousedown', onMouseDown, false);
         this.container.addEventListener('mouseup', onMouseUp, false);
-    }
-    ,
+    },
 
     OrbitWaveVI: function (domElement) {
 
@@ -1858,8 +1770,7 @@ VILibrary.VI = {
         }
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    }
-    ,
+    },
 
     OscillationResponseVI: function (domElement) {
 
@@ -1926,6 +1837,12 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k1 = $('#OscillationResponseVI-input-1').val();
+            _this.k2 = $('#OscillationResponseVI-input-2').val();
+        };
+
         this.reset = function () {
 
             _this.lastInput = 0;
@@ -1947,8 +1864,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     PIDVI: function (domElement) {
 
@@ -2019,6 +1935,13 @@ VILibrary.VI = {
             return _this.singleOutput;
         };
 
+        this.setInitialData = function () {
+
+            _this.P = $('#PIDVI-input-1').val();
+            _this.I = $('#PIDVI-input-2').val();
+            _this.D = $('#PIDVI-input-3').val();
+        };
+
         this.reset = function () {
 
             _this.input = 0;
@@ -2043,8 +1966,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     ProportionDifferentiationResponseVI: function (domElement) {
 
@@ -2110,6 +2032,12 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k1 = $('#ProportionDifferentiationResponseVI-input-1').val();
+            _this.k3 = $('#ProportionDifferentiationResponseVI-input-2').val();
+        };
+
         this.reset = function () {
             _this.lastInput = 0;
             _this.temp1 = 0;
@@ -2129,8 +2057,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     ProportionInertiaResponseVI: function (domElement) {
 
@@ -2193,6 +2120,12 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k1 = $('#ProportionInertiaResponseVI-input-1').val();
+            _this.k2 = $('#ProportionInertiaResponseVI-input-2').val();
+        };
+
         this.reset = function () {
 
             _this.lastInput = 0;
@@ -2214,8 +2147,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     ProportionIntegrationResponseVI: function (domElement) {
 
@@ -2285,6 +2217,12 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k1 = $('#ProportionIntegrationResponseVI-input-1').val();
+            _this.k2 = $('#ProportionIntegrationResponseVI-input-2').val();
+        };
+
         this.reset = function () {
 
             _this.lastInput = 0;
@@ -2306,8 +2244,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     ProportionResponseVI: function (domElement) {
 
@@ -2364,6 +2301,11 @@ VILibrary.VI = {
 
         };
 
+        this.setInitialData = function () {
+
+            _this.k1 = $('#ProportionResponseVI-input').val();
+        };
+
         this.reset = function () {
 
             _this.lastInput = 0;
@@ -2385,8 +2327,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     RelayVI: function (domElement) {
 
@@ -2448,8 +2389,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     RotorExperimentalRigVI: function (domElement, draw3DFlag) {
 
@@ -2484,6 +2424,11 @@ VILibrary.VI = {
                 return false;
             }
             _this.rotateFrequency = _this.rotateSpeed / 60;
+        };
+
+        this.setInitialData = function () {
+
+            _this.signalType = $('input[name=RotorExperimentalRigVI-type]:checked').val();
         };
 
         function VIDraw () {
@@ -2770,8 +2715,7 @@ VILibrary.VI = {
             }
         };
         this.draw();
-    }
-    ,
+    },
 
     RoundPanelVI: function (domElement) {
 
@@ -2884,6 +2828,20 @@ VILibrary.VI = {
             _this.draw();
         };
 
+        this.setInitialData = function () {
+
+            let title = $('#RoundPanelVI-input-1').val();
+            let unit = $('#RoundPanelVI-input-2').val();
+            let minValue = $('#RoundPanelVI-input-3').val();
+            let maxValue = $('#RoundPanelVI-input-4').val();
+            _this.setRange(minValue, maxValue, unit, title);
+        };
+
+        this.reset = function () {
+
+            _this.latestInput = 0;
+        };
+
         this.drawHand = function () {
 
             _this.ctx.save();
@@ -2899,11 +2857,6 @@ VILibrary.VI = {
             _this.ctx.fill();
             _this.ctx.restore();
 
-        };
-
-        this.reset = function () {
-
-            _this.latestInput = 0;
         };
 
         this.draw = function () {
@@ -3002,8 +2955,7 @@ VILibrary.VI = {
 
         this.draw();
 
-    }
-    ,
+    },
 
     SignalGeneratorVI: function (domElement) {
 
@@ -3115,7 +3067,21 @@ VILibrary.VI = {
                     }
                     _this.singleOutput = _this.output[_this.dataLength - 1];
                     break;
+
+                default://正弦波
+                    for (i = 0; i < _this.dataLength; i += 1) {
+
+                        _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
+                    }
+                    _this.singleOutput = _this.output[_this.dataLength - 1];
+
             }
+        };
+
+        this.setInitialData = function () {
+
+            _this.signalType = $('input[name=SignalGeneratorVI-type]:checked').val();
+
         };
 
         this.reset = function () {
@@ -3135,8 +3101,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     StepResponseGeneratorVI: function (domElement) {
 
@@ -3324,8 +3289,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     TextVI: function (domElement) {
 
@@ -3363,6 +3327,10 @@ VILibrary.VI = {
             _this.setData(_this.latestInput);
         };
 
+        this.setInitialData = function () {
+
+            _this.setDecimalPlace($('#TextVI-input').val());
+        };
         this.reset = function () {
 
             _this.originalInput = 0;
@@ -3381,8 +3349,7 @@ VILibrary.VI = {
         };
 
         this.draw();
-    }
-    ,
+    },
 
     WaveVI: function (domElement) {
 
@@ -3796,8 +3763,7 @@ VILibrary.VI = {
         }
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    }
-    ,
+    },
 
     BarVI: function (domElement) {
 
@@ -4175,9 +4141,5 @@ VILibrary.VI = {
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
     }
-    ,
 
-    length: 23
-
-}
-;
+};

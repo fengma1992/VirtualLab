@@ -32,12 +32,17 @@
         <div>
             <span class="normalSpan">D:</span><input type="number" id="DInput" value="20" class="normalInput">
         </div>
+        <div>
+            <span class="normalSpan">标记位置：</span><input type="text" id="positionInput" value="0" class="normalInput">
+        </div>
+        <div>
+            <input type="button" value="开始" class="normalBtn" onclick="start()">
+            <input type="button" value="重置" class="normalBtn" onclick="reset()">
+        </div>
     </div>
 </div>
-<script src="js/VILibraries/AddVI.js"></script>
-<script src="js/VILibraries/PIDVI.js"></script>
-<script src="js/VILibraries/BallBeamVI.js"></script>
-<script src="js/VILibraries/WaveVI.js"></script>
+<script src="js/VILibraries/VILibrary.js"></script>
+<script src="js/jquery-3.1.1.min.js"></script>
 <script src="js/three.js"></script>
 <script src="js/MTLLoader.js"></script>
 <script src="js/OBJLoader.js"></script>
@@ -45,44 +50,44 @@
 <script src="js/ObjectControls.js"></script>
 
 <script>
-    var mainCanvas = document.getElementById('mainCanvas');
-    var positionCanvas = document.getElementById('positionCanvas');
-    var angleCanvas = document.getElementById('angleCanvas');
-    var ADDCanvas = document.getElementById('ADDCanvas');
-    var PIDCanvas = document.getElementById('PIDCanvas');
-    var PInput = document.getElementById('PInput');
-    var IInput = document.getElementById('IInput');
-    var DInput = document.getElementById('DInput');
-
-
     //VI部分变量
-    var positionWave = new WaveVI(positionCanvas);
-    var angleWave = new WaveVI(angleCanvas);
-    var addVI = new AddVI(ADDCanvas);
-    var PIDVI = new PIDVI(PIDCanvas);
-    var ballBeamVI = new BallBeamVI(mainCanvas, true);
+    let positionWave = new VILibrary.VI.WaveVI($('#positionCanvas')[0]);
+    let angleWave = new VILibrary.VI.WaveVI($('#angleCanvas')[0]);
+    let addVI = new VILibrary.VI.AddVI($('#ADDCanvas')[0]);
+    let PIDVI = new VILibrary.VI.PIDVI($('#PIDCanvas')[0]);
+    let ballBeamVI = new VILibrary.VI.BallBeamVI($('#mainCanvas')[0], true);
 
-    window.setInterval(onTimer, 30);
-    function onTimer() {
+    let timer;
+    function onTimer () {
 
-        if (ballBeamVI.isStart) {
+        console.log(ballBeamVI.markPosition);
+        $('#markPosition').val(ballBeamVI.markPosition);
+        //加法器
+        addVI.setOriginalData(ballBeamVI.markPosition);
+        addVI.setData(ballBeamVI.PIDPosition);//输入球位置信号，输出位置偏差
+        //PID控制器
+        PIDVI.P = $('#PInput').val();
+        PIDVI.I = $('#IInput').val();
+        PIDVI.D = $('#DInput').val();
+        PIDVI.setData(addVI.singleOutput);//输入位置偏差，输出杆角度
+        //球杆模型
+        ballBeamVI.setData(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
+        //波形控件
+        positionWave.setData(ballBeamVI.positionOutput, ballBeamVI.dataLength);
+        angleWave.setData(ballBeamVI.angelOutput, ballBeamVI.dataLength);
+        //            console.log('ballBeamVI.markPosition:'+ballBeamVI.markPosition+'ballBeamVI.PIDPosition:'+ballBeamVI.PIDPosition
+        //                    +'addVI.singleOutput:'+addVI.singleOutput+'PIDVI.singleOutput:'+PIDVI.singleOutput)
 
-            //加法器
-            addVI.setOriginalData(ballBeamVI.markPosition);
-            addVI.setData(ballBeamVI.PIDPosition);//输入球位置信号，输出位置偏差
-            //PID控制器
-            PIDVI.P = PInput.value;
-            PIDVI.I = IInput.value;
-            PIDVI.D = DInput.value;
-            PIDVI.setData(addVI.singleOutput);//输入位置偏差，输出杆角度
-            //球杆模型
-            ballBeamVI.setData(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
-            //波形控件
-            positionWave.setData(ballBeamVI.positionOutput, ballBeamVI.dataLength);
-            angleWave.setData(ballBeamVI.angelOutput, ballBeamVI.dataLength);
-//            console.log('ballBeamVI.markPosition:'+ballBeamVI.markPosition+'ballBeamVI.PIDPosition:'+ballBeamVI.PIDPosition
-//                    +'addVI.singleOutput:'+addVI.singleOutput+'PIDVI.singleOutput:'+PIDVI.singleOutput)
-        }
+    }
+
+    function start () {
+
+        timer = window.setInterval(onTimer, 30);
+    }
+    function reset () {
+
+        window.clearInterval(timer);
+        ballBeamVI.reset();
     }
 </script>
 </body>
