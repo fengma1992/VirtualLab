@@ -1,44 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="1130-AFTERNOON&#10;some bug fixed;">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/assets/BallBeamControl/base.mtl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/assets/BallBeamControl/base.obj" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/AddVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/BallBeamVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/BarVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/ButtonVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/DCOutputVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/DifferentiationResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/InertiaResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/IntegrationResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/KnobVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/OrbitWaveVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/OscillationResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/PIDVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionDifferentiationResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionInertiaResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionIntegrationResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/ProportionResponseVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/RelayVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/RotorExperimentalRigVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/RoundPanelVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/SignalGeneratorVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/SignalProcessLib.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/StepResponseGeneratorVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/TextVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/VILibraries/WaveVI.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/libs/stats.min.js" afterPath="" />
+    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ControlCharacteristic.html" afterPath="$PROJECT_DIR$/ControlCharacteristic.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ImageProcessing.html" afterPath="$PROJECT_DIR$/ImageProcessing.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RotorExperimentalRig.html" afterPath="$PROJECT_DIR$/RotorExperimentalRig.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SignalGenerator.html" afterPath="$PROJECT_DIR$/SignalGenerator.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Straightness.html" afterPath="$PROJECT_DIR$/Straightness.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/VILibrary.js" afterPath="$PROJECT_DIR$/js/VILibraries/VILibrary.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/VIParser.js" afterPath="$PROJECT_DIR$/js/VILibraries/VIParser.js" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -191,7 +156,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VILibrary.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="VILibrary.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/VILibraries/VILibrary.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="319">
@@ -714,86 +679,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.mtl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/base.mtl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="5" column="7" lean-forward="false" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ball.mtl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/ball.mtl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ball.obj" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/ball.obj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="beam.mtl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/beam.mtl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="19" column="27" lean-forward="false" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="beam.obj" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/beam.obj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mark.mtl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/mark.mtl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mark.obj" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/mark.obj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="base.obj" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/base.obj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -1260,7 +1145,7 @@
       <workItem from="1479891102527" duration="8598000" />
       <workItem from="1480040913972" duration="4209000" />
       <workItem from="1480295852896" duration="23659000" />
-      <workItem from="1480474168502" duration="12928000" />
+      <workItem from="1480474168502" duration="12966000" />
     </task>
     <task id="LOCAL-00001" summary="test&#10;">
       <created>1476862004763</created>
@@ -1542,11 +1427,18 @@
       <option name="project" value="LOCAL" />
       <updated>1480476902380</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="1130-AFTERNOON&#10;some bug fixed;">
+      <created>1480495994443</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1480495994443</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="760476000" />
+    <option name="totallyTimeSpent" value="760514000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1559,14 +1451,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17721519" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32723358" sideWeight="0.50428265" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32829374" sideWeight="0.49571735" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4862869" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13185655" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -2319,6 +2211,70 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/base.obj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/mark.obj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/mark.mtl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/beam.obj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/beam.mtl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="456">
+          <caret line="19" column="27" lean-forward="false" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/ball.obj">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/ball.mtl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/base.mtl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="5" column="7" lean-forward="false" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/VILibraries/VILibrary.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="319">
@@ -2837,70 +2793,6 @@
             <element signature="e#135985#136073#0" expanded="false" />
             <element signature="e#136132#136182#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/base.obj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/base.mtl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="5" column="7" lean-forward="false" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/ball.mtl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/ball.obj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/beam.mtl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="19" column="27" lean-forward="false" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/beam.obj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/mark.mtl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/BallBeamControl/mark.obj">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
