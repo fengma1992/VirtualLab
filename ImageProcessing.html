@@ -29,38 +29,40 @@
     <!--<canvas id="canvas2" width="320" height="240"></canvas>-->
 
 </div>
-<script src="js/VILibraries/KnobVI.js"></script>
-<script src="js/VILibraries/BarVI.js"></script>
+<script src="js/VILibraries/VILibrary.js"></script>
+<script src="js/jquery-3.1.1.min.js"></script>
 <script type="text/javascript">
-    var video = document.querySelector('video');
-    var captureCanvas = document.getElementById('captureCanvas');
-    var grayCanvas = document.getElementById('grayCanvas');
-    var equalizerCanvas = document.getElementById('equalizerCanvas');
-    var binaryCanvas = document.getElementById('binaryCanvas');
-    var barCanvas = document.getElementById('barCanvas');
-    var knobCanvas = document.getElementById('knobCanvas');
-    var span = document.getElementById('grayValue');
 
-    var captureContext = captureCanvas.getContext('2d');
-    var grayContext = grayCanvas.getContext('2d');
-    var equalizerContext = equalizerCanvas.getContext('2d');
-    var binaryContext = binaryCanvas.getContext('2d');
-    var captureWidth = captureCanvas.width;
-    var captureHeight = captureCanvas.height;
-    var bar = new BarVI(barCanvas);
-    var captureFlag = false;
-    var HISTOGRAM = [], EQUALIZER_HIST = [];
+    'use strict';
+    let video = $('#video')[0];
+    let captureCanvas = $('#captureCanvas')[0];
+    let grayCanvas = $('#grayCanvas')[0];
+    let equalizerCanvas = $('#equalizerCanvas')[0];
+    let binaryCanvas = $('#binaryCanvas')[0];
+    let barCanvas = $('#barCanvas')[0];
+    let knobCanvas = $('#knobCanvas')[0];
+    let span = $('#grayValue')[0];
+
+    let captureContext = captureCanvas.getContext('2d');
+    let grayContext = grayCanvas.getContext('2d');
+    let equalizerContext = equalizerCanvas.getContext('2d');
+    let binaryContext = binaryCanvas.getContext('2d');
+    let captureWidth = captureCanvas.width;
+    let captureHeight = captureCanvas.height;
+    let bar = new VILibrary.VI.BarVI(barCanvas);
+    let captureFlag = false;
+    let HISTOGRAM = [], EQUALIZER_HIST = [];
     drawText('原图', captureContext);
     drawText('灰度图', grayContext);
     drawText('均衡化图', equalizerContext);
     drawText('二值化图', binaryContext);
 
-    var knob = new KnobVI(document.getElementById('knobCanvas'));
+    let knob = new VILibrary.VI.KnobVI(knobCanvas);
     knob.setDataRange(0, 255, 100);
 
     knob.attachEvent('mouseMove', function () {
         if (captureFlag) {
-            var threshold = parseInt(knob.singleOutput);
+            let threshold = parseInt(knob.singleOutput);
             binary(threshold);
             span.innerText = '二值化阈值：' + threshold;
         }
@@ -74,7 +76,7 @@
             video.play();
         });
     } else {
-        document.getElementsByTagName('body').innerHtml = '您的浏览器已禁用摄像头或不支持调用摄像头';
+        $('body').text('您的浏览器已禁用摄像头或不支持调用摄像头');
     }
 
     /**
@@ -82,7 +84,7 @@
      */
     function capture() {
         captureFlag = false;
-        var videoRatio = video.videoHeight / video.videoWidth;
+        let videoRatio = video.videoHeight / video.videoWidth;
         if (captureCanvas.height / captureCanvas.width > videoRatio) {
             captureHeight = captureCanvas.width * videoRatio;
             captureWidth = captureCanvas.width;
@@ -94,14 +96,14 @@
         convertCanvasToImage();
     }
 
-    var grayImageData = captureContext.createImageData(captureWidth, captureHeight);
+    let grayImageData = captureContext.createImageData(captureWidth, captureHeight);
 
     // Converts canvas to an image
     function convertCanvasToImage() {
-        var rgbImageData = captureContext.getImageData(0, 0, captureWidth, captureHeight);   //rgba格式数组
-        var l = rgbImageData.data.length / 4, R, G, B;
+        let rgbImageData = captureContext.getImageData(0, 0, captureWidth, captureHeight);   //rgba格式数组
+        let l = rgbImageData.data.length / 4, R, G, B;
 
-        for (var i = 0; i < l; i++) {
+        for (let i = 0; i < l; i++) {
             R = rgbImageData.data[i * 4];
             G = rgbImageData.data[i * 4 + 1];
             B = rgbImageData.data[i * 4 + 2];
@@ -115,7 +117,7 @@
 
     function getHistogram(grayimage) {
         initHistogram(HISTOGRAM);
-        for (var j = 0; j < grayimage.data.length; j += 4) {
+        for (let j = 0; j < grayimage.data.length; j += 4) {
             HISTOGRAM[grayimage.data[j]]++;
         }
         captureFlag = true;
@@ -130,14 +132,14 @@
             alert('请先照相再进行图像处理操作');
             return;
         }
-        var tempHist = [], i;
+        let tempHist = [], i;
         EQUALIZER_HIST[0] = HISTOGRAM[0];
         initHistogram(tempHist);
 
         for (i = 1; i < 256; i++)
             EQUALIZER_HIST[i] = EQUALIZER_HIST[i - 1] + HISTOGRAM[i];
 
-        var total = EQUALIZER_HIST[255];
+        let total = EQUALIZER_HIST[255];
 
         for (i = 0; i < 256; i++) {
             EQUALIZER_HIST[i] = parseInt(255 * EQUALIZER_HIST[i] / total);
@@ -145,8 +147,8 @@
         }
         drawBar(tempHist);
 
-        var tempData = equalizerContext.createImageData(captureWidth, captureHeight);
-        var l = tempData.data.length / 4;
+        let tempData = equalizerContext.createImageData(captureWidth, captureHeight);
+        let l = tempData.data.length / 4;
         for (i = 0; i < l; i++) {
             tempData.data[i * 4] = tempData.data[i * 4 + 1] = tempData.data[i * 4 + 2] = EQUALIZER_HIST[grayImageData.data[i * 4]];
             tempData.data[i * 4 + 3] = grayImageData.data[i * 4 + 3];
@@ -158,10 +160,10 @@
      * 二值化
      */
     function binary(threshold) {
-        var tempImageData = binaryContext.createImageData(captureWidth, captureHeight);
-        var tempHistogram = [];
-        var zeroCount = 0;
-        for (var i = 0; i < grayImageData.data.length; i += 4) {
+        let tempImageData = binaryContext.createImageData(captureWidth, captureHeight);
+        let tempHistogram = [];
+        let zeroCount = 0;
+        for (let i = 0; i < grayImageData.data.length; i += 4) {
             if (grayImageData.data[i] < threshold) {
                 tempImageData.data[i] = tempImageData.data[i + 1] = tempImageData.data[i + 2] = 0;
                 zeroCount++;
@@ -183,8 +185,8 @@
      * @param histogram
      */
     function drawBar(histogram) {
-        var data = [], xAxis = [];
-        for (var i = 0; i < 256; i++) {
+        let data = [], xAxis = [];
+        for (let i = 0; i < 256; i++) {
             data.push(histogram[i] == undefined ? 0 : histogram[i]);
             xAxis.push(i + 1);
         }
@@ -197,7 +199,7 @@
     }
 
     function initHistogram(histogram) {
-        for (var i = 0; i < 256; i++) {
+        for (let i = 0; i < 256; i++) {
             histogram[i] = 0;
         }
     }

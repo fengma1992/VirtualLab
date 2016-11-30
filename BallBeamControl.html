@@ -60,8 +60,7 @@
     let timer;
     function onTimer () {
 
-        console.log(ballBeamVI.markPosition);
-        $('#markPosition').val(ballBeamVI.markPosition);
+        $('#positionInput').val(ballBeamVI.markPosition);
         //加法器
         addVI.setOriginalData(ballBeamVI.markPosition);
         addVI.setData(ballBeamVI.PIDPosition);//输入球位置信号，输出位置偏差

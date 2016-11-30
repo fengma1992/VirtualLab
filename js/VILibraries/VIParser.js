@@ -66,7 +66,7 @@ function checkIfTargetValueBound (targetElement, checkedValue) {
     let i;
     for (i = 0; i < targetElement.source.length; i += 1) {
 
-        if (targetElement.source[i][1] == checkedValue) {
+        if (targetElement.source[i][1] === checkedValue) {
             return targetElement.source[i][0].cnText;
         }
     }
@@ -88,14 +88,6 @@ function deleteBindInfoFromArr (sourceElement, targetElement) {
     if (bindInfoArr.indexOf([sourceElement, targetElement]) !== -1) {
 
         bindInfoArr.splice(bindInfoArr.indexOf([sourceElement, targetElement]), 1);
-    }
-}
-
-function checkIfThreeDVIStarted (threeDElement) {
-
-    if (threeDElement.isStart) {
-
-        findTimerExecutor(threeDElement);
     }
 }
 
@@ -401,24 +393,24 @@ function showBox (VICanvas) {
 
 function setVIData (VI, sourceData, sourceDataType) {
 
-    if (VI.name == 'AddVI') {
+    if (VI.name === 'AddVI') {
 
-        if (sourceDataType == '1') {
+        if (sourceDataType === 1) {
 
             VI.setOriginalData(sourceData);
         }
-        else if (sourceDataType == '2') {
+        else if (sourceDataType === 2) {
 
             VI.setData(sourceData);
         }
     }
-    else if (VI.name == 'SignalGeneratorVI') {
-        if (sourceDataType == '1') {
+    else if (VI.name === 'SignalGeneratorVI') {
+        if (sourceDataType === 1) {
 
             VI.amp = sourceData;
             VI.ampSetFlag = true;
         }
-        else if (sourceDataType == '2') {
+        else if (sourceDataType === 2) {
 
             VI.frequency = sourceData;
             VI.frequencySetFlag = true;
@@ -441,38 +433,38 @@ function getOutput (VI, outputType) {
 
     if (VI.name === 'BallBeamVI') {
 
-        if (outputType == 1) {
+        if (outputType === 1) {
 
             return VI.angelOutput;  //输出角度数组
         }
-        if (outputType == 2) {
+        if (outputType === 2) {
 
             return VI.positionOutput;  //输出位置数组
 
         }
-        if (outputType == 3) {
+        if (outputType === 3) {
 
             return VI.markPosition;  //输出标记位置
         }
     }
     else if (VI.name === 'RotorExperimentalRigVI') {
 
-        if (outputType == 1) {
+        if (outputType === 1) {
 
             return VI.signalOutput;  //输出时域信号
 
         }
-        if (outputType == 2) {
+        if (outputType === 2) {
 
             return VI.frequencyOutput;  //输出频域信号
 
         }
-        if (outputType == 3) {
+        if (outputType === 3) {
 
             return VI.orbitOutput;  //输出轴心位置
 
         }
-        if (outputType == 4) {
+        if (outputType === 4) {
 
             return VI.rotateFrequency;  //输出旋转频率
 
@@ -497,7 +489,7 @@ function setData () {
         //查找sourceVI的输出参数
         for (i = 0; i < bindInfoArr[setVIDataIndex][0].target.length; i += 1) {
 
-            if (bindInfoArr[setVIDataIndex][0].target[i][0] == bindInfoArr[setVIDataIndex][1]) {
+            if (bindInfoArr[setVIDataIndex][0].target[i][0] === bindInfoArr[setVIDataIndex][1]) {
 
                 sourceData = getOutput(bindInfoArr[setVIDataIndex][0], bindInfoArr[setVIDataIndex][0].target[i][1]);
                 break;
@@ -507,7 +499,7 @@ function setData () {
         //查找targetVI的输入参数类型
         for (i = 0; i < bindInfoArr[setVIDataIndex][1].source.length; i += 1) {
 
-            if (bindInfoArr[setVIDataIndex][1].source[i][0] == bindInfoArr[setVIDataIndex][0]) {
+            if (bindInfoArr[setVIDataIndex][1].source[i][0] === bindInfoArr[setVIDataIndex][0]) {
 
                 sourceDataType = bindInfoArr[setVIDataIndex][1].source[i][1];
                 break;
@@ -1015,7 +1007,7 @@ function ready () {
             let targetElement = getObjectVIById(connectionInfo.connection.targetId);
 
             //对多输出控件判断
-            if (sourceElement.name == 'BallBeamVI') {
+            if (sourceElement.name === 'BallBeamVI') {
 
                 window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
@@ -1028,7 +1020,7 @@ function ready () {
                     '</div>',
                     1, function () {
 
-                        let checkedValue = $('input[name=output-type]:checked').val();
+                        let checkedValue = Number($('input[name=output-type]:checked').val());
                         if (!checkedValue) {
 
                             if (connectionInfo) {
@@ -1044,7 +1036,7 @@ function ready () {
                         sourceElement.target.push([targetElement, checkedValue]);
                     });
             }
-            else if (sourceElement.name == 'RotorExperimentalRigVI') {
+            else if (sourceElement.name === 'RotorExperimentalRigVI') {
 
                 window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
@@ -1059,7 +1051,7 @@ function ready () {
                     '</div>',
                     1, function () {
 
-                        let checkedValue = $('input[name=output-type]:checked').val();
+                        let checkedValue = Number($('input[name=output-type]:checked').val());
                         if (!checkedValue) {
 
                             if (connectionInfo != null && connectionInfo != undefined) {
@@ -1084,7 +1076,7 @@ function ready () {
             }
 
             //对于多输入控件,进行输入端口判断
-            if (targetElement.name == 'AddVI') {
+            if (targetElement.name === 'AddVI') {
 
                 window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
@@ -1096,7 +1088,7 @@ function ready () {
                     1, function () {
 
                         let checkedRadio = $('input[name=AddVI-type]:checked');
-                        let checkedValue = checkedRadio.val();
+                        let checkedValue = Number(checkedRadio.val());
                         if (!checkedValue) {
 
                             if (connectionInfo) {
@@ -1123,7 +1115,7 @@ function ready () {
                     }
                 );
             }
-            else if (targetElement.name == 'SignalGeneratorVI') {
+            else if (targetElement.name === 'SignalGeneratorVI') {
 
                 window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
@@ -1135,7 +1127,7 @@ function ready () {
                     1, function () {
 
                         let checkedRadio = $('input[name=SignalGeneratorVI-type]:checked');
-                        let checkedValue = checkedRadio.val();
+                        let checkedValue = Number(checkedRadio.val());
                         if (!checkedValue) {
 
                             if (connectionInfo) {
@@ -1188,7 +1180,7 @@ function ready () {
             let i;
             for (i = 0; i < sourceElement.target.length; i += 1) {
 
-                if (sourceElement.target[i][0] == targetElement) {
+                if (sourceElement.target[i][0] === targetElement) {
 
                     sourceElement.target.splice(i, 1);
                     break;
@@ -1196,7 +1188,7 @@ function ready () {
             }
             for (i = 0; i < targetElement.source.length; i += 1) {
 
-                if (targetElement.source[i][0] == sourceElement) {
+                if (targetElement.source[i][0] === sourceElement) {
 
                     targetElement.source.splice(i, 1);
                     break;

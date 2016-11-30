@@ -5,7 +5,7 @@
     <title>转子实验台实验</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
-<body onload="init()">
+<body>
 <div class="mainDiv">
     <canvas id="mainCanvas" width="1000" height="300"></canvas>
     <div class="rowFlexDiv">
@@ -35,11 +35,8 @@
         <img class="loadingImg" src="img/loading.gif" alt="loading">
     </div>
 </div>
-<script src="js/VILibraries/KnobVI.js"></script>
-<script src="js/VILibraries/OrbitWaveVI.js"></script>
-<script src="js/VILibraries/WaveVI.js"></script>
-<script src="js/VILibraries/RoundPanelVI.js"></script>
-<script src="js/VILibraries/SignalProcessLib.js"></script>
+<script src="js/VILibraries/VILibrary.js"></script>
+<script src="js/jquery-3.1.1.min.js"></script>
 <script src="js/three.js"></script>
 <script src="js/MTLLoader.js"></script>
 <script src="js/OBJLoader.js"></script>
@@ -48,267 +45,41 @@
 
 <script>
     'use strict';
-    let loadingDiv = document.getElementById('loadingDiv');
-    let mainCanvas = document.getElementById('mainCanvas');
-    let signalCanvas = document.getElementById('signalCanvas');
-    let frequencyCanvas = document.getElementById('frequencyCanvas');
-    let orbitWaveCanvas = document.getElementById('orbitCanvas');
-    let knobCanvas = document.getElementById('knobCanvas');
-    let roundPanelCanvas = document.getElementById('roundPanelCanvas');
-    let startBtn = document.getElementById('startBtn');
+    let signalWaveVI = new VILibrary.VI.WaveVI($('#signalCanvas')[0]);
+    let frequencyWaveVI = new VILibrary.VI.WaveVI($('#frequencyCanvas')[0]);
+    let orbitWaveVI = new VILibrary.VI.OrbitWaveVI($('#orbitCanvas')[0]);
+    let knobVI = new VILibrary.VI.KnobVI($('#knobCanvas')[0]);
+    let roundPanelVI = new VILibrary.VI.RoundPanelVI($('#roundPanelCanvas')[0]);
+    let RotorExperimentalRigVI = new VILibrary.VI.RotorExperimentalRigVI($('#mainCanvas')[0], true);
 
-    let orbitDataX = [], orbitDataY = [], signalData = [], frequencyData = [],
-            rotateFrequency = 4096 / 60,//每秒钟转速，即频率
-            sampleFrequency = 8192,
-            dataLength = 2048, dt = 1 / sampleFrequency, phase = 0,
-            timer1, signalType = 1, runFlag = false;
-    //VI部分变量
-    let signalWaveVI = new WaveVI(signalCanvas);
-    let frequencyWaveVI = new WaveVI(frequencyCanvas);
-    let orbitWaveVI = new OrbitWaveVI(orbitWaveCanvas);
-    let knobVI = new KnobVI(knobCanvas);
-    let roundPanelVI = new RoundPanelVI(roundPanelCanvas);
-    //3D部分变量
-    let camera, scene, renderer, controls, rotor, offSwitch, onSwitch, switchControl, timer2, axis = new THREE.Vector3(1, 0, 0), rotateAngle = 0;
-
-    window.requestAnimationFrame = window.requestAnimationFrame
-            || window.mozRequestAnimationFrame
-            || window.webkitRequestAnimationFrame
-            || window.msRequestAnimationFrame;
-
-    /////////////////////////////////////////////////////////////////
-
-    signalWaveVI.setAxisRangX(0, dataLength * dt);
+    signalWaveVI.setAxisRangX(0, RotorExperimentalRigVI.dataLength / 8192);//采样频率为8192
     signalWaveVI.setLabel('时间/s', '幅值');
     frequencyWaveVI.setAxisRangX(0, 4096);
     frequencyWaveVI.setLabel('频率/Hz', '幅值');
     knobVI.setDataRange(0, 6000, 4096); //转速表，调节转子试验台转速
     knobVI.attachEvent('mouseMove', function () {
 
-        rotateFrequency = (knobVI.singleOutput / 60).toFixed(1);
-        if (runFlag) {
-
-            roundPanelVI.setData(rotateFrequency);
-        }
+        let rotateFrequency = (knobVI.singleOutput / 60).toFixed(1);
+        roundPanelVI.setData(rotateFrequency);
+        RotorExperimentalRigVI.setData(knobVI.singleOutput);
     });
     roundPanelVI.setRange(0, 100, 'Hz', '频率');
 
-    function setSignalType(select) {
+    function setSignalType (select) {
 
-        signalType = select.value;
+        RotorExperimentalRigVI.signalType = Number(select.value);
     }
 
-    function setSignalData() {
+    window.setInterval(function () {
 
-        let i;
-        if (signalType == 1) {//转速信号    正弦波
+        if (RotorExperimentalRigVI.isStart) {
 
-            for (i = 0; i < dataLength; i++) {
-
-                signalData[i] = 5 * Math.sin(2 * Math.PI * rotateFrequency * i * dt + 2 * Math.PI * phase / 360);
-            }
-        } else if (signalType == 2) {//加速度信号
-
-            for (i = 0; i < dataLength; i++) {
-
-                signalData[i] = 5 * Math.sin(2 * Math.PI * rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
-                        6 * Math.sin(4 * Math.PI * rotateFrequency * i * dt + 4 * Math.PI * phase / 360) + 2 * Math.random();
-            }
-        } else if (signalType == 3) {//位移X信号
-
-            for (i = 0; i < dataLength; i++) {
-
-                orbitDataX[i] = 7.5 * Math.sin(2 * Math.PI * rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
-                        4 * Math.sin(4 * Math.PI * rotateFrequency * i * dt + 4 * Math.PI * phase / 360) + 2 * Math.random();
-                signalData[i] = orbitDataX[i];
-            }
-            for (i = 0; i < dataLength; i++) {
-
-                orbitDataY[i] = 7.5 * Math.sin(2 * Math.PI * rotateFrequency * i * dt + 2 * Math.PI * (phase + 90) / 360) +
-                        4 * Math.sin(4 * Math.PI * rotateFrequency * i * dt + 4 * Math.PI * (phase + 90) / 360) + 2 * Math.random();
-            }
-            orbitWaveVI.setData(orbitDataX, orbitDataY);
-        } else if (signalType == 4) {//位移Y信号
-
-            for (i = 0; i < dataLength; i++) {
-
-                orbitDataX[i] = 7.5 * Math.sin(2 * Math.PI * rotateFrequency * i * dt + 2 * Math.PI * phase / 360) +
-                        4 * Math.sin(4 * Math.PI * rotateFrequency * i * dt + 4 * Math.PI * phase / 360) + 2 * Math.random();
-            }
-            for (i = 0; i < dataLength; i++) {
-
-                orbitDataY[i] = 7.5 * Math.sin(2 * Math.PI * rotateFrequency * i * dt + 2 * Math.PI * (phase + 90) / 360) +
-                        4 * Math.sin(4 * Math.PI * rotateFrequency * i * dt + 4 * Math.PI * (phase + 90) / 360) + 2 * Math.random();
-                signalData[i] = orbitDataY[i];
-            }
-            orbitWaveVI.setData(orbitDataX, orbitDataY);
+            signalWaveVI.setData(RotorExperimentalRigVI.signalOutput);
+            frequencyWaveVI.setData(RotorExperimentalRigVI.frequencyOutput);
+            orbitWaveVI.setData(RotorExperimentalRigVI.orbitXOutput, RotorExperimentalRigVI.orbitYOutput);
         }
-        signalWaveVI.setData(signalData);
-        frequencyData = fft(1, 11, signalData);
-        frequencyWaveVI.setData(frequencyData);
-    }
-    function init() {
+    }, 50);
 
-        renderer = new THREE.WebGLRenderer({
-            canvas: mainCanvas,
-            antialias: true
-        });
-        renderer.setClearColor(0x6495ED);
-        renderer.setSize(mainCanvas.clientWidth, mainCanvas.clientHeight);
-
-        camera = new THREE.PerspectiveCamera(30, mainCanvas.clientWidth / mainCanvas.clientHeight, 1, 100000);
-        camera.position.z = 400;
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.rotateSpeed = 0.8;
-        controls.enableZoom = true;
-        controls.zoomSpeed = 1.2;
-        controls.enableDamping = true;
-
-        scene = new THREE.Scene();
-
-        let light = new THREE.AmbientLight(0x555555);
-        scene.add(light);
-        let light1 = new THREE.DirectionalLight(0xffffff, 1);
-        light1.position.set(4000, 4000, 4000);
-        scene.add(light1);
-        let light2 = new THREE.DirectionalLight(0xffffff, 1);
-        light2.position.set(-4000, 4000, -4000);
-        scene.add(light2);
-
-        //use as a reference plane for ObjectControl
-        let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 400));
-
-        //开关控制
-        switchControl = new ObjectControls(camera, renderer.domElement);
-        switchControl.map = plane;
-        switchControl.offsetUse = true;
-
-        switchControl.attachEvent('mouseOver', function () {
-
-            renderer.domElement.style.cursor = 'pointer';
-        });
-
-        switchControl.attachEvent('mouseOut', function () {
-
-            renderer.domElement.style.cursor = 'auto';
-        });
-
-        switchControl.attachEvent('onclick', function () {
-
-            if (!runFlag) {
-
-                runFlag = true;
-
-                scene.remove(offSwitch);
-                switchControl.detach(offSwitch);
-                scene.add(onSwitch);
-                switchControl.attach(onSwitch);
-
-                roundPanelVI.setData(rotateFrequency);
-                timer1 = window.setInterval(function () {
-                    phase += 36;
-                    setSignalData();
-                }, 100);
-                timer2 = window.setInterval(function () {
-                    rotor.rotation.x += 2 * Math.PI * rotateFrequency / 100;
-                }, 10);
-
-            }
-
-            else {
-
-                runFlag = false;
-
-                scene.remove(onSwitch);
-                switchControl.detach(onSwitch);
-                scene.add(offSwitch);
-                switchControl.attach(offSwitch);
-                window.clearInterval(timer1);
-                window.clearInterval(timer2);
-            }
-
-        });
-
-        let mtlLoader = new THREE.MTLLoader();
-        let objLoader = new THREE.OBJLoader();
-
-        loadingDiv.style.display = 'flex';
-        mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {
-
-            materials.preload();
-
-            objLoader.setMaterials(materials);
-            objLoader.load('assets/RotorExperimentalRig/base.obj', function (base) {
-                base.traverse(function (child) {
-                    if (child instanceof THREE.Mesh) {
-
-                        child.material.side = THREE.DoubleSide;
-                    }
-                });
-                mtlLoader.load('assets/RotorExperimentalRig/rotor.mtl', function (materials) {
-
-                    materials.preload();
-
-                    objLoader.setMaterials(materials);
-                    objLoader.load('assets/RotorExperimentalRig/rotor.obj', function (b) {
-                        b.traverse(function (child) {
-                            if (child instanceof THREE.Mesh) {
-
-                                child.material.side = THREE.DoubleSide;
-                            }
-                        });
-                        rotor = b;
-                        mtlLoader.load('assets/RotorExperimentalRig/offSwitch.mtl', function (materials) {
-
-                            materials.preload();
-
-                            objLoader.setMaterials(materials);
-                            objLoader.load('assets/RotorExperimentalRig/offSwitch.obj', function (c) {
-                                c.traverse(function (child) {
-                                    if (child instanceof THREE.Mesh) {
-
-                                        child.material.side = THREE.DoubleSide;
-                                    }
-                                });
-                                offSwitch = c;
-                                mtlLoader.load('assets/RotorExperimentalRig/onSwitch.mtl', function (materials) {
-
-                                    materials.preload();
-
-                                    objLoader.setMaterials(materials);
-                                    objLoader.load('assets/RotorExperimentalRig/onSwitch.obj', function (d) {
-                                        d.traverse(function (child) {
-                                            if (child instanceof THREE.Mesh) {
-
-                                                child.material.side = THREE.DoubleSide;
-                                            }
-                                        });
-                                        onSwitch = d;
-                                        loadingDiv.style.display = 'none';
-                                        scene.add(base);
-                                        scene.add(rotor);
-                                        scene.add(offSwitch);
-                                        switchControl.attach(offSwitch);
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-        animate();
-    }
-
-    function animate() {
-
-        window.requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
-
-    }
 
 </script>
 </body>

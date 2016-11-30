@@ -24,21 +24,16 @@
         <button class="normalBtn" onclick="setStepType(8)">比例微分</button>
     </div>
 </div>
-<script src="js/VILibraries/WaveVI.js"></script>
-<script src="js/VILibraries/StepResponseGeneratorVI.js"></script>
-<script src="js/VILibraries/DCOutputVI.js"></script>
+<script src="js/VILibraries/VILibrary.js"></script>
+<script src="js/jquery-3.1.1.min.js"></script>
 <script>
-    var inputCanvas = document.getElementById('inputCanvas');
-    var outputCanvas = document.getElementById('outputCanvas');
-    var signalCanvas = document.getElementById('signalCanvas');
-    var inputDataCanvas = document.getElementById('inputDataCanvas');
 
-    var inputWave = new WaveVI(inputCanvas);
-    var outputWave = new WaveVI(outputCanvas);
-    var inputData = new DCOutputVI(inputDataCanvas);
-    var signalGenerator = new StepResponseGeneratorVI(signalCanvas);
+    let inputWave = new VILibrary.VI.WaveVI($('#inputCanvas')[0]);
+    let outputWave = new VILibrary.VI.WaveVI($('#outputCanvas')[0]);
+    let inputData = new VILibrary.VI.DCOutputVI($('#inputDataCanvas')[0]);
+    let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI($('#signalCanvas')[0]);
 
-    var signalType = 1, n = 0;
+    let signalType = 1, n = 0, timer;
 
     function setStepType(type) {
 
@@ -93,7 +88,7 @@
                 signalGenerator.k1 = 1.5;
                 break;
         }
-        window.setInterval(onTimer, 30);
+        timer = window.setInterval(onTimer, 40);
     }
 
     function onTimer() {
@@ -116,6 +111,7 @@
         n = 0;
         inputData.reset();
         signalGenerator.reset();
+        window.clearInterval(timer);
     }
 </script>
 

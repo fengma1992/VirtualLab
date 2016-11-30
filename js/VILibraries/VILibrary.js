@@ -45,6 +45,11 @@ VILibrary.InternalFunction = {
         return strLab;
     },
 
+    getDomObject: function (obj) {
+        obj = typeof obj === "string" ? document.getElementById(obj) : obj;
+        return (obj instanceof HTMLElement) ? obj : (obj instanceof jQuery) ? obj[0] : false;
+    },
+
     /**
      * FFT算法
      * @param dir
@@ -54,7 +59,7 @@ VILibrary.InternalFunction = {
      * @returns {Array}
      */
     fft: function (dir, m, realPart, imgPart) {
-        //trace('Getting FFT');
+
         let n, i, i1, j, k, i2, l, l1, l2, c1, c2, tx, ty, t1, t2, u1, u2, z;
         n = 1;
         for (i = 0; i < m; i += 1) {
@@ -143,8 +148,9 @@ VILibrary.InternalFunction = {
 
 VILibrary.VI = {
 
-    AddVI: function (domElement) {
+    AddVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
@@ -226,8 +232,9 @@ VILibrary.VI = {
 
     },
 
-    AudioVI: function (domElement) {
+    AudioVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
@@ -318,7 +325,7 @@ VILibrary.VI = {
                     _this.draw();
                 }
             ).catch(function (err) {
-                console.log(err.name + ": " + err.message);
+                console.log('AudioVI: ' + err.name + ": " + err.message);
             });
         }
 
@@ -354,8 +361,9 @@ VILibrary.VI = {
         }, false);
     },
 
-    BallBeamVI: function (domElement, draw3DFlag) {
+    BallBeamVI: function (VICanvas, draw3DFlag) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.name = 'BallBeamVI';
         this.cnText = '球杆模型';
@@ -602,7 +610,6 @@ VILibrary.VI = {
                 renderer.domElement.style.cursor = 'auto';
             });
 
-
             scene.add(base);
             scene.add(beam);
             scene.add(ball);
@@ -689,8 +696,387 @@ VILibrary.VI = {
 
     },
 
-    ButtonVI: function (domElement) {
+    BarVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+        const _this = this;
+        this.container = domElement;
+        this.ctx = this.container.getContext("2d");
+        this.name = 'BarVI';
+        this.cnText = '柱状图';
+
+        //坐标数值//
+        this.labelX = [];
+        this.maxValY = 100;
+        this.minValY = 0;
+        this.autoZoom = true;
+
+        this.pointNum = 100;
+        this.drawRulerFlag = true;
+
+        //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
+
+        this.offsetT = 10;
+        this.offsetR = 10;
+
+        this.offsetB = 10;
+        this.offsetL = 10;
+        if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
+
+            _this.offsetB = 35;
+            _this.offsetL = 42;
+        }
+        this.waveWidth = this.container.width - this.offsetL - this.offsetR;
+        this.waveHeight = this.container.height - this.offsetT - this.offsetB;
+        this.ratioX = this.waveWidth / this.pointNum;
+        this.ratioY = this.waveHeight / (this.maxValY - this.minValY);
+
+        //颜色选型//
+        this.bgColor = "RGB(255, 255, 255)";
+        this.screenColor = 'RGB(255,253,246)';
+        this.gridColor = "RGB(204, 204, 204)";
+        this.fontColor = "RGB(0, 0, 0)";
+        this.signalColor = "RGB(255, 100, 100)";
+        this.rulerColor = "RGB(255, 100, 100)";
+
+        //缓冲数组
+        this.bufferVal = [];
+        this.curPointX = this.offsetL;
+        this.curPointY = this.offsetT;
+
+        //虚拟仪器中相连接的控件VI
+        this.source = [];
+
+        this.draw = function () {
+
+            _this.drawBackground();
+            _this.drawWave();
+            if (_this.drawRulerFlag) {
+
+                _this.drawRuler();
+            }
+        };
+
+        function drawRec (x, y, w, h) {
+
+            _this.ctx.beginPath();
+            _this.ctx.fillStyle = _this.signalColor;
+            _this.ctx.fillRect(x, y, w, h);
+            _this.ctx.closePath();
+        }
+
+        this.drawWave = function () {
+
+            let i, barHeight, x, y;
+            //绘制柱状图
+            for (i = 0; i < _this.pointNum; i += 1) {
+
+                x = _this.offsetL + i * _this.ratioX;
+                barHeight = _this.bufferVal[i] * _this.ratioY;
+                y = _this.offsetT + _this.waveHeight - barHeight;
+                drawRec(x + 0.1 * _this.ratioX, y, _this.ratioX * 0.8, barHeight, true);
+            }
+        };
+
+        this.drawBackground = function () {
+
+            let ctx = _this.ctx;
+            //刷背景//
+            ctx.beginPath();
+            /* 将这个渐变设置为fillStyle */
+            // ctx.fillStyle = grad;
+            ctx.fillStyle = _this.bgColor;
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "RGB(25, 25, 25)";
+            ctx.fillRect(0, 0, _this.container.width, _this.container.height);
+            ctx.strokeRect(3, 3, _this.container.width - 6, _this.container.height - 6);
+            ctx.closePath();
+
+            //画网格矩形边框和填充
+            ctx.beginPath();
+            ctx.fillStyle = _this.screenColor;
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'RGB(0, 0, 0)';
+            ctx.fillRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
+            ctx.strokeRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
+            ctx.closePath();
+
+            //网格行数
+            let nRow = _this.container.height / 50;
+            let divY = _this.waveHeight / nRow;
+
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = _this.gridColor;
+
+            let i;
+            //绘制横向网格线
+            for (i = 1; i < nRow; i += 1) {
+
+                ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
+                ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
+            }
+            ctx.stroke();
+            ctx.closePath();
+
+            if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
+
+                //绘制横纵刻度
+                let scaleYNum = _this.container.height / 50;
+                let scaleXNum = _this.container.width / 50;
+                let scaleYStep = _this.waveHeight / scaleYNum;
+                let scaleXStep = _this.waveWidth / scaleXNum;
+                ctx.beginPath();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = _this.fontColor;
+                //画纵刻度
+                let k;
+                for (k = 2; k <= scaleYNum; k += 2) {
+
+                    ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
+                    ctx.lineTo(_this.offsetL, _this.offsetT + k * scaleYStep);
+
+                }
+                // //画横刻度
+                // for (k = 0; k < scaleXNum; k += 2) {
+                //
+                //
+                //     ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
+                //     ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 7);
+                //
+                // }
+                ctx.stroke();
+                ctx.closePath();
+                ////////////////画数字字体////////////////
+                ctx.font = "normal 12px Calibri";
+
+                let valStepX = _this.pointNum / scaleXNum;
+                let valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
+
+                ctx.fillStyle = _this.fontColor;
+                let temp = 0;
+                if (_this.labelX.length < _this.pointNum) {
+
+                    for (i = 0; i < _this.pointNum; i += 1) {
+
+                        _this.labelX[i] = i;
+                    }
+                }
+                //横坐标刻度//
+                for (i = 0; i < scaleXNum; i += 2) {
+
+                    temp = _this.labelX[parseInt(valStepX * i)];
+                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9 + _this.ratioX / 2, _this.container.height - 10);
+                }
+                //纵坐标刻度//
+                for (i = 2; i <= scaleYNum; i += 2) {
+
+                    temp = _this.maxValY - valStepY * i;
+
+                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 35, _this.offsetT + scaleYStep * i + 5);
+                }
+                ctx.closePath();
+                ctx.save();
+            }
+        };
+
+        this.drawBackground();
+
+        this.drawRuler = function () {
+
+            //是否缝隙间不绘制标尺
+            // if ((_this.curPointX + 0.1 * _this.ratioX - _this.offsetL ) % _this.ratioX < 0.2 * _this.ratioX) {
+            //
+            //     return;
+            // }
+
+            if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
+                return;
+            }
+            //画标尺//
+            _this.ctx.beginPath();
+            _this.ctx.lineWidth = 1;
+            _this.ctx.lineCap = "round";
+            _this.ctx.strokeStyle = _this.rulerColor;
+            _this.ctx.font = "normal 14px Calibri";
+            _this.ctx.fillStyle = _this.rulerColor;
+
+            //竖标尺//
+            _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
+            _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
+            _this.ctx.stroke();
+            let curPointX = parseInt((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth) - 1;
+            let curPointY = VILibrary.InternalFunction.fixNumber(_this.bufferVal[curPointX]);
+            _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
+                _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
+            _this.ctx.closePath();
+        };
+
+        this.reset = function () {
+
+            _this.bufferVal = [];
+            _this.drawBackground();
+        };
+
+        this.setData = function (data, len) {
+
+            if (len == undefined) {
+
+                _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
+            }
+            else {
+
+                _this.pointNum = len;
+            }
+
+            let YMax = 0, YMin = 0, i;
+            for (i = 0; i < _this.pointNum; i += 1) {
+
+                _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
+                YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
+                YMin = YMin > _this.bufferVal[i] ? _this.bufferVal[i] : YMin;
+            }
+            if (_this.autoZoom) {
+
+                _this.setAxisRangY(YMin, 1.2 * YMax);
+            }
+            _this.ratioX = _this.waveWidth / _this.pointNum;
+            _this.ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
+            _this.draw();
+        };
+
+        this.setAxisRangY = function (yMin, yMax) {
+
+            _this.minValY = yMin;
+            _this.maxValY = yMax;
+            _this.drawBackground();
+        };
+
+        this.setAxisX = function (labelX) {
+
+            _this.labelX = labelX;
+            _this.drawBackground();
+        };
+
+        this.setPointNum = function (num) {
+
+            _this.pointNum = num;
+            _this.drawBackground();
+        };
+
+        this.setLabel = function (xLabel, yLabel) {
+
+            this.strLabelX = xLabel;
+            this.strLabelY = yLabel;
+            _this.drawBackground();
+        };
+
+        this.setRowColNum = function (row, col) {
+
+            _this.nRow = row;
+            _this.nCol = col;
+            _this.drawBackground();
+        };
+
+        let _mouseOverFlag = false;
+        let _mouseOutFlag = false;
+        let _dragAndDropFlag = false;
+        let _mouseUpFlag = false;
+        let _onclickFlag = false;
+        let _mouseMoveFlag = false;
+
+        this.dragAndDrop = function () { };// this.container.style.cursor = 'move';
+        this.mouseOver = function () { }; // this.container.style.cursor = 'pointer';
+        this.mouseOut = function () { }; // this.container.style.cursor = 'auto';
+        this.mouseUp = function () { }; // this.container.style.cursor = 'auto';
+        this.mouseMove = function () { };
+        this.onclick = function () { };
+
+        this.attachEvent = function (event, handler) {
+
+            switch (event) {
+                case 'mouseOver':
+                    this.mouseOver = handler;
+                    _mouseOverFlag = true;
+                    break;
+                case 'mouseOut':
+                    this.mouseOut = handler;
+                    _mouseOutFlag = true;
+                    break;
+                case 'dragAndDrop':
+                    this.dragAndDrop = handler;
+                    _dragAndDropFlag = true;
+                    break;
+                case 'mouseUp':
+                    this.mouseUp = handler;
+                    _mouseUpFlag = true;
+                    break;
+                case 'onclick':
+                    this.onclick = handler;
+                    _onclickFlag = true;
+                    break;
+                case 'mouseMove':
+                    this.mouseMove = handler;
+                    _mouseMoveFlag = true;
+                    break;
+            }
+        };
+
+        this.detachEvent = function (event) {
+
+            switch (event) {
+                case 'mouseOver':
+                    _mouseOverFlag = false;
+                    break;
+                case 'mouseOut':
+                    _mouseOutFlag = false;
+                    break;
+                case 'dragAndDrop':
+                    _dragAndDropFlag = false;
+                    break;
+                case 'mouseUp':
+                    _mouseUpFlag = false;
+                    break;
+                case 'onclick':
+                    _onclickFlag = false;
+                    break;
+                case 'mouseMove':
+                    _mouseMoveFlag = false;
+                    break;
+            }
+
+        };
+
+        function onMouseMove (event) {
+
+            if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
+
+                return;
+            }
+            _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 1;
+            _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 1;
+
+            if (_this.curPointX <= _this.offsetL) {
+
+                _this.curPointX = _this.offsetL;
+            }
+            if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
+
+                _this.curPointX = _this.container.width - _this.offsetR;
+            }
+            _this.draw();
+            if (_mouseMoveFlag) {
+                _this.mouseMove();
+            }
+        }
+
+        this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
+    },
+
+    ButtonVI: function (VICanvas) {
+
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
@@ -716,8 +1102,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    DCOutputVI: function (domElement) {
+    DCOutputVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
@@ -786,8 +1173,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    DifferentiationResponseVI: function (domElement) {
+    DifferentiationResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -840,7 +1228,7 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k3 = $('#DifferentiationResponseVI-input').val();
+            _this.k3 = Number($('#DifferentiationResponseVI-input').val());
         };
 
         this.reset = function () {
@@ -865,8 +1253,9 @@ VILibrary.VI = {
 
     },
 
-    FFTVI: function (domElement) {
+    FFTVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -886,7 +1275,6 @@ VILibrary.VI = {
                 return;
             }
             _this.output = VILibrary.InternalFunction.fft(1, 11, input);
-            console.log('FFTVI:' + _this.output);
             return _this.output;
 
         };
@@ -907,8 +1295,9 @@ VILibrary.VI = {
 
     },
 
-    InertiaResponseVI: function (domElement) {
+    InertiaResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -965,7 +1354,7 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k1 = $('#InertiaResponseVI-input').val();
+            _this.k1 = Number($('#InertiaResponseVI-input').val());
         };
 
         this.reset = function () {
@@ -989,8 +1378,9 @@ VILibrary.VI = {
 
     },
 
-    IntegrationResponseVI: function (domElement) {
+    IntegrationResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -1049,7 +1439,7 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k2 = $('#IntegrationResponseVI-input').val();
+            _this.k2 = Number($('#IntegrationResponseVI-input').val());
         };
 
         this.reset = function () {
@@ -1073,10 +1463,10 @@ VILibrary.VI = {
         this.draw();
     },
 
-    KnobVI: function (domElement) {
+    KnobVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
-
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
         this.name = 'KnobVI';
@@ -1376,8 +1766,9 @@ VILibrary.VI = {
         this.container.addEventListener('mouseup', onMouseUp, false);
     },
 
-    OrbitWaveVI: function (domElement) {
+    OrbitWaveVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -1772,8 +2163,9 @@ VILibrary.VI = {
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
     },
 
-    OscillationResponseVI: function (domElement) {
+    OscillationResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -1839,8 +2231,8 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k1 = $('#OscillationResponseVI-input-1').val();
-            _this.k2 = $('#OscillationResponseVI-input-2').val();
+            _this.k1 = Number($('#OscillationResponseVI-input-1').val());
+            _this.k2 = Number($('#OscillationResponseVI-input-2').val());
         };
 
         this.reset = function () {
@@ -1866,8 +2258,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    PIDVI: function (domElement) {
+    PIDVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext('2d');
@@ -1937,9 +2330,9 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.P = $('#PIDVI-input-1').val();
-            _this.I = $('#PIDVI-input-2').val();
-            _this.D = $('#PIDVI-input-3').val();
+            _this.P = Number($('#PIDVI-input-1').val());
+            _this.I = Number($('#PIDVI-input-2').val());
+            _this.D = Number($('#PIDVI-input-3').val());
         };
 
         this.reset = function () {
@@ -1968,8 +2361,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    ProportionDifferentiationResponseVI: function (domElement) {
+    ProportionDifferentiationResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -2034,8 +2428,8 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k1 = $('#ProportionDifferentiationResponseVI-input-1').val();
-            _this.k3 = $('#ProportionDifferentiationResponseVI-input-2').val();
+            _this.k1 = Number($('#ProportionDifferentiationResponseVI-input-1').val());
+            _this.k3 = Number($('#ProportionDifferentiationResponseVI-input-2').val());
         };
 
         this.reset = function () {
@@ -2059,8 +2453,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    ProportionInertiaResponseVI: function (domElement) {
+    ProportionInertiaResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -2122,8 +2517,8 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k1 = $('#ProportionInertiaResponseVI-input-1').val();
-            _this.k2 = $('#ProportionInertiaResponseVI-input-2').val();
+            _this.k1 = Number($('#ProportionInertiaResponseVI-input-1').val());
+            _this.k2 = Number($('#ProportionInertiaResponseVI-input-2').val());
         };
 
         this.reset = function () {
@@ -2149,8 +2544,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    ProportionIntegrationResponseVI: function (domElement) {
+    ProportionIntegrationResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -2219,8 +2615,8 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k1 = $('#ProportionIntegrationResponseVI-input-1').val();
-            _this.k2 = $('#ProportionIntegrationResponseVI-input-2').val();
+            _this.k1 = Number($('#ProportionIntegrationResponseVI-input-1').val());
+            _this.k2 = Number($('#ProportionIntegrationResponseVI-input-2').val());
         };
 
         this.reset = function () {
@@ -2246,8 +2642,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    ProportionResponseVI: function (domElement) {
+    ProportionResponseVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -2303,7 +2700,7 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.k1 = $('#ProportionResponseVI-input').val();
+            _this.k1 = Number($('#ProportionResponseVI-input').val());
         };
 
         this.reset = function () {
@@ -2329,8 +2726,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    RelayVI: function (domElement) {
+    RelayVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
@@ -2391,18 +2789,19 @@ VILibrary.VI = {
         this.draw();
     },
 
-    RotorExperimentalRigVI: function (domElement, draw3DFlag) {
+    RotorExperimentalRigVI: function (VICanvas, draw3DFlag) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.name = 'RotorExperimentalRigVI';
         this.cnText = '转子实验台';
         this.isStart = false;
 
         this.signalType = 1;
-        this.rotateSpeed = 0;
+        this.rotateSpeed = 4096;
         this.dataLength = 2048;
         this.index = 0;
-        this.rotateFrequency = 0;  //旋转频率
+        this.rotateFrequency = 4096 / 60;  //旋转频率
         this.signalOutput = [0];
         this.frequencyOutput = [0];
         this.orbitXOutput = [0];
@@ -2428,7 +2827,7 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.signalType = $('input[name=RotorExperimentalRigVI-type]:checked').val();
+            _this.signalType = Number($('input[name=RotorExperimentalRigVI-type]:checked').val());
         };
 
         function VIDraw () {
@@ -2576,7 +2975,7 @@ VILibrary.VI = {
                     _this.signalOutput[i] = _this.orbitYOutput[i];
                 }
             }
-            _this.frequencyOutput = fft(1, 12, _this.signalOutput.splice(0, 0, '')); //需SignalProcessLib
+            _this.frequencyOutput = VILibrary.InternalFunction.fft(1, 11, _this.signalOutput);
         }
 
         /**
@@ -2717,8 +3116,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    RoundPanelVI: function (domElement) {
+    RoundPanelVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext('2d');
@@ -2830,10 +3230,10 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            let title = $('#RoundPanelVI-input-1').val();
-            let unit = $('#RoundPanelVI-input-2').val();
-            let minValue = $('#RoundPanelVI-input-3').val();
-            let maxValue = $('#RoundPanelVI-input-4').val();
+            let title = Number($('#RoundPanelVI-input-1').val());
+            let unit = Number($('#RoundPanelVI-input-2').val());
+            let minValue = Number($('#RoundPanelVI-input-3').val());
+            let maxValue = Number($('#RoundPanelVI-input-4').val());
             _this.setRange(minValue, maxValue, unit, title);
         };
 
@@ -2957,8 +3357,9 @@ VILibrary.VI = {
 
     },
 
-    SignalGeneratorVI: function (domElement) {
+    SignalGeneratorVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
@@ -3080,7 +3481,7 @@ VILibrary.VI = {
 
         this.setInitialData = function () {
 
-            _this.signalType = $('input[name=SignalGeneratorVI-type]:checked').val();
+            _this.signalType = Number($('input[name=SignalGeneratorVI-type]:checked').val());
 
         };
 
@@ -3103,8 +3504,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    StepResponseGeneratorVI: function (domElement) {
+    StepResponseGeneratorVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -3291,8 +3693,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    TextVI: function (domElement) {
+    TextVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = domElement.getContext('2d');
@@ -3331,6 +3734,7 @@ VILibrary.VI = {
 
             _this.setDecimalPlace($('#TextVI-input').val());
         };
+
         this.reset = function () {
 
             _this.originalInput = 0;
@@ -3351,8 +3755,9 @@ VILibrary.VI = {
         this.draw();
     },
 
-    WaveVI: function (domElement) {
+    WaveVI: function (VICanvas) {
 
+        let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
         const _this = this;
         this.container = domElement;
         this.ctx = this.container.getContext("2d");
@@ -3596,6 +4001,11 @@ VILibrary.VI = {
 
         this.setData = function (data, len) {
 
+            if (!Array.isArray(data)) {
+
+                console.log('WaveVI: input type error');
+                return false;
+            }
             if (len == undefined) {
 
                 _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
@@ -3763,383 +4173,5 @@ VILibrary.VI = {
         }
 
         this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-    },
-
-    BarVI: function (domElement) {
-
-        const _this = this;
-        this.container = domElement;
-        this.ctx = this.container.getContext("2d");
-        this.name = 'BarVI';
-        this.cnText = '柱状图';
-
-        //坐标数值//
-        this.labelX = [];
-        this.maxValY = 100;
-        this.minValY = 0;
-        this.autoZoom = true;
-
-        this.pointNum = 100;
-        this.drawRulerFlag = true;
-
-        //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
-
-        this.offsetT = 10;
-        this.offsetR = 10;
-
-        this.offsetB = 10;
-        this.offsetL = 10;
-        if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
-
-            _this.offsetB = 35;
-            _this.offsetL = 42;
-        }
-        this.waveWidth = this.container.width - this.offsetL - this.offsetR;
-        this.waveHeight = this.container.height - this.offsetT - this.offsetB;
-        this.ratioX = this.waveWidth / this.pointNum;
-        this.ratioY = this.waveHeight / (this.maxValY - this.minValY);
-
-        //颜色选型//
-        this.bgColor = "RGB(255, 255, 255)";
-        this.screenColor = 'RGB(255,253,246)';
-        this.gridColor = "RGB(204, 204, 204)";
-        this.fontColor = "RGB(0, 0, 0)";
-        this.signalColor = "RGB(255, 100, 100)";
-        this.rulerColor = "RGB(255, 100, 100)";
-
-        //缓冲数组
-        this.bufferVal = [];
-        this.curPointX = this.offsetL;
-        this.curPointY = this.offsetT;
-
-        //虚拟仪器中相连接的控件VI
-        this.source = [];
-
-        this.draw = function () {
-
-            _this.drawBackground();
-            _this.drawWave();
-            if (_this.drawRulerFlag) {
-
-                _this.drawRuler();
-            }
-        };
-
-        function drawRec (x, y, w, h) {
-
-            _this.ctx.beginPath();
-            _this.ctx.fillStyle = _this.signalColor;
-            _this.ctx.fillRect(x, y, w, h);
-            _this.ctx.closePath();
-        }
-
-        this.drawWave = function () {
-
-            let i, barHeight, x, y;
-            //绘制柱状图
-            for (i = 0; i < _this.pointNum; i += 1) {
-
-                x = _this.offsetL + i * _this.ratioX;
-                barHeight = _this.bufferVal[i] * _this.ratioY;
-                y = _this.offsetT + _this.waveHeight - barHeight;
-                drawRec(x + 0.1 * _this.ratioX, y, _this.ratioX * 0.8, barHeight, true);
-            }
-        };
-
-        this.drawBackground = function () {
-
-            let ctx = _this.ctx;
-            //刷背景//
-            ctx.beginPath();
-            /* 将这个渐变设置为fillStyle */
-            // ctx.fillStyle = grad;
-            ctx.fillStyle = _this.bgColor;
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = "RGB(25, 25, 25)";
-            ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-            ctx.strokeRect(3, 3, _this.container.width - 6, _this.container.height - 6);
-            ctx.closePath();
-
-            //画网格矩形边框和填充
-            ctx.beginPath();
-            ctx.fillStyle = _this.screenColor;
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'RGB(0, 0, 0)';
-            ctx.fillRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
-            ctx.strokeRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
-            ctx.closePath();
-
-            //网格行数
-            let nRow = _this.container.height / 50;
-            let divY = _this.waveHeight / nRow;
-
-            ctx.beginPath();
-            ctx.lineWidth = 1;
-            ctx.lineCap = "round";
-            ctx.strokeStyle = _this.gridColor;
-
-            let i;
-            //绘制横向网格线
-            for (i = 1; i < nRow; i += 1) {
-
-                ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
-                ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
-            }
-            ctx.stroke();
-            ctx.closePath();
-
-            if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
-
-                //绘制横纵刻度
-                let scaleYNum = _this.container.height / 50;
-                let scaleXNum = _this.container.width / 50;
-                let scaleYStep = _this.waveHeight / scaleYNum;
-                let scaleXStep = _this.waveWidth / scaleXNum;
-                ctx.beginPath();
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = _this.fontColor;
-                //画纵刻度
-                let k;
-                for (k = 2; k <= scaleYNum; k += 2) {
-
-                    ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
-                    ctx.lineTo(_this.offsetL, _this.offsetT + k * scaleYStep);
-
-                }
-                // //画横刻度
-                // for (k = 0; k < scaleXNum; k += 2) {
-                //
-                //
-                //     ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
-                //     ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 7);
-                //
-                // }
-                ctx.stroke();
-                ctx.closePath();
-                ////////////////画数字字体////////////////
-                ctx.font = "normal 12px Calibri";
-
-                let valStepX = _this.pointNum / scaleXNum;
-                let valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
-
-                ctx.fillStyle = _this.fontColor;
-                let temp = 0;
-                if (_this.labelX.length < _this.pointNum) {
-
-                    for (i = 0; i < _this.pointNum; i += 1) {
-
-                        _this.labelX[i] = i;
-                    }
-                }
-                //横坐标刻度//
-                for (i = 0; i < scaleXNum; i += 2) {
-
-                    temp = _this.labelX[parseInt(valStepX * i)];
-                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9 + _this.ratioX / 2, _this.container.height - 10);
-                }
-                //纵坐标刻度//
-                for (i = 2; i <= scaleYNum; i += 2) {
-
-                    temp = _this.maxValY - valStepY * i;
-
-                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 35, _this.offsetT + scaleYStep * i + 5);
-                }
-                ctx.closePath();
-                ctx.save();
-            }
-        };
-
-        this.drawBackground();
-
-        this.drawRuler = function () {
-
-            //是否缝隙间不绘制标尺
-            // if ((_this.curPointX + 0.1 * _this.ratioX - _this.offsetL ) % _this.ratioX < 0.2 * _this.ratioX) {
-            //
-            //     return;
-            // }
-
-            if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
-                return;
-            }
-            //画标尺//
-            _this.ctx.beginPath();
-            _this.ctx.lineWidth = 1;
-            _this.ctx.lineCap = "round";
-            _this.ctx.strokeStyle = _this.rulerColor;
-            _this.ctx.font = "normal 14px Calibri";
-            _this.ctx.fillStyle = _this.rulerColor;
-
-            //竖标尺//
-            _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
-            _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
-            _this.ctx.stroke();
-            let curPointX = parseInt((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth) - 1;
-            let curPointY = VILibrary.InternalFunction.fixNumber(_this.bufferVal[curPointX]);
-            _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
-                _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
-            _this.ctx.closePath();
-        };
-
-        this.reset = function () {
-
-            _this.bufferVal = [];
-            _this.drawBackground();
-        };
-
-        this.setData = function (data, len) {
-
-            if (len == undefined) {
-
-                _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
-            }
-            else {
-
-                _this.pointNum = len;
-            }
-
-            let YMax = 0, YMin = 0, i;
-            for (i = 0; i < _this.pointNum; i += 1) {
-
-                _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
-                YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
-                YMin = YMin > _this.bufferVal[i] ? _this.bufferVal[i] : YMin;
-            }
-            if (_this.autoZoom) {
-
-                _this.setAxisRangY(YMin, 1.2 * YMax);
-            }
-            _this.ratioX = _this.waveWidth / _this.pointNum;
-            _this.ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
-            _this.draw();
-        };
-
-        this.setAxisRangY = function (yMin, yMax) {
-
-            _this.minValY = yMin;
-            _this.maxValY = yMax;
-            _this.drawBackground();
-        };
-
-        this.setAxisX = function (labelX) {
-
-            _this.labelX = labelX;
-            _this.drawBackground();
-        };
-
-        this.setPointNum = function (num) {
-
-            _this.pointNum = num;
-            _this.drawBackground();
-        };
-
-        this.setLabel = function (xLabel, yLabel) {
-
-            this.strLabelX = xLabel;
-            this.strLabelY = yLabel;
-            _this.drawBackground();
-        };
-
-        this.setRowColNum = function (row, col) {
-
-            _this.nRow = row;
-            _this.nCol = col;
-            _this.drawBackground();
-        };
-
-        let _mouseOverFlag = false;
-        let _mouseOutFlag = false;
-        let _dragAndDropFlag = false;
-        let _mouseUpFlag = false;
-        let _onclickFlag = false;
-        let _mouseMoveFlag = false;
-
-        this.dragAndDrop = function () { };// this.container.style.cursor = 'move';
-        this.mouseOver = function () { }; // this.container.style.cursor = 'pointer';
-        this.mouseOut = function () { }; // this.container.style.cursor = 'auto';
-        this.mouseUp = function () { }; // this.container.style.cursor = 'auto';
-        this.mouseMove = function () { };
-        this.onclick = function () { };
-
-        this.attachEvent = function (event, handler) {
-
-            switch (event) {
-                case 'mouseOver':
-                    this.mouseOver = handler;
-                    _mouseOverFlag = true;
-                    break;
-                case 'mouseOut':
-                    this.mouseOut = handler;
-                    _mouseOutFlag = true;
-                    break;
-                case 'dragAndDrop':
-                    this.dragAndDrop = handler;
-                    _dragAndDropFlag = true;
-                    break;
-                case 'mouseUp':
-                    this.mouseUp = handler;
-                    _mouseUpFlag = true;
-                    break;
-                case 'onclick':
-                    this.onclick = handler;
-                    _onclickFlag = true;
-                    break;
-                case 'mouseMove':
-                    this.mouseMove = handler;
-                    _mouseMoveFlag = true;
-                    break;
-            }
-        };
-
-        this.detachEvent = function (event) {
-
-            switch (event) {
-                case 'mouseOver':
-                    _mouseOverFlag = false;
-                    break;
-                case 'mouseOut':
-                    _mouseOutFlag = false;
-                    break;
-                case 'dragAndDrop':
-                    _dragAndDropFlag = false;
-                    break;
-                case 'mouseUp':
-                    _mouseUpFlag = false;
-                    break;
-                case 'onclick':
-                    _onclickFlag = false;
-                    break;
-                case 'mouseMove':
-                    _mouseMoveFlag = false;
-                    break;
-            }
-
-        };
-
-        function onMouseMove (event) {
-
-            if (!_this.drawRulerFlag || _this.bufferVal.length == 0) {
-
-                return;
-            }
-            _this.curPointX = event.offsetX == undefined ? event.layerX : event.offsetX - 1;
-            _this.curPointY = event.offsetY == undefined ? event.layerY : event.offsetY - 1;
-
-            if (_this.curPointX <= _this.offsetL) {
-
-                _this.curPointX = _this.offsetL;
-            }
-            if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
-
-                _this.curPointX = _this.container.width - _this.offsetR;
-            }
-            _this.draw();
-            if (_mouseMoveFlag) {
-                _this.mouseMove();
-            }
-        }
-
-        this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
     }
-
 };

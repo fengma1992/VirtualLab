@@ -29,35 +29,33 @@
             <input id="freqInput" type="number" value="100" class="signalInput" onchange="setFreq()">
         </div>
     </div>
-    <script src="js/VILibraries/WaveVI.js"></script>
-    <script src="js/VILibraries/SignalGeneratorVI.js"></script>
-    <script src="js/VILibraries/KnobVI.js"></script>
+    <script src="js/VILibraries/VILibrary.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
     <script>
-        var canvas = document.getElementById('signalCanvas');
-        var ampInput = document.getElementById('ampInput');
-        var freqInput = document.getElementById('freqInput');
-        var startBtn = document.getElementById('startBtn');
-        var dataCanvas = document.getElementById('dataCanvas');
+        let canvas = document.getElementById('signalCanvas');
+        let ampInput = document.getElementById('ampInput');
+        let freqInput = document.getElementById('freqInput');
+        let startBtn = document.getElementById('startBtn');
+        let dataCanvas = document.getElementById('dataCanvas');
         startBtn.disabled = true;
 
-        var wave = new WaveVI(canvas);
-        var data = new SignalGeneratorVI(dataCanvas);
-        var phrase, interval,
-                originalAmp = ampInput.value, amplitude = originalAmp,
-                originalFreq = freqInput.value, frequency = originalFreq, started = false;
+        let wave = new VILibrary.VI.WaveVI($('#signalCanvas'));
+        let data = new VILibrary.VI.SignalGeneratorVI(dataCanvas);
+        let phrase, interval, originalAmp = ampInput.value, amplitude = originalAmp,
+            originalFreq = freqInput.value, frequency = originalFreq, started = false;
 
-        function setValue(signalType) {
+        function setValue (signalType) {
             phrase = 0;
             data.signalType = signalType;
             setData();
             startBtn.disabled = false;
         }
 
-        function setData() {
+        function setData () {
             data.setData(amplitude, frequency, phrase);
             wave.setData(data.output, data.output.length);
         }
-        function start() {
+        function start () {
             if (!started) {
                 interval = window.setInterval(function () {
                     phrase += 10;
@@ -72,41 +70,47 @@
                 started = !started;
             }
         }
-        var knob1 = new KnobVI(document.getElementById('knobCanvas1'));
+        let knob1 = new VILibrary.VI.KnobVI(document.getElementById('knobCanvas1'));
         knob1.setDataRange(0, 100, originalAmp);
 
         knob1.attachEvent('mouseMove', function () {
             ampInput.value = knob1.singleOutput.toFixed(1);
             amplitude = ampInput.value;
 
-            if (!started)setData();
+            if (!started) {
+                setData();
+            }
 
         });
 
-        var knob2 = new KnobVI(document.getElementById('knobCanvas2'));
+        let knob2 = new VILibrary.VI.KnobVI(document.getElementById('knobCanvas2'));
         knob2.setDataRange(0, 1000, originalFreq);
 
         knob2.attachEvent('mouseMove', function () {
             freqInput.value = knob2.singleOutput.toFixed(1);
             frequency = freqInput.value;
 
-            if (!started)setData();
+            if (!started) {
+                setData();
+            }
         });
 
-        function setAmp() {
+        function setAmp () {
             amplitude = parseFloat(ampInput.value).toFixed(1);
             amplitude = amplitude > 100 ? 100 : amplitude;
             ampInput.value = amplitude;
             knob1.setData(amplitude);
-            if (!started)setData();
+            if (!started) {
+                setData();
+            }
         }
 
-        function setFreq() {
+        function setFreq () {
             frequency = parseFloat(freqInput.value).toFixed(1);
             frequency = frequency > 1000 ? 1000 : frequency;
             freqInput.value = frequency;
             knob2.setData(frequency);
-            if (!started)setData();
+            if (!started) setData();
         }
 
 
