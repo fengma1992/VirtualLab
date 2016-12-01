@@ -15,6 +15,7 @@
       <w>mouseup</w>
       <w>oncontextmenu</w>
       <w>ondataavailable</w>
+      <w>ondblclick</w>
       <w>ondragstart</w>
       <w>onerror</w>
       <w>onload</w>

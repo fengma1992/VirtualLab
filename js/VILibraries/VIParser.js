@@ -3,15 +3,21 @@
  */
 
 'use strict';
+let bd = $('body');
+let mainContainer = $('<div id="container-div" class="rowFlexDiv"></div>');
+let sideBar = $('<div id="sideBar" class="draggable-sideBar"></div>');
+let VIContainer = $('<div id="VIContainer" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>');
+let contextMenu = $('<div id="menu"></div>');
 
-const sideBar = $('#sideBar');
-const VIContainer = $('#VIContainer');
+VIContainer.append(contextMenu);
+mainContainer.append(sideBar);
+mainContainer.append(VIContainer);
+bd.append(mainContainer);
 
 let instance, mainTimer;
 let bindInfoArr = [];//二维数组，第二维分别记录输出VI、输入VI
 let setVIDataIndex = 0;
 let dataObject = {
-    THREECount: 0,
     AudioVICount: 0,
     BallBeamVICount: 0,
     ButtonVICount: 0,
@@ -35,7 +41,6 @@ let dataObject = {
     ProportionIntegrationResponseVICount: 0,
     ProportionResponseVICount: 0,
     SignalGeneratorVICount: 0,
-    THREE: [],
     AddVI: [],
     AudioVI: [],
     BallBeamVI: [],
@@ -91,80 +96,10 @@ function deleteBindInfoFromArr (sourceElement, targetElement) {
     }
 }
 
-function getObjectVIById (id) {
+function getObjectVIById (VIId) {
 
-    let VIInfo = id.split('-');
-    switch (VIInfo[0]) {
-
-        case 'AddVI':
-            return dataObject.AddVI[VIInfo[1]];
-
-        case 'AudioVI':
-            return dataObject.AudioVI[VIInfo[1]];
-
-        case 'BallBeamVI':
-            return dataObject.BallBeamVI[VIInfo[1]];
-
-        case 'ButtonVI':
-            return dataObject.ButtonVI[VIInfo[1]];
-
-        case 'DCOutputVI':
-            return dataObject.DCOutputVI[VIInfo[1]];
-
-        case 'FFTVI':
-            return dataObject.FFTVI[VIInfo[1]];
-
-        case 'KnobVI':
-            return dataObject.KnobVI[VIInfo[1]];
-
-        case 'OrbitWaveVI':
-            return dataObject.OrbitWaveVI[VIInfo[1]];
-
-        case 'PIDVI':
-            return dataObject.PIDVI[VIInfo[1]];
-
-        case 'RelayVI':
-            return dataObject.RelayVI[VIInfo[1]];
-
-        case 'RotorExperimentalRigVI':
-            return dataObject.RotorExperimentalRigVI[VIInfo[1]];
-
-        case 'RoundPanelVI':
-            return dataObject.RoundPanelVI[VIInfo[1]];
-
-        case 'TextVI':
-            return dataObject.TextVI[VIInfo[1]];
-
-        case 'ProportionResponseVI':
-            return dataObject.ProportionResponseVI[VIInfo[1]];
-
-        case 'IntegrationResponseVI':
-            return dataObject.IntegrationResponseVI[VIInfo[1]];
-
-        case 'DifferentiationResponseVI':
-            return dataObject.DifferentiationResponseVI[VIInfo[1]];
-
-        case 'InertiaResponseVI':
-            return dataObject.InertiaResponseVI[VIInfo[1]];
-
-        case 'OscillationResponseVI':
-            return dataObject.OscillationResponseVI[VIInfo[1]];
-
-        case 'ProportionIntegrationResponseVI':
-            return dataObject.ProportionIntegrationResponseVI[VIInfo[1]];
-
-        case 'ProportionDifferentiationResponseVI':
-            return dataObject.ProportionDifferentiationResponseVI[VIInfo[1]];
-
-        case 'ProportionInertiaResponseVI':
-            return dataObject.ProportionInertiaResponseVI[VIInfo[1]];
-
-        case 'SignalGeneratorVI':
-            return dataObject.SignalGeneratorVI[VIInfo[1]];
-
-        case 'WaveVI':
-            return dataObject.WaveVI[VIInfo[1]];
-    }
+    let VIInfo = VIId.split('-');
+    return dataObject[VIInfo[0]][VIInfo[1]];
 }
 
 function showBox (VICanvas) {
@@ -172,223 +107,7 @@ function showBox (VICanvas) {
     let canvasId = VICanvas.id;
     let VI = getObjectVIById(canvasId);
 
-    switch (canvasId.split('-')[0]) {
-
-        case 'AddVI':
-
-            window.B = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">初值:</span><input type="number" id="AddVI-input" value="' + VI.originalInput + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'PIDVI':
-
-            window.B = G.box('请输入PID参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">P:</span><input type="number" id="PIDVI-input-1" value="' + VI.P + '" class="normalInput">' +
-                '<span class="normalSpan">I:</span><input type="number" id="PIDVI-input-2" value="' + VI.I + '" class="normalInput">' +
-                '<span class="normalSpan">D:</span><input type="number" id="PIDVI-input-3" value="' + VI.D + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'TextVI':
-
-            window.B = G.box('请输入保留小数位数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<input type="number" id="TextVI-input" value="' + VI.decimalPlace + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'DCOutputVI':
-
-            window.B = G.box('请设置输出值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">初值:</span><input type="number" id="DCOutputVI-input" value="' + VI.singleOutput + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'KnobVI':
-
-            window.B = G.box('请输入初始值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">最小值:</span><input type="number" id="KnobVI-input-1" value="' + VI.minValue + '" class="normalInput">' +
-                '<span class="normalSpan">最大值:</span><input type="number" id="KnobVI-input-2" value="' + VI.maxValue + '" class="normalInput">' +
-                '<span class="normalSpan">初值:</span><input type="number" id="KnobVI-input-3" value="' + VI.defaultValue + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'RotorExperimentalRigVI':
-
-            window.B = G.box('请设置输出信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<div><input type="radio" id="type1" class="radioInput" name="RotorExperimentalRigVI-type" value="1" onclick="B.close()">' +
-                '<label class="input-label" for="type1">转速信号</label></div>' +
-                '<div><input type="radio" id="type2" class="radioInput" name="RotorExperimentalRigVI-type" value="2" onclick="B.close()">' +
-                '<label class="input-label" for="type2">加速度信号</label></div>' +
-                '<div><input type="radio" id="type3" class="radioInput" name="RotorExperimentalRigVI-type" value="3" onclick="B.close()">' +
-                '<label class="input-label" for="type3">轴心位移X信号</label></div>' +
-                '<div><input type="radio" id="type4" class="radioInput" name="RotorExperimentalRigVI-type" value="4" onclick="B.close()">' +
-                '<label class="input-label" for="type4">轴心位移Y信号</label></div>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'RoundPanelVI':
-
-            window.B = G.box('请设置初始参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">标题:</span><input type="text" id="RoundPanelVI-input-1" value="' + VI.title + '" class="normalInput">' +
-                '<span class="normalSpan">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + VI.unit + '" class="normalInput">' +
-                '<span class="normalSpan">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + VI.minValue + '" class="normalInput">' +
-                '<span class="normalSpan">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + VI.maxValue + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'ProportionResponseVI':
-
-            window.B = G.box('比例响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K1:</span><input type="number" id="ProportionResponseVI-input" value="' + VI.k1 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'IntegrationResponseVI':
-
-            window.B = G.box('积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K2:</span><input type="number" id="IntegrationResponseVI-input" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'DifferentiationResponseVI':
-
-            window.B = G.box('微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K3:</span><input type="number" id="DifferentiationResponseVI-input" value="' + VI.k3 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'InertiaResponseVI':
-
-            window.B = G.box('惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K1:</span><input type="number" id="InertiaResponseVI-input" value="' + VI.k1 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'OscillationResponseVI':
-
-            window.B = G.box('震荡响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
-                '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'ProportionIntegrationResponseVI':
-
-            window.B = G.box('比例积分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
-                '<span class="normalSpan">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'ProportionDifferentiationResponseVI':
-
-            window.B = G.box('比例微分响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
-                '<span class="normalSpan">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="' + VI.k3 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'ProportionInertiaResponseVI':
-
-            window.B = G.box('比例惯性响应&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<span class="normalSpan">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="' + VI.k1 + '" class="normalInput">' +
-                '<span class="normalSpan">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="' + VI.k2 + '" class="normalInput">' +
-                '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-
-        case 'SignalGeneratorVI':
-
-            window.B = G.box('请选择信号类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<div class="input-div">' +
-                '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" onclick="B.close()">' +
-                '<label class="input-label" for="type1">正弦波</label></div>' +
-                '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" onclick="B.close()">' +
-                '<label class="input-label" for="type2">方波</label></div>' +
-                '<div><input type="radio" id="type3" class="radioInput" name="SignalGeneratorVI-type" value="3" onclick="B.close()">' +
-                '<label class="input-label" for="type3">三角波</label></div>' +
-                '<div><input type="radio" id="type4" class="radioInput" name="SignalGeneratorVI-type" value="4" onclick="B.close()">' +
-                '<label class="input-label" for="type4">白噪声</label></div>' +
-                '</div>', 1, function () {
-
-                    getObjectVIById(canvasId).setInitialData();
-                });
-            break;
-    }
+    window.B = G.box(VI.boxTitle, VI.boxContent, 1, function () { getObjectVIById(canvasId).setInitialData();});
 }
 
 function setVIData (VI, sourceData, sourceDataType) {
@@ -541,312 +260,13 @@ function toggleStart (VICanvas) {
     }
 }
 
-function allowDrop (e) {
-
-    e.preventDefault();
-}
-
-function drag (e) {
-
-    e.dataTransfer.setData('Text', e.target.id);
-}
-
-function drop (e) {
-
-    e.preventDefault();
-    let VICanvas = document.getElementById(e.dataTransfer.getData('Text'));
-    let newVICanvas = document.createElement('canvas'), i;
-    for (i = 0; i < VICanvas.attributes.length - 3; i += 1) {//后三个属性为侧栏中拖动属性，主VI界面不需要
-
-        newVICanvas.setAttribute(VICanvas.attributes.item(i).nodeName, VICanvas.getAttribute(VICanvas.attributes.item(i).nodeName));
-    }
-    newVICanvas.setAttribute('oncontextmenu', 'toggleDrag(event, this)');
-    newVICanvas.width = VICanvas.width * VICanvas.getAttribute('zoom');
-    newVICanvas.height = VICanvas.height * VICanvas.getAttribute('zoom');
-    newVICanvas.style.left = (e.offsetX - newVICanvas.width / 2) + 'px';
-    newVICanvas.style.top = (e.offsetY - newVICanvas.height / 2) + 'px';
-
-    switch (VICanvas.id) {
-
-        case 'AddVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.AddVICount++;
-            break;
-
-        case 'AudioVI':
-            if (dataObject.AudioVICount > 0) {
-                G.alert('麦克风已添加！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.AudioVICount++;
-            break;
-
-        case 'BallBeamVI':
-            if (dataObject.BallBeamVICount > 0) {
-                G.alert('球杆实验已添加！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.BallBeamVICount++;
-            break;
-
-        case 'ButtonVI':
-            if (dataObject.ButtonVICount > 0) {
-                G.alert('开关已添加！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.ButtonVICount++;
-            newVICanvas.setAttribute('onclick', 'toggleStart(this)');//向开关绑定启动函数
-            break;
-
-        case 'WaveVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.WaveVICount++;
-            break;
-
-        case 'TextVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.TextVICount++;
-            break;
-
-        case 'DCOutputVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.DCOutputVICount++;
-            break;
-
-        case 'FFTVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.FFTVICount++;
-            break;
-
-        case 'KnobVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.KnobVICount++;
-            break;
-
-        case 'OrbitWaveVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.OrbitWaveVICount++;
-            break;
-
-        case 'PIDVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.PIDVICount++;
-            break;
-
-        case 'RelayVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.RelayVICount++;
-            break;
-
-        case 'RotorExperimentalRigVI':
-            if (dataObject.RotorExperimentalRigVICount > 0) {
-                G.alert('转子实验台已添加！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.RotorExperimentalRigVICount++;
-            break;
-
-        case 'RoundPanelVI':
-            newVICanvas.id = VICanvas.id + '-' + dataObject.RoundPanelVICount++;
-            break;
-
-        case 'ProportionResponseVI':
-            if (dataObject.ProportionResponseVICount > 0) {
-                G.alert('比例响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionResponseVICount++;
-            break;
-
-        case 'IntegrationResponseVI':
-            if (dataObject.IntegrationResponseVICount > 0) {
-                G.alert('积分响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.IntegrationResponseVICount++;
-            break;
-
-        case 'DifferentiationResponseVI':
-            if (dataObject.DifferentiationResponseVICount > 0) {
-                G.alert('微分响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.DifferentiationResponseVICount++;
-            break;
-
-        case 'InertiaResponseVI':
-            if (dataObject.InertiaResponseVICount > 0) {
-                G.alert('惯性响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.InertiaResponseVICount++;
-            break;
-
-        case 'OscillationResponseVI':
-            if (dataObject.OscillationResponseVICount > 0) {
-                G.alert('震荡响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.OscillationResponseVICount++;
-            break;
-
-        case 'ProportionIntegrationResponseVI':
-            if (dataObject.ProportionIntegrationResponseVICount > 0) {
-                G.alert('比例积分响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionIntegrationResponseVICount++;
-            break;
-
-        case 'ProportionDifferentiationResponseVI':
-            if (dataObject.ProportionDifferentiationResponseVICount > 0) {
-                G.alert('比例微分响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionDifferentiationResponseVICount++;
-            break;
-
-        case 'ProportionInertiaResponseVI':
-            if (dataObject.ProportionInertiaResponseVICount > 0) {
-                G.alert('比例惯性响应已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.ProportionInertiaResponseVICount++;
-            break;
-
-        case 'SignalGeneratorVI':
-            if (dataObject.SignalGeneratorVICount > 0) {
-                G.alert('信号发生器已存在！', 1, 1500);
-                return false;
-            }
-            newVICanvas.id = VICanvas.id + '-' + dataObject.SignalGeneratorVICount++;
-            break;
-    }
-    VIDraw(newVICanvas);
-}
-
-function VIDraw (canvas) {
-
-    instance.getContainer().appendChild(canvas);
-    instance.draggable(canvas);
-    let VIInfo = canvas.id.split('-');
-    switch (VIInfo[0]) {
-
-        case 'AddVI':
-            dataObject.AddVI.push(new VILibrary.VI.AddVI(canvas));
-            addEndpoints(canvas.id, -1, 2);
-            break;
-
-        case 'AudioVI':
-            dataObject.AudioVI.push(new VILibrary.VI.AudioVI(canvas));
-            addEndpoints(canvas.id, -1, 0);
-            break;
-
-        case 'BallBeamVI':
-            dataObject.BallBeamVI.push(new VILibrary.VI.BallBeamVI(canvas, true));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'ButtonVI':
-            dataObject.ButtonVI.push(new VILibrary.VI.ButtonVI(canvas, true));
-            break;
-
-        case 'DCOutputVI':
-            dataObject.DCOutputVI.push(new VILibrary.VI.DCOutputVI(canvas));
-            addEndpoints(canvas.id, -1, 0);
-            break;
-
-        case 'DifferentiationResponseVI':
-            dataObject.DifferentiationResponseVI.push(new VILibrary.VI.DifferentiationResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'FFTVI':
-            dataObject.FFTVI.push(new VILibrary.VI.FFTVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'InertiaResponseVI':
-            dataObject.InertiaResponseVI.push(new VILibrary.VI.InertiaResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'IntegrationResponseVI':
-            dataObject.IntegrationResponseVI.push(new VILibrary.VI.IntegrationResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'KnobVI':
-            dataObject.KnobVI.push(new VILibrary.VI.KnobVI(canvas));
-            addEndpoints(canvas.id, -1, 0);
-            break;
-
-        case 'OrbitWaveVI':
-            dataObject.OrbitWaveVI.push(new VILibrary.VI.OrbitWaveVI(canvas));
-            addEndpoints(canvas.id, 0, 1);
-            break;
-
-        case 'OscillationResponseVI':
-            dataObject.OscillationResponseVI.push(new VILibrary.VI.OscillationResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'PIDVI':
-            dataObject.PIDVI.push(new VILibrary.VI.PIDVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'ProportionDifferentiationResponseVI':
-            dataObject.ProportionDifferentiationResponseVI.push(new VILibrary.VI.ProportionDifferentiationResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'ProportionInertiaResponseVI':
-            dataObject.ProportionInertiaResponseVI.push(new VILibrary.VI.ProportionInertiaResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'ProportionIntegrationResponseVI':
-            dataObject.ProportionIntegrationResponseVI.push(new VILibrary.VI.ProportionIntegrationResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'ProportionResponseVI':
-            dataObject.ProportionResponseVI.push(new VILibrary.VI.ProportionResponseVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'RelayVI':
-            dataObject.RelayVI.push(new VILibrary.VI.RelayVI(canvas));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'RotorExperimentalRigVI':
-            dataObject.RotorExperimentalRigVI.push(new VILibrary.VI.RotorExperimentalRigVI(canvas, true));
-            addEndpoints(canvas.id, -1, 1);
-            break;
-
-        case 'RoundPanelVI':
-            dataObject.RoundPanelVI.push(new VILibrary.VI.RoundPanelVI(canvas));
-            addEndpoints(canvas.id, 0, 1);
-            break;
-
-        case 'SignalGeneratorVI':
-            dataObject.SignalGeneratorVI.push(new VILibrary.VI.SignalGeneratorVI(canvas));
-            addEndpoints(canvas.id, -1, 2);
-            break;
-
-        case 'TextVI':
-            dataObject.TextVI.push(new VILibrary.VI.TextVI(canvas));
-            dataObject.TextVI[dataObject.TextVICount - 1].setData(0);
-            addEndpoints(canvas.id, 0, 1);
-            break;
-
-        case 'WaveVI':
-            dataObject.WaveVI.push(new VILibrary.VI.WaveVI(canvas));
-            addEndpoints(canvas.id, 0, 1);
-            break;
-    }
-}
-
 /**
  *添加节点
  * @param id 元素ID
- * @param sourcePointCount 输出节点允许最大连接数
- * @param targetPointCount 输入节点允许最大连接数
+ * @param outputPointCount 输出节点允许最大连接数
+ * @param inputPointCount 输入节点允许最大连接数
  */
-function addEndpoints (id, sourcePointCount, targetPointCount) {
+function addEndpoints (id, outputPointCount, inputPointCount) {
 
     // this is the paint style for the connecting lines..
     let connectorPaintStyle = {
@@ -867,8 +287,8 @@ function addEndpoints (id, sourcePointCount, targetPointCount) {
             fill: '#216477',
             stroke: '#216477'
         },
-        // the definition of source endpoints (the small blue ones)
-        sourceEndpoint = {
+        // the definition of output endpoints (the small blue ones)
+        outputEndpoint = {
             endpoint: 'Dot',
             paintStyle: {
                 stroke: '#7AB02C',
@@ -877,7 +297,7 @@ function addEndpoints (id, sourcePointCount, targetPointCount) {
                 strokeWidth: 1
             },
             isSource: true,
-            maxConnections: sourcePointCount, //设置最大连接个数，-1为不限制
+            maxConnections: outputPointCount, //设置最大连接个数，-1为不限制
             connector: ['Flowchart', {stub: [10, 15], gap: 10, cornerRadius: 5, alwaysRespectStubs: true}],
             connectorStyle: connectorPaintStyle,
             hoverPaintStyle: endpointHoverStyle,
@@ -892,12 +312,12 @@ function addEndpoints (id, sourcePointCount, targetPointCount) {
                 }]
             ]
         },
-        // the definition of target endpoints (will appear when the user drags a connection)
-        targetEndpoint = {
+        // the definition of input endpoints (will appear when the user drags a connection)
+        inputEndpoint = {
             endpoint: 'Dot',
             paintStyle: {fill: '#7AB02C', radius: 7},
             hoverPaintStyle: endpointHoverStyle,
-            maxConnections: targetPointCount,
+            maxConnections: inputPointCount,
             dropOptions: {hoverClass: 'hover', activeClass: 'active'},
             isTarget: true,
             overlays: [
@@ -909,55 +329,128 @@ function addEndpoints (id, sourcePointCount, targetPointCount) {
                 }]
             ]
         },
-        sourceAnchors = [
+        outputAnchors = [
             [0.2, 0, 0, -1, 0, 0, "foo"],
             [1, 0.2, 1, 0, 0, 0, "bar"],
             [0.8, 1, 0, 1, 0, 0, "baz"],
             [0, 0.8, -1, 0, 0, 0, "qux"]
         ],
-        targetAnchors = [
+        inputAnchors = [
             [0.6, 0, 0, -1],
             [1, 0.6, 1, 0],
             [0.4, 1, 0, 1],
             [0, 0.4, -1, 0]
         ];
 
-    if (sourcePointCount != 0) {
+    if (outputPointCount != 0) {
 
-        instance.addEndpoint(id, sourceEndpoint, {anchor: sourceAnchors, uuid: 'source-' + id});
+        instance.addEndpoint(id, outputEndpoint, {anchor: outputAnchors, uuid: 'output-' + id});
     }
-    if (targetPointCount != 0) {
+    if (inputPointCount != 0) {
 
-        instance.addEndpoint(id, targetEndpoint, {anchor: targetAnchors, uuid: 'target-' + id});
+        instance.addEndpoint(id, inputEndpoint, {anchor: inputAnchors, uuid: 'input-' + id});
     }
 }
 
-/**
- * 右键点击锁定VI
- * @param e
- * @param canvas
- */
-function toggleDrag (e, canvas) {
+function VIDraw (canvas) {
+
+    VIContainer.append(canvas);
+    instance.draggable(canvas);
+    let VIInfo = canvas.id.split('-'),
+        tempVI = new VILibrary.VI[VIInfo[0]](canvas, true);
+
+    dataObject[VIInfo[0]].push(tempVI);
+    addEndpoints(canvas.id, tempVI.outputPointCount, tempVI.inputPointCount);
+
+}
+
+function allowDrop (e) {
+
+    e.preventDefault();
+}
+
+function drag (e) {
+
+    e.dataTransfer.setData('Text', e.target.id);
+}
+
+function drop (e) {
+
+    e.preventDefault();
+    let VICanvas = document.getElementById(e.dataTransfer.getData('Text'));
+    let newVICanvas = document.createElement('canvas'), i;
+    for (i = 0; i < VICanvas.attributes.length - 3; i += 1) {//后三个属性为侧栏中拖动属性，主VI界面不需要
+
+        newVICanvas.setAttribute(VICanvas.attributes.item(i).nodeName, VICanvas.getAttribute(VICanvas.attributes.item(i).nodeName));
+    }
+    newVICanvas.setAttribute('oncontextmenu', 'showContextMenu(event, this)');
+    newVICanvas.width = VICanvas.width * VICanvas.getAttribute('zoom');
+    newVICanvas.height = VICanvas.height * VICanvas.getAttribute('zoom');
+    newVICanvas.style.left = (e.offsetX - newVICanvas.width / 2) + 'px';
+    newVICanvas.style.top = (e.offsetY - newVICanvas.height / 2) + 'px';
+
+    newVICanvas.id = VICanvas.id + '-' + dataObject[VICanvas.id + 'Count']++;
+
+    if (VICanvas.id === 'ButtonVI') {
+
+        newVICanvas.setAttribute('onclick', 'toggleStart(this)');//向开关绑定启动函数
+    }
+    new VIDraw(newVICanvas);
+}
+
+function toggleDrag (info) {
+
+    instance.toggleDraggable($('#' + $(info).attr('canvasid')));
+}
+
+function deleteVI (info) {
+
+    let canvasId = $(info).attr('canvasid');
+    let canvas = $('#' + canvasId);
+    instance.detachAllConnections(canvas);
+    let VI = getObjectVIById(canvasId);
+    canvas.remove();
+    console.log('VIDeleted');
+
+}
+function showContextMenu (e, canvas) {
 
     e = e || window.event;
     e.preventDefault(); //阻止右键默认菜单
-    instance.toggleDraggable(canvas);
+
+    //鼠标点的坐标
+    let oX = e.clientX;
+    let oY = e.clientY;
+    let btn_Lock = $('<span canvasid="' + canvas.id + '" onclick="toggleDrag(this)">锁定</span>');
+    let btn_Delete = $('<span canvasid="' + canvas.id + '" onclick="deleteVI(this)">删除</span>');
+    contextMenu.append(btn_Lock);
+    contextMenu.append(btn_Delete);
+    //菜单出现后的位置
+    contextMenu.css('display', 'block');
+    contextMenu.css('left', oX);
+    contextMenu.css('top', oY);
+    return false;
 }
+
+VIContainer.click(function () {
+
+    contextMenu.css('display', 'none');
+});
 
 function createCanvas (id, className, width, height, zoomValue, showBoxFlag) {
 
-    let canvas = document.createElement('canvas');
-    canvas.setAttribute('id', id);
-    canvas.setAttribute('class', className);
-    canvas.setAttribute('width', width);
-    canvas.setAttribute('height', height);
+    let canvas = $('<canvas></canvas>');
+    canvas.attr('id', id);
+    canvas.attr('class', className);
+    canvas.attr('width', width);
+    canvas.attr('height', height);
     if (showBoxFlag) {
 
-        canvas.setAttribute('ondblclick', 'showBox(this)');
+        canvas.attr('ondblclick', 'showBox(this)');
     }
-    canvas.setAttribute('zoom', zoomValue);
-    canvas.setAttribute('draggable', 'true');
-    canvas.setAttribute('ondragstart', 'drag(event)');
+    canvas.attr('zoom', zoomValue);
+    canvas.attr('draggable', 'true');
+    canvas.attr('ondragstart', 'drag(event)');
     sideBar.append(canvas);
     return canvas;
 
@@ -979,8 +472,8 @@ function ready () {
                 id: 'ARROW',
                 events: {
                     // click: function () {
-                        //                            alert('you clicked on the arrow overlay')
-                        //点击箭头事件
+                    //                            alert('you clicked on the arrow overlay')
+                    //点击箭头事件
                     // }
                 }
             }]
@@ -1009,7 +502,7 @@ function ready () {
             //对多输出控件判断
             if (sourceElement.name === 'BallBeamVI') {
 
-                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
                     '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="O.close()">' +
                     '<label class="input-label" for="type1">反馈角度</label></div>' +
@@ -1038,7 +531,7 @@ function ready () {
             }
             else if (sourceElement.name === 'RotorExperimentalRigVI') {
 
-                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
                     '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="O.close()">' +
                     '<label class="input-label" for="type1">时域信号</label></div>' +
@@ -1078,7 +571,7 @@ function ready () {
             //对于多输入控件,进行输入端口判断
             if (targetElement.name === 'AddVI') {
 
-                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
                     '<div><input type="radio" id="type1" class="radioInput" name="AddVI-type" value="1" alt="初值" onclick="I.close()">' +
                     '<label class="input-label" for="type1">初值</label></div>' +
@@ -1117,7 +610,7 @@ function ready () {
             }
             else if (targetElement.name === 'SignalGeneratorVI') {
 
-                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
                     '<div class="input-div">' +
                     '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" alt="幅值" onclick="I.close()">' +
                     '<label class="input-label" for="type1">幅值</label></div>' +
@@ -1174,6 +667,7 @@ function ready () {
         //监听断开连线事件
         instance.bind('connectionDetached', function (connectionInfo) {
 
+            console.log('detached');
             let sourceElement = getObjectVIById(connectionInfo.connection.sourceId);
             let targetElement = getObjectVIById(connectionInfo.connection.targetId);
 

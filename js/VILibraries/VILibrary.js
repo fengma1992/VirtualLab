@@ -163,10 +163,17 @@ VILibrary.VI = {
         this.latestInput = 0;
         this.singleOutput = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '请输入初始值';
+        this.boxContent = '<div class="input-div"><span class="normalSpan">初值:</span>' +
+            '<input type="number" id="AddVI-input" value="' + this.originalInput + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (latestInput) {
 
@@ -245,6 +252,8 @@ VILibrary.VI = {
 
         this.dataLength = 2048;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 0;
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
@@ -382,6 +391,8 @@ VILibrary.VI = {
         this.index = 0;
         this.angelOutput = [0];
         this.positionOutput = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -710,6 +721,8 @@ VILibrary.VI = {
         this.maxValY = 100;
         this.minValY = 0;
         this.autoZoom = true;
+        this.outputPointCount = 0;
+        this.inputPointCount = 1;
 
         this.pointNum = 100;
         this.drawRulerFlag = true;
@@ -1083,6 +1096,8 @@ VILibrary.VI = {
         this.name = 'ButtonVI';
         this.cnText = '启动';
         this.fillStyle = 'silver';
+        this.outputPointCount = 0;
+        this.inputPointCount = 0;
 
         this.reset = function () {
 
@@ -1115,9 +1130,16 @@ VILibrary.VI = {
         this.index = 0;
         this.singleOutput = 100;//输出初值
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 0;
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
+
+        this.boxTitle = '请设置输出值';
+        this.boxContent = '<div class="input-div"><span class="normalSpan">初值:</span>' +
+            '<input type="number" id="DCOutputVI-input" value="' + this.singleOutput + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         /**
          * 将输出数保存在数组内
@@ -1194,10 +1216,17 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '微分响应';
+        this.boxContent = '<div class="input-div"><span class="normalSpan">K3:</span>' +
+            '<input type="number" id="DifferentiationResponseVI-input" value="' + this.k3 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -1263,6 +1292,8 @@ VILibrary.VI = {
         this.cnText = 'FFT';
 
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1315,10 +1346,17 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '惯性响应';
+        this.boxContent = '<div class="input-div"><span class="normalSpan">K1:</span>' +
+            '<input type="number" id="InertiaResponseVI-input" value="' + this.k1 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -1399,10 +1437,17 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '积分响应';
+        this.boxContent = '<div class="input-div"><span class="normalSpan">K2:</span>' +
+            '<input type="number" id="IntegrationResponseVI-input" value="' + this.k2 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -1482,9 +1527,18 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [100];
+        this.outputPointCount = -1;
+        this.inputPointCount = 0;
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
+
+        this.boxTitle = '请输入初始值';
+        this.boxContent = '<div class="input-div">' +
+            '<span class="normalSpan">最小值:</span><input type="number" id="KnobVI-input-1" value="' + this.minValue + '" class="normalInput">' +
+            '<span class="normalSpan">最大值:</span><input type="number" id="KnobVI-input-2" value="' + this.maxValue + '" class="normalInput">' +
+            '<span class="normalSpan">初值:</span><input type="number" id="KnobVI-input-3" value="' + this.defaultValue + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         let spinnerFlag = false;
         let startX, startY, stopX, stopY;
@@ -1783,6 +1837,8 @@ VILibrary.VI = {
         this.MaxVal = 20;
         this.MinVal = -20;
         this.autoZoom = true;
+        this.outputPointCount = 0;
+        this.inputPointCount = 1;
 
         //网格行列数//
         this.nRow = 10;
@@ -2185,10 +2241,18 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '震荡响应';
+        this.boxContent = '<div class="input-div">' +
+            '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
+            '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="' + this.k2 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2279,10 +2343,19 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '请输入PID参数';
+        this.boxContent = '<div class="input-div">' +
+            '<span class="normalSpan">P:</span><input type="number" id="PIDVI-input-1" value="' + this.P + '" class="normalInput">' +
+            '<span class="normalSpan">I:</span><input type="number" id="PIDVI-input-2" value="' + this.I + '" class="normalInput">' +
+            '<span class="normalSpan">D:</span><input type="number" id="PIDVI-input-3" value="' + this.D + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         /**
          *
@@ -2384,10 +2457,18 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '比例微分响应';
+        this.boxContent = '<div class="input-div">' +
+            '<span class="normalSpan">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
+            '<span class="normalSpan">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="' + this.k3 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2475,10 +2556,20 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '比例惯性响应';
+        this.boxContent = '<div class="input-div">' +
+            '<span class="normalSpan">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
+            '<span class="normalSpan">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="' + this.k2 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+
+
         this.setData = function (input) {
 
             _this.input = Array.isArray(input) ? input[input.length - 1] : input;
@@ -2567,10 +2658,18 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '比例积分响应';
+        this.boxContent = '<div class="input-div">' +
+            '<span class="normalSpan">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
+            '<span class="normalSpan">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="' + this.k2 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2663,10 +2762,17 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '比例响应';
+        this.boxContent = '<div class="input-div"><span class="normalSpan">K1:</span>' +
+            '<input type="number" id="ProportionResponseVI-input" value="' + this.k1 + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2734,11 +2840,14 @@ VILibrary.VI = {
         this.ctx = domElement.getContext('2d');
         this.name = 'RelayVI';
         this.cnText = '存储器';
+
         this.input = 0;
         this.singleOutput = 0;
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2806,10 +2915,23 @@ VILibrary.VI = {
         this.frequencyOutput = [0];
         this.orbitXOutput = [0];
         this.orbitYOutput = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 0;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '请设置输出信号类型';
+        this.boxContent = '<div class="input-div">' +
+            '<div><input type="radio" id="type1" class="radioInput" name="RotorExperimentalRigVI-type" value="1" onclick="B.close()">' +
+            '<label class="input-label" for="type1">转速信号</label></div>' +
+            '<div><input type="radio" id="type2" class="radioInput" name="RotorExperimentalRigVI-type" value="2" onclick="B.close()">' +
+            '<label class="input-label" for="type2">加速度信号</label></div>' +
+            '<div><input type="radio" id="type3" class="radioInput" name="RotorExperimentalRigVI-type" value="3" onclick="B.close()">' +
+            '<label class="input-label" for="type3">轴心位移X信号</label></div>' +
+            '<div><input type="radio" id="type4" class="radioInput" name="RotorExperimentalRigVI-type" value="4" onclick="B.close()">' +
+            '<label class="input-label" for="type4">轴心位移Y信号</label></div></div>';
 
         /**
          *设置转速
@@ -3137,15 +3259,25 @@ VILibrary.VI = {
         this.smallSectionNum = 10;
         this.unit = '';
         this.title = '';
-        this.bgColor = "RGB(249, 250, 249)";
-        this.screenColor = "RGB(61, 132, 185)";
-        this.borderColor = "RGB(100,100,100)";
-
-        this.fontColor = "RGB(0, 0, 0)";
-        this.fontSize = parseInt(16 * _this.radius / 150);
+        this.outputPointCount = 0;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
+
+        this.boxTitle = '请设置初始参数';
+        this.boxContent = '<div class="input-div">' +
+            '<span class="normalSpan">标题:</span><input type="text" id="RoundPanelVI-input-1" value="' + this.title + '" class="normalInput">' +
+            '<span class="normalSpan">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + this.unit + '" class="normalInput">' +
+            '<span class="normalSpan">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + this.minValue + '" class="normalInput">' +
+            '<span class="normalSpan">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + this.maxValue + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+
+        this.bgColor = "RGB(249, 250, 249)";
+        this.screenColor = "RGB(61, 132, 185)";
+        this.borderColor = "RGB(100,100,100)";
+        this.fontColor = "RGB(0, 0, 0)";
+        this.fontSize = parseInt(16 * _this.radius / 150);
 
         function parsePosition (angle) {
 
@@ -3375,10 +3507,23 @@ VILibrary.VI = {
         this.signalType = 1;
         this.singleOutput = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 2;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
         this.target = [];
+
+        this.boxTitle = '请选择信号类型';
+        this.boxContent = '<div class="input-div">' +
+            '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" onclick="B.close()">' +
+            '<label class="input-label" for="type1">正弦波</label></div>' +
+            '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" onclick="B.close()">' +
+            '<label class="input-label" for="type2">方波</label></div>' +
+            '<div><input type="radio" id="type3" class="radioInput" name="SignalGeneratorVI-type" value="3" onclick="B.close()">' +
+            '<label class="input-label" for="type3">三角波</label></div>' +
+            '<div><input type="radio" id="type4" class="radioInput" name="SignalGeneratorVI-type" value="4" onclick="B.close()">' +
+            '<label class="input-label" for="type4">白噪声</label></div></div>';
 
         /**
          * 信号产生函数
@@ -3527,6 +3672,8 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.output = [0];
+        this.outputPointCount = -1;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3704,9 +3851,16 @@ VILibrary.VI = {
 
         this.latestInput = 0;
         this.decimalPlace = 1;
+        this.outputPointCount = 0;
+        this.inputPointCount = 1;
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
+
+        this.boxTitle = '请输入保留小数位数';
+        this.boxContent = '<div class="input-div">' +
+            '<input type="number" id="TextVI-input" value="' + this.decimalPlace + '" class="normalInput">' +
+            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (latestInput) {
 
@@ -3774,6 +3928,8 @@ VILibrary.VI = {
         this.maxValY = 10;
         this.minValY = -10;
         this.autoZoom = true;
+        this.outputPointCount = 0;
+        this.inputPointCount = 1;
 
         //网格行列数//
         this.nRow = 4;
