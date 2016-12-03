@@ -6,7 +6,6 @@
     <option eval="true" />
     <option for="true" />
     <option maxerr="50" />
-    <option multivar="true" />
     <option single="true" />
     <option this="true" />
     <option white="true" />

@@ -2758,8 +2758,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var _ctx;
 	    function getContext() {
 	        if (!_ctx) {
-	            // Use util.createCanvas instead of createCanvas
-	            // because createCanvas may be overwritten in different environment
+                // Use util.addCanvasToSideBar instead of addCanvasToSideBar
+                // because addCanvasToSideBar may be overwritten in different environment
 	            _ctx = util.createCanvas().getContext('2d');
 	        }
 	        return _ctx;

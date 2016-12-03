@@ -6,19 +6,19 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-<div class="mainDiv">
-    <div class="rowFlexDiv">
-        <video id="video" width="320" height="240" class="pictureCanvas" autoplay="autoplay"></video>
-        <canvas id="captureCanvas" width="320" height="240" class="pictureCanvas"></canvas>
-        <canvas id="grayCanvas" width="320" height="240" class="pictureCanvas"></canvas>
-        <canvas id="equalizerCanvas" width="320" height="240" class="pictureCanvas"></canvas>
-        <canvas id="binaryCanvas" width="320" height="240" class="pictureCanvas"></canvas>
+<div class="main-div">
+    <div class="rowFlex-div">
+        <video id="video" width="320" height="240" class="picture-canvas" autoplay="autoplay"></video>
+        <canvas id="captureCanvas" width="320" height="240" class="picture-canvas"></canvas>
+        <canvas id="grayCanvas" width="320" height="240" class="picture-canvas"></canvas>
+        <canvas id="equalizerCanvas" width="320" height="240" class="picture-canvas"></canvas>
+        <canvas id="binaryCanvas" width="320" height="240" class="picture-canvas"></canvas>
 
-        <div id="controlDiv">
+        <div id="control-div">
             <!--<button onclick="openCamera()">开启摄像头</button>-->
             <div>
-                <button class="normalBtn" onclick="capture()">拍照</button>
-                <button class="normalBtn" onclick="histogramEqualizer()">直方图均衡化</button>
+                <button class="normal-btn" onclick="capture()">拍照</button>
+                <button class="normal-btn" onclick="histogramEqualizer()">直方图均衡化</button>
             </div>
             <canvas id="knobCanvas" width="128" height="128"></canvas>
             <span id="grayValue" style="width: 200px">二值化阈值：未设定</span>

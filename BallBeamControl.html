@@ -6,38 +6,38 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-<div class="mainDiv">
+<div class="main-div">
     <canvas id="mainCanvas" width="1000" height="400"></canvas>
-    <div class="rowFlexDiv">
-        <div class="columnFlexDiv">
+    <div class="rowFlex-div">
+        <div class="columnFlex-div">
             <span>小球位置曲线</span>
             <canvas id="positionCanvas" width="500" height="300"></canvas>
         </div>
-        <div class="columnFlexDiv">
+        <div class="columnFlex-div">
             <span>杆角度曲线</span>
             <canvas id="angleCanvas" width="500" height="300"></canvas>
         </div>
     </div>
-    <div class="rowFlexDiv">
+    <div class="rowFlex-div">
         <canvas id="ADDCanvas" width="45" height="45"></canvas>
         <canvas id="PIDCanvas" width="45" height="45"></canvas>
     </div>
-    <div class="rowFlexDiv">
+    <div class="rowFlex-div">
         <div>
-            <span class="normalSpan">P:</span><input type="number" id="PInput" value="20" class="normalInput">
+            <span class="normal-span">P:</span><input type="number" id="PInput" value="20" class="normal-input">
         </div>
         <div>
-            <span class="normalSpan">I:</span><input type="number" id="IInput" value="0" class="normalInput">
+            <span class="normal-span">I:</span><input type="number" id="IInput" value="0" class="normal-input">
         </div>
         <div>
-            <span class="normalSpan">D:</span><input type="number" id="DInput" value="20" class="normalInput">
+            <span class="normal-span">D:</span><input type="number" id="DInput" value="20" class="normal-input">
         </div>
         <div>
-            <span class="normalSpan">标记位置：</span><input type="text" id="positionInput" value="0" class="normalInput">
+            <span class="normal-span">标记位置：</span><input type="text" id="positionInput" value="0" class="normal-input">
         </div>
         <div>
-            <input type="button" value="开始" class="normalBtn" onclick="start()">
-            <input type="button" value="重置" class="normalBtn" onclick="reset()">
+            <input type="button" value="开始" class="normal-btn" onclick="start()">
+            <input type="button" value="重置" class="normal-btn" onclick="reset()">
         </div>
     </div>
 </div>

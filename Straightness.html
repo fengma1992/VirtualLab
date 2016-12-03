@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div class="mainDiv">
+<div class="main-div">
     <canvas id="mainCanvas" width="1000" height="400"></canvas>
     <table id="mainTable">
         <tr>
@@ -30,14 +30,14 @@
                     <tr>
                         <th>读数</th>
                         <td>0</td>
-                        <td><input id="data1" type="number" class="dataInput"></td>
-                        <td><input id="data2" type="number" class="dataInput"></td>
-                        <td><input id="data3" type="number" class="dataInput"></td>
-                        <td><input id="data4" type="number" class="dataInput"></td>
-                        <td><input id="data5" type="number" class="dataInput"></td>
-                        <td><input id="data6" type="number" class="dataInput"></td>
-                        <td><input id="data7" type="number" class="dataInput"></td>
-                        <td><input id="data8" type="number" class="dataInput"></td>
+                        <td><input id="data1" type="number" class="data-input"></td>
+                        <td><input id="data2" type="number" class="data-input"></td>
+                        <td><input id="data3" type="number" class="data-input"></td>
+                        <td><input id="data4" type="number" class="data-input"></td>
+                        <td><input id="data5" type="number" class="data-input"></td>
+                        <td><input id="data6" type="number" class="data-input"></td>
+                        <td><input id="data7" type="number" class="data-input"></td>
+                        <td><input id="data8" type="number" class="data-input"></td>
                     </tr>
                     <tr>
                         <th>直接累加值</th>
@@ -79,9 +79,9 @@
             </td>
         </tr>
     </table>
-    <div id="eChartDiv"></div>
-    <div id="loadingDiv" class="loadingDiv">
-        <img class="loadingImg" src="img/loading.gif" alt="loading">
+    <div id="eChart-div"></div>
+    <div id="loadingDiv" class="loading-div">
+        <img class="loading-img" src="img/loading.gif" alt="loading">
     </div>
 </div>
 
@@ -120,7 +120,7 @@
     window.requestAnimationFrame = requestAnimationFrame;
 
     let mainTable = document.getElementById('mainTable'),
-            eChartDiv = document.getElementById('eChartDiv'),
+        eChartDiv = document.getElementById('eChart-div'),
             mainCanvas = document.getElementById('mainCanvas'),
             loadingDiv = document.getElementById('loadingDiv');
 

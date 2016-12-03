@@ -6,33 +6,33 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-<div class="mainDiv">
+<div class="main-div">
     <canvas id="mainCanvas" width="1000" height="300"></canvas>
-    <div class="rowFlexDiv">
-        <div class="columnFlexDiv">
+    <div class="rowFlex-div">
+        <div class="columnFlex-div">
             <span>信号波形</span>
             <canvas id="signalCanvas" width="500" height="200"></canvas>
             <span>信号频谱</span>
             <canvas id="frequencyCanvas" width="500" height="200"></canvas>
         </div>
-        <div class="columnFlexDiv">
+        <div class="columnFlex-div">
             <span>轴心轨迹</span>
             <canvas id="orbitCanvas" width="430" height="430"></canvas>
         </div>
     </div>
     <br>
-    <div class="rowFlexDiv">
+    <div class="rowFlex-div">
         <canvas id="knobCanvas" width="128" height="128"></canvas>
         <canvas id="roundPanelCanvas" width="128" height="128"></canvas>
-        <select id="signalSelect" class="normalSelect" onchange="setSignalType(this)">
+        <select id="signalSelect" class="normal-select" onchange="setSignalType(this)">
             <option value="1">转速信号</option>
             <option value="2">加速度信号</option>
             <option value="3">轴心位移X信号</option>
             <option value="4">轴心位移Y信号</option>
         </select>
     </div>
-    <div id="loadingDiv" class="loadingDiv">
-        <img class="loadingImg" src="img/loading.gif" alt="loading">
+    <div id="loadingDiv" class="loading-div">
+        <img class="loading-img" src="img/loading.gif" alt="loading">
     </div>
 </div>
 <script src="js/VILibraries/VILibrary.js"></script>

@@ -163,6 +163,7 @@ VILibrary.VI = {
         this.latestInput = 0;
         this.singleOutput = 0;
         this.output = [0];
+
         this.outputPointCount = -1;
         this.inputPointCount = 2;
 
@@ -170,52 +171,72 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //多输入选择弹出框
+        this.inputBoxTitle = '请选择' + this.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        this.inputBoxContent = '<div class="input-div">' +
+            '<div><input type="radio" id="type1" class="radio-input" name="input-type" value="1" alt="初值" onclick="I.close()">' +
+            '<label class="input-label" for="type1">初值</label></div>' +
+            '<div><input type="radio" id="type2" class="radio-input" name="input-type" value="2" alt="反馈值" onclick="I.close()">' +
+            '<label class="input-label" for="type2">反馈值</label></div></div>';
+
+        //VI双击弹出框
         this.boxTitle = '请输入初始值';
-        this.boxContent = '<div class="input-div"><span class="normalSpan">初值:</span>' +
-            '<input type="number" id="AddVI-input" value="' + this.originalInput + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+        this.boxContent = '<div class="input-div"><span class="normal-span">初值:</span>' +
+            '<input type="number" id="AddVI-input" value="' + this.originalInput + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
-        this.setData = function (latestInput) {
+        this.setData = function (input, inputType) {
 
-            _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-            if (Number.isNaN(_this.latestInput)) {
+            let inputValue = Array.isArray(input) ? input[input.length - 1] : input;
+            if (Number.isNaN(inputValue)) {
 
+                console.log('AddVI: Input value error');
                 return false;
             }
-            _this.singleOutput = parseFloat(_this.originalInput - _this.latestInput).toFixed(2);
 
-            let i = 0;
-            if (_this.index <= (_this.dataLength - 1)) {
+            if (inputType === 1) {
 
-                _this.output[_this.index] = _this.singleOutput;
-                _this.index += 1;
+                _this.originalInput = inputValue;
+                return true;
             }
             else {
 
-                for (i = 0; i < _this.dataLength - 1; i += 1) {
+                _this.latestInput = inputValue;
+                _this.singleOutput = parseFloat(_this.originalInput - _this.latestInput).toFixed(2);
 
-                    _this.output[i] = _this.output[i + 1];
+                let i = 0;
+                if (_this.index <= (_this.dataLength - 1)) {
+
+                    _this.output[_this.index] = _this.singleOutput;
+                    _this.index += 1;
                 }
-                _this.output[_this.dataLength - 1] = _this.singleOutput;
+                else {
+
+                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+
+                        _this.output[i] = _this.output[i + 1];
+                    }
+                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                }
+
+                return _this.singleOutput;
             }
-
-            return _this.singleOutput;
-        };
-
-        this.setOriginalData = function (originalInput) {
-
-            originalInput = Array.isArray(originalInput) ? originalInput[originalInput.length - 1] : originalInput;
-            if (Number.isNaN(originalInput)) {
-
-                return false;
-            }
-            _this.originalInput = originalInput;
-            return _this.originalInput;
         };
 
         this.setInitialData = function () {
 
-            _this.setOriginalData($('#AddVI-input').val());
+            _this.originalInput = Number($('#AddVI-input').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -350,6 +371,11 @@ VILibrary.VI = {
             _this.draw();
         }
 
+        this.getData = function () {
+
+            return _this.output;
+        };
+
         this.reset = function () {
 
             _this.output = [0];
@@ -391,8 +417,19 @@ VILibrary.VI = {
         this.index = 0;
         this.angelOutput = [0];
         this.positionOutput = [0];
+
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+
+        //多输出选择弹出框
+        this.outputBoxTitle = '请选择' + this.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        this.outputBoxContent = '<div class="input-div">' +
+            '<div><input type="radio" id="type1" class="radio-input" name="output-type" value="1" onclick="O.close()">' +
+            '<label class="input-label" for="type1">反馈角度</label></div>' +
+            '<div><input type="radio" id="type2" class="radio-input" name="output-type" value="2" onclick="O.close()">' +
+            '<label class="input-label" for="type2">反馈位置</label></div>' +
+            '<div><input type="radio" id="type3" class="radio-input" name="output-type" value="3" onclick="O.close()">' +
+            '<label class="input-label" for="type3">标记位置</label></div></div>';
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -668,6 +705,23 @@ VILibrary.VI = {
 
         }
 
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.angelOutput;  //输出角度数组
+            }
+            if (dataType === 2) {
+
+                return _this.positionOutput;  //输出位置数组
+
+            }
+            if (dataType === 3) {
+
+                return _this.markPosition;  //输出标记位置
+            }
+        };
+
         this.reset = function () {
 
             _this.PIDAngle = 0;
@@ -932,16 +986,14 @@ VILibrary.VI = {
             _this.drawBackground();
         };
 
-        this.setData = function (data, len) {
+        this.setData = function (data) {
 
-            if (len == undefined) {
+            if (!Array.isArray(data)) {
 
-                _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
+                console.log('BarVI: input type error');
+                return false;
             }
-            else {
-
-                _this.pointNum = len;
-            }
+            _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
 
             let YMax = 0, YMin = 0, i;
             for (i = 0; i < _this.pointNum; i += 1) {
@@ -1129,17 +1181,18 @@ VILibrary.VI = {
         this.dataLength = 1024;
         this.index = 0;
         this.singleOutput = 100;//输出初值
-        this.output = [0];
+        this.output = [100];
         this.outputPointCount = -1;
         this.inputPointCount = 0;
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '请设置输出值';
-        this.boxContent = '<div class="input-div"><span class="normalSpan">初值:</span>' +
-            '<input type="number" id="DCOutputVI-input" value="' + this.singleOutput + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+        this.boxContent = '<div class="input-div"><span class="normal-span">初值:</span>' +
+            '<input type="number" id="DCOutputVI-input" value="' + this.singleOutput + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         /**
          * 将输出数保存在数组内
@@ -1171,6 +1224,18 @@ VILibrary.VI = {
             }
         };
 
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
+        };
+
         this.setInitialData = function () {
 
             _this.setData($('#DCOutputVI-input').val());
@@ -1179,7 +1244,8 @@ VILibrary.VI = {
         this.reset = function () {
 
             _this.index = 0;
-            _this.output = [0];
+            _this.singleOutput = 100;//输出初值
+            _this.output = [100];
         };
 
         this.draw = function () {
@@ -1223,10 +1289,11 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '微分响应';
-        this.boxContent = '<div class="input-div"><span class="normalSpan">K3:</span>' +
-            '<input type="number" id="DifferentiationResponseVI-input" value="' + this.k3 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+        this.boxContent = '<div class="input-div"><span class="normal-span">K3:</span>' +
+            '<input type="number" id="DifferentiationResponseVI-input" value="' + this.k3 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -1258,6 +1325,18 @@ VILibrary.VI = {
         this.setInitialData = function () {
 
             _this.k3 = Number($('#DifferentiationResponseVI-input').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -1310,6 +1389,11 @@ VILibrary.VI = {
 
         };
 
+        this.getData = function () {
+
+            return _this.output;
+        };
+
         this.reset = function () {
 
             _this.output = [0];
@@ -1353,10 +1437,11 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '惯性响应';
-        this.boxContent = '<div class="input-div"><span class="normalSpan">K1:</span>' +
-            '<input type="number" id="InertiaResponseVI-input" value="' + this.k1 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+        this.boxContent = '<div class="input-div"><span class="normal-span">K1:</span>' +
+            '<input type="number" id="InertiaResponseVI-input" value="' + this.k1 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -1393,6 +1478,18 @@ VILibrary.VI = {
         this.setInitialData = function () {
 
             _this.k1 = Number($('#InertiaResponseVI-input').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -1444,10 +1541,11 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '积分响应';
-        this.boxContent = '<div class="input-div"><span class="normalSpan">K2:</span>' +
-            '<input type="number" id="IntegrationResponseVI-input" value="' + this.k2 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+        this.boxContent = '<div class="input-div"><span class="normal-span">K2:</span>' +
+            '<input type="number" id="IntegrationResponseVI-input" value="' + this.k2 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -1485,6 +1583,18 @@ VILibrary.VI = {
         this.setInitialData = function () {
 
             _this.k2 = Number($('#IntegrationResponseVI-input').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -1533,12 +1643,13 @@ VILibrary.VI = {
         //虚拟仪器中相连接的控件VI
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '请输入初始值';
         this.boxContent = '<div class="input-div">' +
-            '<span class="normalSpan">最小值:</span><input type="number" id="KnobVI-input-1" value="' + this.minValue + '" class="normalInput">' +
-            '<span class="normalSpan">最大值:</span><input type="number" id="KnobVI-input-2" value="' + this.maxValue + '" class="normalInput">' +
-            '<span class="normalSpan">初值:</span><input type="number" id="KnobVI-input-3" value="' + this.defaultValue + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+            '<span class="normal-span">最小值:</span><input type="number" id="KnobVI-input-1" value="' + this.minValue + '" class="normal-input">' +
+            '<span class="normal-span">最大值:</span><input type="number" id="KnobVI-input-2" value="' + this.maxValue + '" class="normal-input">' +
+            '<span class="normal-span">初值:</span><input type="number" id="KnobVI-input-3" value="' + this.defaultValue + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         let spinnerFlag = false;
         let startX, startY, stopX, stopY;
@@ -1623,6 +1734,18 @@ VILibrary.VI = {
             let maxValue = Number($('#KnobVI-input-2').val());
             let defaultValue = Number($('#KnobVI-input-3').val());
             _this.setDataRange(minValue, maxValue, defaultValue);
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -2063,8 +2186,24 @@ VILibrary.VI = {
             _this.ctx.closePath();
         };
 
-        this.setData = function (dataX, dataY) {
+        this.setAxisRange = function (min, max) {
 
+            _this.MinVal = min;
+            _this.MaxVal = max;
+            _this.drawBackground();
+        };
+
+        this.setRowColNum = function (row, col) {
+
+            _this.nRow = row;
+            _this.nCol = col;
+            _this.drawBackground();
+        };
+
+        this.setData = function (input) {
+
+            let dataX = input[0];
+            let dataY = input[1];
             if ((dataX == null || undefined) || (dataY == null || undefined)) {
 
                 return false;
@@ -2110,20 +2249,6 @@ VILibrary.VI = {
                 }
             }
             _this.draw();
-        };
-
-        this.setAxisRange = function (min, max) {
-
-            _this.MinVal = min;
-            _this.MaxVal = max;
-            _this.drawBackground();
-        };
-
-        this.setRowColNum = function (row, col) {
-
-            _this.nRow = row;
-            _this.nCol = col;
-            _this.drawBackground();
         };
 
         this.reset = function () {
@@ -2248,11 +2373,12 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '震荡响应';
         this.boxContent = '<div class="input-div">' +
-            '<span class="normalSpan">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
-            '<span class="normalSpan">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="' + this.k2 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+            '<span class="normal-span">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+            '<span class="normal-span">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="' + this.k2 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2297,6 +2423,18 @@ VILibrary.VI = {
 
             _this.k1 = Number($('#OscillationResponseVI-input-1').val());
             _this.k2 = Number($('#OscillationResponseVI-input-2').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -2350,12 +2488,13 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '请输入PID参数';
         this.boxContent = '<div class="input-div">' +
-            '<span class="normalSpan">P:</span><input type="number" id="PIDVI-input-1" value="' + this.P + '" class="normalInput">' +
-            '<span class="normalSpan">I:</span><input type="number" id="PIDVI-input-2" value="' + this.I + '" class="normalInput">' +
-            '<span class="normalSpan">D:</span><input type="number" id="PIDVI-input-3" value="' + this.D + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+            '<span class="normal-span">P:</span><input type="number" id="PIDVI-input-1" value="' + this.P + '" class="normal-input">' +
+            '<span class="normal-span">I:</span><input type="number" id="PIDVI-input-2" value="' + this.I + '" class="normal-input">' +
+            '<span class="normal-span">D:</span><input type="number" id="PIDVI-input-3" value="' + this.D + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         /**
          *
@@ -2406,6 +2545,18 @@ VILibrary.VI = {
             _this.P = Number($('#PIDVI-input-1').val());
             _this.I = Number($('#PIDVI-input-2').val());
             _this.D = Number($('#PIDVI-input-3').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -2464,11 +2615,12 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '比例微分响应';
         this.boxContent = '<div class="input-div">' +
-            '<span class="normalSpan">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
-            '<span class="normalSpan">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="' + this.k3 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+            '<span class="normal-span">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+            '<span class="normal-span">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="' + this.k3 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2511,6 +2663,18 @@ VILibrary.VI = {
 
             _this.k1 = Number($('#ProportionDifferentiationResponseVI-input-1').val());
             _this.k3 = Number($('#ProportionDifferentiationResponseVI-input-2').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -2563,12 +2727,12 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '比例惯性响应';
         this.boxContent = '<div class="input-div">' +
-            '<span class="normalSpan">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
-            '<span class="normalSpan">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="' + this.k2 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
-
+            '<span class="normal-span">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+            '<span class="normal-span">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="' + this.k2 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2610,6 +2774,18 @@ VILibrary.VI = {
 
             _this.k1 = Number($('#ProportionInertiaResponseVI-input-1').val());
             _this.k2 = Number($('#ProportionInertiaResponseVI-input-2').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -2665,11 +2841,12 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '比例积分响应';
         this.boxContent = '<div class="input-div">' +
-            '<span class="normalSpan">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="' + this.k1 + '" class="normalInput">' +
-            '<span class="normalSpan">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="' + this.k2 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+            '<span class="normal-span">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+            '<span class="normal-span">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="' + this.k2 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2716,6 +2893,18 @@ VILibrary.VI = {
 
             _this.k1 = Number($('#ProportionIntegrationResponseVI-input-1').val());
             _this.k2 = Number($('#ProportionIntegrationResponseVI-input-2').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -2769,10 +2958,11 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //VI双击弹出框
         this.boxTitle = '比例响应';
-        this.boxContent = '<div class="input-div"><span class="normalSpan">K1:</span>' +
-            '<input type="number" id="ProportionResponseVI-input" value="' + this.k1 + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+        this.boxContent = '<div class="input-div"><span class="normal-span">K1:</span>' +
+            '<input type="number" id="ProportionResponseVI-input" value="' + this.k1 + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (input) {
 
@@ -2807,6 +2997,18 @@ VILibrary.VI = {
         this.setInitialData = function () {
 
             _this.k1 = Number($('#ProportionResponseVI-input').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -2879,6 +3081,18 @@ VILibrary.VI = {
             return _this.singleOutput;
         };
 
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
+        };
+
         this.reset = function () {
 
             _this.index = 0;
@@ -2915,6 +3129,7 @@ VILibrary.VI = {
         this.frequencyOutput = [0];
         this.orbitXOutput = [0];
         this.orbitYOutput = [0];
+
         this.outputPointCount = -1;
         this.inputPointCount = 0;
 
@@ -2922,15 +3137,28 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //多输出选择弹出框
+        this.outputBoxTitle = '请选择' + this.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        this.outputBoxContent = '<div class="input-div">' +
+            '<div><input type="radio" id="type1" class="radio-input" name="output-type" value="1" onclick="O.close()">' +
+            '<label class="input-label" for="type1">时域信号</label></div>' +
+            '<div><input type="radio" id="type2" class="radio-input" name="output-type" value="2" onclick="O.close()">' +
+            '<label class="input-label" for="type2">频域信号</label></div>' +
+            '<div><input type="radio" id="type3" class="radio-input" name="output-type" value="3" onclick="O.close()">' +
+            '<label class="input-label" for="type3">轴心轨迹</label></div>' +
+            '<div><input type="radio" id="type4" class="radio-input" name="output-type" value="4" onclick="O.close()">' +
+            '<label class="input-label" for="type4">旋转频率</label></div></div>';
+
+        //VI双击弹出框
         this.boxTitle = '请设置输出信号类型';
         this.boxContent = '<div class="input-div">' +
-            '<div><input type="radio" id="type1" class="radioInput" name="RotorExperimentalRigVI-type" value="1" onclick="B.close()">' +
+            '<div><input type="radio" id="type1" class="radio-input" name="RotorExperimentalRigVI-type" value="1" onclick="B.close()">' +
             '<label class="input-label" for="type1">转速信号</label></div>' +
-            '<div><input type="radio" id="type2" class="radioInput" name="RotorExperimentalRigVI-type" value="2" onclick="B.close()">' +
+            '<div><input type="radio" id="type2" class="radio-input" name="RotorExperimentalRigVI-type" value="2" onclick="B.close()">' +
             '<label class="input-label" for="type2">加速度信号</label></div>' +
-            '<div><input type="radio" id="type3" class="radioInput" name="RotorExperimentalRigVI-type" value="3" onclick="B.close()">' +
+            '<div><input type="radio" id="type3" class="radio-input" name="RotorExperimentalRigVI-type" value="3" onclick="B.close()">' +
             '<label class="input-label" for="type3">轴心位移X信号</label></div>' +
-            '<div><input type="radio" id="type4" class="radioInput" name="RotorExperimentalRigVI-type" value="4" onclick="B.close()">' +
+            '<div><input type="radio" id="type4" class="radio-input" name="RotorExperimentalRigVI-type" value="4" onclick="B.close()">' +
             '<label class="input-label" for="type4">轴心位移Y信号</label></div></div>';
 
         /**
@@ -2950,6 +3178,30 @@ VILibrary.VI = {
         this.setInitialData = function () {
 
             _this.signalType = Number($('input[name=RotorExperimentalRigVI-type]:checked').val());
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.signalOutput;  //输出时域信号
+
+            }
+            if (dataType === 2) {
+
+                return _this.frequencyOutput;  //输出频域信号
+
+            }
+            if (dataType === 3) {
+
+                return [_this.orbitXOutput, _this.orbitYOutput];  //输出轴心位置
+
+            }
+            if (dataType === 4) {
+
+                return _this.rotateFrequency;  //输出旋转频率
+
+            }
         };
 
         function VIDraw () {
@@ -3265,13 +3517,14 @@ VILibrary.VI = {
         //虚拟仪器中相连接的控件VI
         this.source = [];
 
+        //VI双击弹出框
         this.boxTitle = '请设置初始参数';
         this.boxContent = '<div class="input-div">' +
-            '<span class="normalSpan">标题:</span><input type="text" id="RoundPanelVI-input-1" value="' + this.title + '" class="normalInput">' +
-            '<span class="normalSpan">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + this.unit + '" class="normalInput">' +
-            '<span class="normalSpan">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + this.minValue + '" class="normalInput">' +
-            '<span class="normalSpan">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + this.maxValue + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+            '<span class="normal-span">标题:</span><input type="text" id="RoundPanelVI-input-1" value="' + this.title + '" class="normal-input">' +
+            '<span class="normal-span">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + this.unit + '" class="normal-input">' +
+            '<span class="normal-span">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + this.minValue + '" class="normal-input">' +
+            '<span class="normal-span">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + this.maxValue + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.bgColor = "RGB(249, 250, 249)";
         this.screenColor = "RGB(61, 132, 185)";
@@ -3507,6 +3760,7 @@ VILibrary.VI = {
         this.signalType = 1;
         this.singleOutput = 0;
         this.output = [0];
+
         this.outputPointCount = -1;
         this.inputPointCount = 2;
 
@@ -3514,113 +3768,130 @@ VILibrary.VI = {
         this.source = [];
         this.target = [];
 
+        //多输入选择弹出框
+        this.inputBoxTitle = '请选择' + this.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        this.inputBoxContent = '<div class="input-div">' +
+            '<div><input type="radio" id="type1" class="radio-input" name="input-type" value="1" alt="幅值" onclick="I.close()">' +
+            '<label class="input-label" for="type1">幅值</label></div>' +
+            '<div><input type="radio" id="type2" class="radio-input" name="input-type" value="2" alt="频率" onclick="I.close()">' +
+            '<label class="input-label" for="type2">频率</label></div></div>';
+
+        //VI双击弹出框
         this.boxTitle = '请选择信号类型';
         this.boxContent = '<div class="input-div">' +
-            '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" onclick="B.close()">' +
+            '<div><input type="radio" id="type1" class="radio-input" name="SignalGeneratorVI-type" value="1" onclick="B.close()">' +
             '<label class="input-label" for="type1">正弦波</label></div>' +
-            '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" onclick="B.close()">' +
+            '<div><input type="radio" id="type2" class="radio-input" name="SignalGeneratorVI-type" value="2" onclick="B.close()">' +
             '<label class="input-label" for="type2">方波</label></div>' +
-            '<div><input type="radio" id="type3" class="radioInput" name="SignalGeneratorVI-type" value="3" onclick="B.close()">' +
+            '<div><input type="radio" id="type3" class="radio-input" name="SignalGeneratorVI-type" value="3" onclick="B.close()">' +
             '<label class="input-label" for="type3">三角波</label></div>' +
-            '<div><input type="radio" id="type4" class="radioInput" name="SignalGeneratorVI-type" value="4" onclick="B.close()">' +
+            '<div><input type="radio" id="type4" class="radio-input" name="SignalGeneratorVI-type" value="4" onclick="B.close()">' +
             '<label class="input-label" for="type4">白噪声</label></div></div>';
 
-        /**
-         * 信号产生函数
-         *  采样频率为11025Hz
-         * @param amp 信号幅值
-         * @param f 信号频率
-         * @param phase 信号相位
-         *
-         */
-        this.setData = function (amp, f, phase) {
-            _this.amp = Array.isArray(amp) ? amp[amp.length - 1] : amp;
-            _this.frequency = Array.isArray(f) ? f[f.length - 1] : f;
-            _this.phase = Array.isArray(phase) ? phase[phase.length - 1] : phase;
-            if (Number.isNaN(_this.amp) || Number.isNaN(_this.frequency) || Number.isNaN(_this.phase)) {
+        // 采样频率为11025Hz
+        this.setData = function (input, inputType) {
 
-                return false;
+            if (inputType === 1) {
+
+                _this.amp = Array.isArray(input) ? input[input.length - 1] : input;
+                _this.ampSetFlag = true;
             }
-            let FS = 11025;
-            let i, j;
-            let T = 1 / _this.frequency;//周期
-            let dt = 1 / FS;//采样周期
-            let t, t1, t2, t3;
+            else if (inputType === 2) {
 
-            if (_this.frequency <= 0) {
+                _this.frequency = Array.isArray(input) ? input[input.length - 1] : input;
+                _this.frequencySetFlag = true;
+            }
+            if (_this.ampSetFlag && _this.frequencySetFlag) {
 
-                for (i = 0; i < _this.dataLength; i += 1) {
+                _this.phase += 10;
+                _this.ampSetFlag = false;
+                _this.frequencySetFlag = false;
+                if (Number.isNaN(_this.amp) || Number.isNaN(_this.frequency) || Number.isNaN(_this.phase)) {
 
-                    _this.output[i] = 0;
+                    return false;
                 }
-                return _this.output;
-            }
+                let FS = 11025;
+                let i, j;
+                let T = 1 / _this.frequency;//周期
+                let dt = 1 / FS;//采样周期
+                let t, t1, t2, t3;
 
-            switch (parseInt(_this.signalType)) {
-                case 1://正弦波
+                if (_this.frequency <= 0) {
+
                     for (i = 0; i < _this.dataLength; i += 1) {
 
-                        _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
+                        _this.output[i] = 0;
                     }
-                    _this.singleOutput = _this.output[_this.dataLength - 1];
-                    break;
+                    _this.singleOutput = 0;
+                    return _this.output;
+                }
 
-                case 2://方波
-                    t1 = T / 2;//半周期时长
-                    t3 = T * _this.phase / 360.0;
-                    for (i = 0; i < _this.dataLength; i += 1) {
+                switch (parseInt(_this.signalType)) {
+                    case 1://正弦波
+                        for (i = 0; i < _this.dataLength; i += 1) {
 
-                        t = i * dt + t3;
-                        t2 = t - Math.floor(t / T) * T;
-                        if (t2 >= t1) {
-
-                            _this.output[i] = -_this.amp;
+                            _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
                         }
-                        else {
+                        _this.singleOutput = _this.output[_this.dataLength - 1];
+                        break;
 
-                            _this.output[i] = _this.amp;
+                    case 2://方波
+                        t1 = T / 2;//半周期时长
+                        t3 = T * _this.phase / 360.0;
+                        for (i = 0; i < _this.dataLength; i += 1) {
+
+                            t = i * dt + t3;
+                            t2 = t - Math.floor(t / T) * T;
+                            if (t2 >= t1) {
+
+                                _this.output[i] = -_this.amp;
+                            }
+                            else {
+
+                                _this.output[i] = _this.amp;
+                            }
                         }
-                    }
-                    _this.singleOutput = _this.output[_this.dataLength - 1];
-                    break;
+                        _this.singleOutput = _this.output[_this.dataLength - 1];
+                        break;
 
-                case 3://三角波
-                    t3 = T * _this.phase / 360.0;
-                    for (i = 0; i < _this.dataLength; i += 1) {
+                    case 3://三角波
+                        t3 = T * _this.phase / 360.0;
+                        for (i = 0; i < _this.dataLength; i += 1) {
 
-                        t = i * dt + t3;
-                        t2 = parseInt(t / T);
-                        t1 = t - t2 * T;
-                        if (t1 <= T / 2) {
-                            _this.output[i] = 4 * _this.amp * t1 / T - _this.amp;
+                            t = i * dt + t3;
+                            t2 = parseInt(t / T);
+                            t1 = t - t2 * T;
+                            if (t1 <= T / 2) {
+                                _this.output[i] = 4 * _this.amp * t1 / T - _this.amp;
+                            }
+                            else {
+                                _this.output[i] = 3 * _this.amp - 4 * _this.amp * t1 / T;
+                            }
                         }
-                        else {
-                            _this.output[i] = 3 * _this.amp - 4 * _this.amp * t1 / T;
+                        _this.singleOutput = _this.output[_this.dataLength - 1];
+                        break;
+
+                    case 4://白噪声
+                        t2 = 32767;// 0 -- 0x7fff
+                        for (i = 0; i < _this.dataLength; i += 1) {
+                            t1 = 0;
+                            for (j = 0; j < 12; j += 1) {
+
+                                t1 += (t2 * Math.random());
+                            }
+                            _this.output[i] = _this.amp * (t1 - 6 * t2) / (3 * t2);
                         }
-                    }
-                    _this.singleOutput = _this.output[_this.dataLength - 1];
-                    break;
+                        _this.singleOutput = _this.output[_this.dataLength - 1];
+                        break;
 
-                case 4://白噪声
-                    t2 = 32767;// 0 -- 0x7fff
-                    for (i = 0; i < _this.dataLength; i += 1) {
-                        t1 = 0;
-                        for (j = 0; j < 12; j += 1) {
+                    default://正弦波
+                        for (i = 0; i < _this.dataLength; i += 1) {
 
-                            t1 += (t2 * Math.random());
+                            _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
                         }
-                        _this.output[i] = _this.amp * (t1 - 6 * t2) / (3 * t2);
-                    }
-                    _this.singleOutput = _this.output[_this.dataLength - 1];
-                    break;
+                        _this.singleOutput = _this.output[_this.dataLength - 1];
 
-                default://正弦波
-                    for (i = 0; i < _this.dataLength; i += 1) {
-
-                        _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
-                    }
-                    _this.singleOutput = _this.output[_this.dataLength - 1];
-
+                }
             }
         };
 
@@ -3628,6 +3899,18 @@ VILibrary.VI = {
 
             _this.signalType = Number($('input[name=SignalGeneratorVI-type]:checked').val());
 
+        };
+
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
         };
 
         this.reset = function () {
@@ -3817,6 +4100,18 @@ VILibrary.VI = {
 
         };
 
+        this.getData = function (dataType) {
+
+            if (dataType === 1) {
+
+                return _this.singleOutput;
+            }
+            else {
+
+                return _this.output;
+            }
+        };
+
         this.reset = function () {
 
             _this.lastInput = 0;
@@ -3857,10 +4152,11 @@ VILibrary.VI = {
         //虚拟仪器中相连接的控件VI
         this.source = [];
 
+        //VI双击弹出框
         this.boxTitle = '请输入保留小数位数';
         this.boxContent = '<div class="input-div">' +
-            '<input type="number" id="TextVI-input" value="' + this.decimalPlace + '" class="normalInput">' +
-            '<button id="startBtn" class="normalBtn" onclick="B.close()">确定</button></div>';
+            '<input type="number" id="TextVI-input" value="' + this.decimalPlace + '" class="normal-input">' +
+            '<button id="startBtn" class="normal-btn" onclick="B.close()">确定</button></div>';
 
         this.setData = function (latestInput) {
 
@@ -3918,6 +4214,7 @@ VILibrary.VI = {
         this.name = 'WaveVI';
         this.cnText = '波形控件';
 
+        // console.log(domElement.width+':'+domElement.height);
         //坐标单位//
         this.strLabelX = 'X';
         this.strLabelY = 'Y';
@@ -3946,8 +4243,8 @@ VILibrary.VI = {
         this.offsetL = 10;
         if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
 
-            _this.offsetB = 35;
-            _this.offsetL = 42;
+            _this.offsetB = 30;
+            _this.offsetL = 35;
         }
         this.waveWidth = this.container.width - this.offsetL - this.offsetR;
         this.waveHeight = this.container.height - this.offsetT - this.offsetB;
@@ -4065,31 +4362,11 @@ VILibrary.VI = {
 
             if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
 
-                //绘制横纵刻度
                 let scaleYNum = 8;
                 let scaleXNum = 16;
                 let scaleYStep = _this.waveHeight / scaleYNum;
                 let scaleXStep = _this.waveWidth / scaleXNum;
-                ctx.beginPath();
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = _this.fontColor;
-                //画纵刻度
-                let k;
-                for (k = 2; k < scaleYNum; k += 2) {
 
-                    ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
-                    ctx.lineTo(_this.offsetL, _this.offsetT + k * scaleYStep);
-
-                }
-                //画横刻度
-                for (k = 2; k < scaleXNum; k += 2) {
-
-                    ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
-                    ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 7);
-
-                }
-                ctx.stroke();
-                ctx.closePath();
                 ////////////////画数字字体////////////////
                 ctx.font = "normal 12px Calibri";
 
@@ -4111,13 +4388,13 @@ VILibrary.VI = {
                 for (i = 2; i < scaleXNum; i += 2) {
 
                     temp = _this.minValX + valStepX * i;
-                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9, _this.container.height - 10);
+                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9, _this.container.height - 12);
                 }
                 //纵坐标刻度//
                 for (i = 2; i < scaleYNum; i += 2) {
 
                     temp = _this.maxValY - valStepY * i;
-                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 35, _this.offsetT + scaleYStep * i + 5);
+                    ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 28, _this.offsetT + scaleYStep * i + 5);
                 }
                 ctx.closePath();
                 ctx.save();
@@ -4155,21 +4432,14 @@ VILibrary.VI = {
             _this.drawBackground();
         };
 
-        this.setData = function (data, len) {
+        this.setData = function (data) {
 
             if (!Array.isArray(data)) {
 
                 console.log('WaveVI: input type error');
                 return false;
             }
-            if (len == undefined) {
-
-                _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
-            }
-            else {
-
-                _this.pointNum = len;
-            }
+            _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
             let YMax = 0, YMin = 0, i;
             for (i = 0; i < _this.pointNum; i += 1) {
 

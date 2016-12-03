@@ -4,99 +4,116 @@
 
 'use strict';
 let bd = $('body');
-let mainContainer = $('<div id="container-div" class="rowFlexDiv"></div>');
+let navigationBar = $('<div id="navigationBar-div"></div>');
+let fileImporter = $('<input type="file" id="file-input" onchange="importVI()">');
+let importBtn = $('<input type="button" value="导入">');
+let exportBtn = $('<input type="button" value="导出" onclick="exportVI()">');
+let startBtn = $('<input type="button" value="启动" onclick="toggleStart()">');
+let resetBtn = $('<input type="button" value="重置" onclick="init()">');
+let mainContainer = $('<div id="container-div" class="rowFlex-div"></div>');
 let sideBar = $('<div id="sideBar" class="draggable-sideBar"></div>');
 let VIContainer = $('<div id="VIContainer" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>');
-let contextMenu = $('<div id="menu"></div>');
+let contextMenu = $('<div id="menu" class="columnFlex-div"></div>');
 
-VIContainer.append(contextMenu);
+VIContainer.click(function () {
+
+    contextMenu.css('display', 'none');
+});
+importBtn.click(function () { fileImporter.click();});
+
 mainContainer.append(sideBar);
 mainContainer.append(VIContainer);
+navigationBar.append(importBtn);
+navigationBar.append(exportBtn);
+navigationBar.append(startBtn);
+navigationBar.append(resetBtn);
+bd.append(navigationBar);
 bd.append(mainContainer);
 
-let instance, mainTimer;
+let instance;
+let mainTimer;
 let bindInfoArr = [];//二维数组，第二维分别记录输出VI、输入VI
 let setVIDataIndex = 0;
 let dataObject = {
-    AudioVICount: 0,
-    BallBeamVICount: 0,
-    ButtonVICount: 0,
-    WaveVICount: 0,
-    AddVICount: 0,
-    DCOutputVICount: 0,
-    FFTVICount: 0,
-    KnobVICount: 0,
-    OrbitWaveVICount: 0,
-    PIDVICount: 0,
-    RelayVICount: 0,
-    RotorExperimentalRigVICount: 0,
-    RoundPanelVICount: 0,
-    TextVICount: 0,
-    DifferentiationResponseVICount: 0,
-    InertiaResponseVICount: 0,
-    IntegrationResponseVICount: 0,
-    OscillationResponseVICount: 0,
-    ProportionDifferentiationResponseVICount: 0,
-    ProportionInertiaResponseVICount: 0,
-    ProportionIntegrationResponseVICount: 0,
-    ProportionResponseVICount: 0,
-    SignalGeneratorVICount: 0,
-    AddVI: [],
-    AudioVI: [],
-    BallBeamVI: [],
-    ButtonVI: [],
-    WaveVI: [],
-    DCOutputVI: [],
-    FFTVI: [],
-    KnobVI: [],
-    OrbitWaveVI: [],
-    PIDVI: [],
-    RelayVI: [],
-    RotorExperimentalRigVI: [],
-    RoundPanelVI: [],
-    TextVI: [],
-    ProportionResponseVI: [],
-    IntegrationResponseVI: [],
-    DifferentiationResponseVI: [],
-    InertiaResponseVI: [],
-    OscillationResponseVI: [],
-    ProportionIntegrationResponseVI: [],
-    ProportionDifferentiationResponseVI: [],
-    ProportionInertiaResponseVI: [],
-    SignalGeneratorVI: []
+    // AudioVICount: 0,
+    // BallBeamVICount: 0,
+    // ButtonVICount: 0,
+    // WaveVICount: 0,
+    // AddVICount: 0,
+    // DCOutputVICount: 0,
+    // FFTVICount: 0,
+    // KnobVICount: 0,
+    // OrbitWaveVICount: 0,
+    // PIDVICount: 0,
+    // RelayVICount: 0,
+    // RotorExperimentalRigVICount: 0,
+    // RoundPanelVICount: 0,
+    // TextVICount: 0,
+    // DifferentiationResponseVICount: 0,
+    // InertiaResponseVICount: 0,
+    // IntegrationResponseVICount: 0,
+    // OscillationResponseVICount: 0,
+    // ProportionDifferentiationResponseVICount: 0,
+    // ProportionInertiaResponseVICount: 0,
+    // ProportionIntegrationResponseVICount: 0,
+    // ProportionResponseVICount: 0,
+    // SignalGeneratorVICount: 0,
+    // AddVI: [],
+    // AudioVI: [],
+    // BallBeamVI: [],
+    // ButtonVI: [],
+    // WaveVI: [],
+    // DCOutputVI: [],
+    // FFTVI: [],
+    // KnobVI: [],
+    // OrbitWaveVI: [],
+    // PIDVI: [],
+    // RelayVI: [],
+    // RotorExperimentalRigVI: [],
+    // RoundPanelVI: [],
+    // TextVI: [],
+    // ProportionResponseVI: [],
+    // IntegrationResponseVI: [],
+    // DifferentiationResponseVI: [],
+    // InertiaResponseVI: [],
+    // OscillationResponseVI: [],
+    // ProportionIntegrationResponseVI: [],
+    // ProportionDifferentiationResponseVI: [],
+    // ProportionInertiaResponseVI: [],
+    // SignalGeneratorVI: []
 };
 
-function checkIfTargetValueBound (targetElement, checkedValue) {
+function checkIfTargetInputValueBound (targetVI, targetInputType) {
 
-    let i;
-    for (i = 0; i < targetElement.source.length; i += 1) {
+    for (let sourceInfo of targetVI.source) {
 
-        if (targetElement.source[i][1] === checkedValue) {
-            return targetElement.source[i][0].cnText;
+        if (sourceInfo[1] === targetInputType) {
+            return sourceInfo[0].cnText;
         }
+
     }
     return false;
 }
 
 //向记录数组中添加绑定对
-function addBindInfoToArr (sourceElement, targetElement) {
+function addBindInfoToArr (bindInfo) {
 
-    if (bindInfoArr.indexOf([sourceElement, targetElement]) === -1) {
+    if (bindInfoArr.indexOf(bindInfo) === -1) {
 
-        bindInfoArr.push([sourceElement, targetElement]);
+        bindInfoArr.push(bindInfo);
     }
 }
 
 //从记录数组中删除绑定对
-function deleteBindInfoFromArr (sourceElement, targetElement) {
+function deleteBindInfoFromArr (bindInfo) {
 
-    if (bindInfoArr.indexOf([sourceElement, targetElement]) !== -1) {
+    if (bindInfoArr.indexOf(bindInfo) !== -1) {
 
-        bindInfoArr.splice(bindInfoArr.indexOf([sourceElement, targetElement]), 1);
+        bindInfoArr.splice(bindInfoArr.indexOf(bindInfo), 1);
     }
 }
 
-function getObjectVIById (VIId) {
+function getVIById (VIId) {
 
     let VIInfo = VIId.split('-');
     return dataObject[VIInfo[0]][VIInfo[1]];
@@ -105,94 +122,49 @@ function getObjectVIById (VIId) {
 function showBox (VICanvas) {
 
     let canvasId = VICanvas.id;
-    let VI = getObjectVIById(canvasId);
+    let VI = getVIById(canvasId);
 
-    window.B = G.box(VI.boxTitle, VI.boxContent, 1, function () { getObjectVIById(canvasId).setInitialData();});
-}
+    if (VI.boxTitle) {
 
-function setVIData (VI, sourceData, sourceDataType) {
-
-    if (VI.name === 'AddVI') {
-
-        if (sourceDataType === 1) {
-
-            VI.setOriginalData(sourceData);
-        }
-        else if (sourceDataType === 2) {
-
-            VI.setData(sourceData);
-        }
-    }
-    else if (VI.name === 'SignalGeneratorVI') {
-        if (sourceDataType === 1) {
-
-            VI.amp = sourceData;
-            VI.ampSetFlag = true;
-        }
-        else if (sourceDataType === 2) {
-
-            VI.frequency = sourceData;
-            VI.frequencySetFlag = true;
-        }
-        if (VI.ampSetFlag && VI.frequencySetFlag) {
-
-            VI.phase += 10;
-            VI.setData(VI.amp, VI.frequency, VI.phase);
-            VI.ampSetFlag = false;
-            VI.frequencySetFlag = false;
-        }
-    }
-    else {
-
-        VI.setData(sourceData);
+        window.B = G.box(VI.boxTitle, VI.boxContent, 1, function () { getVIById(canvasId).setInitialData();});
     }
 }
 
-function getOutput (VI, outputType) {
+function getSourceVIOutput (sourceVI, sourceOutputType) {
 
-    if (VI.name === 'BallBeamVI') {
+    return sourceVI.getData(sourceOutputType);
+}
 
-        if (outputType === 1) {
+//查找sourceVI的输出参数
+function getSourceVIOutputType (sourceVI, targetVI) {
 
-            return VI.angelOutput;  //输出角度数组
-        }
-        if (outputType === 2) {
+    for (let sourceInfo of sourceVI.target) {
 
-            return VI.positionOutput;  //输出位置数组
+        if (sourceInfo[0] === targetVI) {
 
-        }
-        if (outputType === 3) {
-
-            return VI.markPosition;  //输出标记位置
+            return sourceInfo[1];
         }
     }
-    else if (VI.name === 'RotorExperimentalRigVI') {
+    return false;
+}
 
-        if (outputType === 1) {
+//查找targetVI的输入参数类型
+function getTargetVIInputType (targetVI, sourceVI) {
 
-            return VI.signalOutput;  //输出时域信号
+    for (let targetInfo of targetVI.source) {
 
-        }
-        if (outputType === 2) {
+        if (targetInfo[0] === sourceVI) {
 
-            return VI.frequencyOutput;  //输出频域信号
-
-        }
-        if (outputType === 3) {
-
-            return VI.orbitOutput;  //输出轴心位置
-
-        }
-        if (outputType === 4) {
-
-            return VI.rotateFrequency;  //输出旋转频率
-
+            return targetInfo[1];
         }
     }
-    else {
+    return false;
+}
 
-        return VI.output;  //输出数组
-    }
+function setTargetVIData (targetVI, sourceData, targetInputType) {
+
+    targetVI.setData(sourceData, targetInputType);
+
 }
 
 function setData () {
@@ -204,43 +176,25 @@ function setData () {
 
     for (setVIDataIndex = 0; setVIDataIndex < bindInfoArr.length; setVIDataIndex += 1) {
 
-        let i, sourceData, sourceDataType;
-        //查找sourceVI的输出参数
-        for (i = 0; i < bindInfoArr[setVIDataIndex][0].target.length; i += 1) {
+        let sourceVI = getVIById(bindInfoArr[setVIDataIndex].split(' ')[0]);
+        let targetVI = getVIById(bindInfoArr[setVIDataIndex].split(' ')[1]);
 
-            if (bindInfoArr[setVIDataIndex][0].target[i][0] === bindInfoArr[setVIDataIndex][1]) {
+        let sourceData = getSourceVIOutput(sourceVI, getSourceVIOutputType(sourceVI, targetVI));
+        let targetInputType = getTargetVIInputType(targetVI, sourceVI);
 
-                sourceData = getOutput(bindInfoArr[setVIDataIndex][0], bindInfoArr[setVIDataIndex][0].target[i][1]);
-                break;
-            }
-        }
-
-        //查找targetVI的输入参数类型
-        for (i = 0; i < bindInfoArr[setVIDataIndex][1].source.length; i += 1) {
-
-            if (bindInfoArr[setVIDataIndex][1].source[i][0] === bindInfoArr[setVIDataIndex][0]) {
-
-                sourceDataType = bindInfoArr[setVIDataIndex][1].source[i][1];
-                break;
-            }
-        }
-        setVIData(bindInfoArr[setVIDataIndex][1], sourceData, sourceDataType);
+        setTargetVIData(targetVI, sourceData, targetInputType);
     }
 
     setVIDataIndex = 0;
 }
 
-//用于开关VI来控制全局启停
-function toggleStart (VICanvas) {
+//控制全局启停
+function toggleStart () {
 
-    let buttonVI = getObjectVIById(VICanvas.id);
+    if (startBtn.val() === '启动') {
 
-    if (buttonVI.cnText === '启动') {
-
-        buttonVI.cnText = '停止';
-        buttonVI.fillStyle = 'red';
-        buttonVI.draw();
-
+        startBtn.val('停止');
+        navigationBar.css('background-color', 'green');
         mainTimer = window.setInterval(function () {
             if (bindInfoArr.length === 0) {
 
@@ -252,10 +206,8 @@ function toggleStart (VICanvas) {
     }
     else {
 
-        buttonVI.fillStyle = 'silver';
-        buttonVI.cnText = '启动';
-        buttonVI.draw();
-
+        startBtn.val('启动');
+        navigationBar.css('background-color', 'white');
         window.clearInterval(mainTimer);
     }
 }
@@ -268,6 +220,7 @@ function toggleStart (VICanvas) {
  */
 function addEndpoints (id, outputPointCount, inputPointCount) {
 
+    let endpoints = {};
     // this is the paint style for the connecting lines..
     let connectorPaintStyle = {
             strokeWidth: 2,
@@ -342,26 +295,34 @@ function addEndpoints (id, outputPointCount, inputPointCount) {
             [0, 0.4, -1, 0]
         ];
 
-    if (outputPointCount != 0) {
+    if (outputPointCount !== 0) {
 
-        instance.addEndpoint(id, outputEndpoint, {anchor: outputAnchors, uuid: 'output-' + id});
+        endpoints.outputEndpoint = instance.addEndpoint(id, outputEndpoint, {
+            anchor: outputAnchors,
+            uuid: 'output-' + id
+        });
     }
-    if (inputPointCount != 0) {
+    if (inputPointCount !== 0) {
 
-        instance.addEndpoint(id, inputEndpoint, {anchor: inputAnchors, uuid: 'input-' + id});
+        endpoints.inputEndPoint = instance.addEndpoint(id, inputEndpoint, {anchor: inputAnchors, uuid: 'input-' + id});
     }
+    return endpoints;
 }
 
 function VIDraw (canvas) {
 
     VIContainer.append(canvas);
     instance.draggable(canvas);
-    let VIInfo = canvas.id.split('-'),
-        tempVI = new VILibrary.VI[VIInfo[0]](canvas, true);
+    let VIName = canvas.attr('id').split('-')[0];
+    let tempVI = new VILibrary.VI[VIName](canvas, true);
 
-    dataObject[VIInfo[0]].push(tempVI);
-    addEndpoints(canvas.id, tempVI.outputPointCount, tempVI.inputPointCount);
+    if (!dataObject[VIName]) {
+        dataObject[VIName] = [];
+    }
+    dataObject[VIName].push(tempVI);
+    let endpoints = addEndpoints(canvas.attr('id'), tempVI.outputPointCount, tempVI.inputPointCount);
 
+    return {VI: tempVI, endpoints: endpoints};
 }
 
 function allowDrop (e) {
@@ -377,42 +338,44 @@ function drag (e) {
 function drop (e) {
 
     e.preventDefault();
-    let VICanvas = document.getElementById(e.dataTransfer.getData('Text'));
-    let newVICanvas = document.createElement('canvas'), i;
-    for (i = 0; i < VICanvas.attributes.length - 3; i += 1) {//后三个属性为侧栏中拖动属性，主VI界面不需要
+    let VICanvas = $('#' + e.dataTransfer.getData('Text'));
+    let newVICanvas = $('<canvas></canvas>');
+    let VIName = VICanvas.attr('id');
 
-        newVICanvas.setAttribute(VICanvas.attributes.item(i).nodeName, VICanvas.getAttribute(VICanvas.attributes.item(i).nodeName));
+    if (!dataObject[VIName + 'Count']) {
+
+        dataObject[VIName + 'Count'] = 0;
     }
-    newVICanvas.setAttribute('oncontextmenu', 'showContextMenu(event, this)');
-    newVICanvas.width = VICanvas.width * VICanvas.getAttribute('zoom');
-    newVICanvas.height = VICanvas.height * VICanvas.getAttribute('zoom');
-    newVICanvas.style.left = (e.offsetX - newVICanvas.width / 2) + 'px';
-    newVICanvas.style.top = (e.offsetY - newVICanvas.height / 2) + 'px';
 
-    newVICanvas.id = VICanvas.id + '-' + dataObject[VICanvas.id + 'Count']++;
+    newVICanvas.attr('id', VIName + '-' + dataObject[VIName + 'Count']++);
+    newVICanvas.attr('class', VICanvas.attr('class'));
+    newVICanvas.attr('width', VICanvas.width() * VICanvas.attr('zoom'));
+    newVICanvas.attr('height', VICanvas.height() * VICanvas.attr('zoom'));
+    newVICanvas.css('left', (e.offsetX - newVICanvas.width() / 2) + 'px');
+    newVICanvas.css('top', (e.offsetY - newVICanvas.height() / 2) + 'px');
+    newVICanvas.attr('ondblclick', 'showBox(this)');
+    newVICanvas.attr('oncontextmenu', 'showContextMenu(event, this)');
 
-    if (VICanvas.id === 'ButtonVI') {
-
-        newVICanvas.setAttribute('onclick', 'toggleStart(this)');//向开关绑定启动函数
-    }
-    new VIDraw(newVICanvas);
+    VIDraw(newVICanvas);
 }
 
-function toggleDrag (info) {
+function deleteVI (canvas) {
 
-    instance.toggleDraggable($('#' + $(info).attr('canvasid')));
-}
+    let canvasId = canvas.id;
+    let VI = getVIById(canvasId);
 
-function deleteVI (info) {
+    if (dataObject[VI.name].indexOf(VI) !== -1) {
 
-    let canvasId = $(info).attr('canvasid');
-    let canvas = $('#' + canvasId);
+        dataObject[VI.name].splice(dataObject[VI.name].indexOf(VI), 1);
+        dataObject[VI.name + 'Count'] -= 1;
+    }
     instance.detachAllConnections(canvas);
-    let VI = getObjectVIById(canvasId);
+    instance.deleteEndpoint('output-' + canvasId);
+    instance.deleteEndpoint('input-' + canvasId);
     canvas.remove();
-    console.log('VIDeleted');
-
+    ready();
 }
+
 function showContextMenu (e, canvas) {
 
     e = e || window.event;
@@ -421,39 +384,19 @@ function showContextMenu (e, canvas) {
     //鼠标点的坐标
     let oX = e.clientX;
     let oY = e.clientY;
-    let btn_Lock = $('<span canvasid="' + canvas.id + '" onclick="toggleDrag(this)">锁定</span>');
-    let btn_Delete = $('<span canvasid="' + canvas.id + '" onclick="deleteVI(this)">删除</span>');
-    contextMenu.append(btn_Lock);
-    contextMenu.append(btn_Delete);
+    let lockBtn = $('<li class="context-li">锁定</li>');
+    let deleteBtn = $('<li class="context-li">删除</li>');
+    lockBtn.click(function () { instance.toggleDraggable(canvas); });
+    deleteBtn.click(function () { deleteVI(canvas); });
     //菜单出现后的位置
     contextMenu.css('display', 'block');
     contextMenu.css('left', oX);
     contextMenu.css('top', oY);
+    contextMenu.html('');
+    contextMenu.append(lockBtn);
+    contextMenu.append(deleteBtn);
+    VIContainer.append(contextMenu);
     return false;
-}
-
-VIContainer.click(function () {
-
-    contextMenu.css('display', 'none');
-});
-
-function createCanvas (id, className, width, height, zoomValue, showBoxFlag) {
-
-    let canvas = $('<canvas></canvas>');
-    canvas.attr('id', id);
-    canvas.attr('class', className);
-    canvas.attr('width', width);
-    canvas.attr('height', height);
-    if (showBoxFlag) {
-
-        canvas.attr('ondblclick', 'showBox(this)');
-    }
-    canvas.attr('zoom', zoomValue);
-    canvas.attr('draggable', 'true');
-    canvas.attr('ondragstart', 'drag(event)');
-    sideBar.append(canvas);
-    return canvas;
-
 }
 
 function ready () {
@@ -496,103 +439,58 @@ function ready () {
         // 监听连线事件
         instance.bind('connection', function (connectionInfo) {
 
-            let sourceElement = getObjectVIById(connectionInfo.connection.sourceId);
-            let targetElement = getObjectVIById(connectionInfo.connection.targetId);
+            let sourceId = connectionInfo.connection.sourceId;
+            let targetId = connectionInfo.connection.targetId;
+            let sourceVI = getVIById(sourceId);
+            let targetVI = getVIById(targetId);
+            let targetInputType = 0;
+            let sourceOutputType = 0;
 
+            addBindInfoToArr(sourceId + ' ' + targetId);
             //对多输出控件判断
-            if (sourceElement.name === 'BallBeamVI') {
+            if (sourceVI.outputBoxTitle) {
 
-                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                    '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="O.close()">' +
-                    '<label class="input-label" for="type1">反馈角度</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="output-type" value="2" onclick="O.close()">' +
-                    '<label class="input-label" for="type2">反馈位置</label></div>' +
-                    '<div><input type="radio" id="type3" class="radioInput" name="output-type" value="3" onclick="O.close()">' +
-                    '<label class="input-label" for="type3">标记位置</label></div>' +
-                    '</div>',
-                    1, function () {
+                window.O = G.box(sourceVI.outputBoxTitle, sourceVI.outputBoxContent, 1,
+                    function () {
 
-                        let checkedValue = Number($('input[name=output-type]:checked').val());
-                        if (!checkedValue) {
+                        sourceOutputType = Number($('input[name=output-type]:checked').val());
+                        if (!sourceOutputType) {
 
                             if (connectionInfo) {
 
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
+                            G.alert('未选择' + sourceVI.cnText + '输出参数！', 1, 1500);
                             return false;
                         }
-
-                        addBindInfoToArr(sourceElement, targetElement);
-                        sourceElement.target.push([targetElement, checkedValue]);
+                        sourceVI.target.push([targetVI, sourceOutputType]);
                     });
             }
-            else if (sourceElement.name === 'RotorExperimentalRigVI') {
-
-                window.O = G.box('请选择' + sourceElement.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                    '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="output-type" value="1" onclick="O.close()">' +
-                    '<label class="input-label" for="type1">时域信号</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="output-type" value="2" onclick="O.close()">' +
-                    '<label class="input-label" for="type2">频域信号</label></div>' +
-                    '<div><input type="radio" id="type3" class="radioInput" name="output-type" value="3" onclick="O.close()">' +
-                    '<label class="input-label" for="type3">轴心轨迹</label></div>' +
-                    '<div><input type="radio" id="type4" class="radioInput" name="output-type" value="4" onclick="O.close()">' +
-                    '<label class="input-label" for="type4">旋转频率</label></div>' +
-                    '</div>',
-                    1, function () {
-
-                        let checkedValue = Number($('input[name=output-type]:checked').val());
-                        if (!checkedValue) {
-
-                            if (connectionInfo != null && connectionInfo != undefined) {
-
-                                instance.detach(connectionInfo.connection);
-                                connectionInfo = null;
-                            }
-                            G.alert('未选择' + sourceElement.cnText + '输出参数！', 1, 1500);
-                            return false;
-                        }
-
-                        addBindInfoToArr(sourceElement, targetElement);
-                        sourceElement.target.push([targetElement, checkedValue]);
-                    });
-            }
-
-            //默认输出数组
             else {
 
-                addBindInfoToArr(sourceElement, targetElement);
-                sourceElement.target.push([targetElement, 2]);
+                sourceVI.target.push([targetVI, sourceOutputType]);
             }
 
             //对于多输入控件,进行输入端口判断
-            if (targetElement.name === 'AddVI') {
+            if (targetVI.inputBoxTitle) {
 
-                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                    '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="AddVI-type" value="1" alt="初值" onclick="I.close()">' +
-                    '<label class="input-label" for="type1">初值</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="AddVI-type" value="2" alt="反馈值" onclick="I.close()">' +
-                    '<label class="input-label" for="type2">反馈值</label></div>' +
-                    '</div>',
-                    1, function () {
+                window.I = G.box(targetVI.inputBoxTitle, targetVI.inputBoxContent, 1,
+                    function () {
 
-                        let checkedRadio = $('input[name=AddVI-type]:checked');
-                        let checkedValue = Number(checkedRadio.val());
-                        if (!checkedValue) {
+                        let checkedRadio = $('input[name=input-type]:checked');
+                        targetInputType = Number(checkedRadio.val());
+                        if (!targetInputType) {
 
                             if (connectionInfo) {
 
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            G.alert('未选择' + targetElement.cnText + '输入参数！', 1, 1500);
+                            G.alert('未选择' + targetVI.cnText + '输入参数！', 1, 1500);
                             return false;
                         }
-                        let name = checkIfTargetValueBound(targetElement, checkedValue);    //检测此输入端口是否已与其他VI连接
+                        let name = checkIfTargetInputValueBound(targetVI, targetInputType);    //检测此输入端口是否已与其他VI连接
                         if (name) {
 
                             if (connectionInfo) {
@@ -600,57 +498,16 @@ function ready () {
                                 instance.detach(connectionInfo.connection);
                                 connectionInfo = null;
                             }
-                            G.alert(targetElement.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
+                            G.alert(targetVI.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
                             return false;
                         }
-                        addBindInfoToArr(sourceElement, targetElement);
-                        targetElement.source.push([sourceElement, checkedValue]);
-                    }
-                );
-            }
-            else if (targetElement.name === 'SignalGeneratorVI') {
-
-                window.I = G.box('请选择' + targetElement.cnText + '输入参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-                    '<div class="input-div">' +
-                    '<div><input type="radio" id="type1" class="radioInput" name="SignalGeneratorVI-type" value="1" alt="幅值" onclick="I.close()">' +
-                    '<label class="input-label" for="type1">幅值</label></div>' +
-                    '<div><input type="radio" id="type2" class="radioInput" name="SignalGeneratorVI-type" value="2" alt="频率" onclick="I.close()">' +
-                    '<label class="input-label" for="type2">频率</label></div>' +
-                    '</div>',
-                    1, function () {
-
-                        let checkedRadio = $('input[name=SignalGeneratorVI-type]:checked');
-                        let checkedValue = Number(checkedRadio.val());
-                        if (!checkedValue) {
-
-                            if (connectionInfo) {
-
-                                instance.detach(connectionInfo.connection);
-                                connectionInfo = null;
-                            }
-                            G.alert('未选择' + targetElement.cnText + '输入参数！', 1, 1500);
-                            return false;
-                        }
-                        let name = checkIfTargetValueBound(targetElement, checkedValue);    //检测此输入端口是否已与其他VI连接
-                        if (name) {
-
-                            if (connectionInfo) {
-
-                                instance.detach(connectionInfo.connection);
-                                connectionInfo = null;
-                            }
-                            G.alert(targetElement.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
-                            return false;
-                        }
-                        addBindInfoToArr(sourceElement, targetElement);
-                        targetElement.source.push([sourceElement, checkedValue]);
+                        targetVI.source.push([sourceVI, targetInputType]);
                     }
                 );
             }
             else {
 
-                addBindInfoToArr(sourceElement, targetElement);
-                targetElement.source[0] = [sourceElement, 0];
+                targetVI.source[0] = [sourceVI, targetInputType]; //只有一个输入，所以直接给source[0]赋值
             }
         });
 
@@ -668,27 +525,28 @@ function ready () {
         instance.bind('connectionDetached', function (connectionInfo) {
 
             console.log('detached');
-            let sourceElement = getObjectVIById(connectionInfo.connection.sourceId);
-            let targetElement = getObjectVIById(connectionInfo.connection.targetId);
+            let sourceId = connectionInfo.connection.sourceId;
+            let targetId = connectionInfo.connection.targetId;
+            let sourceVI = getVIById(sourceId);
+            let targetVI = getVIById(targetId);
 
-            let i;
-            for (i = 0; i < sourceElement.target.length; i += 1) {
+            for (let targetInfo of sourceVI.target) {
 
-                if (sourceElement.target[i][0] === targetElement) {
+                if (targetInfo[0] === targetVI) {
 
-                    sourceElement.target.splice(i, 1);
+                    sourceVI.target.splice(sourceVI.target.indexOf(targetInfo), 1);
                     break;
                 }
             }
-            for (i = 0; i < targetElement.source.length; i += 1) {
+            for (let sourceInfo of targetVI.source) {
 
-                if (targetElement.source[i][0] === sourceElement) {
+                if (sourceInfo[0] === sourceVI) {
 
-                    targetElement.source.splice(i, 1);
+                    targetVI.source.splice(targetVI.source.indexOf(sourceInfo), 1);
                     break;
                 }
             }
-            deleteBindInfoFromArr(sourceElement, targetElement);
+            deleteBindInfoFromArr(sourceId + ' ' + targetId);
         });
     });
 
@@ -703,31 +561,50 @@ function containerResize () {
     VIContainer.css('height', height);
 }
 
+function addCanvasToSideBar (id, className, width, height, zoomValue) {
+
+    let canvas = $('<canvas></canvas>');
+    canvas.attr('id', id);
+    canvas.attr('class', className);
+    canvas.attr('width', width);
+    canvas.attr('height', height);
+    canvas.attr('zoom', zoomValue);
+    canvas.attr('draggable', 'true');
+    canvas.attr('ondragstart', 'drag(event)');
+    sideBar.append(canvas);
+    return canvas;
+
+}
+
 function init () {
 
-    new VILibrary.VI.AudioVI(createCanvas('AudioVI', 'draggable-element', 104, 90, 1, false));
-    new VILibrary.VI.OrbitWaveVI(createCanvas('OrbitWaveVI', 'draggable-element', 104, 90, 3, false));
-    new VILibrary.VI.WaveVI(createCanvas('WaveVI', 'draggable-element', 162, 90, 3, false));
-    new VILibrary.VI.BallBeamVI(createCanvas('BallBeamVI', 'draggable-element', 162, 90, 4, false));
-    new VILibrary.VI.RotorExperimentalRigVI(createCanvas('RotorExperimentalRigVI', 'draggable-element', 162, 90, 4, false));
-    new VILibrary.VI.TextVI(createCanvas('TextVI', 'draggable-element', 104, 45, 1, true));
-    new VILibrary.VI.ButtonVI(createCanvas('ButtonVI', 'draggable-element', 104, 45, 1, false));
-    new VILibrary.VI.KnobVI(createCanvas('KnobVI', 'draggable-element', 45, 45, 3, true));
-    new VILibrary.VI.RoundPanelVI(createCanvas('RoundPanelVI', 'draggable-element', 45, 45, 3, true));
-    new VILibrary.VI.FFTVI(createCanvas('FFTVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.AddVI(createCanvas('AddVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.DCOutputVI(createCanvas('DCOutputVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.PIDVI(createCanvas('PIDVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.RelayVI(createCanvas('RelayVI', 'draggable-element', 45, 45, 1, false));
-    new VILibrary.VI.ProportionResponseVI(createCanvas('ProportionResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.IntegrationResponseVI(createCanvas('IntegrationResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.DifferentiationResponseVI(createCanvas('DifferentiationResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.InertiaResponseVI(createCanvas('InertiaResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.OscillationResponseVI(createCanvas('OscillationResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.ProportionIntegrationResponseVI(createCanvas('ProportionIntegrationResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.ProportionDifferentiationResponseVI(createCanvas('ProportionDifferentiationResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.ProportionInertiaResponseVI(createCanvas('ProportionInertiaResponseVI', 'draggable-element', 45, 45, 1, true));
-    new VILibrary.VI.SignalGeneratorVI(createCanvas('SignalGeneratorVI', 'draggable-element', 45, 45, 1, true));
+    bindInfoArr = [];
+    dataObject = {};
+    sideBar.html('');
+    VIContainer.html('');
+
+    new VILibrary.VI.AudioVI(addCanvasToSideBar('AudioVI', 'draggable-element', 104, 90, 1));
+    new VILibrary.VI.OrbitWaveVI(addCanvasToSideBar('OrbitWaveVI', 'draggable-element', 104, 90, 3));
+    new VILibrary.VI.WaveVI(addCanvasToSideBar('WaveVI', 'draggable-element', 162, 90, 3));
+    new VILibrary.VI.BallBeamVI(addCanvasToSideBar('BallBeamVI', 'draggable-element', 162, 90, 4));
+    new VILibrary.VI.RotorExperimentalRigVI(addCanvasToSideBar('RotorExperimentalRigVI', 'draggable-element', 162, 90, 4));
+    new VILibrary.VI.TextVI(addCanvasToSideBar('TextVI', 'draggable-element', 104, 45, 1));
+    new VILibrary.VI.KnobVI(addCanvasToSideBar('KnobVI', 'draggable-element', 45, 45, 3));
+    new VILibrary.VI.RoundPanelVI(addCanvasToSideBar('RoundPanelVI', 'draggable-element', 45, 45, 3));
+    new VILibrary.VI.FFTVI(addCanvasToSideBar('FFTVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.AddVI(addCanvasToSideBar('AddVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.DCOutputVI(addCanvasToSideBar('DCOutputVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.PIDVI(addCanvasToSideBar('PIDVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.RelayVI(addCanvasToSideBar('RelayVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.ProportionResponseVI(addCanvasToSideBar('ProportionResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.IntegrationResponseVI(addCanvasToSideBar('IntegrationResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.DifferentiationResponseVI(addCanvasToSideBar('DifferentiationResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.InertiaResponseVI(addCanvasToSideBar('InertiaResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.OscillationResponseVI(addCanvasToSideBar('OscillationResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.ProportionIntegrationResponseVI(addCanvasToSideBar('ProportionIntegrationResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.ProportionDifferentiationResponseVI(addCanvasToSideBar('ProportionDifferentiationResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.ProportionInertiaResponseVI(addCanvasToSideBar('ProportionInertiaResponseVI', 'draggable-element', 45, 45, 1));
+    new VILibrary.VI.SignalGeneratorVI(addCanvasToSideBar('SignalGeneratorVI', 'draggable-element', 45, 45, 1));
 
     ready();
     containerResize();
@@ -736,3 +613,134 @@ function init () {
 init();
 
 window.addEventListener('resize', containerResize, false);
+
+function createCanvas (id, className, width, height, top, left) {
+
+    let canvas = $('<canvas></canvas>');
+    canvas.attr('id', id);
+    canvas.attr('class', className);
+    canvas.attr('width', width);
+    canvas.attr('height', height);
+    canvas.css('top', top);
+    canvas.css('left', left);
+    canvas.attr('oncontextmenu', 'showContextMenu(event, this)');
+    canvas.attr('ondblclick', 'showBox(this)');
+
+    return canvas;
+}
+
+function parseImportVIInfo (json) {
+
+    for (let VIInfo of json.VIInfo) {
+
+        try {
+
+            let sourceInfo = VIInfo.sourceInfo;
+            let targetInfo = VIInfo.targetInfo;
+            let sourceVIName = sourceInfo.id.split('-')[0];
+            let targetVIName = targetInfo.id.split('-')[0];
+            let sourceCanvas = createCanvas(sourceInfo.id, sourceInfo.className, sourceInfo.width, sourceInfo.height, sourceInfo.top, sourceInfo.left);
+            let targetCanvas = createCanvas(targetInfo.id, targetInfo.className, targetInfo.width, targetInfo.height, targetInfo.top, targetInfo.left);
+
+            let sourceObject = VIDraw(sourceCanvas);//返回一个Object, key分别为VI和endpoints
+            let targetObject = VIDraw(targetCanvas);
+            if (!dataObject[sourceVIName + 'Count']) {
+
+                dataObject[sourceVIName + 'Count'] = 0;
+            }
+            dataObject[sourceVIName + 'Count']++;
+            if (!dataObject[targetVIName + 'Count']) {
+
+                dataObject[targetVIName + 'Count'] = 0;
+            }
+            dataObject[targetVIName + 'Count']++;
+            let sourceVI = sourceObject.VI;
+            let targetVI = targetObject.VI;
+            sourceVI.target.push([targetVI, sourceVI.outputType]);
+            targetVI.source.push([sourceVI, targetVI.inputType]);
+            addBindInfoToArr(sourceInfo.id + ' ' + targetInfo.id);
+            instance.connect({
+                source: sourceObject.endpoints.outputEndpoint,
+                target: targetObject.endpoints.inputEndPoint
+            });
+        }
+        catch (e) {
+
+            //先初始化数据记录
+            bindInfoArr = [];
+            dataObject = {};
+            console.log('Parse ImportVI Error: ' + e);
+        }
+    }
+}
+
+function exportVI () {
+
+    if (bindInfoArr.length === 0) {
+
+        alert('No VI connected!');
+        return false;
+    }
+    let exportInfo = {VIInfo: []};
+    for (let info of bindInfoArr) {
+
+        let sourceInfo = {};
+        let targetInfo = {};
+        let sourceVIId = info.split(' ')[0];
+        let targetVIId = info.split(' ')[1];
+        let sourceVI = getVIById(sourceVIId);
+        let targetVI = getVIById(targetVIId);
+        let sourceCanvas = $('#' + sourceVIId);
+        let targetCanvas = $('#' + targetVIId);
+
+        sourceInfo.id = sourceVIId;
+        sourceInfo.outputType = getSourceVIOutputType(sourceVI, targetVI);
+        sourceInfo.className = sourceCanvas.attr('class');
+        sourceInfo.width = sourceCanvas.width();
+        sourceInfo.height = sourceCanvas.height();
+        sourceInfo.top = sourceCanvas.css('top');
+        sourceInfo.left = sourceCanvas.css('left');
+
+        targetInfo.id = targetVIId;
+        targetInfo.inputType = getTargetVIInputType(targetVI, sourceVI);
+        targetInfo.className = targetCanvas.attr('class');
+        targetInfo.width = targetCanvas.width();
+        targetInfo.height = targetCanvas.height();
+        targetInfo.top = targetCanvas.css('top');
+        targetInfo.left = targetCanvas.css('left');
+
+        exportInfo.VIInfo.push({sourceInfo: sourceInfo, targetInfo: targetInfo});
+    }
+
+    let json = JSON.stringify(exportInfo);
+
+    let pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(json));
+    pom.setAttribute('download', 'exportVI.txt');
+
+    if (document.createEvent) {
+        let event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}
+
+function importVI () {
+
+    let selectedFile = fileImporter[0].files[0];
+
+    let reader = new FileReader();
+    reader.readAsText(selectedFile);
+    reader.onload = function () {
+
+        VIContainer.html('');
+        ready();
+        //先初始化数据记录
+        bindInfoArr = [];
+        dataObject = {};
+        parseImportVIInfo($.parseJSON(this.result));
+    }
+}

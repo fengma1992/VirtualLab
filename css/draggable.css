@@ -12,6 +12,7 @@
     /*from jsPlumbToolkit-defaults.css*/
     /*overflow: hidden !important;*/
     position: relative;
+    margin-top: 30px;
     /*cursor: pointer;*/
     overflow: auto !important;
 }
@@ -59,6 +60,7 @@
     /*from jsPlumbToolkit-defaults.css*/
     /*overflow: hidden !important;*/
     position: relative;
+    /*margin-top: 30px;*/
     /*cursor: pointer;*/
     overflow: auto !important;
 }
@@ -88,14 +90,6 @@
     transition: box-shadow 0.15s ease-in;
 }
 
-/*.draggable-div .draggable-element:hover {*/
-/*box-shadow: 2px 2px 19px #444;*/
-/*-o-box-shadow: 2px 2px 19px #444;*/
-/*-webkit-box-shadow: 2px 2px 19px #444;*/
-/*-moz-box-shadow: 2px 2px 19px #444;*/
-/*opacity: 0.6;*/
-/*}*/
-
 .draggable-div .jtk-connector {
     z-index: 4;
 }
@@ -121,8 +115,7 @@
     position: fixed;
     left: 0;
     top: 0;
-    width: 200px;
-    height: 300px;
+    width: 100px;
     display: none;
     border: 1px solid #346789;
     box-shadow: 2px 2px 19px #aaa;
@@ -132,18 +125,39 @@
     /*-moz-border-radius: 0.5em;*/
     /*border-radius: 0.5em;*/
     opacity: 0.8;
-    line-height: 80px;
-    text-align: center;
     z-index: 25;
     background-color: #eeeeef;
     color: black;
     font-family: helvetica, sans-serif;
-    padding: 0.3em;
-    font-size: 0.9em;
+    font-size: 1em;
     -webkit-transition: -webkit-box-shadow 0.15s ease-in;
     -moz-transition: -moz-box-shadow 0.15s ease-in;
     -o-transition: -o-box-shadow 0.15s ease-in;
     transition: box-shadow 0.15s ease-in;
+}
+
+.context-li {
+
+    height: 22px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #CCCCCC;
+}
+
+.context-li:hover {
+    background-color: #EEEEEE;
+    box-shadow: 2px 2px 19px #444;
+    -o-box-shadow: 2px 2px 19px #444;
+    -webkit-box-shadow: 2px 2px 19px #444;
+    -moz-box-shadow: 2px 2px 19px #444;
+}
+
+#navigationBar-div {
+    position: fixed;
+    top: 0;
+    /*left: 0;*/
+    width: 100%;
+    height: 30px;
 }
 /*.draggable-div .aLabel.jtk-hover {*/
 /*background-color: #5C96BC;*/
