@@ -99,10 +99,12 @@ function checkIfTargetInputValueBound (targetVI, targetInputType) {
 //向记录数组中添加绑定对
 function addBindInfoToArr (bindInfo) {
 
+    console.log(bindInfo);
     if (bindInfoArr.indexOf(bindInfo) === -1) {
 
         bindInfoArr.push(bindInfo);
     }
+    console.log(bindInfoArr);
 }
 
 //从记录数组中删除绑定对
@@ -692,6 +694,7 @@ function parseImportVIInfo (json) {
         //     parsingFlag = false;
         // }
     }
+    console.log(bindInfoArr);
     parsingFlag = false;
 }
 
@@ -751,6 +754,7 @@ function exportVI () {
 
 function importVI () {
 
+    console.log('import');
     let selectedFile = fileImporter[0].files[0];
 
     let reader = new FileReader();
