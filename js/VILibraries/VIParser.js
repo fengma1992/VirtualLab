@@ -32,7 +32,8 @@ bd.append(mainContainer);
 
 let instance;
 let mainTimer;
-let bindInfoArr = [];//二维数组，第二维分别记录输出VI、输入VI
+let bindInfoArr = [];//记录连接的输入输出VI的ID，以空格隔开
+let parsingFlag = false;
 let setVIDataIndex = 0;
 let dataObject = {
     // AudioVICount: 0,
@@ -115,8 +116,14 @@ function deleteBindInfoFromArr (bindInfo) {
 
 function getVIById (VIId) {
 
-    let VIInfo = VIId.split('-');
-    return dataObject[VIInfo[0]][VIInfo[1]];
+    try {
+
+        let VIInfo = VIId.split('-');
+        return dataObject[VIInfo[0]][VIInfo[1]];
+    }
+    catch (e) {
+        return false;
+    }
 }
 
 function showBox (VICanvas) {
@@ -320,9 +327,9 @@ function VIDraw (canvas) {
         dataObject[VIName] = [];
     }
     dataObject[VIName].push(tempVI);
-    let endpoints = addEndpoints(canvas.attr('id'), tempVI.outputPointCount, tempVI.inputPointCount);
+    tempVI.endpoints = addEndpoints(canvas.attr('id'), tempVI.outputPointCount, tempVI.inputPointCount);
 
-    return {VI: tempVI, endpoints: endpoints};
+    return tempVI;
 }
 
 function allowDrop (e) {
@@ -439,75 +446,78 @@ function ready () {
         // 监听连线事件
         instance.bind('connection', function (connectionInfo) {
 
-            let sourceId = connectionInfo.connection.sourceId;
-            let targetId = connectionInfo.connection.targetId;
-            let sourceVI = getVIById(sourceId);
-            let targetVI = getVIById(targetId);
-            let targetInputType = 0;
-            let sourceOutputType = 0;
+            if (!parsingFlag) {
 
-            addBindInfoToArr(sourceId + ' ' + targetId);
-            //对多输出控件判断
-            if (sourceVI.outputBoxTitle) {
+                let sourceId = connectionInfo.connection.sourceId;
+                let targetId = connectionInfo.connection.targetId;
+                let sourceVI = getVIById(sourceId);
+                let targetVI = getVIById(targetId);
+                let targetInputType = 0;
+                let sourceOutputType = 0;
 
-                window.O = G.box(sourceVI.outputBoxTitle, sourceVI.outputBoxContent, 1,
-                    function () {
+                addBindInfoToArr(sourceId + ' ' + targetId);
+                //对多输出控件判断
+                if (sourceVI.outputBoxTitle) {
 
-                        sourceOutputType = Number($('input[name=output-type]:checked').val());
-                        if (!sourceOutputType) {
+                    window.O = G.box(sourceVI.outputBoxTitle, sourceVI.outputBoxContent, 1,
+                        function () {
 
-                            if (connectionInfo) {
+                            sourceOutputType = Number($('input[name=output-type]:checked').val());
+                            if (!sourceOutputType) {
 
-                                instance.detach(connectionInfo.connection);
-                                connectionInfo = null;
+                                if (connectionInfo) {
+
+                                    instance.detach(connectionInfo.connection);
+                                    connectionInfo = null;
+                                }
+                                G.alert('未选择' + sourceVI.cnText + '输出参数！', 1, 1500);
+                                return false;
                             }
-                            G.alert('未选择' + sourceVI.cnText + '输出参数！', 1, 1500);
-                            return false;
-                        }
-                        sourceVI.target.push([targetVI, sourceOutputType]);
-                    });
-            }
-            else {
+                            sourceVI.target.push([targetVI, sourceOutputType]);
+                        });
+                }
+                else {
 
-                sourceVI.target.push([targetVI, sourceOutputType]);
-            }
+                    sourceVI.target.push([targetVI, sourceOutputType]);
+                }
 
-            //对于多输入控件,进行输入端口判断
-            if (targetVI.inputBoxTitle) {
+                //对于多输入控件,进行输入端口判断
+                if (targetVI.inputBoxTitle) {
 
-                window.I = G.box(targetVI.inputBoxTitle, targetVI.inputBoxContent, 1,
-                    function () {
+                    window.I = G.box(targetVI.inputBoxTitle, targetVI.inputBoxContent, 1,
+                        function () {
 
-                        let checkedRadio = $('input[name=input-type]:checked');
-                        targetInputType = Number(checkedRadio.val());
-                        if (!targetInputType) {
+                            let checkedRadio = $('input[name=input-type]:checked');
+                            targetInputType = Number(checkedRadio.val());
+                            if (!targetInputType) {
 
-                            if (connectionInfo) {
+                                if (connectionInfo) {
 
-                                instance.detach(connectionInfo.connection);
-                                connectionInfo = null;
+                                    instance.detach(connectionInfo.connection);
+                                    connectionInfo = null;
+                                }
+                                G.alert('未选择' + targetVI.cnText + '输入参数！', 1, 1500);
+                                return false;
                             }
-                            G.alert('未选择' + targetVI.cnText + '输入参数！', 1, 1500);
-                            return false;
-                        }
-                        let name = checkIfTargetInputValueBound(targetVI, targetInputType);    //检测此输入端口是否已与其他VI连接
-                        if (name) {
+                            let name = checkIfTargetInputValueBound(targetVI, targetInputType);    //检测此输入端口是否已与其他VI连接
+                            if (name) {
 
-                            if (connectionInfo) {
+                                if (connectionInfo) {
 
-                                instance.detach(connectionInfo.connection);
-                                connectionInfo = null;
+                                    instance.detach(connectionInfo.connection);
+                                    connectionInfo = null;
+                                }
+                                G.alert(targetVI.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
+                                return false;
                             }
-                            G.alert(targetVI.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
-                            return false;
+                            targetVI.source.push([sourceVI, targetInputType]);
                         }
-                        targetVI.source.push([sourceVI, targetInputType]);
-                    }
-                );
-            }
-            else {
+                    );
+                }
+                else {
 
-                targetVI.source[0] = [sourceVI, targetInputType]; //只有一个输入，所以直接给source[0]赋值
+                    targetVI.source[0] = [sourceVI, targetInputType]; //只有一个输入，所以直接给source[0]赋值
+                }
             }
         });
 
@@ -631,47 +641,58 @@ function createCanvas (id, className, width, height, top, left) {
 
 function parseImportVIInfo (json) {
 
-    for (let VIInfo of json.VIInfo) {
+    parsingFlag = true;
+    for (let bindInfo of json.VIInfo) {
 
-        try {
+        // try {
+        let sourceInfo = bindInfo.sourceInfo;
+        let targetInfo = bindInfo.targetInfo;
+        let sourceVI = getVIById(sourceInfo.id);
+        let targetVI = getVIById(targetInfo.id);
 
-            let sourceInfo = VIInfo.sourceInfo;
-            let targetInfo = VIInfo.targetInfo;
+        if (!sourceVI) {
+
             let sourceVIName = sourceInfo.id.split('-')[0];
-            let targetVIName = targetInfo.id.split('-')[0];
             let sourceCanvas = createCanvas(sourceInfo.id, sourceInfo.className, sourceInfo.width, sourceInfo.height, sourceInfo.top, sourceInfo.left);
-            let targetCanvas = createCanvas(targetInfo.id, targetInfo.className, targetInfo.width, targetInfo.height, targetInfo.top, targetInfo.left);
 
-            let sourceObject = VIDraw(sourceCanvas);//返回一个Object, key分别为VI和endpoints
-            let targetObject = VIDraw(targetCanvas);
+            sourceVI = VIDraw(sourceCanvas);//返回一个Object, key分别为VI和endpoints
             if (!dataObject[sourceVIName + 'Count']) {
 
                 dataObject[sourceVIName + 'Count'] = 0;
             }
             dataObject[sourceVIName + 'Count']++;
+        }
+        if (!targetVI) {
+
+            let targetVIName = targetInfo.id.split('-')[0];
+            let targetCanvas = createCanvas(targetInfo.id, targetInfo.className, targetInfo.width, targetInfo.height, targetInfo.top, targetInfo.left);
+
+            targetVI = VIDraw(targetCanvas);
             if (!dataObject[targetVIName + 'Count']) {
 
                 dataObject[targetVIName + 'Count'] = 0;
             }
             dataObject[targetVIName + 'Count']++;
-            let sourceVI = sourceObject.VI;
-            let targetVI = targetObject.VI;
-            sourceVI.target.push([targetVI, sourceVI.outputType]);
-            targetVI.source.push([sourceVI, targetVI.inputType]);
-            addBindInfoToArr(sourceInfo.id + ' ' + targetInfo.id);
-            instance.connect({
-                source: sourceObject.endpoints.outputEndpoint,
-                target: targetObject.endpoints.inputEndPoint
-            });
         }
-        catch (e) {
 
-            //先初始化数据记录
-            bindInfoArr = [];
-            dataObject = {};
-            console.log('Parse ImportVI Error: ' + e);
-        }
+        sourceVI.target.push([targetVI, sourceInfo.outputType]);
+        targetVI.source.push([sourceVI, targetInfo.inputType]);
+        addBindInfoToArr(sourceInfo.id + ' ' + targetInfo.id);
+        instance.connect({
+            source: sourceVI.endpoints.outputEndpoint,
+            target: targetVI.endpoints.inputEndPoint
+        });
+        // }
+        // catch (e) {
+        //
+        //     //先初始化数据记录
+        //     bindInfoArr = [];
+        //     dataObject = {};
+        //     console.log('Parse ImportVI Error: ' + e);
+        //     parsingFlag = false;
+        // }
     }
+    parsingFlag = false;
 }
 
 function exportVI () {

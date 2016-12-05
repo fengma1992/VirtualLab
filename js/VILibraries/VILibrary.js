@@ -166,6 +166,7 @@ VILibrary.VI = {
 
         this.outputPointCount = -1;
         this.inputPointCount = 2;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -275,6 +276,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 0;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
@@ -420,6 +422,11 @@ VILibrary.VI = {
 
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
+
+        //虚拟仪器中相连接的控件VI
+        this.source = [];
+        this.target = [];
 
         //多输出选择弹出框
         this.outputBoxTitle = '请选择' + this.cnText + '输出参数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -431,9 +438,6 @@ VILibrary.VI = {
             '<div><input type="radio" id="type3" class="radio-input" name="output-type" value="3" onclick="O.close()">' +
             '<label class="input-label" for="type3">标记位置</label></div></div>';
 
-        //虚拟仪器中相连接的控件VI
-        this.source = [];
-        this.target = [];
 
         let camera, scene, renderer, controls, markControl, base, beam, ball, mark, loadedFlag = false, position = 0;
 
@@ -777,15 +781,17 @@ VILibrary.VI = {
         this.autoZoom = true;
         this.outputPointCount = 0;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         this.pointNum = 100;
         this.drawRulerFlag = true;
 
-        //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
+        //虚拟仪器中相连接的控件VI
+        this.source = [];
 
+        //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
         this.offsetT = 10;
         this.offsetR = 10;
-
         this.offsetB = 10;
         this.offsetL = 10;
         if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
@@ -810,9 +816,6 @@ VILibrary.VI = {
         this.bufferVal = [];
         this.curPointX = this.offsetL;
         this.curPointY = this.offsetT;
-
-        //虚拟仪器中相连接的控件VI
-        this.source = [];
 
         this.draw = function () {
 
@@ -1150,6 +1153,7 @@ VILibrary.VI = {
         this.fillStyle = 'silver';
         this.outputPointCount = 0;
         this.inputPointCount = 0;
+        this.endpoints = {};
 
         this.reset = function () {
 
@@ -1184,6 +1188,7 @@ VILibrary.VI = {
         this.output = [100];
         this.outputPointCount = -1;
         this.inputPointCount = 0;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
@@ -1284,6 +1289,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1373,6 +1379,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1432,6 +1439,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1536,6 +1544,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -1639,6 +1648,7 @@ VILibrary.VI = {
         this.output = [100];
         this.outputPointCount = -1;
         this.inputPointCount = 0;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.target = [];
@@ -1962,6 +1972,7 @@ VILibrary.VI = {
         this.autoZoom = true;
         this.outputPointCount = 0;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //网格行列数//
         this.nRow = 10;
@@ -2368,6 +2379,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2483,6 +2495,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2610,6 +2623,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2722,6 +2736,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2836,6 +2851,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -2953,6 +2969,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3050,6 +3067,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3132,6 +3150,7 @@ VILibrary.VI = {
 
         this.outputPointCount = -1;
         this.inputPointCount = 0;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3513,6 +3532,7 @@ VILibrary.VI = {
         this.title = '';
         this.outputPointCount = 0;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3763,6 +3783,7 @@ VILibrary.VI = {
 
         this.outputPointCount = -1;
         this.inputPointCount = 2;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -3957,6 +3978,7 @@ VILibrary.VI = {
         this.output = [0];
         this.outputPointCount = -1;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -4148,6 +4170,7 @@ VILibrary.VI = {
         this.decimalPlace = 1;
         this.outputPointCount = 0;
         this.inputPointCount = 1;
+        this.endpoints = {};
 
         //虚拟仪器中相连接的控件VI
         this.source = [];
@@ -4227,6 +4250,10 @@ VILibrary.VI = {
         this.autoZoom = true;
         this.outputPointCount = 0;
         this.inputPointCount = 1;
+        this.endpoints = {};
+
+        //虚拟仪器中相连接的控件VI
+        this.source = [];
 
         //网格行列数//
         this.nRow = 4;
@@ -4235,10 +4262,8 @@ VILibrary.VI = {
         this.drawRulerFlag = true;
 
         //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
-
         this.offsetT = 10;
         this.offsetR = 10;
-
         this.offsetB = 10;
         this.offsetL = 10;
         if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
@@ -4261,9 +4286,6 @@ VILibrary.VI = {
         this.bufferVal = [];
         this.curPointX = this.offsetL;
         this.curPointY = this.offsetT;
-
-        //虚拟仪器中相连接的控件VI
-        this.source = [];
 
         this.draw = function () {
 
