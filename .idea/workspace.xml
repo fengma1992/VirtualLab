@@ -4,7 +4,6 @@
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/draggable.css" afterPath="$PROJECT_DIR$/css/draggable.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/VIParser.js" afterPath="$PROJECT_DIR$/js/VILibraries/VIParser.js" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -626,16 +625,17 @@
                 <element signature="e#153734#153798#0" expanded="false" />
                 <element signature="e#153875#153963#0" expanded="false" />
                 <element signature="e#154022#154072#0" expanded="false" />
+                <marker date="1480926082365" expanded="true" signature="3664:154188" ph="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="draggable.css" pinned="false" current-in-tab="false">
+      <file leaf-file-name="draggable.css" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/css/draggable.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1271">
-              <caret line="13" column="23" lean-forward="false" selection-start-line="13" selection-start-column="23" selection-end-line="13" selection-end-column="23" />
+            <state relative-caret-position="432">
+              <caret line="18" column="14" lean-forward="true" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
               <folding>
                 <element signature="e#1673#2402#0" expanded="false" />
                 <element signature="e#2528#2569#0" expanded="false" />
@@ -648,7 +648,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VIParser.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VIParser.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/VILibraries/VIParser.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="258">
@@ -842,8 +842,8 @@
         <option value="$PROJECT_DIR$/js/popup.js" />
         <option value="$PROJECT_DIR$/VITest.html" />
         <option value="$PROJECT_DIR$/js/VILibraries/VILibrary.js" />
-        <option value="$PROJECT_DIR$/css/draggable.css" />
         <option value="$PROJECT_DIR$/js/VILibraries/VIParser.js" />
+        <option value="$PROJECT_DIR$/css/draggable.css" />
       </list>
     </option>
   </component>
@@ -1167,7 +1167,7 @@
       <workItem from="1480295852896" duration="23659000" />
       <workItem from="1480474168502" duration="21140000" />
       <workItem from="1480554960580" duration="49932000" />
-      <workItem from="1480920273700" duration="7949000" />
+      <workItem from="1480920273700" duration="8035000" />
     </task>
     <task id="LOCAL-00001" summary="test&#10;">
       <created>1476862004763</created>
@@ -1484,11 +1484,18 @@
       <option name="project" value="LOCAL" />
       <updated>1480926114521</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="1205-Afternoon-1&#10;1.import bug fix;&#10;">
+      <created>1480929413756</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1480929413756</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="826569000" />
+    <option name="totallyTimeSpent" value="826655000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1558,7 +1565,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1027-night&#10;1、更新连接判断；&#10;2、更新断开连接响应..." />
     <MESSAGE value="1028-night&#10;1、更新允许多个连接；&#10;2、更改对象保存为二维数组形式" />
     <MESSAGE value="1031-night&#10;1、数据框架更新中；&#10;2、未完工" />
     <MESSAGE value="1031-night&#10;1、数据框架更新完成；&#10;2、测试稳定性" />
@@ -1583,7 +1589,8 @@
     <MESSAGE value="1201-MORNING&#10;BIG CHANGE!!! SLIM VIPARSER" />
     <MESSAGE value="1203-MORNING&#10;1. Add save and import function;&#10;2. bug fix;&#10;3. slim" />
     <MESSAGE value="1205-Afternoon&#10;1.import bug fix;&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="1205-Afternoon&#10;1.import bug fix;&#10;" />
+    <MESSAGE value="1205-Afternoon-1&#10;1.import bug fix;&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="1205-Afternoon-1&#10;1.import bug fix;&#10;" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -2605,21 +2612,7 @@
             <element signature="e#153734#153798#0" expanded="false" />
             <element signature="e#153875#153963#0" expanded="false" />
             <element signature="e#154022#154072#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/draggable.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1271">
-          <caret line="13" column="23" lean-forward="false" selection-start-line="13" selection-start-column="23" selection-end-line="13" selection-end-column="23" />
-          <folding>
-            <element signature="e#1673#2402#0" expanded="false" />
-            <element signature="e#2528#2569#0" expanded="false" />
-            <element signature="e#2594#2775#0" expanded="false" />
-            <element signature="e#2783#3466#0" expanded="false" />
-            <element signature="e#3480#3578#0" expanded="false" />
-            <element signature="e#3598#3788#0" expanded="false" />
+            <marker date="1480926082365" expanded="true" signature="3664:154188" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2701,6 +2694,21 @@
             <element signature="n#!!block;n#addCanvasToSideBar#0" expanded="false" />
             <element signature="n#!!block;n#init#0" expanded="false" />
             <element signature="n#!!block;n#exportVI#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/draggable.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="18" column="14" lean-forward="true" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
+          <folding>
+            <element signature="e#1673#2402#0" expanded="false" />
+            <element signature="e#2528#2569#0" expanded="false" />
+            <element signature="e#2594#2775#0" expanded="false" />
+            <element signature="e#2783#3466#0" expanded="false" />
+            <element signature="e#3480#3578#0" expanded="false" />
+            <element signature="e#3598#3788#0" expanded="false" />
           </folding>
         </state>
       </provider>
