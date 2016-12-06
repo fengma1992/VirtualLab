@@ -6,10 +6,10 @@
 let bd = $('body');
 let navigationBar = $('<div id="navigationBar-div"></div>');
 let fileImporter = $('<input type="file" id="file-input" onchange="importVI()">');
-let importBtn = $('<input type="button" value="导入">');
-let exportBtn = $('<input type="button" value="导出" onclick="exportVI()">');
-let startBtn = $('<input type="button" value="启动" onclick="toggleStart()">');
-let resetBtn = $('<input type="button" value="重置" onclick="init()">');
+let startBtn = $('<input type="button" class="navigationBar-btn" style="flex-grow: 1; text-align: right" value="启动" onclick="toggleStart()">');
+let importBtn = $('<input type="button" class="navigationBar-btn" value="导入">');
+let exportBtn = $('<input type="button" class="navigationBar-btn" value="导出" onclick="exportVI()">');
+let resetBtn = $('<input type="button" class="navigationBar-btn" value="重置" onclick="init()">');
 let mainContainer = $('<div id="container-div" class="rowFlex-div"></div>');
 let sideBar = $('<div id="sideBar" class="draggable-sideBar"></div>');
 let VIContainer = $('<div id="VIContainer" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>');
@@ -23,9 +23,9 @@ importBtn.click(function () { fileImporter.click();});
 
 mainContainer.append(sideBar);
 mainContainer.append(VIContainer);
+navigationBar.append(startBtn);
 navigationBar.append(importBtn);
 navigationBar.append(exportBtn);
-navigationBar.append(startBtn);
 navigationBar.append(resetBtn);
 bd.append(navigationBar);
 bd.append(mainContainer);
@@ -35,54 +35,7 @@ let mainTimer;
 let bindInfoArr = [];//记录连接的输入输出VI的ID，以空格隔开
 let parsingFlag = false;
 let setVIDataIndex = 0;
-let dataObject = {
-    // AudioVICount: 0,
-    // BallBeamVICount: 0,
-    // ButtonVICount: 0,
-    // WaveVICount: 0,
-    // AddVICount: 0,
-    // DCOutputVICount: 0,
-    // FFTVICount: 0,
-    // KnobVICount: 0,
-    // OrbitWaveVICount: 0,
-    // PIDVICount: 0,
-    // RelayVICount: 0,
-    // RotorExperimentalRigVICount: 0,
-    // RoundPanelVICount: 0,
-    // TextVICount: 0,
-    // DifferentiationResponseVICount: 0,
-    // InertiaResponseVICount: 0,
-    // IntegrationResponseVICount: 0,
-    // OscillationResponseVICount: 0,
-    // ProportionDifferentiationResponseVICount: 0,
-    // ProportionInertiaResponseVICount: 0,
-    // ProportionIntegrationResponseVICount: 0,
-    // ProportionResponseVICount: 0,
-    // SignalGeneratorVICount: 0,
-    // AddVI: [],
-    // AudioVI: [],
-    // BallBeamVI: [],
-    // ButtonVI: [],
-    // WaveVI: [],
-    // DCOutputVI: [],
-    // FFTVI: [],
-    // KnobVI: [],
-    // OrbitWaveVI: [],
-    // PIDVI: [],
-    // RelayVI: [],
-    // RotorExperimentalRigVI: [],
-    // RoundPanelVI: [],
-    // TextVI: [],
-    // ProportionResponseVI: [],
-    // IntegrationResponseVI: [],
-    // DifferentiationResponseVI: [],
-    // InertiaResponseVI: [],
-    // OscillationResponseVI: [],
-    // ProportionIntegrationResponseVI: [],
-    // ProportionDifferentiationResponseVI: [],
-    // ProportionInertiaResponseVI: [],
-    // SignalGeneratorVI: []
-};
+let dataObject = {};
 
 function checkIfTargetInputValueBound (targetVI, targetInputType) {
 
@@ -121,7 +74,18 @@ function getVIById (VIId) {
     try {
 
         let VIInfo = VIId.split('-');
-        return dataObject[VIInfo[0]][VIInfo[1]];
+        if (!dataObject[VIInfo[0]]) {
+
+            return false;
+        }
+        for (let VI of dataObject[VIInfo[0]]) {
+
+            if (VI.container.id === VIId) {
+
+                return VI;
+            }
+        }
+        return false;
     }
     catch (e) {
         return false;
@@ -203,7 +167,7 @@ function toggleStart () {
     if (startBtn.val() === '启动') {
 
         startBtn.val('停止');
-        navigationBar.css('background-color', 'green');
+        startBtn.css('background-color', '#6dd3d1');
         mainTimer = window.setInterval(function () {
             if (bindInfoArr.length === 0) {
 
@@ -216,7 +180,7 @@ function toggleStart () {
     else {
 
         startBtn.val('启动');
-        navigationBar.css('background-color', 'white');
+        startBtn.css('background-color', '');
         window.clearInterval(mainTimer);
     }
 }
@@ -334,6 +298,28 @@ function VIDraw (canvas) {
     return tempVI;
 }
 
+function getNewId (VIName) {
+
+    if (!dataObject[VIName + 'Count']) {
+
+        dataObject[VIName + 'Count'] = 0;
+    }
+    let VICount = Number(dataObject[VIName + 'Count']);
+    let tempId = VIName + '-' + VICount;
+
+    if (dataObject[VIName]) {
+
+        for (let i = 0; i < dataObject[VIName].length; i += 1) {
+
+            if (dataObject[VIName][i].container.id === tempId) {
+
+                tempId = VIName + '-' + (VICount + 1);
+            }
+        }
+    }
+    return tempId;
+}
+
 function allowDrop (e) {
 
     e.preventDefault();
@@ -351,12 +337,9 @@ function drop (e) {
     let newVICanvas = $('<canvas></canvas>');
     let VIName = VICanvas.attr('id');
 
-    if (!dataObject[VIName + 'Count']) {
-
-        dataObject[VIName + 'Count'] = 0;
-    }
-
-    newVICanvas.attr('id', VIName + '-' + dataObject[VIName + 'Count']++);
+    let newId = getNewId(VIName);
+    console.log(newId);
+    newVICanvas.attr('id', newId);
     newVICanvas.attr('class', VICanvas.attr('class'));
     newVICanvas.attr('width', VICanvas.width() * VICanvas.attr('zoom'));
     newVICanvas.attr('height', VICanvas.height() * VICanvas.attr('zoom'));
@@ -366,6 +349,7 @@ function drop (e) {
     newVICanvas.attr('oncontextmenu', 'showContextMenu(event, this)');
 
     VIDraw(newVICanvas);
+    dataObject[VIName + 'Count']++;
 }
 
 function deleteVI (canvas) {
@@ -568,7 +552,7 @@ function ready () {
 
 function containerResize () {
 
-    let height = window.innerWidth * 0.95 > 600 ? window.innerHeight * 0.95 : 600;
+    let height = window.innerHeight * 0.95 > 600 ? window.innerHeight * 0.95 : 600;
     sideBar.css('height', height);
     VIContainer.css('height', height);
 }
@@ -594,6 +578,7 @@ function init () {
     dataObject = {};
     sideBar.html('');
     VIContainer.html('');
+    fileImporter.val('');
 
     new VILibrary.VI.AudioVI(addCanvasToSideBar('AudioVI', 'draggable-element', 104, 90, 1));
     new VILibrary.VI.OrbitWaveVI(addCanvasToSideBar('OrbitWaveVI', 'draggable-element', 104, 90, 3));
@@ -646,56 +631,56 @@ function parseImportVIInfo (json) {
     parsingFlag = true;
     for (let bindInfo of json.VIInfo) {
 
-        // try {
-        let sourceInfo = bindInfo.sourceInfo;
-        let targetInfo = bindInfo.targetInfo;
-        let sourceVI = getVIById(sourceInfo.id);
-        let targetVI = getVIById(targetInfo.id);
+        try {
+            let sourceInfo = bindInfo.sourceInfo;
+            let targetInfo = bindInfo.targetInfo;
+            let sourceVI = getVIById(sourceInfo.id);
+            let targetVI = getVIById(targetInfo.id);
+            console.log(sourceVI);
+            console.log(targetVI);
+            if (!sourceVI) {
 
-        if (!sourceVI) {
+                let sourceVIName = sourceInfo.id.split('-')[0];
+                let sourceCanvas = createCanvas(sourceInfo.id, sourceInfo.className, sourceInfo.width, sourceInfo.height, sourceInfo.top, sourceInfo.left);
 
-            let sourceVIName = sourceInfo.id.split('-')[0];
-            let sourceCanvas = createCanvas(sourceInfo.id, sourceInfo.className, sourceInfo.width, sourceInfo.height, sourceInfo.top, sourceInfo.left);
+                sourceVI = VIDraw(sourceCanvas);//返回一个Object, key分别为VI和endpoints
+                if (!dataObject[sourceVIName + 'Count']) {
 
-            sourceVI = VIDraw(sourceCanvas);//返回一个Object, key分别为VI和endpoints
-            if (!dataObject[sourceVIName + 'Count']) {
-
-                dataObject[sourceVIName + 'Count'] = 0;
+                    dataObject[sourceVIName + 'Count'] = 0;
+                }
+                dataObject[sourceVIName + 'Count']++;
             }
-            dataObject[sourceVIName + 'Count']++;
-        }
-        if (!targetVI) {
+            if (!targetVI) {
 
-            let targetVIName = targetInfo.id.split('-')[0];
-            let targetCanvas = createCanvas(targetInfo.id, targetInfo.className, targetInfo.width, targetInfo.height, targetInfo.top, targetInfo.left);
+                let targetVIName = targetInfo.id.split('-')[0];
+                let targetCanvas = createCanvas(targetInfo.id, targetInfo.className, targetInfo.width, targetInfo.height, targetInfo.top, targetInfo.left);
 
-            targetVI = VIDraw(targetCanvas);
-            if (!dataObject[targetVIName + 'Count']) {
+                targetVI = VIDraw(targetCanvas);
+                if (!dataObject[targetVIName + 'Count']) {
 
-                dataObject[targetVIName + 'Count'] = 0;
+                    dataObject[targetVIName + 'Count'] = 0;
+                }
+                dataObject[targetVIName + 'Count']++;
             }
-            dataObject[targetVIName + 'Count']++;
-        }
 
-        sourceVI.target.push([targetVI, sourceInfo.outputType]);
-        targetVI.source.push([sourceVI, targetInfo.inputType]);
-        addBindInfoToArr(sourceInfo.id + ' ' + targetInfo.id);
-        instance.connect({
-            source: sourceVI.endpoints.outputEndpoint,
-            target: targetVI.endpoints.inputEndPoint
-        });
-        // }
-        // catch (e) {
-        //
-        //     //先初始化数据记录
-        //     bindInfoArr = [];
-        //     dataObject = {};
-        //     console.log('Parse ImportVI Error: ' + e);
-        //     parsingFlag = false;
-        // }
+            sourceVI.target.push([targetVI, sourceInfo.outputType]);
+            targetVI.source.push([sourceVI, targetInfo.inputType]);
+            addBindInfoToArr(sourceInfo.id + ' ' + targetInfo.id);
+            instance.connect({
+                source: sourceVI.endpoints.outputEndpoint,
+                target: targetVI.endpoints.inputEndPoint
+            });
+        }
+        catch (e) {
+
+            init();
+            console.log('Parse ImportVI ' + e);
+            parsingFlag = false;
+            return false;
+        }
     }
-    console.log(bindInfoArr);
     parsingFlag = false;
+    fileImporter.val('');
 }
 
 function exportVI () {
@@ -755,12 +740,20 @@ function exportVI () {
 function importVI () {
 
     console.log('import');
+
+    if (startBtn.val() === '停止') {
+
+        startBtn.val('启动');
+        startBtn.css('background-color', '');
+        window.clearInterval(mainTimer);
+    }
     let selectedFile = fileImporter[0].files[0];
 
     let reader = new FileReader();
     reader.readAsText(selectedFile);
     reader.onload = function () {
 
+        console.log('loaded');
         VIContainer.html('');
         ready();
         //先初始化数据记录
