@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,7 +40,7 @@
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
               <first_editor relative-caret-position="216">
-                <caret line="9" column="72" lean-forward="false" selection-start-line="9" selection-start-column="72" selection-end-line="9" selection-end-column="72" />
+                <caret line="9" column="67" lean-forward="false" selection-start-line="9" selection-start-column="67" selection-end-line="9" selection-end-column="67" />
                 <folding />
               </first_editor>
               <second_editor />
@@ -1214,14 +1213,7 @@
       <workItem from="1480474168502" duration="21140000" />
       <workItem from="1480554960580" duration="49932000" />
       <workItem from="1480920273700" duration="18585000" />
-      <workItem from="1480994531580" duration="13991000" />
-    </task>
-    <task id="LOCAL-00002" summary="test&#10;">
-      <created>1476862225030</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1476862225030</updated>
+      <workItem from="1480994531580" duration="14028000" />
     </task>
     <task id="LOCAL-00003" summary="test&#10;">
       <created>1476862768911</created>
@@ -1559,11 +1551,18 @@
       <option name="project" value="LOCAL" />
       <updated>1481029168606</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="1206-morning&#10;1. VILibrary change&#10;1.BUG FIX">
+      <created>1481029246287</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1481029246287</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="851196000" />
+    <option name="totallyTimeSpent" value="851233000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -2892,7 +2891,7 @@
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="216">
-            <caret line="9" column="72" lean-forward="false" selection-start-line="9" selection-start-column="72" selection-end-line="9" selection-end-column="72" />
+            <caret line="9" column="67" lean-forward="false" selection-start-line="9" selection-start-column="67" selection-end-line="9" selection-end-column="67" />
             <folding />
           </first_editor>
           <second_editor />
