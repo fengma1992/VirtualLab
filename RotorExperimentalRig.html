@@ -76,11 +76,9 @@
 
             signalWaveVI.setData(RotorExperimentalRigVI.signalOutput);
             frequencyWaveVI.setData(RotorExperimentalRigVI.frequencyOutput);
-            orbitWaveVI.setData(RotorExperimentalRigVI.orbitXOutput, RotorExperimentalRigVI.orbitYOutput);
+            orbitWaveVI.setData([RotorExperimentalRigVI.orbitXOutput, RotorExperimentalRigVI.orbitYOutput]);
         }
     }, 50);
-
-
 </script>
 </body>
 </html>

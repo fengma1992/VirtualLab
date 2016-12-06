@@ -996,7 +996,8 @@ VILibrary.VI = {
                 _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
                 _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
                 _this.ctx.stroke();
-                let curPointX = parseInt((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth) - 1;
+                let curPointX = parseInt((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth);
+                curPointX = curPointX === _this.pointNum ? curPointX - 1 : curPointX;
                 let curPointY = VILibrary.InternalFunction.fixNumber(_this.bufferVal[curPointX]);
                 _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
                     _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
@@ -4371,7 +4372,7 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '文本显示',
-        defaultWidth: '150px',
+        defaultWidth: '100px',
         defaultHeight: '50px'
     },
 
