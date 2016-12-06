@@ -28,10 +28,10 @@
 <script src="js/jquery-3.1.1.min.js"></script>
 <script>
 
-    let inputWave = new VILibrary.VI.WaveVI($('#inputCanvas')[0]);
-    let outputWave = new VILibrary.VI.WaveVI($('#outputCanvas')[0]);
-    let inputData = new VILibrary.VI.DCOutputVI($('#inputDataCanvas')[0]);
-    let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI($('#signalCanvas')[0]);
+    let inputWave = new VILibrary.VI.WaveVI.createVI($('#inputCanvas')[0]);
+    let outputWave = new VILibrary.VI.WaveVI.createVI($('#outputCanvas')[0]);
+    let inputData = new VILibrary.VI.DCOutputVI.createVI($('#inputDataCanvas')[0]);
+    let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI.createVI($('#signalCanvas')[0]);
 
     let signalType = 1, n = 0, timer;
 

@@ -76,7 +76,6 @@ function addBindInfoToArr (bindInfo) {
 
         bindInfoArr.push(bindInfo);
     }
-    console.log(bindInfoArr);
 }
 
 //从记录数组中删除绑定对
@@ -334,7 +333,7 @@ function VIDraw (canvas) {
     VIContainer.append(canvas);
     instance.draggable(canvas);
     let VIName = canvas.attr('id').split('-')[0];
-    let tempVI = new VILibrary.VI[VIName](canvas, true);
+    let tempVI = new VILibrary.VI[VIName].createVI(canvas, true);
 
     if (!dataObject[VIName]) {
         dataObject[VIName] = [];
@@ -385,11 +384,10 @@ function drop (e) {
     let VIName = VICanvas.attr('id');
 
     let newId = getNewId(VIName);
-    console.log(newId);
     newVICanvas.attr('id', newId);
     newVICanvas.attr('class', VICanvas.attr('class'));
-    newVICanvas.attr('width', VICanvas.width() * VICanvas.attr('zoom'));
-    newVICanvas.attr('height', VICanvas.height() * VICanvas.attr('zoom'));
+    newVICanvas.attr('width', VILibrary.VI[VIName].defaultWidth);
+    newVICanvas.attr('height', VILibrary.VI[VIName].defaultHeight);
     newVICanvas.css('left', (e.offsetX - newVICanvas.width() / 2) + 'px');
     newVICanvas.css('top', (e.offsetY - newVICanvas.height() / 2) + 'px');
     newVICanvas.attr('ondblclick', 'showBox(this)');
@@ -486,7 +484,7 @@ function ready () {
                                     instance.detach(connectionInfo.connection);
                                     connectionInfo = null;
                                 }
-                                G.alert('未选择' + sourceVI.cnText + '输出参数！', 1, 1500);
+                                G.alert('未选择' + getVICNName(sourceVI.name) + '输出参数！', 1, 1500);
                                 return false;
                             }
                             sourceVI.target.push([targetVI, sourceOutputType]);
@@ -512,7 +510,7 @@ function ready () {
                                     instance.detach(connectionInfo.connection);
                                     connectionInfo = null;
                                 }
-                                G.alert('未选择' + targetVI.cnText + '输入参数！', 1, 1500);
+                                G.alert('未选择' + getVICNName(targetVI.name) + '输入参数！', 1, 1500);
                                 return false;
                             }
                             if (checkIfTargetInputValueBound(targetVI, targetInputType)) {//检测此输入端口是否已与其他VI连接

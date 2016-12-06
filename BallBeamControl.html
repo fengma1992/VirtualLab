@@ -51,11 +51,11 @@
 
 <script>
     //VI部分变量
-    let positionWave = new VILibrary.VI.WaveVI($('#positionCanvas')[0]);
-    let angleWave = new VILibrary.VI.WaveVI($('#angleCanvas')[0]);
-    let addVI = new VILibrary.VI.AddVI($('#ADDCanvas')[0]);
-    let PIDVI = new VILibrary.VI.PIDVI($('#PIDCanvas')[0]);
-    let ballBeamVI = new VILibrary.VI.BallBeamVI($('#mainCanvas')[0], true);
+    let positionWave = new VILibrary.VI.WaveVI.createVI($('#positionCanvas')[0]);
+    let angleWave = new VILibrary.VI.WaveVI.createVI($('#angleCanvas')[0]);
+    let addVI = new VILibrary.VI.AddVI.createVI($('#ADDCanvas')[0]);
+    let PIDVI = new VILibrary.VI.PIDVI.createVI($('#PIDCanvas')[0]);
+    let ballBeamVI = new VILibrary.VI.BallBeamVI.createVI($('#mainCanvas')[0], true);
 
     let timer;
     function onTimer () {

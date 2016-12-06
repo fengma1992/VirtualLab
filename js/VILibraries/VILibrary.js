@@ -157,6 +157,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = domElement.getContext('2d');
             this.name = 'AddVI';
+            this.zoomValue = 1;
 
             this.dataLength = 1024;
             this.index = 0;
@@ -262,8 +263,8 @@ VILibrary.VI = {
 
         },
         cnName: '加法器',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     AudioVI: {
@@ -275,6 +276,8 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = domElement.getContext('2d');
             this.name = 'AudioVI';
+            this.zoomValue = 1;
+
             this.fillStyle = 'silver';
             this.runningFlag = false;
 
@@ -404,8 +407,8 @@ VILibrary.VI = {
             }, false);
         },
         cnName: '麦克风',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '80px',
+        defaultHeight: '80px'
     },
 
     BallBeamVI: {
@@ -415,6 +418,7 @@ VILibrary.VI = {
             let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
             const _this = this;
             this.name = 'BallBeamVI';
+            this.zoomValue = 1;
 
             this.Fs = 50;
             this.markPosition = 0;  //记录标记移动位置
@@ -775,8 +779,8 @@ VILibrary.VI = {
 
         },
         cnName: '球杆模型',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '550px',
+        defaultHeight: '300px'
     },
 
     BarVI: {
@@ -788,6 +792,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'BarVI';
+            this.zoomValue = 1;
 
             //坐标数值//
             this.labelX = [];
@@ -1157,8 +1162,8 @@ VILibrary.VI = {
             this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
         },
         cnName: '柱状图',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '500px',
+        defaultHeight: '250px'
     },
 
     ButtonVI: {
@@ -1170,6 +1175,8 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = domElement.getContext('2d');
             this.name = 'ButtonVI';
+            this.zoomValue = 1;
+
             this.fillStyle = 'silver';
             this.outputPointCount = 0;
             this.inputPointCount = 0;
@@ -1193,8 +1200,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '按钮',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '100px',
+        defaultHeight: '50px'
     },
 
     DCOutputVI: {
@@ -1206,6 +1213,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = domElement.getContext('2d');
             this.name = 'DCOutputVI';
+            this.zoomValue = 1;
 
             this.dataLength = 1024;
             this.index = 0;
@@ -1291,8 +1299,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '直流输出',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     DifferentiationResponseVI: {
@@ -1304,6 +1312,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'DifferentiationResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 3;
             this.k3 = 0.0025;
@@ -1397,8 +1406,8 @@ VILibrary.VI = {
 
         },
         cnName: '微分响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     FFTVI: {
@@ -1410,6 +1419,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'FFTVI';
+            this.zoomValue = 1;
 
             this.output = [0];
             this.outputPointCount = -1;
@@ -1452,8 +1462,8 @@ VILibrary.VI = {
 
         },
         cnName: 'FFT',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     InertiaResponseVI: {
@@ -1465,6 +1475,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'InertiaResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 6;
             this.k1 = 0.025;
@@ -1561,8 +1572,8 @@ VILibrary.VI = {
 
         },
         cnName: '惯性响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     IntegrationResponseVI: {
@@ -1574,6 +1585,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'IntegrationResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 2;
             this.k2 = 5;
@@ -1672,8 +1684,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '积分响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     KnobVI: {
@@ -1685,6 +1697,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'KnobVI';
+            this.zoomValue = 1;
 
             this.minValue = 0;
             this.maxValue = 100;
@@ -2003,8 +2016,8 @@ VILibrary.VI = {
             this.container.addEventListener('mouseup', onMouseUp, false);
         },
         cnName: '旋钮',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '150px',
+        defaultHeight: '150px'
     },
 
     OrbitWaveVI: {
@@ -2016,6 +2029,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'OrbitWaveVI';
+            this.zoomValue = 1;
 
             //坐标单位//
             this.strLabelX = 'X';
@@ -2410,8 +2424,8 @@ VILibrary.VI = {
             this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
         },
         cnName: '二维波形',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '400px',
+        defaultHeight: '370px'
     },
 
     OscillationResponseVI: {
@@ -2423,6 +2437,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'OscillationResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 7;
             this.k1 = 50;
@@ -2532,8 +2547,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '震荡响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     PIDVI: {
@@ -2545,6 +2560,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext('2d');
             this.name = 'PIDVI';
+            this.zoomValue = 1;
 
             this.input = 0;
             this.lastInput = 0;
@@ -2663,8 +2679,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: 'PID控制器',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     ProportionDifferentiationResponseVI: {
@@ -2676,6 +2692,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'ProportionDifferentiationResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 5;
             this.k1 = 1;
@@ -2782,8 +2799,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '比例微分响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     ProportionInertiaResponseVI: {
@@ -2795,6 +2812,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'ProportionInertiaResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 8;
             this.k1 = 0.025;
@@ -2901,8 +2919,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '比例惯性响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     ProportionIntegrationResponseVI: {
@@ -2914,6 +2932,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'ProportionIntegrationResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 4;
             this.k1 = 1.5;
@@ -3026,8 +3045,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '比例积分响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     ProportionResponseVI: {
@@ -3039,6 +3058,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'ProportionResponseVI';
+            this.zoomValue = 1;
 
             this.signalType = 1;
             this.k1 = 1.5;
@@ -3136,8 +3156,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '比例响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     RelayVI: {
@@ -3149,6 +3169,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = domElement.getContext('2d');
             this.name = 'RelayVI';
+            this.zoomValue = 1;
 
             this.input = 0;
             this.singleOutput = 0;
@@ -3214,14 +3235,14 @@ VILibrary.VI = {
                 _this.ctx.fillStyle = 'orange';
                 _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
                 _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText(this.cnText, _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+                _this.ctx.fillText(VILibrary.VI.RelayVI.cnName, _this.container.width / 2 - 18, _this.container.height / 2 + 6);
             };
 
             this.draw();
         },
         cnName: '存储器',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     RotorExperimentalRigVI: {
@@ -3231,6 +3252,7 @@ VILibrary.VI = {
             let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
             const _this = this;
             this.name = 'RotorExperimentalRigVI';
+            this.zoomValue = 1;
             this.isStart = false;
 
             this.signalType = 1;
@@ -3604,8 +3626,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '转子实验台',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '550px',
+        defaultHeight: '300px'
     },
 
     RoundPanelVI: {
@@ -3617,6 +3639,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext('2d');
             this.name = 'RoundPanelVI';
+            this.zoomValue = 1;
 
             this.latestInput = 0;
             this.handAngle = Math.PI * 5 / 6;
@@ -3863,8 +3886,8 @@ VILibrary.VI = {
 
         },
         cnName: '圆表盘',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '150px',
+        defaultHeight: '150px'
     },
 
     SignalGeneratorVI: {
@@ -3876,6 +3899,8 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = domElement.getContext('2d');
             this.name = 'SignalGeneratorVI';
+            this.zoomValue = 1;
+
             this.ampSetFlag = false;
             this.frequencySetFlag = false;
 
@@ -3930,7 +3955,6 @@ VILibrary.VI = {
                 }
                 if (_this.ampSetFlag && _this.frequencySetFlag) {
 
-                    _this.phase += 10;
                     _this.ampSetFlag = false;
                     _this.frequencySetFlag = false;
                     if (Number.isNaN(_this.amp) || Number.isNaN(_this.frequency) || Number.isNaN(_this.phase)) {
@@ -4019,6 +4043,7 @@ VILibrary.VI = {
                             _this.singleOutput = _this.output[_this.dataLength - 1];
 
                     }
+                    _this.phase += 10;
                 }
             };
 
@@ -4059,8 +4084,8 @@ VILibrary.VI = {
             this.draw();
         },
         cnName: '信号发生器',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     StepResponseGeneratorVI: {
@@ -4072,6 +4097,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'StepResponseGeneratorVI';
+            this.zoomValue = 1;
 
             this.signalType = 0;
             this.k1 = 1;
@@ -4261,15 +4287,15 @@ VILibrary.VI = {
                 _this.ctx.fillStyle = 'orange';
                 _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
                 _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText(_this.cnText.substring(0, 2), _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText(_this.cnText.substring(2), _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                _this.ctx.fillText(VILibrary.VI.StepResponseGeneratorVI.cnName.substring(0, 2), _this.container.width / 2 - 12, _this.container.height / 4 + 6);
+                _this.ctx.fillText(VILibrary.VI.StepResponseGeneratorVI.cnName.substring(2), _this.container.width / 2 - 12, _this.container.height * 3 / 4);
             };
 
             this.draw();
         },
         cnName: '阶跃响应',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '50px',
+        defaultHeight: '50px'
     },
 
     TextVI: {
@@ -4281,6 +4307,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = domElement.getContext('2d');
             this.name = 'TextVI';
+            this.zoomValue = 1;
 
             this.latestInput = 0;
             this.decimalPlace = 1;
@@ -4338,14 +4365,14 @@ VILibrary.VI = {
                 _this.ctx.fillStyle = 'orange';
                 _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
                 _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('文本框', _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+                _this.ctx.fillText('文本显示', _this.container.width / 2 - 18, _this.container.height / 2 + 6);
             };
 
             this.draw();
         },
         cnName: '文本显示',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '150px',
+        defaultHeight: '50px'
     },
 
     WaveVI: {
@@ -4357,6 +4384,7 @@ VILibrary.VI = {
             this.container = domElement;
             this.ctx = this.container.getContext("2d");
             this.name = 'WaveVI';
+            this.zoomValue = 1;
 
             // console.log(domElement.width+':'+domElement.height);
             //坐标单位//
@@ -4744,7 +4772,7 @@ VILibrary.VI = {
             this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
         },
         cnName: '波形显示',
-        defaultWidth: '',
-        defaultHeight: ''
+        defaultWidth: '500px',
+        defaultHeight: '300px'
     }
 };

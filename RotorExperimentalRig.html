@@ -45,12 +45,12 @@
 
 <script>
     'use strict';
-    let signalWaveVI = new VILibrary.VI.WaveVI($('#signalCanvas')[0]);
-    let frequencyWaveVI = new VILibrary.VI.WaveVI($('#frequencyCanvas')[0]);
-    let orbitWaveVI = new VILibrary.VI.OrbitWaveVI($('#orbitCanvas')[0]);
-    let knobVI = new VILibrary.VI.KnobVI($('#knobCanvas')[0]);
-    let roundPanelVI = new VILibrary.VI.RoundPanelVI($('#roundPanelCanvas')[0]);
-    let RotorExperimentalRigVI = new VILibrary.VI.RotorExperimentalRigVI($('#mainCanvas')[0], true);
+    let signalWaveVI = new VILibrary.VI.WaveVI.createVI($('#signalCanvas'));
+    let frequencyWaveVI = new VILibrary.VI.WaveVI.createVI($('#frequencyCanvas'));
+    let orbitWaveVI = new VILibrary.VI.OrbitWaveVI.createVI($('#orbitCanvas'));
+    let knobVI = new VILibrary.VI.KnobVI.createVI($('#knobCanvas'));
+    let roundPanelVI = new VILibrary.VI.RoundPanelVI.createVI($('#roundPanelCanvas'));
+    let RotorExperimentalRigVI = new VILibrary.VI.RotorExperimentalRigVI.createVI($('#mainCanvas'), true);
 
     signalWaveVI.setAxisRangX(0, RotorExperimentalRigVI.dataLength / 8192);//采样频率为8192
     signalWaveVI.setLabel('时间/s', '幅值');

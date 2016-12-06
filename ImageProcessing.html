@@ -49,7 +49,7 @@
     let binaryContext = binaryCanvas.getContext('2d');
     let captureWidth = captureCanvas.width;
     let captureHeight = captureCanvas.height;
-    let bar = new VILibrary.VI.BarVI(barCanvas);
+    let bar = new VILibrary.VI.BarVI.createVI(barCanvas);
     let captureFlag = false;
     let HISTOGRAM = [], EQUALIZER_HIST = [];
     drawText('原图', captureContext);
@@ -57,7 +57,7 @@
     drawText('均衡化图', equalizerContext);
     drawText('二值化图', binaryContext);
 
-    let knob = new VILibrary.VI.KnobVI(knobCanvas);
+    let knob = new VILibrary.VI.KnobVI.createVI(knobCanvas);
     knob.setDataRange(0, 255, 100);
 
     knob.attachEvent('mouseMove', function () {

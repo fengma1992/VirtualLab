@@ -32,50 +32,47 @@
     <script src="js/VILibraries/VILibrary.js"></script>
     <script src="js/jquery-3.1.1.min.js"></script>
     <script>
-        let canvas = document.getElementById('signalCanvas');
-        let ampInput = document.getElementById('ampInput');
-        let freqInput = document.getElementById('freqInput');
-        let startBtn = document.getElementById('startBtn');
-        let dataCanvas = document.getElementById('dataCanvas');
-        startBtn.disabled = true;
+        let ampInput = $('#ampInput');
+        let freqInput = $('#freqInput');
+        let startBtn = $('#startBtn');
+        startBtn.clickable = true;
 
-        let wave = new VILibrary.VI.WaveVI($('#signalCanvas'));
-        let data = new VILibrary.VI.SignalGeneratorVI(dataCanvas);
-        let phrase, interval, originalAmp = ampInput.value, amplitude = originalAmp,
-            originalFreq = freqInput.value, frequency = originalFreq, started = false;
+        let wave = new VILibrary.VI.WaveVI.createVI($('#signalCanvas'));
+        let data = new VILibrary.VI.SignalGeneratorVI.createVI($('#dataCanvas'));
+        let interval, originalAmp = ampInput.val(), amplitude = originalAmp,
+            originalFreq = freqInput.val(), frequency = originalFreq, started = false;
 
         function setValue (signalType) {
-            phrase = 0;
             data.signalType = signalType;
             setData();
-            startBtn.disabled = false;
+            startBtn.clickable = false;
         }
 
         function setData () {
-            data.setData(amplitude, frequency, phrase);
+            data.setData(amplitude, 1);
+            data.setData(frequency, 2);
             wave.setData(data.output, data.output.length);
         }
         function start () {
             if (!started) {
                 interval = window.setInterval(function () {
-                    phrase += 10;
                     setData();
                 }, 100);
-                startBtn.innerText = '停止';
+                startBtn.text('停止');
                 started = !started;
             }
             else {
                 window.clearInterval(interval);
-                startBtn.innerText = '运行';
+                startBtn.text('运行');
                 started = !started;
             }
         }
-        let knob1 = new VILibrary.VI.KnobVI(document.getElementById('knobCanvas1'));
+        let knob1 = new VILibrary.VI.KnobVI.createVI($('#knobCanvas1'));
         knob1.setDataRange(0, 100, originalAmp);
 
         knob1.attachEvent('mouseMove', function () {
-            ampInput.value = knob1.singleOutput.toFixed(1);
-            amplitude = ampInput.value;
+            ampInput.val(knob1.singleOutput.toFixed(1));
+            amplitude = ampInput.val();
 
             if (!started) {
                 setData();
@@ -83,12 +80,12 @@
 
         });
 
-        let knob2 = new VILibrary.VI.KnobVI(document.getElementById('knobCanvas2'));
+        let knob2 = new VILibrary.VI.KnobVI.createVI($('#knobCanvas2'));
         knob2.setDataRange(0, 1000, originalFreq);
 
         knob2.attachEvent('mouseMove', function () {
-            freqInput.value = knob2.singleOutput.toFixed(1);
-            frequency = freqInput.value;
+            freqInput.val(knob2.singleOutput.toFixed(1));
+            frequency = freqInput.val();
 
             if (!started) {
                 setData();
@@ -96,9 +93,9 @@
         });
 
         function setAmp () {
-            amplitude = parseFloat(ampInput.value).toFixed(1);
+            amplitude = parseFloat(ampInput.val()).toFixed(1);
             amplitude = amplitude > 100 ? 100 : amplitude;
-            ampInput.value = amplitude;
+            ampInput.val(amplitude);
             knob1.setData(amplitude);
             if (!started) {
                 setData();
@@ -106,11 +103,13 @@
         }
 
         function setFreq () {
-            frequency = parseFloat(freqInput.value).toFixed(1);
+            frequency = parseFloat(freqInput.val()).toFixed(1);
             frequency = frequency > 1000 ? 1000 : frequency;
-            freqInput.value = frequency;
+            freqInput.val(frequency);
             knob2.setData(frequency);
-            if (!started) setData();
+            if (!started) {
+                setData();
+            }
         }
 
 
