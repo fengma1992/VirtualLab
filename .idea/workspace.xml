@@ -3,13 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ControlCharacteristic.html" afterPath="$PROJECT_DIR$/ControlCharacteristic.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ImageProcessing.html" afterPath="$PROJECT_DIR$/ImageProcessing.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RotorExperimentalRig.html" afterPath="$PROJECT_DIR$/RotorExperimentalRig.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SignalGenerator.html" afterPath="$PROJECT_DIR$/SignalGenerator.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/VILibrary.js" afterPath="$PROJECT_DIR$/js/VILibraries/VILibrary.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibraries/VIParser.js" afterPath="$PROJECT_DIR$/js/VILibraries/VIParser.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -42,12 +36,15 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VITest.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/VITest.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
-              <folding />
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="216">
+                <caret line="9" column="72" lean-forward="false" selection-start-line="9" selection-start-column="72" selection-end-line="9" selection-end-column="72" />
+                <folding />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -740,7 +737,7 @@
         <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1345">
-              <caret line="99" column="17" lean-forward="true" selection-start-line="99" selection-start-column="17" selection-end-line="99" selection-end-column="17" />
+              <caret line="99" column="17" lean-forward="false" selection-start-line="99" selection-start-column="17" selection-end-line="99" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -870,7 +867,6 @@
         <option value="$PROJECT_DIR$/css/main.css" />
         <option value="$PROJECT_DIR$/js/popup.js" />
         <option value="$PROJECT_DIR$/VITest.html" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/css/draggable.css" />
         <option value="$PROJECT_DIR$/js/VILibraries/VIParser.js" />
         <option value="$PROJECT_DIR$/BallBeamControl.html" />
@@ -879,6 +875,7 @@
         <option value="$PROJECT_DIR$/RotorExperimentalRig.html" />
         <option value="$PROJECT_DIR$/js/VILibraries/VILibrary.js" />
         <option value="$PROJECT_DIR$/SignalGenerator.html" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -1217,14 +1214,7 @@
       <workItem from="1480474168502" duration="21140000" />
       <workItem from="1480554960580" duration="49932000" />
       <workItem from="1480920273700" duration="18585000" />
-      <workItem from="1480994531580" duration="13869000" />
-    </task>
-    <task id="LOCAL-00001" summary="test&#10;">
-      <created>1476862004763</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1476862004763</updated>
+      <workItem from="1480994531580" duration="13991000" />
     </task>
     <task id="LOCAL-00002" summary="test&#10;">
       <created>1476862225030</created>
@@ -1562,11 +1552,18 @@
       <option name="project" value="LOCAL" />
       <updated>1481023940019</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="1206-morning&#10;1. VILibrary change&#10;1.BUG FIX">
+      <created>1481029168605</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1481029168606</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="851074000" />
+    <option name="totallyTimeSpent" value="851196000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1579,9 +1576,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12974684" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12974684" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32721382" sideWeight="0.50428265" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
@@ -1636,7 +1633,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1101-afternoon&#10;1、数据框架更新完成；&#10;2、测试稳定性" />
     <MESSAGE value="1102-afternoon&#10;1、三维实验框架完成" />
     <MESSAGE value="1102-afternoon&#10;1、bug fix" />
     <MESSAGE value="1102-afternoon&#10;1、拼写修正" />
@@ -1661,7 +1657,8 @@
     <MESSAGE value="1205-Afternoon-1&#10;1.css fix&#10;" />
     <MESSAGE value="1206-morning&#10;1. import bug fix;&#10;2. add vi bug fix." />
     <MESSAGE value="1206-morning&#10;1.README.MD CHANGE" />
-    <option name="LAST_COMMIT_MESSAGE" value="1206-morning&#10;1.README.MD CHANGE" />
+    <MESSAGE value="1206-morning&#10;1. VILibrary change&#10;1.BUG FIX" />
+    <option name="LAST_COMMIT_MESSAGE" value="1206-morning&#10;1. VILibrary change&#10;1.BUG FIX" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1844,17 +1841,6 @@
             <element signature="e#2017#9928#0" expanded="false" />
             <element signature="e#9957#18537#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="240">
-            <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-            <folding />
-          </first_editor>
-          <second_editor />
         </state>
       </provider>
     </entry>
@@ -2873,7 +2859,7 @@
     <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1345">
-          <caret line="99" column="17" lean-forward="true" selection-start-line="99" selection-start-column="17" selection-end-line="99" selection-end-column="17" />
+          <caret line="99" column="17" lean-forward="false" selection-start-line="99" selection-start-column="17" selection-end-line="99" selection-end-column="17" />
           <folding />
         </state>
       </provider>
@@ -2886,6 +2872,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/VITest.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="20" column="38" lean-forward="true" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/VirtualInstrument.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
@@ -2894,11 +2888,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/VITest.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
-          <folding />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="216">
+            <caret line="9" column="72" lean-forward="false" selection-start-line="9" selection-start-column="72" selection-end-line="9" selection-end-column="72" />
+            <folding />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
