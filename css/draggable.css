@@ -24,8 +24,8 @@
     -moz-box-shadow: 2px 2px 19px #aaa;
     /*-moz-border-radius: 0.5em;*/
     /*border-radius: 0.5em;*/
-    opacity: 0.8;
-    line-height: 80px;
+    /*opacity: 0.8;*/
+    /*line-height: 80px;*/
     cursor: grab;
     cursor: -moz-grab;
     cursor: -webkit-grab;
@@ -35,7 +35,8 @@
     color: black;
     font-family: helvetica, sans-serif;
     padding: 0.3em;
-    font-size: 0.9em;
+    margin: 2px 0;
+    font-size: 1.2em;
     -webkit-transition: -webkit-box-shadow 0.15s ease-in;
     -moz-transition: -moz-box-shadow 0.15s ease-in;
     -o-transition: -o-box-shadow 0.15s ease-in;

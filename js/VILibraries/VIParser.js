@@ -37,12 +37,31 @@ let parsingFlag = false;
 let setVIDataIndex = 0;
 let dataObject = {};
 
+function init () {
+
+    bindInfoArr = [];
+    dataObject = {};
+    sideBar.html('');
+    VIContainer.html('');
+    fileImporter.val('');
+
+    for (let VIName in VILibrary.VI) {
+
+        if (VILibrary.VI.hasOwnProperty(VIName)) {
+
+            addCanvasToSideBar(VIName, getVICNName(VIName));
+        }
+    }
+    ready();
+    containerResize();
+}
+
 function checkIfTargetInputValueBound (targetVI, targetInputType) {
 
     for (let sourceInfo of targetVI.source) {
 
         if (sourceInfo[1] === targetInputType) {
-            return sourceInfo[0].cnText;
+            return true;
         }
 
     }
@@ -69,6 +88,33 @@ function deleteBindInfoFromArr (bindInfo) {
     }
 }
 
+//删除VI
+function deleteVI (canvas) {
+
+    let canvasId = canvas.id;
+    let VI = getVIById(canvasId);
+
+    if (dataObject[VI.name].indexOf(VI) !== -1) {
+
+        dataObject[VI.name].splice(dataObject[VI.name].indexOf(VI), 1);
+        dataObject[VI.name + 'Count'] -= 1;
+    }
+    instance.detachAllConnections(canvas);
+    instance.deleteEndpoint('output-' + canvasId);
+    instance.deleteEndpoint('input-' + canvasId);
+    canvas.remove();
+    ready();
+}
+
+function getVICNName (VIName) {
+
+    if (VILibrary.VI.hasOwnProperty(VIName)) {
+
+        return VILibrary.VI[VIName].cnName;
+    }
+    return false;
+}
+
 function getVIById (VIId) {
 
     try {
@@ -89,17 +135,6 @@ function getVIById (VIId) {
     }
     catch (e) {
         return false;
-    }
-}
-
-function showBox (VICanvas) {
-
-    let canvasId = VICanvas.id;
-    let VI = getVIById(canvasId);
-
-    if (VI.boxTitle) {
-
-        window.B = G.box(VI.boxTitle, VI.boxContent, 1, function () { getVIById(canvasId).setInitialData();});
     }
 }
 
@@ -159,6 +194,18 @@ function setData () {
     }
 
     setVIDataIndex = 0;
+}
+
+//双击VI弹出框
+function showBox (VICanvas) {
+
+    let canvasId = VICanvas.id;
+    let VI = getVIById(canvasId);
+
+    if (VI.boxTitle) {
+
+        window.B = G.box(VI.boxTitle, VI.boxContent, 1, function () { getVIById(canvasId).setInitialData();});
+    }
 }
 
 //控制全局启停
@@ -352,23 +399,6 @@ function drop (e) {
     dataObject[VIName + 'Count']++;
 }
 
-function deleteVI (canvas) {
-
-    let canvasId = canvas.id;
-    let VI = getVIById(canvasId);
-
-    if (dataObject[VI.name].indexOf(VI) !== -1) {
-
-        dataObject[VI.name].splice(dataObject[VI.name].indexOf(VI), 1);
-        dataObject[VI.name + 'Count'] -= 1;
-    }
-    instance.detachAllConnections(canvas);
-    instance.deleteEndpoint('output-' + canvasId);
-    instance.deleteEndpoint('input-' + canvasId);
-    canvas.remove();
-    ready();
-}
-
 function showContextMenu (e, canvas) {
 
     e = e || window.event;
@@ -485,15 +515,14 @@ function ready () {
                                 G.alert('未选择' + targetVI.cnText + '输入参数！', 1, 1500);
                                 return false;
                             }
-                            let name = checkIfTargetInputValueBound(targetVI, targetInputType);    //检测此输入端口是否已与其他VI连接
-                            if (name) {
+                            if (checkIfTargetInputValueBound(targetVI, targetInputType)) {//检测此输入端口是否已与其他VI连接
 
                                 if (connectionInfo) {
 
                                     instance.detach(connectionInfo.connection);
                                     connectionInfo = null;
                                 }
-                                G.alert(targetVI.cnText + checkedRadio.attr('alt') + '已与' + name + '绑定！', 1, 1500);
+                                G.alert(getVICNName(targetVI.name) + checkedRadio.attr('alt') + '已绑定！', 1, 1500);
                                 return false;
                             }
                             targetVI.source.push([sourceVI, targetInputType]);
@@ -557,57 +586,21 @@ function containerResize () {
     VIContainer.css('height', height);
 }
 
-function addCanvasToSideBar (id, className, width, height, zoomValue) {
+function addCanvasToSideBar (id, name) {
 
-    let canvas = $('<canvas></canvas>');
-    canvas.attr('id', id);
-    canvas.attr('class', className);
-    canvas.attr('width', width);
-    canvas.attr('height', height);
-    canvas.attr('zoom', zoomValue);
-    canvas.attr('draggable', 'true');
-    canvas.attr('ondragstart', 'drag(event)');
-    sideBar.append(canvas);
-    return canvas;
+    let VISpan = $('<span></span>');
+    VISpan.attr('id', id);
+    VISpan.attr('class', 'draggable-element');
+    VISpan.css('width', '150px');
+    VISpan.css('height', 'auto');
+    VISpan.css('display', 'inline-block');
+    VISpan.attr('draggable', 'true');
+    VISpan.attr('ondragstart', 'drag(event)');
+    VISpan.text(name);
+    sideBar.append(VISpan);
+    return VISpan;
 
 }
-
-function init () {
-
-    bindInfoArr = [];
-    dataObject = {};
-    sideBar.html('');
-    VIContainer.html('');
-    fileImporter.val('');
-
-    new VILibrary.VI.AudioVI(addCanvasToSideBar('AudioVI', 'draggable-element', 104, 90, 1));
-    new VILibrary.VI.OrbitWaveVI(addCanvasToSideBar('OrbitWaveVI', 'draggable-element', 104, 90, 3));
-    new VILibrary.VI.WaveVI(addCanvasToSideBar('WaveVI', 'draggable-element', 162, 90, 3));
-    new VILibrary.VI.BallBeamVI(addCanvasToSideBar('BallBeamVI', 'draggable-element', 162, 90, 4));
-    new VILibrary.VI.RotorExperimentalRigVI(addCanvasToSideBar('RotorExperimentalRigVI', 'draggable-element', 162, 90, 4));
-    new VILibrary.VI.TextVI(addCanvasToSideBar('TextVI', 'draggable-element', 104, 45, 1));
-    new VILibrary.VI.KnobVI(addCanvasToSideBar('KnobVI', 'draggable-element', 45, 45, 3));
-    new VILibrary.VI.RoundPanelVI(addCanvasToSideBar('RoundPanelVI', 'draggable-element', 45, 45, 3));
-    new VILibrary.VI.FFTVI(addCanvasToSideBar('FFTVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.AddVI(addCanvasToSideBar('AddVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.DCOutputVI(addCanvasToSideBar('DCOutputVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.PIDVI(addCanvasToSideBar('PIDVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.RelayVI(addCanvasToSideBar('RelayVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.ProportionResponseVI(addCanvasToSideBar('ProportionResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.IntegrationResponseVI(addCanvasToSideBar('IntegrationResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.DifferentiationResponseVI(addCanvasToSideBar('DifferentiationResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.InertiaResponseVI(addCanvasToSideBar('InertiaResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.OscillationResponseVI(addCanvasToSideBar('OscillationResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.ProportionIntegrationResponseVI(addCanvasToSideBar('ProportionIntegrationResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.ProportionDifferentiationResponseVI(addCanvasToSideBar('ProportionDifferentiationResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.ProportionInertiaResponseVI(addCanvasToSideBar('ProportionInertiaResponseVI', 'draggable-element', 45, 45, 1));
-    new VILibrary.VI.SignalGeneratorVI(addCanvasToSideBar('SignalGeneratorVI', 'draggable-element', 45, 45, 1));
-
-    ready();
-    containerResize();
-}
-
-init();
 
 window.addEventListener('resize', containerResize, false);
 
@@ -643,7 +636,7 @@ function parseImportVIInfo (json) {
                 let sourceVIName = sourceInfo.id.split('-')[0];
                 let sourceCanvas = createCanvas(sourceInfo.id, sourceInfo.className, sourceInfo.width, sourceInfo.height, sourceInfo.top, sourceInfo.left);
 
-                sourceVI = VIDraw(sourceCanvas);//返回一个Object, key分别为VI和endpoints
+                sourceVI = VIDraw(sourceCanvas);
                 if (!dataObject[sourceVIName + 'Count']) {
 
                     dataObject[sourceVIName + 'Count'] = 0;
@@ -762,3 +755,5 @@ function importVI () {
         parseImportVIInfo($.parseJSON(this.result));
     }
 }
+
+init();
