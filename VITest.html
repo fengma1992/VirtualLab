@@ -1,27 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-    <meta charset=utf-8/>
-    <title>Chrome File API tester</title>
-
+    <title>开始使用layer</title>
 </head>
 <body>
-<div id="inoutCanvas"><input id="minusBtn" type="button" value="-">
-    <span id="txtSpan">0</span>
-    <input id="plusBtn" type="button" value="+">
-</div>
+<button id="test1">小小提示层</button>
+
+你必须先引入jQuery1.8或以上版本
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/layui/lay/dest/layui.all.js"></script>
 <script>
-    let minusBtn = $('<input id="minusBtn" type="button" value="-">');
-    let plusBtn = $('<input id="plusBtn" type="button" value="+">');
-    let txtSpan = $('<span id="txtSpan">0</span>');
-    let mainCanvas = $('#inputCanvas');
-    mainCanvas.css('display', 'flex');
-    mainCanvas.css('width', '200px');
-    mainCanvas.css('height', '200px');
-    mainCanvas.append(minusBtn);
-    mainCanvas.append(txtSpan);
-    mainCanvas.append(plusBtn);
+
+    $('#test1').on('click', function () {
+        let that = this;
+        layer.open({
+            type: 1,
+            title: 'test frame',
+            area: ['auto', '300px'],
+            shade: 0,
+            maxmin: true,
+            content: '<input type="button" value="111">',
+            btn: ['按钮1', '按钮2'],
+            yes: function () {
+                $(that).click();
+            },
+            btn2: function () {
+                layer.closeAll();
+            },
+            zIndex: layer.zIndex,
+            success: function (layero) {
+                layer.setTop(layero);
+            }
+        });
+    });
+
 </script>
-</body>
-</html>
+当然，你也可以写在外部的js文件
+< / body >
+< / html >

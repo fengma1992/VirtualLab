@@ -41,13 +41,13 @@
         </div>
     </div>
 </div>
-<script src="js/VILibraries/VILibrary.js"></script>
+<script src="js/VILibrary.js"></script>
 <script src="js/jquery-3.1.1.min.js"></script>
-<script src="js/three.js"></script>
-<script src="js/MTLLoader.js"></script>
-<script src="js/OBJLoader.js"></script>
-<script src="js/controls/OrbitControls.js"></script>
-<script src="js/ObjectControls.js"></script>
+<script src="js/three/three.js"></script>
+<script src="js/three/MTLLoader.js"></script>
+<script src="js/three/OBJLoader.js"></script>
+<script src="js/three/controls/OrbitControls.js"></script>
+<script src="js/three/ObjectControls.js"></script>
 
 <script>
     //VI部分变量
@@ -62,7 +62,7 @@
 
         $('#positionInput').val(ballBeamVI.markPosition);
         //加法器
-        addVI.setOriginalData(ballBeamVI.markPosition);
+        addVI.setData(ballBeamVI.markPosition, 1);
         addVI.setData(ballBeamVI.PIDPosition);//输入球位置信号，输出位置偏差
         //PID控制器
         PIDVI.P = $('#PInput').val();
