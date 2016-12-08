@@ -2,18 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/layui.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/css/popup.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/js/popup.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ControlCharacteristic.html" afterPath="$PROJECT_DIR$/ControlCharacteristic.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VITest.html" afterPath="$PROJECT_DIR$/VITest.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VirtualInstrument.html" afterPath="$PROJECT_DIR$/VirtualInstrument.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/draggable.css" afterPath="$PROJECT_DIR$/css/draggable.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibrary.js" afterPath="$PROJECT_DIR$/js/VILibrary.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VIParser.js" afterPath="$PROJECT_DIR$/js/VIParser.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test.html" afterPath="$PROJECT_DIR$/test.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RotorExperimentalRig.html" afterPath="$PROJECT_DIR$/RotorExperimentalRig.html" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -58,11 +49,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VIParser.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VIParser.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/VIParser.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="743">
-              <caret line="669" column="22" lean-forward="true" selection-start-line="669" selection-start-column="22" selection-end-line="669" selection-end-column="22" />
+              <caret line="669" column="22" lean-forward="false" selection-start-line="669" selection-start-column="22" selection-end-line="669" selection-end-column="22" />
               <folding>
                 <element signature="e#0#43#0" expanded="false" />
                 <element signature="e#1021#1065#0" expanded="false" />
@@ -156,19 +147,19 @@
                 <element signature="n#!!block;n#addCanvasToSideBar#0" expanded="false" />
                 <element signature="n#!!block;n#createCanvas#0" expanded="false" />
                 <element signature="n#!!block;n#parseImportVIInfo#0" expanded="false" />
-                <element signature="e#21571#23370#0" expanded="false" />
-                <element signature="e#21586#23206#0" expanded="false" />
-                <element signature="e#21821#22299#0" expanded="false" />
-                <element signature="e#22151#22231#0" expanded="false" />
-                <element signature="e#22327#22805#0" expanded="false" />
-                <element signature="e#22657#22737#0" expanded="false" />
-                <element signature="e#23225#23364#0" expanded="false" />
+                <element signature="e#21575#23374#0" expanded="false" />
+                <element signature="e#21590#23210#0" expanded="false" />
+                <element signature="e#21825#22303#0" expanded="false" />
+                <element signature="e#22155#22235#0" expanded="false" />
+                <element signature="e#22331#22809#0" expanded="false" />
+                <element signature="e#22661#22741#0" expanded="false" />
+                <element signature="e#23229#23368#0" expanded="false" />
                 <element signature="n#!!block;n#exportVI#0" expanded="false" />
-                <element signature="e#23483#23548#0" expanded="false" />
-                <element signature="e#23618#24789#0" expanded="false" />
-                <element signature="e#25050#25194#0" expanded="false" />
-                <element signature="e#25204#25232#0" expanded="false" />
-                <marker date="1481180376561" expanded="false" signature="295:326" ph="..." />
+                <element signature="e#23487#23552#0" expanded="false" />
+                <element signature="e#23622#24793#0" expanded="false" />
+                <element signature="e#25054#25198#0" expanded="false" />
+                <element signature="e#25208#25236#0" expanded="false" />
+                <marker date="1481180495467" expanded="false" signature="295:326" ph="..." />
               </folding>
             </state>
           </provider>
@@ -239,14 +230,39 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BallBeamControl.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
+      <file leaf-file-name="test.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
-              <caret line="45" column="14" lean-forward="true" selection-start-line="45" selection-start-column="14" selection-end-line="45" selection-end-column="14" />
+            <state relative-caret-position="-288">
+              <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="40" selection-end-column="12" />
               <folding>
                 <element signature="n#head#0;n#html#0;n#!!top" expanded="false" />
-                <marker date="1481162138398" expanded="true" signature="2114:2129" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BallBeamControl.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="217">
+              <caret line="49" column="20" lean-forward="true" selection-start-line="49" selection-start-column="20" selection-end-line="49" selection-end-column="20" />
+              <folding>
+                <marker date="1481181477103" expanded="true" signature="2116:2131" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RotorExperimentalRig.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2328">
+              <caret line="114" column="31" lean-forward="true" selection-start-line="114" selection-start-column="31" selection-end-line="114" selection-end-column="31" />
+              <folding>
+                <element signature="n#head#0;n#html#0;n#!!top" expanded="false" />
+                <element signature="e#1707#1892#0" expanded="false" />
+                <element signature="e#1979#2053#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -352,19 +368,19 @@
         <option value="$PROJECT_DIR$/js/VILibraries/VIParser.js" />
         <option value="$PROJECT_DIR$/SignalGenerator.html" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/RotorExperimentalRig.html" />
         <option value="$PROJECT_DIR$/js/VILibraries/VILibrary.js" />
         <option value="$PROJECT_DIR$/ImageProcessing.html" />
         <option value="$PROJECT_DIR$/js/layuimodule.js" />
-        <option value="$PROJECT_DIR$/test.html" />
         <option value="$PROJECT_DIR$/css/main.css" />
-        <option value="$PROJECT_DIR$/BallBeamControl.html" />
         <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
         <option value="$PROJECT_DIR$/css/draggable.css" />
         <option value="$PROJECT_DIR$/VITest.html" />
         <option value="$PROJECT_DIR$/VirtualInstrument.html" />
         <option value="$PROJECT_DIR$/js/VILibrary.js" />
         <option value="$PROJECT_DIR$/js/VIParser.js" />
+        <option value="$PROJECT_DIR$/test.html" />
+        <option value="$PROJECT_DIR$/BallBeamControl.html" />
+        <option value="$PROJECT_DIR$/RotorExperimentalRig.html" />
       </list>
     </option>
   </component>
@@ -706,14 +722,7 @@
       <workItem from="1480554960580" duration="49932000" />
       <workItem from="1480920273700" duration="18585000" />
       <workItem from="1480994531580" duration="15170000" />
-      <workItem from="1481034819076" duration="35350000" />
-    </task>
-    <task id="LOCAL-00006" summary="1019test2">
-      <created>1476864199061</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1476864199061</updated>
+      <workItem from="1481034819076" duration="36908000" />
     </task>
     <task id="LOCAL-00007" summary="1019test2">
       <created>1476864577292</created>
@@ -1051,11 +1060,18 @@
       <option name="project" value="LOCAL" />
       <updated>1481096853730</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="1208-afternoon&#10;         1.delete VI bug fix;&#10;         2.BallBeamControl.html add pop window">
+      <created>1481180525686</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1481180525686</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="887725000" />
+    <option name="totallyTimeSpent" value="889283000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1125,7 +1141,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1102-afternoon&#10;1、拼写修正" />
     <MESSAGE value="1102-afternoon&#10;1、fix webcam bug" />
     <MESSAGE value="1107-afternoon&#10;1、add rotorexperimentalrig" />
     <MESSAGE value="1108-afternoon&#10;1、bugfix" />
@@ -1150,7 +1165,8 @@
     <MESSAGE value="1206-morning&#10;1. VILibrary change&#10;1.BUG FIX" />
     <MESSAGE value="1206-night&#10;         1. page loading time optimized&#10;         1.BUG FIX" />
     <MESSAGE value="1207-afternoon&#10;         1.BUG FIX" />
-    <option name="LAST_COMMIT_MESSAGE" value="1207-afternoon&#10;         1.BUG FIX" />
+    <MESSAGE value="1208-afternoon&#10;         1.delete VI bug fix;&#10;         2.BallBeamControl.html add pop window" />
+    <option name="LAST_COMMIT_MESSAGE" value="1208-afternoon&#10;         1.delete VI bug fix;&#10;         2.BallBeamControl.html add pop window" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1458,14 +1474,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1225">
-          <caret line="74" column="37" lean-forward="false" selection-start-line="74" selection-start-column="37" selection-end-line="74" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/layui.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1558,17 +1566,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="672">
-          <caret line="32" column="54" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="107" selection-end-column="7" />
-          <folding>
-            <element signature="n#head#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="e#1883#2905#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/css/main.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
@@ -1592,17 +1589,6 @@
             <element signature="e#3530#3628#0" expanded="false" />
             <element signature="e#3648#3838#0" expanded="false" />
             <element signature="e#3993#4415#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="45" column="14" lean-forward="true" selection-start-line="45" selection-start-column="14" selection-end-line="45" selection-end-column="14" />
-          <folding>
-            <element signature="n#head#0;n#html#0;n#!!top" expanded="false" />
-            <marker date="1481162138398" expanded="true" signature="2114:2129" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1646,14 +1632,6 @@
             <element signature="e#7363#7450#0" expanded="false" />
             <element signature="e#7403#7444#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/VITest.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2265,7 +2243,7 @@
     <entry file="file://$PROJECT_DIR$/js/VIParser.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="743">
-          <caret line="669" column="22" lean-forward="true" selection-start-line="669" selection-start-column="22" selection-end-line="669" selection-end-column="22" />
+          <caret line="669" column="22" lean-forward="false" selection-start-line="669" selection-start-column="22" selection-end-line="669" selection-end-column="22" />
           <folding>
             <element signature="e#0#43#0" expanded="false" />
             <element signature="e#1021#1065#0" expanded="false" />
@@ -2359,19 +2337,59 @@
             <element signature="n#!!block;n#addCanvasToSideBar#0" expanded="false" />
             <element signature="n#!!block;n#createCanvas#0" expanded="false" />
             <element signature="n#!!block;n#parseImportVIInfo#0" expanded="false" />
-            <element signature="e#21571#23370#0" expanded="false" />
-            <element signature="e#21586#23206#0" expanded="false" />
-            <element signature="e#21821#22299#0" expanded="false" />
-            <element signature="e#22151#22231#0" expanded="false" />
-            <element signature="e#22327#22805#0" expanded="false" />
-            <element signature="e#22657#22737#0" expanded="false" />
-            <element signature="e#23225#23364#0" expanded="false" />
+            <element signature="e#21575#23374#0" expanded="false" />
+            <element signature="e#21590#23210#0" expanded="false" />
+            <element signature="e#21825#22303#0" expanded="false" />
+            <element signature="e#22155#22235#0" expanded="false" />
+            <element signature="e#22331#22809#0" expanded="false" />
+            <element signature="e#22661#22741#0" expanded="false" />
+            <element signature="e#23229#23368#0" expanded="false" />
             <element signature="n#!!block;n#exportVI#0" expanded="false" />
-            <element signature="e#23483#23548#0" expanded="false" />
-            <element signature="e#23618#24789#0" expanded="false" />
-            <element signature="e#25050#25194#0" expanded="false" />
-            <element signature="e#25204#25232#0" expanded="false" />
-            <marker date="1481180376561" expanded="false" signature="295:326" ph="..." />
+            <element signature="e#23487#23552#0" expanded="false" />
+            <element signature="e#23622#24793#0" expanded="false" />
+            <element signature="e#25054#25198#0" expanded="false" />
+            <element signature="e#25208#25236#0" expanded="false" />
+            <marker date="1481180495467" expanded="false" signature="295:326" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-288">
+          <caret line="40" column="12" lean-forward="true" selection-start-line="40" selection-start-column="12" selection-end-line="40" selection-end-column="12" />
+          <folding>
+            <element signature="n#head#0;n#html#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VITest.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="7" lean-forward="true" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2328">
+          <caret line="114" column="31" lean-forward="true" selection-start-line="114" selection-start-column="31" selection-end-line="114" selection-end-column="31" />
+          <folding>
+            <element signature="n#head#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="e#1707#1892#0" expanded="false" />
+            <element signature="e#1979#2053#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="49" column="20" lean-forward="true" selection-start-line="49" selection-start-column="20" selection-end-line="49" selection-end-column="20" />
+          <folding>
+            <marker date="1481181477103" expanded="true" signature="2116:2131" ph="..." />
           </folding>
         </state>
       </provider>
