@@ -7,21 +7,7 @@
 </head>
 <body>
 <div class="main-div">
-    <canvas id="mainCanvas" width="1000" height="400"></canvas>
-    <div class="rowFlex-div">
-        <div class="columnFlex-div">
-            <span>小球位置曲线</span>
-            <canvas id="positionCanvas" width="500" height="300"></canvas>
-        </div>
-        <div class="columnFlex-div">
-            <span>杆角度曲线</span>
-            <canvas id="angleCanvas" width="500" height="300"></canvas>
-        </div>
-    </div>
-    <div class="rowFlex-div">
-        <canvas id="ADDCanvas" width="45" height="45"></canvas>
-        <canvas id="PIDCanvas" width="45" height="45"></canvas>
-    </div>
+    <canvas id="mainCanvas" width="1000" height="600"></canvas>
     <div class="rowFlex-div">
         <div>
             <span class="normal-span">P:</span><input type="number" id="PInput" value="20" class="normal-input">
@@ -38,48 +24,63 @@
         <div>
             <input type="button" value="开始" class="normal-btn" onclick="start()">
             <input type="button" value="重置" class="normal-btn" onclick="reset()">
+            <input type="button" value="打开波形界面" class="normal-btn" onclick="openWaveFrame()">
         </div>
     </div>
 </div>
 <script src="js/VILibrary.js"></script>
 <script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/layui/lay/dest/layui.all.js"></script>
 <script src="js/three/three.js"></script>
 <script src="js/three/MTLLoader.js"></script>
 <script src="js/three/OBJLoader.js"></script>
 <script src="js/three/controls/OrbitControls.js"></script>
 <script src="js/three/ObjectControls.js"></script>
-
-<script src="js/layui/lay/dest/layui.all.js"></script>
 <script>
 
     //VI部分变量
-    let positionWave = new VILibrary.VI.WaveVI.createVI($('#positionCanvas')[0]);
-    let angleWave = new VILibrary.VI.WaveVI.createVI($('#angleCanvas')[0]);
-    let addVI = new VILibrary.VI.AddVI.createVI($('#ADDCanvas')[0]);
-    let PIDVI = new VILibrary.VI.PIDVI.createVI($('#PIDCanvas')[0]);
-    let ballBeamVI = new VILibrary.VI.BallBeamVI.createVI($('#mainCanvas')[0], true);
+    let positionWave;
+    let angleWave;
+    let addVI = new VILibrary.VI.AddVI.createVI($('<canvas></canvas>'));
+    let PIDVI = new VILibrary.VI.PIDVI.createVI($('<canvas></canvas>'));
+    let ballBeamVI = new VILibrary.VI.BallBeamVI.createVI($('#mainCanvas'), true);
     let timer;
 
-    function openPositionWave () {
+    function openWaveFrame (type) {
         layer.open({
             type: 1,
             title: 'test frame',
-            area: ['auto', '300px'],
+            area: ['auto', 'auto'],
             shade: 0,
             maxmin: true,
-            content: '<canvas id="positionCanvas" width="500" height="300"></canvas>',
+            content: '<div class="rowFlex-div">' +
+            '<div class="columnFlex-div">' +
+            '<span>小球位置曲线</span>' +
+            '<canvas id="positionCanvas" width="500" height="300"></canvas>' +
+            '</div>' +
+            '<div class="columnFlex-div">' +
+            '<span>杆角度曲线</span>' +
+            '<canvas id="angleCanvas" width="500" height="300"></canvas>' +
+            '</div>' +
+            '</div>',
             zIndex: layer.zIndex,
             success: function (layero) {
                 layer.setTop(layero);
+                positionWave = new VILibrary.VI.WaveVI.createVI($('#positionCanvas')[0]);
+                angleWave = new VILibrary.VI.WaveVI.createVI($('#angleCanvas')[0]);
+                if (type) {
+
+                    timer = window.setInterval(onTimer, 30);
+                }
             }
-        })
+        });
     }
 
     function onTimer () {
 
         $('#positionInput').val(ballBeamVI.markPosition);
         //加法器
-        addVI.setOriginalData(ballBeamVI.markPosition);
+        addVI.setData(ballBeamVI.markPosition, 1);
         addVI.setData(ballBeamVI.PIDPosition);//输入球位置信号，输出位置偏差
         //PID控制器
         PIDVI.P = $('#PInput').val();
@@ -91,14 +92,10 @@
         //波形控件
         positionWave.setData(ballBeamVI.positionOutput, ballBeamVI.dataLength);
         angleWave.setData(ballBeamVI.angelOutput, ballBeamVI.dataLength);
-        //            console.log('ballBeamVI.markPosition:'+ballBeamVI.markPosition+'ballBeamVI.PIDPosition:'+ballBeamVI.PIDPosition
-        //                    +'addVI.singleOutput:'+addVI.singleOutput+'PIDVI.singleOutput:'+PIDVI.singleOutput)
-
     }
 
     function start () {
-
-        timer = window.setInterval(onTimer, 30);
+        openWaveFrame(1);
     }
 
     function reset () {

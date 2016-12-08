@@ -49,7 +49,7 @@ function init () {
 
         if (VILibrary.VI.hasOwnProperty(VIName)) {
 
-            addCanvasToSideBar(VIName, getVICNName(VIName));
+            addCanvasToSideBar(VIName, getVIcnName(VIName));
         }
     }
     ready();
@@ -69,9 +69,8 @@ function checkIfTargetInputValueBound (targetVI, targetInputType) {
 }
 
 //向记录数组中添加绑定对
-function addBindInfoToArr (bindInfo) {
+function addBindInfo (bindInfo) {
 
-    console.log(bindInfo);
     if (bindInfoArr.indexOf(bindInfo) === -1) {
 
         bindInfoArr.push(bindInfo);
@@ -79,11 +78,13 @@ function addBindInfoToArr (bindInfo) {
 }
 
 //从记录数组中删除绑定对
-function deleteBindInfoFromArr (bindInfo) {
+function deleteBindInfo (bindInfo) {
 
+    console.log('bindInfo deleting');
     if (bindInfoArr.indexOf(bindInfo) !== -1) {
 
         bindInfoArr.splice(bindInfoArr.indexOf(bindInfo), 1);
+        console.log('bindInfo deleted');
     }
 }
 
@@ -92,20 +93,33 @@ function deleteVI (canvas) {
 
     let canvasId = canvas.id;
     let VI = getVIById(canvasId);
-
+    //从绑定信息删除VI数据
+    // for (let bindInfo of bindInfoArr) {
+    //
+    //     let reg = new RegExp(canvasId);
+    //     console.log(reg.test(bindInfo)+':'+canvasId+':'+bindInfo);
+    //     if (reg.test(bindInfo)) {
+    //
+    //         bindInfoArr.splice(bindInfoArr.indexOf(bindInfo), 1);
+    //     }
+    // }
+    //从数据对象删除VI数据
     if (dataObject[VI.name].indexOf(VI) !== -1) {
 
         dataObject[VI.name].splice(dataObject[VI.name].indexOf(VI), 1);
         dataObject[VI.name + 'Count'] -= 1;
     }
+    //从连线库删除VI数据
     instance.detachAllConnections(canvas);
+
     instance.deleteEndpoint('output-' + canvasId);
     instance.deleteEndpoint('input-' + canvasId);
     canvas.remove();
+
     ready();
 }
 
-function getVICNName (VIName) {
+function getVIcnName (VIName) {
 
     if (VILibrary.VI.hasOwnProperty(VIName)) {
 
@@ -203,7 +217,28 @@ function showBox (VICanvas) {
 
     if (VI.boxTitle) {
 
-        window.B = G.box(VI.boxTitle, VI.boxContent, 1, function () { getVIById(canvasId).setInitialData();});
+        layer.open({
+            type: 1,
+            title: VI.boxTitle,
+            area: ['auto', 'auto'],
+            shade: 0.3,
+            shadeClose: true,
+            closeBtn: false,
+            zIndex: layer.zIndex,
+            content: VI.boxContent,
+            btnAlign: 'c',
+            btn: ['确定', '取消'],
+            yes: function (index) {
+                VI.setInitialData();
+                layer.close(index);
+            },
+            btn2: function (index) {
+                layer.close(index);
+            },
+            success: function (layero) {
+                layer.setTop(layero);
+            }
+        });
     }
 }
 
@@ -239,7 +274,6 @@ function toggleStart () {
  */
 function addEndpoints (id, outputPointCount, inputPointCount) {
 
-    let endpoints = {};
     // this is the paint style for the connecting lines..
     let connectorPaintStyle = {
             strokeWidth: 2,
@@ -316,16 +350,15 @@ function addEndpoints (id, outputPointCount, inputPointCount) {
 
     if (outputPointCount !== 0) {
 
-        endpoints.outputEndpoint = instance.addEndpoint(id, outputEndpoint, {
+        instance.addEndpoint(id, outputEndpoint, {
             anchor: outputAnchors,
             uuid: 'output-' + id
         });
     }
     if (inputPointCount !== 0) {
 
-        endpoints.inputEndPoint = instance.addEndpoint(id, inputEndpoint, {anchor: inputAnchors, uuid: 'input-' + id});
+        instance.addEndpoint(id, inputEndpoint, {anchor: inputAnchors, uuid: 'input-' + id});
     }
-    return endpoints;
 }
 
 function VIDraw (canvas) {
@@ -339,7 +372,7 @@ function VIDraw (canvas) {
         dataObject[VIName] = [];
     }
     dataObject[VIName].push(tempVI);
-    tempVI.endpoints = addEndpoints(canvas.attr('id'), tempVI.outputPointCount, tempVI.inputPointCount);
+    addEndpoints(canvas.attr('id'), tempVI.outputPointCount, tempVI.inputPointCount);
 
     return tempVI;
 }
@@ -462,33 +495,64 @@ function ready () {
 
             if (!parsingFlag) {
 
-                let sourceId = connectionInfo.connection.sourceId;
-                let targetId = connectionInfo.connection.targetId;
+                let sourceId = connectionInfo.sourceId;
+                let targetId = connectionInfo.targetId;
                 let sourceVI = getVIById(sourceId);
                 let targetVI = getVIById(targetId);
                 let targetInputType = 0;
                 let sourceOutputType = 0;
 
-                addBindInfoToArr(sourceId + ' ' + targetId);
+                addBindInfo(sourceId + ' ' + targetId);
                 //对多输出控件判断
                 if (sourceVI.outputBoxTitle) {
 
-                    window.O = G.box(sourceVI.outputBoxTitle, sourceVI.outputBoxContent, 1,
-                        function () {
+                    layer.open({
+                        type: 1,
+                        title: sourceVI.outputBoxTitle,
+                        area: ['auto', 'auto'],
+                        shade: 0.3,
+                        shadeClose: false,
+                        closeBtn: false,
+                        zIndex: layer.zIndex,
+                        content: sourceVI.outputBoxContent,
+                        btnAlign: 'c',
+                        btn: ['确定', '取消'],
+                        yes: function (index) {
 
                             sourceOutputType = Number($('input[name=output-type]:checked').val());
                             if (!sourceOutputType) {
 
-                                if (connectionInfo) {
-
-                                    instance.detach(connectionInfo.connection);
-                                    connectionInfo = null;
-                                }
-                                G.alert('未选择' + getVICNName(sourceVI.name) + '输出参数！', 1, 1500);
+                                layer.msg('未选择' + getVIcnName(sourceVI.name) + '输出参数！',
+                                    {icon: 2, shade: 0.6, time: 1500, zIndex: layer.zIndex});
                                 return false;
                             }
                             sourceVI.target.push([targetVI, sourceOutputType]);
-                        });
+                            layer.close(index);
+                        },
+                        btn2: function () {
+
+                            if (connectionInfo) {
+
+                                instance.detach(connectionInfo.connection);
+                                connectionInfo = null;
+                            }
+                            layer.msg('未选择' + getVIcnName(sourceVI.name) + '输出参数！',
+                                {icon: 2, shade: 0.6, time: 1500}, function () { layer.closeAll(); });
+                        },
+                        cancel: function () {
+
+                            if (connectionInfo) {
+
+                                instance.detach(connectionInfo.connection);
+                                connectionInfo = null;
+                            }
+                            layer.msg('未选择' + getVIcnName(sourceVI.name) + '输出参数！',
+                                {icon: 2, shade: 0.6, time: 1500}, function () { layer.closeAll(); });
+                        },
+                        success: function (layero) {
+                            layer.setTop(layero);
+                        }
+                    });
                 }
                 else {
 
@@ -498,34 +562,60 @@ function ready () {
                 //对于多输入控件,进行输入端口判断
                 if (targetVI.inputBoxTitle) {
 
-                    window.I = G.box(targetVI.inputBoxTitle, targetVI.inputBoxContent, 1,
-                        function () {
+                    layer.open({
+                        type: 1,
+                        title: targetVI.inputBoxTitle,
+                        area: ['auto', 'auto'],
+                        shade: 0.3,
+                        shadeClose: false,
+                        closeBtn: false,
+                        zIndex: layer.zIndex,
+                        content: targetVI.inputBoxContent,
+                        btnAlign: 'c',
+                        btn: ['确定', '取消'],
+                        yes: function (index) {
 
                             let checkedRadio = $('input[name=input-type]:checked');
                             targetInputType = Number(checkedRadio.val());
                             if (!targetInputType) {
 
-                                if (connectionInfo) {
-
-                                    instance.detach(connectionInfo.connection);
-                                    connectionInfo = null;
-                                }
-                                G.alert('未选择' + getVICNName(targetVI.name) + '输入参数！', 1, 1500);
+                                layer.msg('未选择' + getVIcnName(targetVI.name) + '输入参数！',
+                                    {icon: 2, shade: 0.6, time: 1500, zIndex: layer.zIndex});
                                 return false;
                             }
                             if (checkIfTargetInputValueBound(targetVI, targetInputType)) {//检测此输入端口是否已与其他VI连接
 
-                                if (connectionInfo) {
-
-                                    instance.detach(connectionInfo.connection);
-                                    connectionInfo = null;
-                                }
-                                G.alert(getVICNName(targetVI.name) + checkedRadio.attr('alt') + '已绑定！', 1, 1500);
+                                layer.msg(getVIcnName(targetVI.name) + checkedRadio.attr('alt') + '已绑定！',
+                                    {icon: 2, shade: 0.6, time: 1500, zIndex: layer.zIndex});
                                 return false;
                             }
                             targetVI.source.push([sourceVI, targetInputType]);
+                            layer.close(index);
+                        },
+                        btn2: function () {
+
+                            if (connectionInfo) {
+
+                                instance.detach(connectionInfo.connection);
+                                connectionInfo = null;
+                            }
+                            layer.msg('未选择' + getVIcnName(targetVI.name) + '输入参数！',
+                                {icon: 2, shade: 0.6, time: 1500}, function () { layer.closeAll(); });
+                        },
+                        cancel: function () {
+
+                            if (connectionInfo) {
+
+                                instance.detach(connectionInfo.connection);
+                                connectionInfo = null;
+                            }
+                            layer.msg('未选择' + getVIcnName(targetVI.name) + '输入参数！',
+                                {icon: 2, shade: 0.6, time: 1500}, function () { layer.closeAll(); });
+                        },
+                        success: function (layero) {
+                            layer.setTop(layero);
                         }
-                    );
+                    });
                 }
                 else {
 
@@ -536,40 +626,49 @@ function ready () {
 
         // 绑定点击删除连线
         instance.bind('click', function (conn) {
-            G.confirm("删除连接?", function (z) {
-                if (z) {
+
+            layer.confirm("删除连接?", {icon: 3, title: '提示', closeBtn: false},
+                function (index) {
 
                     instance.detach(conn);
+                    layer.close(index);
                 }
-            }, 1);
+            )
+            ;
         });
 
         //监听断开连线事件
         instance.bind('connectionDetached', function (connectionInfo) {
 
-            console.log('detached');
-            let sourceId = connectionInfo.connection.sourceId;
-            let targetId = connectionInfo.connection.targetId;
+            let sourceId = connectionInfo.sourceId;
+            let targetId = connectionInfo.targetId;
             let sourceVI = getVIById(sourceId);
             let targetVI = getVIById(targetId);
 
-            for (let targetInfo of sourceVI.target) {
+            if (sourceVI.target) {
 
-                if (targetInfo[0] === targetVI) {
+                for (let targetInfo of sourceVI.target) {
 
-                    sourceVI.target.splice(sourceVI.target.indexOf(targetInfo), 1);
-                    break;
+                    if (targetInfo[0] === targetVI) {
+
+                        sourceVI.target.splice(sourceVI.target.indexOf(targetInfo), 1);
+                        break;
+                    }
                 }
             }
-            for (let sourceInfo of targetVI.source) {
+            if (targetVI.source) {
 
-                if (sourceInfo[0] === sourceVI) {
+                for (let sourceInfo of targetVI.source) {
 
-                    targetVI.source.splice(targetVI.source.indexOf(sourceInfo), 1);
-                    break;
+                    if (sourceInfo[0] === sourceVI) {
+
+                        targetVI.source.splice(targetVI.source.indexOf(sourceInfo), 1);
+                        break;
+                    }
                 }
             }
-            deleteBindInfoFromArr(sourceId + ' ' + targetId);
+            deleteBindInfo(sourceId + ' ' + targetId);
+            console.log('Connection detached');
         });
     });
 
@@ -589,7 +688,7 @@ function addCanvasToSideBar (id, name) {
     let VISpan = $('<span></span>');
     VISpan.attr('id', id);
     VISpan.attr('class', 'draggable-element');
-    VISpan.css('width', '150px');
+    VISpan.css('width', '130px');
     VISpan.css('height', 'auto');
     VISpan.css('display', 'inline-block');
     VISpan.attr('draggable', 'true');
@@ -619,7 +718,7 @@ function createCanvas (id, className, width, height, top, left) {
 
 function parseImportVIInfo (json) {
 
-    parsingFlag = true;
+    parsingFlag = true;//导入解析时无需弹出输入输出选择
     for (let bindInfo of json.VIInfo) {
 
         try {
@@ -627,8 +726,6 @@ function parseImportVIInfo (json) {
             let targetInfo = bindInfo.targetInfo;
             let sourceVI = getVIById(sourceInfo.id);
             let targetVI = getVIById(targetInfo.id);
-            console.log(sourceVI);
-            console.log(targetVI);
             if (!sourceVI) {
 
                 let sourceVIName = sourceInfo.id.split('-')[0];
@@ -656,10 +753,10 @@ function parseImportVIInfo (json) {
 
             sourceVI.target.push([targetVI, sourceInfo.outputType]);
             targetVI.source.push([sourceVI, targetInfo.inputType]);
-            addBindInfoToArr(sourceInfo.id + ' ' + targetInfo.id);
+            addBindInfo(sourceInfo.id + ' ' + targetInfo.id);
             instance.connect({
-                source: sourceVI.endpoints.outputEndpoint,
-                target: targetVI.endpoints.inputEndPoint
+                source: instance.getEndpoint('output-' + sourceInfo.id),
+                target: instance.getEndpoint('input-' + targetInfo.id)
             });
         }
         catch (e) {
@@ -730,8 +827,6 @@ function exportVI () {
 
 function importVI () {
 
-    console.log('import');
-
     if (startBtn.val() === '停止') {
 
         startBtn.val('启动');
@@ -744,10 +839,9 @@ function importVI () {
     reader.readAsText(selectedFile);
     reader.onload = function () {
 
-        console.log('loaded');
+        //先初始化数据记录
         VIContainer.html('');
         ready();
-        //先初始化数据记录
         bindInfoArr = [];
         dataObject = {};
         parseImportVIInfo($.parseJSON(this.result));

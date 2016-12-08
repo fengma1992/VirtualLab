@@ -4,7 +4,7 @@
 }
 
 .draggable-sideBar {
-    width: 190px;
+    width: 150px;
     height: 700px;
     border: 1px solid #CCC;
     background-color: white;
@@ -17,7 +17,7 @@
 }
 
 .draggable-sideBar .draggable-element {
-    border: 1px solid #346789;
+    border: 1px solid rgba(52, 103, 137, 0.5);
     box-shadow: 2px 2px 19px #aaa;
     -o-box-shadow: 2px 2px 19px #aaa;
     -webkit-box-shadow: 2px 2px 19px #aaa;
@@ -31,7 +31,7 @@
     cursor: -webkit-grab;
     text-align: center;
     z-index: 20;
-    background-color: #eeeeef;
+    background-color: ghostwhite;
     color: black;
     font-family: helvetica, sans-serif;
     padding: 0.3em;

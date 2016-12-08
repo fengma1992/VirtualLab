@@ -12,8 +12,6 @@
         <canvas id="outputCanvas" width="1000" height="300"></canvas>
     </div>
     <div class="rowFlex-div">
-        <canvas id="inputDataCanvas" width="50" height="30"></canvas>
-        <canvas id="signalCanvas" width="50" height="30"></canvas>
         <button class="normal-btn" onclick="setStepType(1)">比例</button>
         <button class="normal-btn" onclick="setStepType(2)">积分</button>
         <button class="normal-btn" onclick="setStepType(3)">微分</button>
@@ -28,10 +26,10 @@
 <script src="js/jquery-3.1.1.min.js"></script>
 <script>
 
-    let inputWave = new VILibrary.VI.WaveVI.createVI($('#inputCanvas')[0]);
-    let outputWave = new VILibrary.VI.WaveVI.createVI($('#outputCanvas')[0]);
-    let inputData = new VILibrary.VI.DCOutputVI.createVI($('#inputDataCanvas')[0]);
-    let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI.createVI($('#signalCanvas')[0]);
+    let inputWave = new VILibrary.VI.WaveVI.createVI($('#inputCanvas'));
+    let outputWave = new VILibrary.VI.WaveVI.createVI($('#outputCanvas'));
+    let inputData = new VILibrary.VI.DCOutputVI.createVI($('<canvas></canvas>'));
+    let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI.createVI($('<canvas></canvas>'));
 
     let signalType = 1, n = 0, timer;
 

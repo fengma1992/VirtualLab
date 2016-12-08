@@ -6,35 +6,41 @@
 <body>
 <button id="test1">小小提示层</button>
 
-你必须先引入jQuery1.8或以上版本
 <script src="js/jquery-3.1.1.min.js"></script>
 <script src="js/layui/lay/dest/layui.all.js"></script>
 <script>
+    layui.define(function (exports) {
+        //do something
 
-    $('#test1').on('click', function () {
-        let that = this;
-        layer.open({
-            type: 1,
-            title: 'test frame',
-            area: ['auto', '300px'],
-            shade: 0,
-            maxmin: true,
-            content: '<input type="button" value="111">',
-            btn: ['按钮1', '按钮2'],
-            yes: function () {
-                $(that).click();
-            },
-            btn2: function () {
-                layer.closeAll();
-            },
-            zIndex: layer.zIndex,
-            success: function (layero) {
-                layer.setTop(layero);
-            }
+        exports('demo', function () {
+            alert('Hello World!');
         });
+    });
+    $('#test1').on('click', function () {
+        layer.msg('加了个图标', {icon: 2});
+        //        let that = this;
+        //        layer.open({
+        //            type: 0,
+        //            title: 'test frame',
+        //            area: ['800px', '800px'],
+        //            shade: 0,
+        //            maxmin: true,
+        //            content: 'http://115.28.40.121:7080/ni?SID=7784EBF49015C936',
+        //            btn: ['按钮1', '按钮2'],
+        //            yes: function () {
+        //                let index = $('html').html();
+        //                parent.$('#test1').text('我被改变了');
+        //            },
+        //            btn2: function () {
+        //                layer.closeAll();
+        //            },
+        //            zIndex: layer.zIndex,
+        //            success: function (layero, index) {
+        //                layer.setTop(layero);
+        //            }
+        //        });
     });
 
 </script>
-当然，你也可以写在外部的js文件
-< / body >
-< / html >
+</body>
+</html>
