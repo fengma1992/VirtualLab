@@ -13,12 +13,9 @@ let resetBtn = $('<input type="button" class="navigationBar-btn" value="重置" 
 let mainContainer = $('<div id="container-div" class="rowFlex-div"></div>');
 let sideBar = $('<div id="sideBar" class="draggable-sideBar"></div>');
 let VIContainer = $('<div id="VIContainer" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>');
-let contextMenu = $('<div id="menu" class="columnFlex-div"></div>');
+let contextMenu = $('<div id="contextMenu" class="columnFlex-div"></div>');
 
-VIContainer.click(function () {
-
-    contextMenu.css('display', 'none');
-});
+VIContainer.click(function () { contextMenu.css('display', 'none');});
 importBtn.click(function () { fileImporter.click();});
 
 mainContainer.append(sideBar);
@@ -93,16 +90,7 @@ function deleteVI (canvas) {
 
     let canvasId = canvas.id;
     let VI = getVIById(canvasId);
-    //从绑定信息删除VI数据
-    // for (let bindInfo of bindInfoArr) {
-    //
-    //     let reg = new RegExp(canvasId);
-    //     console.log(reg.test(bindInfo)+':'+canvasId+':'+bindInfo);
-    //     if (reg.test(bindInfo)) {
-    //
-    //         bindInfoArr.splice(bindInfoArr.indexOf(bindInfo), 1);
-    //     }
-    // }
+
     //从数据对象删除VI数据
     if (dataObject[VI.name].indexOf(VI) !== -1) {
 
@@ -111,7 +99,6 @@ function deleteVI (canvas) {
     }
     //从连线库删除VI数据
     instance.detachAllConnections(canvas);
-
     instance.deleteEndpoint('output-' + canvasId);
     instance.deleteEndpoint('input-' + canvasId);
     canvas.remove();
@@ -676,13 +663,6 @@ function ready () {
 
 }
 
-function containerResize () {
-
-    let height = window.innerHeight * 0.95 > 600 ? window.innerHeight * 0.95 : 600;
-    sideBar.css('height', height);
-    VIContainer.css('height', height);
-}
-
 function addCanvasToSideBar (id, name) {
 
     let VISpan = $('<span></span>');
@@ -698,8 +678,6 @@ function addCanvasToSideBar (id, name) {
     return VISpan;
 
 }
-
-window.addEventListener('resize', containerResize, false);
 
 function createCanvas (id, className, width, height, top, left) {
 
@@ -849,3 +827,12 @@ function importVI () {
 }
 
 init();
+
+function containerResize () {
+
+    let height = window.innerHeight * 0.95 > 600 ? window.innerHeight * 0.95 : 600;
+    sideBar.css('height', height);
+    VIContainer.css('height', height);
+}
+
+window.addEventListener('resize', containerResize, false);
