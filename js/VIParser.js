@@ -235,7 +235,7 @@ function toggleStart () {
     if (startBtn.val() === '启动') {
 
         startBtn.val('停止');
-        startBtn.css('background-color', '#6dd3d1');
+        startBtn.css('background-color', 'orangered');
         mainTimer = window.setInterval(function () {
             if (bindInfoArr.length === 0) {
 
