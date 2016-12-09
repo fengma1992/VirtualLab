@@ -1,117 +1,320 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>典型环节控制特性分析</title>
-    <link rel="stylesheet" href="css/main.css">
-</head>
-<body>
-<div class="main-div">
-    <div>
-        <canvas id="inputCanvas" width="1000" height="300"></canvas>
-        <canvas id="outputCanvas" width="1000" height="300"></canvas>
-    </div>
-    <div class="rowFlex-div">
-        <button class="normal-btn" onclick="setStepType(1)">比例</button>
-        <button class="normal-btn" onclick="setStepType(2)">积分</button>
-        <button class="normal-btn" onclick="setStepType(3)">微分</button>
-        <button class="normal-btn" onclick="setStepType(4)">惯性</button>
-        <button class="normal-btn" onclick="setStepType(5)">震荡</button>
-        <button class="normal-btn" onclick="setStepType(6)">比例积分</button>
-        <button class="normal-btn" onclick="setStepType(7)">比例惯性</button>
-        <button class="normal-btn" onclick="setStepType(8)">比例微分</button>
-    </div>
-</div>
-<script src="js/VILibrary.js"></script>
-<script src="js/jquery-3.1.1.min.js"></script>
-<script>
-
-    let inputWave = new VILibrary.VI.WaveVI.createVI($('#inputCanvas'));
-    let outputWave = new VILibrary.VI.WaveVI.createVI($('#outputCanvas'));
-    let inputData = new VILibrary.VI.DCOutputVI.createVI($('<canvas></canvas>'));
-    let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI.createVI($('<canvas></canvas>'));
-
-    let signalType = 1, n = 0, timer;
-
-    function setStepType(type) {
-
-        reset();
-        signalType = type;
-
-        switch (signalType) {
-
-            case 1://比例
-                signalGenerator.setStepType(1);
-                signalGenerator.k1 = 1.5;
-                break;
-
-            case 2://积分
-                signalGenerator.setStepType(2);
-                signalGenerator.k2 = 5;
-                break;
-
-            case 3://微分
-                signalGenerator.setStepType(3);
-                signalGenerator.k3 = 0.0025;
-                break;
-
-            case 4://惯性
-                signalGenerator.setStepType(6);
-                signalGenerator.k1 = 0.025;
-                break;
-
-            case 5://震荡
-                signalGenerator.setStepType(7);
-                signalGenerator.k1 = 50;
-                signalGenerator.k2 = 0.05;
-                break;
-
-            case 6://比例积分
-                signalGenerator.setStepType(4);
-                break;
-
-            case 7://比例惯性
-                signalGenerator.setStepType(8);
-                signalGenerator.k1 = 0.025;
-                signalGenerator.k2 = 1;
-                break;
-
-            case 8://比例微分
-                signalGenerator.setStepType(5);
-                signalGenerator.k3 = 0.0025;
-                break;
-
-            default:
-                signalGenerator.setStepType(1);
-                signalGenerator.k1 = 1.5;
-                break;
-        }
-        timer = window.setInterval(onTimer, 40);
-    }
-
-    function onTimer() {
-        if (n < 10) {
-            signalGenerator.setData(0);
-            inputData.setData(0);
-            n++;
+    <meta charset="UTF-8"/>
+    <title>网络登录</title>
+    <script type="text/javascript">
+        var type = navigator.appName;
+        var g_IsEN = false;
+        var sLangCN = {
+            Dev: "设备",
+            Group: "设备组",
+            DevID: "设备序号",
+            DevPass: "设备密码",
+            GroupName: "设备组名",
+            GroupPass: "设备组密码",
+            PCLogin: "电脑登录",
+            MobLogin: "手机登录",
+            EPassShort: "密码不可少于6位!",
+            ENoGroup: "没有设备组名!",
+            EDevIDError: "设备序号非法,必须是11位数字",
+            SQuickLog: "的快速登录网址",
+            EEE: ""
+        };
+        var sLangEN = {
+            Dev: "Device",
+            Group: "Device Group",
+            DevID: "Device ID",
+            DevPass: "Password",
+            GroupName: "Device Group",
+            GroupPass: "Password",
+            PCLogin: "PC Login",
+            MobLogin: "Mobile Login",
+            EPassShort: "The shortest password is 6 Digits",
+            ENoGroup: "No Device Group Name!",
+            EDevIDError: "Device ID Must be 11 Digits",
+            SQuickLog: "'s Quick Log Address",
+            EEE: ""
+        };
+        var g_Lang = sLangCN;
+        if (type == "Netscape") {
+            var lang = navigator.language;
         }
         else {
-            signalGenerator.setData(800);
-            inputData.setData(800);
+            var lang = navigator.userLanguage;
         }
+        var lang = lang.substr(0, 2);
+        // 英语
+        if (lang == "en") {
+            g_IsEN = true;
+        }
+        var fx = window.location.href;
+        if (fx.indexOf('en.') >= 0) {
+            g_IsEN = true;
+        }
+        //g_IsEN = true;///DEBUG!!
+        if (g_IsEN) {
+            g_Lang = sLangEN;
+        }
+        String.prototype.trim = function () {
+            return this.replace(/(^\s*)|(\s*$)/g, "");
+        }
+        function GI (a) {
+            return document.getElementById(a);
+        }
+        function msgbox (a) {
+            window.alert(a);
+        }
+        function DR (a) {
+            document.write(a);
+        }
+        function clickpc () {
+            var x = document.forms["fNiLog"];
+            GI("ISPC").value = "1";
+            x.submit();
+            GI("ISPC").value = "0";
+        }
+        function nvclickpc () {
+            var x = document.forms["fNvLog"];
+            GI("nvISPC").value = "1";
+            x.submit();
+            GI("nvISPC").value = "0";
+        }
+        function fClearQ () {
+            GI("idQWeb").innerHTML = "";
+        }
+        function fTypeChg (v) {
+            if (v == "D") {
+                GI("idQGrmID").innerHTML = g_Lang.DevID;
+                GI("idQGrmInp").innerHTML =
+                    '<input class="seditsize" type="text" name="GrmID" value="" maxlength="11" onkeypress="EnterPress(event)" onkeydown="EnterPress()">';
+            }
+            else {
+                GI("idQGrmID").innerHTML = g_Lang.GroupName;
+                GI("idQGrmInp").innerHTML =
+                    '<input class="seditsize" type="text" name="GrmID" value="" maxlength="16" onkeypress="EnterPress(event)" onkeydown="EnterPress()">';
+            }
+            fClearQ();
+        }
+        function EnterPress (e) {
+            fClearQ();
+        }
+        function fEnc (s) {
+            var r = "";
+            var w = [];
+            var hexes = "83ED725A06C4BF91";//8,3,14,13,7,2,5,10,0,6,12,4,11,15,9,1,
+            for (var i = 0; i < s.length; i++) {
+                var ix = s.charCodeAt(i);
+                r += hexes.charAt((((ix & 0xFF) >> 4) + i) & 0x0F) + hexes.charAt((ix + i) & 0x0F);
+            }
+            return r;
+        }
+        function Num2Hex4 (num) {
+            var s = num.toString(16);
+            while (s.length < 4)
+                s = "0" + s;
+            return s;
+        }
+        function fStr2Hex (s) {
+            var sret = "", i;
+            for (i = 0; i < s.length; i++) {
+                sret += Num2Hex4(s.charCodeAt(i));
+            }
+            return sret;
+        }
+        function fclickQ () {
+            var x = document.forms["fQAddr"];
+            var isPC = GI("idQisPC").checked - 0;
+            var isGrp = GI("idQType").checked - 0;
+            var vpass = x.QPass.value.trim();
+            if (vpass.length < 6) {
+                alert(g_Lang.EPassShort);
+                return;
+            }
+            var vgrm, venc;
+            if (isGrp) {
+                vgrm = x.GrmID.value.trim();
+                if (vgrm.length == 0) {
+                    alert(g_Lang.ENoGroup);
+                    return;
+                }
+                venc = fStr2Hex(vgrm);
+            }
+            else {
+                vgrm = parseInt(x.GrmID.value);
+                if (isNaN(vgrm) || (vgrm + "") != x.GrmID.value || x.GrmID.value.length != 11) {
+                    alert(g_Lang.EDevIDError);
+                    return;
+                }
+                vgrm = vgrm + "";
+                venc = vgrm;
+            }
+            var vaddr = '/qlog?X=' + fEnc(vpass) + '&Y=' + (isGrp ? 'G' : 'D') + (isPC ? 'P' : 'M') + venc;
+            var vdev = isGrp ? g_Lang.Group : g_Lang.Dev;
+            var sname = vdev + '(' + vgrm + ')' + g_Lang.SQuickLog;
+            var vret = '[ <a href="' + vaddr + '">' + sname + '</a> ]<br/>';
+            GI("idQWeb").innerHTML = vret;
+            fAddFav(sname, "http://" + window.location.host + vaddr);
+        }
+        function fQView (v) {
+            GI("idQSetBox").style.display = v ? "block" : "none";
+            if (v) {
+                GI("idQTypeD").checked = true;
+                fTypeChg('D');
+            }
+        }
+        function fAddFav (sname, surl) {
+            try {
+                window.external.addFavorite(surl, sname);  //IE
+            }
+            catch (e) {
+                try {
+                    window.sidebar.addPanel(sname, surl, "");  //FireFox
+                }
+                catch (e) {
+                    //这里表示不支持自动添加到收藏夹，所以跳转到另一个登录入口页面
+                    window.location.href = surl + "@";
+                }
+            }
+        }
+        function fonload () {
+            var fx = window.location.href;
+            if (fx.indexOf('gc.') >= 0) {
+                GI("idba").style.display = "none";
+            }
+            if (!g_IsEN) {
+                GI("idQLogBox").style.display = "block";
+            }
+        }
+    </script>
+</head>
+<body onload="fonload()">
+<div class="container wrapper">
+    <br>
+    <script>
+        if (!g_IsEN) {
+            DR('<table style="border-style:none; border-collapse:collapse"><tr><td> ')
+        }
+    </script>
+    <div class="ibox">
+        <script>
+            DR('<div class="stitle"><b>');
+            DR(g_IsEN ? 'Device Group Login' : '网站系统登录');
+            DR('</b>');
+            DR(g_IsEN ? '' : '<span style="font-size:66%"><br>（只有制作了网站的用户才能使用） </span>');
+            DR('</div>');
+        </script>
+        <form class="sinp" name="fNvLog" action="/loguser" method="post">
+            <input id="nvISPC" type="hidden" name="ISPC" value="0">
+            <script>
+                DR('<table width=100%><tr><td style="line-height:50%">&nbsp;</td></tr>')
+                DR('<tr><td width="35%" class="rt">');
+                DR(g_IsEN ? 'Device Group' : '网站名/设备组名');
+                DR('</td><td width="65%">');
+                DR('<input class="seditsize" type="text" name="S" value="" maxlength="16">');
+                DR(' <input class="sbtnsize" type="button" style="min-width:7em" value="' + g_Lang.PCLogin + '" onclick="nvclickpc()" ></td></tr>');
+                DR('<tr><td style="line-height:50%">&nbsp;</td></tr>');
+                DR('<tr><td class="rt">');
+                DR(g_IsEN ? 'Password' : '登录密码');
+                DR(' </td><td> <input class="seditsize" type="password" name="P" value="" maxlength="15">');
+                DR(' <input class="sbtnsize" type="submit" style="min-width:7em"  value="' + g_Lang.MobLogin + '"></td></tr></table>')
+            </script>
+        </form>
+        <script>
+            if (g_IsEN) { }
+            else {
+                DR(' <ul style="padding:10px">')
+                DR('<li>正式用户请用我们分配给您的网站名和密码登录</li></ul><br/>')
+            }
+        </script>
+    </div>
+    <br/>
+    <script>
+        DR('<div class="ibox"><div class="stitle"><b>');
+        DR(g_IsEN ? 'Device ID Login</b>' : '网络查看/修改设备变量</b><span style="font-size:66%"><br>（对所有用户开放）</span>');
+        DR('</div><form class="sinp" name="fNiLog" action="/nilog" method="post">');
+        DR('<input id="ISPC" type="hidden" name="ISPC" value="0">')
+        DR('<table width=100%><tr><td style="line-height:50%">&nbsp;</td></tr>');
+        DR('<tr><td width="35%" class="rt">' + g_Lang.DevID + '</td><td width="65%">');
+        DR('<input class="seditsize" type="text" name="U" value="" maxlength="11">');
+        DR(' <input class="sbtnsize" type="button"  style="min-width:7em" value="' + g_Lang.PCLogin + '" onclick="clickpc()"> </td></tr>')
+        DR('<tr><td style="line-height:50%">&nbsp;</td></tr>');
+        DR('<tr><td class="rt">' + g_Lang.DevPass + '</td><td>');
+        DR('<input class="seditsize" type="password" name="P" value="" maxlength="15">');
+        DR(' <input class="sbtnsize" type="submit"  style="min-width:7em" value="' + g_Lang.MobLogin + '"></td></tr></table> </form>');
+        if (!g_IsEN) {
+            DR('<ul style="padding:10px"><li>输入设备序号(11位数字)和密码，即可查看修改该设备中的变量</li></ul><br/> <br/>')
+        }
+    </script>
+</div>
+<br/>
+<div class="ibox" id="idQLogBox" style="display:none">
+    <div class="stitle">
+        <b>快捷登录功能</b>&nbsp;<span style="font-size:66%">
+&nbsp;
+<label><input type="checkbox" id="idQSet" onclick="fQView(this.checked);"/>配置快捷登录...</label>
+<br>快捷登录可以把登录所需的所有信息集中到一个网址中，点击该网址直接登录，无需重复输入
+</span> <br>
+    </div>
+    <div id="idQSetBox" style="display:none">
+        <form name="fQAddr">
+            <table width=100%>
+                <tr>
+                    <td width="35%" class="rt">类型</td>
+                    <td width="65%">
+                        <label><input type="radio" name="QType" id="idQTypeD" checked
+                                      onclick="fTypeChg('D'); return true;"/>单个设备</label>
+                        <label><input type="radio" name="QType" id="idQType" onclick="fTypeChg('G'); return true;"/>设备网站/设备组</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="rt">登录模式</td>
+                    <td>
+                        <label><input type="radio" name="QisPC" value="1" id="idQisPC"
+                                      onclick=" fClearQ();">电脑登录</label>
+                        <label><input type="radio" name="QisPC" value="0" checked onclick=" fClearQ();">手机登录</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="35%" class="rt" id="idQGrmID">设备序号</td>
+                    <td width="65%" id="idQGrmInp">
+                        <input class="seditsize" type="text" name="GrmID" value="" maxlength="11"
+                               onkeypress="EnterPress(event)" onkeydown="EnterPress()">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="rt">密码</td>
+                    <td>
+                        <input class="seditsize" type="password" name="QPass" value="" maxlength="15"
+                               onkeypress="EnterPress(event)" onkeydown="EnterPress()">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center"><input class="sbtnsize" type="button" value="生成快捷登录网址"
+                                                          onclick="fclickQ()"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" id="idQWeb" align="center"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
 
-        outputWave.setData(signalGenerator.output, 1024);
-        inputWave.setData(inputData.output, 1024);
-    }
-
-    function reset() {
-
-        n = 0;
-        inputData.reset();
-        signalGenerator.reset();
-        window.clearInterval(timer);
+<script>
+    if (!g_IsEN) {
+        DR('</td><td style="vertical-align:top"><div>&nbsp;<b>&nbsp;扫描二维码下载<br />&nbsp;Android手机APP</b></div>');
+        DR('<img src="AppURL.png" style="width:140px"/>');
+        DR('<div>&nbsp; <a href="http://download.yunplc.com/GrmWebAPP_v102.apk" style="font-size:85%;text-decoration:none"> [点这里直接下载...]</a></div></td></tr></table>');
     }
 </script>
 
+<div class="push"></div>
+</div>
+<div class="footer" id="idba" style="margin: 0 auto;text-align:center;font-size:small;">
+    <div><br/><br/>Copyright(C) 2008-2015 GiantControl Electronics</div>
+    <div> &nbsp;<a href="http://www.miibeian.gov.cn/">粤ICP备11002855号</a><br/></div>
+</div>
 </body>
 </html>
