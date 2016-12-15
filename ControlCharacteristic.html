@@ -29,6 +29,7 @@
     let outputWave = new VILibrary.VI.WaveVI.createVI($('#outputCanvas'));
     let inputData = new VILibrary.VI.DCOutputVI.createVI($('<canvas></canvas>'));
     let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI.createVI($('<canvas></canvas>'));
+
     let signalType = 1, n = 0, timer;
     function setStepType (type) {
         reset();
