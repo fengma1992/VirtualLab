@@ -211,7 +211,7 @@ VILibrary.InnerObjects = {
         }
         for (let VI of VILibrary.InnerObjects.existingVIArray) {
 
-            if (VI.dataLine === dataLine && this.sourceInfoArray.length > 0) {
+            if (VI.dataLine === dataLine && VI.sourceInfoArray.length > 0) {
 
                 VI.updater();
             }
