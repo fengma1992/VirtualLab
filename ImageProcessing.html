@@ -49,7 +49,7 @@
     let binaryContext = binaryCanvas.getContext('2d');
     let captureWidth = captureCanvas.width;
     let captureHeight = captureCanvas.height;
-    let bar = new VILibrary.VI.BarVI.createVI(barCanvas);
+    let bar = new VILibrary.VI.BarVI(barCanvas);
     let captureFlag = false;
     let HISTOGRAM = [], EQUALIZER_HIST = [];
     drawText('原图', captureContext);
@@ -57,13 +57,15 @@
     drawText('均衡化图', equalizerContext);
     drawText('二值化图', binaryContext);
 
-    let knob = new VILibrary.VI.KnobVI.createVI(knobCanvas);
+    let knob = new VILibrary.VI.KnobVI(knobCanvas);
     knob.setDataRange(0, 255, 100);
 
     knob.attachEvent('mouseMove', function () {
         if (captureFlag) {
-            let threshold = parseInt(knob.singleOutput);
+            let data = knob.getData();
+            let threshold = parseInt(data[data.length - 1]);
             binary(threshold);
+
             span.innerText = '二值化阈值：' + threshold;
         }
     });
@@ -83,12 +85,15 @@
      * 拍照
      */
     function capture() {
+
         captureFlag = false;
         let videoRatio = video.videoHeight / video.videoWidth;
         if (captureCanvas.height / captureCanvas.width > videoRatio) {
+
             captureHeight = captureCanvas.width * videoRatio;
             captureWidth = captureCanvas.width;
         } else {
+
             captureHeight = captureCanvas.height;
             captureWidth = captureCanvas.height / videoRatio;
         }
@@ -128,7 +133,9 @@
      *直方图均衡化
      */
     function histogramEqualizer() {
+
         if (!captureFlag) {
+
             alert('请先照相再进行图像处理操作');
             return;
         }
@@ -160,6 +167,7 @@
      * 二值化
      */
     function binary(threshold) {
+
         let tempImageData = binaryContext.createImageData(captureWidth, captureHeight);
         let tempHistogram = [];
         let zeroCount = 0;
@@ -185,6 +193,7 @@
      * @param histogram
      */
     function drawBar(histogram) {
+
         let data = [], xAxis = [];
         for (let i = 0; i < 256; i++) {
             data.push(histogram[i] == undefined ? 0 : histogram[i]);
@@ -194,12 +203,15 @@
     }
 
     function drawText(text, context) {
+
         context.font = "normal 28px Microsoft YaHei";
         context.fillText(text, 320 / 2 - 14 * text.length, 240 / 2 + 14);
     }
 
     function initHistogram(histogram) {
+
         for (let i = 0; i < 256; i++) {
+
             histogram[i] = 0;
         }
     }

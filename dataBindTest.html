@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<script src="js/jquery-3.1.1.js"></script>
+</head>
+<body>
+<input type="text" data-bind-cj="name">
+<input type="text" data-bind-cj="name">
+<span data-bind-cj="name"></span>
+<script>
+	/*
+	 * DataBinder by jQuery
+	 *
+	 * @param {object_id} String
+	 */
+    function DataBinder (object_id) {
+        //使用一个jQuery对象作为简单的订阅者发布者
+        let pubSub = $({});
+
+        // 我们希望一个data元素可以在表单中指明绑定：data-bind-<object_id>="<property_name>"
+        let data_attr = "bind-" + object_id,
+            message = object_id + ":change";
+
+        // 使用data-binding属性和代理来监听元素上的变化
+        // 以便变化能够“广播”到所有的关联对象
+        $(document).on("keyup", "[data-" + data_attr + "]", function (e) {
+            let $input = $(this);
+            pubSub.trigger(message, [$input.data(data_attr), $input.val()]);
+        });
+
+        // pubSub将变化传播到所有的绑定元素，设置input标签的值或者其他标签的HTML内容
+        pubSub.on(message, function (e, prop_name, new_val) {
+            $("[data-" + data_attr + "=" + prop_name + "]").each(function () {
+                let $bound = $(this);
+                if ($bound.is("input,textarea,select")) {
+                    $bound.val(new_val);
+                }
+                else {
+                    $bound.html(new_val);
+                }
+            });
+        });
+
+        return pubSub;
+    }
+	
+	/*
+	 * User Model
+	 *
+	 * @param {uid} String
+	 */
+    function User (uid) {
+        let binder = new DataBinder(uid);
+
+        let user = {
+            attributes: {},
+
+            // 属性设置器使用数据绑定器PubSub来发布变化
+            set: function (attr_name, val) {
+                this.attributes[attr_name] = val;
+                binder.trigger(uid + ":change", [attr_name, val, this]);
+            },
+
+            get: function (attr_name) {
+                return this.attributes[attr_name];
+            },
+
+            _binder: binder
+        };
+
+        binder.on(uid + ":change", function (e, attr_name, new_val, initiator) {
+            if (initiator !== user) {
+                user.set(attr_name, new_val);
+            }
+        });
+        return user;
+    }
+
+    // test
+    let user = new User('cj');
+    user.set("name", "jackie");
+</script>
+</body>
+</html>

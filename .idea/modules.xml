@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ObjectControl.iml" filepath="$PROJECT_DIR$/.idea/ObjectControl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/VirtualLab.iml" filepath="$PROJECT_DIR$/.idea/VirtualLab.iml" />
     </modules>
   </component>
 </project>

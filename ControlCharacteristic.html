@@ -12,6 +12,8 @@
 		<canvas id="outputCanvas" width="1000" height="300"></canvas>
     </div>
 	<div class="rowFlex-div">
+		<canvas id="DCOutputVICanvas" width="65" height="50"></canvas>
+		<canvas id="StepResponseGeneratorVICanvas" width="65" height="50"></canvas>
 		<button class="normal-btn" onclick="setStepType(1)">比例</button>
 		<button class="normal-btn" onclick="setStepType(2)">积分</button>
 		<button class="normal-btn" onclick="setStepType(3)">微分</button>
@@ -25,74 +27,72 @@
 <script src="js/VILibrary.js"></script>
 <script src="js/jquery-3.1.1.min.js"></script>
 <script>
-    let inputWave = new VILibrary.VI.WaveVI.createVI($('#inputCanvas'));
-    let outputWave = new VILibrary.VI.WaveVI.createVI($('#outputCanvas'));
-    let inputData = new VILibrary.VI.DCOutputVI.createVI($('<canvas></canvas>'));
-    let signalGenerator = new VILibrary.VI.StepResponseGeneratorVI.createVI($('<canvas></canvas>'));
+    let inputWave = new VILibrary.VI.WaveVI($('#inputCanvas'));
+    let outputWave = new VILibrary.VI.WaveVI($('#outputCanvas'));
+    let DCOutputVI = new VILibrary.VI.DCOutputVI($('#DCOutputVICanvas'));
+    let StepResponseGeneratorVI = new VILibrary.VI.StepResponseGeneratorVI($('#StepResponseGeneratorVICanvas'));
+
+    VILibrary.InnerObjects.bindDataLine(StepResponseGeneratorVI.id, outputWave.id, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI.id, inputWave.id, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI.id, StepResponseGeneratorVI.id, 0, 0);
 
     let signalType = 1, n = 0, timer;
     function setStepType (type) {
+
         reset();
+        while (n < 10) {
+            StepResponseGeneratorVI.setData(0);
+            DCOutputVI.setData(0);
+            n++;
+        }
+        n = 0;
+        DCOutputVI.setData(100);
         signalType = type;
         switch (signalType) {
             case 1://比例
-                signalGenerator.setStepType(1);
-                signalGenerator.k1 = 1.5;
+                StepResponseGeneratorVI.setStepType(1);
+                StepResponseGeneratorVI.k1 = 1.5;
                 break;
             case 2://积分
-                signalGenerator.setStepType(2);
-                signalGenerator.k2 = 5;
+                StepResponseGeneratorVI.setStepType(2);
+                StepResponseGeneratorVI.k2 = 5;
                 break;
             case 3://微分
-                signalGenerator.setStepType(3);
-                signalGenerator.k3 = 0.0025;
+                StepResponseGeneratorVI.setStepType(3);
+                StepResponseGeneratorVI.k3 = 0.0025;
                 break;
             case 4://惯性
-                signalGenerator.setStepType(6);
-                signalGenerator.k1 = 0.025;
+                StepResponseGeneratorVI.setStepType(6);
+                StepResponseGeneratorVI.k1 = 0.025;
                 break;
             case 5://震荡
-                signalGenerator.setStepType(7);
-                signalGenerator.k1 = 50;
-                signalGenerator.k2 = 0.05;
+                StepResponseGeneratorVI.setStepType(7);
+                StepResponseGeneratorVI.k1 = 50;
+                StepResponseGeneratorVI.k2 = 0.05;
                 break;
             case 6://比例积分
-                signalGenerator.setStepType(4);
+                StepResponseGeneratorVI.setStepType(4);
                 break;
             case 7://比例惯性
-                signalGenerator.setStepType(8);
-                signalGenerator.k1 = 0.025;
-                signalGenerator.k2 = 1;
+                StepResponseGeneratorVI.setStepType(8);
+                StepResponseGeneratorVI.k1 = 0.025;
+                StepResponseGeneratorVI.k2 = 1;
                 break;
             case 8://比例微分
-                signalGenerator.setStepType(5);
-                signalGenerator.k3 = 0.0025;
+                StepResponseGeneratorVI.setStepType(5);
+                StepResponseGeneratorVI.k3 = 0.0025;
                 break;
             default:
-                signalGenerator.setStepType(1);
-                signalGenerator.k1 = 1.5;
+                StepResponseGeneratorVI.setStepType(1);
+                StepResponseGeneratorVI.k1 = 1.5;
                 break;
         }
-        timer = window.setInterval(onTimer, 40);
-    }
-    function onTimer () {
-        if (n < 10) {
-            signalGenerator.setData(0);
-            inputData.setData(0);
-            n++;
-        }
-        else {
-            signalGenerator.setData(800);
-            inputData.setData(800);
-        }
-        outputWave.setData(signalGenerator.output, 1024);
-        inputWave.setData(inputData.output, 1024);
+        DCOutputVI.toggleObserver(true);
     }
     function reset () {
-        n = 0;
-        inputData.reset();
-        signalGenerator.reset();
-        window.clearInterval(timer);
+
+        DCOutputVI.reset();
+        StepResponseGeneratorVI.reset();
     }
 </script>
 

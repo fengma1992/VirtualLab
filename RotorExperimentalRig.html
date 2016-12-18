@@ -13,12 +13,13 @@
     <div class="rowFlex-div">
         <canvas id="knobCanvas" width="128" height="128"></canvas>
         <canvas id="roundPanelCanvas" width="128" height="128"></canvas>
-        <select id="signalSelect" class="normal-select" onchange="setSignalType(this)">
+	    <select id="signalSelect" class="normal-select" onchange="setSignalType(this);openWaveWindow()">
             <option value="1">转速信号</option>
             <option value="2">加速度信号</option>
             <option value="3">轴心位移X信号</option>
             <option value="4">轴心位移Y信号</option>
         </select>
+	    <input type="button" class="normal-btn" value="打开波形面板" onclick="openWaveWindow()">
     </div>
     <div id="loadingDiv" class="loading-div">
         <img class="loading-img" src="img/loading.gif" alt="loading">
@@ -34,20 +35,16 @@
 <script src="js/three/ObjectControls.js"></script>
 <script>
     'use strict';
-    let layerOpenFlag, timer1, timer2;
-    layerOpenFlag = false;
+    let layerOpenFlag = false;
 
-    let knobVI = new VILibrary.VI.KnobVI.createVI($('#knobCanvas'));
-    let roundPanelVI = new VILibrary.VI.RoundPanelVI.createVI($('#roundPanelCanvas'));
-    let RotorExperimentalRigVI = new VILibrary.VI.RotorExperimentalRigVI.createVI($('#mainCanvas'), true);
+    let knobVI = new VILibrary.VI.KnobVI($('#knobCanvas'));
+    let roundPanelVI = new VILibrary.VI.RoundPanelVI($('#roundPanelCanvas'));
+    let RotorExperimentalRigVI = new VILibrary.VI.RotorExperimentalRigVI($('#mainCanvas'), true);
 
-    knobVI.setDataRange(0, 6000, 4096); //转速表，调节转子试验台转速
-    knobVI.attachEvent('mouseMove', function () {
+    VILibrary.InnerObjects.bindDataLine(knobVI.id, RotorExperimentalRigVI.id, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(RotorExperimentalRigVI.id, roundPanelVI.id, 4, 0);
 
-        let rotateFrequency = (knobVI.singleOutput / 60).toFixed(1);
-        roundPanelVI.setData(rotateFrequency);
-        RotorExperimentalRigVI.setData(knobVI.singleOutput);
-    });
+    knobVI.setDataRange(0, 6000, 2399); //转速表，调节转子试验台转速
     roundPanelVI.setRange(0, 100, 'Hz', '频率');
 
     function setSignalType (select) {
@@ -56,6 +53,11 @@
     }
 
     function openWaveWindow () {
+
+        if (layerOpenFlag) {
+
+            return
+        }
         layer.open({
             type: 1,
             title: '相关数据波形图',
@@ -64,57 +66,28 @@
             maxmin: true,
             closeBtn: false,
             zIndex: layer.zIndex,
-            content: '<div class="rowFlex-div">' +
-            '<div class="columnFlex-div">' +
-            '<span>信号波形</span>' +
-            '<canvas id="signalCanvas" width="500" height="200"></canvas>' +
-            '<span>信号频谱</span>' +
-            '<canvas id="frequencyCanvas" width="500" height="200"></canvas>' +
-            '</div>' +
-            '<div class="columnFlex-div">' +
-            '<span>轴心轨迹</span>' +
-            '<canvas id="orbitCanvas" width="430" height="430"></canvas>' +
-            '</div>' +
-            '</div>',
+            content: '<div class="rowFlex-div"><div class="columnFlex-div">' +
+            '<span>信号波形</span><canvas id="signalCanvas" width="500" height="200"></canvas>' +
+            '<span>信号频谱</span><canvas id="frequencyCanvas" width="500" height="200"></canvas>' +
+            '</div><div class="columnFlex-div">' +
+            '<span>轴心轨迹</span><canvas id="orbitCanvas" width="430" height="430"></canvas></div></div>',
             success: function (layero) {
+
                 layer.setTop(layero);
                 layerOpenFlag = true;
-                let signalWaveVI = new VILibrary.VI.WaveVI.createVI($('#signalCanvas'));
-                let frequencyWaveVI = new VILibrary.VI.WaveVI.createVI($('#frequencyCanvas'));
-                let orbitWaveVI = new VILibrary.VI.OrbitWaveVI.createVI($('#orbitCanvas'));
+                let signalWaveVI = new VILibrary.VI.WaveVI($('#signalCanvas'));
+                let frequencyWaveVI = new VILibrary.VI.WaveVI($('#frequencyCanvas'));
+                let orbitWaveVI = new VILibrary.VI.OrbitWaveVI($('#orbitCanvas'));
                 signalWaveVI.setAxisRangX(0, RotorExperimentalRigVI.dataLength / 8192);//采样频率为8192
                 signalWaveVI.setLabel('时间/s', '幅值');
                 frequencyWaveVI.setAxisRangX(0, 4096);
                 frequencyWaveVI.setLabel('频率/Hz', '幅值');
-                timer2 = window.setInterval(function () {
 
-                    signalWaveVI.setData(RotorExperimentalRigVI.signalOutput);
-                    frequencyWaveVI.setData(RotorExperimentalRigVI.frequencyOutput);
-                    orbitWaveVI.setData([RotorExperimentalRigVI.orbitXOutput, RotorExperimentalRigVI.orbitYOutput]);
-                }, 50);
+                VILibrary.InnerObjects.bindDataLine(RotorExperimentalRigVI.id, signalWaveVI.id, 1, 0);
+                VILibrary.InnerObjects.bindDataLine(RotorExperimentalRigVI.id, frequencyWaveVI.id, 2, 0);
+                VILibrary.InnerObjects.bindDataLine(RotorExperimentalRigVI.id, orbitWaveVI.id, 3, 0);
             }
         });
-    }
-
-    timer1 = window.setInterval(function () {
-
-        if (RotorExperimentalRigVI.isStart) {
-
-            if (!layerOpenFlag) {
-
-                openWaveWindow();
-            }
-        }
-        else {
-            reset();
-        }
-    }, 50);
-
-    function reset () {
-
-        window.clearInterval(timer2);
-        layer.closeAll();
-        layerOpenFlag = false;
     }
 </script>
 </body>

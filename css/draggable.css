@@ -115,7 +115,7 @@
     position: fixed;
     left: 0;
     top: 0;
-    width: 100px;
+    width: 120px;
     display: none;
     box-shadow: 2px 2px 19px #aaa;
     -o-box-shadow: 2px 2px 19px #aaa;
@@ -146,10 +146,10 @@
 
 .context-li:hover {
     background-color: #EEEEEE;
-    box-shadow: 2px 2px 19px #444;
-    -o-box-shadow: 2px 2px 19px #444;
-    -webkit-box-shadow: 2px 2px 19px #444;
-    -moz-box-shadow: 2px 2px 19px #444;
+    box-shadow: 1px 1px 19px #AAA;
+    -o-box-shadow: 1px 1px 19px #AAA;
+    -webkit-box-shadow: 1px 1px 19px #AAA;
+    -moz-box-shadow: 1px 1px 19px #AAA;
 }
 
 #navigationBar-div {

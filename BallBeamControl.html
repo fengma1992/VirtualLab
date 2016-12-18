@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +19,7 @@
             <span class="normal-span">D:</span><input type="number" id="DInput" value="20" class="normal-input">
         </div>
         <div>
-            <span class="normal-span">标记位置：</span><input type="text" id="positionInput" value="0" class="normal-input">
+            <span class="normal-span">标记位置：</span><span id="positionSpan">0</span>
         </div>
         <div>
             <input type="button" id="startBtn" value="开始" class="normal-btn" onclick="start()">
@@ -41,10 +40,15 @@
     //VI部分变量
     let positionWave;
     let angleWave;
-    let addVI = new VILibrary.VI.AddVI.createVI($('<canvas></canvas>'));
-    let PIDVI = new VILibrary.VI.PIDVI.createVI($('<canvas></canvas>'));
-    let ballBeamVI = new VILibrary.VI.BallBeamVI.createVI($('#mainCanvas'), true);
-    let timer;
+    let addVI = new VILibrary.VI.AddVI($('<canvas id="addVI"></canvas>'));
+    let PIDVI = new VILibrary.VI.PIDVI($('<canvas id="PIDVI"></canvas>'));
+    let ballBeamVI = new VILibrary.VI.BallBeamVI($('#mainCanvas'), true);
+
+    VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 3, 1);
+    VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 2, 0);
+    VILibrary.InnerObjects.bindDataLine(addVI.id, PIDVI.id, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(PIDVI.id, ballBeamVI.id, 0, 0);
+    
     function start () {
         $('#startBtn').attr('disabled', true);
         layer.open({
@@ -66,38 +70,30 @@
             '</div>' +
             '</div>',
             success: function (layero) {
+
                 layer.setTop(layero);
-                positionWave = new VILibrary.VI.WaveVI.createVI($('#positionCanvas'));
-                angleWave = new VILibrary.VI.WaveVI.createVI($('#angleCanvas'));
-                timer = window.setInterval(onTimer, 30);
+                //PID控制器
+                PIDVI.P = $('#PInput').val();
+                PIDVI.I = $('#IInput').val();
+                PIDVI.D = $('#DInput').val();
+                $('#positionSpan').text(ballBeamVI.markPosition);
+                positionWave = new VILibrary.VI.WaveVI($('#positionCanvas'));
+                angleWave = new VILibrary.VI.WaveVI($('#angleCanvas'));
+                VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, positionWave.id, 2, 0);
+                VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, angleWave.id, 1, 0);
+                ballBeamVI.toggleObserver(true);
             }
         });
     }
 
-    function onTimer () {
-
-        $('#positionInput').val(ballBeamVI.markPosition);
-        //加法器
-        addVI.setData(ballBeamVI.markPosition, 1);
-        addVI.setData(ballBeamVI.PIDPosition);//输入球位置信号，输出位置偏差
-        //PID控制器
-        PIDVI.P = $('#PInput').val();
-        PIDVI.I = $('#IInput').val();
-        PIDVI.D = $('#DInput').val();
-        PIDVI.setData(addVI.singleOutput);//输入位置偏差，输出杆角度
-        //球杆模型
-        ballBeamVI.setData(PIDVI.singleOutput);//输入杆角度信号，输出调整角度与位置
-        //波形控件
-        positionWave.setData(ballBeamVI.positionOutput, ballBeamVI.dataLength);
-        angleWave.setData(ballBeamVI.angelOutput, ballBeamVI.dataLength);
-    }
 
     function reset () {
 
-        window.clearInterval(timer);
+        ballBeamVI.toggleObserver(false);
         ballBeamVI.reset();
         layer.closeAll();
         $('#startBtn').attr('disabled', false);
+        $('#positionInput').val(0);
     }
 </script>
 </body>

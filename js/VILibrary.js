@@ -6,7 +6,7 @@
 
 let VILibrary = {REVISION: '1.0'};
 
-VILibrary.InternalFunction = {
+VILibrary.InnerObjects = {
 
     fixNumber: function (num) {
 
@@ -46,8 +46,176 @@ VILibrary.InternalFunction = {
     },
 
     getDomObject: function (obj) {
+
         obj = typeof obj === "string" ? document.getElementById(obj) : obj;
         return (obj instanceof HTMLElement) ? obj : (obj instanceof jQuery) ? obj[0] : false;
+    },
+
+    getVIById: function (id) {
+
+        for (let VI of VILibrary.InnerObjects.existingVIArray) {
+
+            if (VI.id === id) {
+                return VI
+            }
+        }
+        return false;
+    },
+
+    getVIcnName: function (VIName) {
+
+        if (VILibrary.VI.hasOwnProperty(VIName)) {
+
+            return VILibrary.VI[VIName].cnName;
+        }
+        return false;
+    },
+
+    /**
+     * 查询某个VI已绑定的其他VI(默认包含自己)，调用后查询结果会存在boundVIArray中，
+     * @param VI 需查询的VI
+     * @param boundVIArray 空数组
+     */
+    findBoundVI: function (VI, boundVIArray) {
+
+        boundVIArray.push(VI);
+        if (VI.sourceInfoArray) {
+
+            if (VI.sourceInfoArray.length > 0) {
+
+                for (let sourceInfo of VI.sourceInfoArray) {
+
+                    let tempSourceVI = this.getVIById(sourceInfo[0]);
+                    if (boundVIArray.indexOf(tempSourceVI) === -1) {
+
+                        this.findBoundVI(tempSourceVI, boundVIArray);
+                    }
+                }
+            }
+        }
+        if (VI.targetInfoArray) {
+
+            if (VI.targetInfoArray.length > 0) {
+
+                for (let targetInfo of VI.targetInfoArray) {
+
+                    let tempTargetVI = this.getVIById(targetInfo[0]);
+
+                    if (boundVIArray.indexOf(tempTargetVI) === -1) {
+
+                        this.findBoundVI(tempTargetVI, boundVIArray);
+                    }
+                }
+            }
+        }
+        return boundVIArray;
+    },
+
+    bindDataLine: function (sourceId, targetId, sourceOutputType, targetInputType) {
+
+        let sourceVI = this.getVIById(sourceId);
+        let targetVI = this.getVIById(targetId);
+        sourceVI.targetInfoArray.push([targetId, sourceOutputType, targetInputType]);
+        targetVI.sourceInfoArray.push([sourceId, sourceOutputType, targetInputType]);
+
+        //******************************分配dataLine*******************************************//
+        if (!sourceVI.dataLine && !targetVI.dataLine) {//均未赋过值说明未与其他VI连接，赋一个未被占用的dataLine
+
+            let newDataLine = VILibrary.InnerObjects.dataLineArray.length > 0 ?
+                (Math.max.apply(null, VILibrary.InnerObjects.dataLineArray) + 1 ) : 1;
+            VILibrary.InnerObjects.dataLineArray.push(newDataLine);
+            sourceVI.dataLine = newDataLine;
+            targetVI.dataLine = newDataLine;
+        }
+        else if (!sourceVI.dataLine && targetVI.dataLine) {//将已有dataLine赋给无dataLine的
+
+            sourceVI.dataLine = targetVI.dataLine;
+        }
+        else if (sourceVI.dataLine && !targetVI.dataLine) {
+
+            targetVI.dataLine = sourceVI.dataLine;
+        }
+        else if (sourceVI.dataLine > targetVI.dataLine) {//均有dataLine，合并较大的那个到较小的
+
+            for (let VI of VILibrary.InnerObjects.existingVIArray) {
+
+                VI.dataLine = VI.dataLine === sourceVI.dataLine ? targetVI.dataLine : VI.dataLine;
+            }
+        }
+        else if (sourceVI.dataLine < targetVI.dataLine) {
+
+            for (let VI of VILibrary.InnerObjects.existingVIArray) {
+
+                VI.dataLine = VI.dataLine === targetVI.dataLine ? sourceVI.dataLine : VI.dataLine;
+            }
+        }
+    },
+
+    //解绑默认将与targetVI相关的VI赋新dataLine值
+    unbindDataLine: function (sourceId, targetId) {
+
+        let sourceVI = this.getVIById(sourceId);
+        let targetVI = this.getVIById(targetId);
+
+        //**********************************删除绑定信息**************************************//
+        for (let targetInfo of sourceVI.targetInfoArray) {
+
+            if (targetInfo[0] === targetId) {
+
+                sourceVI.targetInfoArray.splice(sourceVI.targetInfoArray.indexOf(targetInfo), 1);
+                break;
+            }
+        }
+        for (let sourceInfo of targetVI.sourceInfoArray) {
+
+            if (sourceInfo[0] === sourceId) {
+
+                targetVI.sourceInfoArray.splice(targetVI.sourceInfoArray.indexOf(sourceInfo), 1);
+                break;
+            }
+        }
+
+        //*****************************重分配dataLine*************************************//
+        let sourceVIBoundVIArray = [], targetVIBoundVIArray = [];
+
+        this.findBoundVI(sourceVI, sourceVIBoundVIArray);
+        this.findBoundVI(targetVI, targetVIBoundVIArray);
+
+        if (sourceVIBoundVIArray.length === 1) {//无其他VI相连
+
+            sourceVI.dataLine = 0;
+        }
+        //检测sourceVI与targetVI断开后有没有间接与targetVI相连，仍然相连则无需赋新dataLine值
+        if (targetVIBoundVIArray.indexOf(sourceVI) === -1) {
+
+            if (targetVIBoundVIArray.length === 1) {//无其他VI相连
+
+                targetVI.dataLine = 0;
+            }
+            else {
+
+                let newDataLine = Math.max.apply(null, VILibrary.InnerObjects.dataLineArray) + 1;
+                for (let VI of targetVIBoundVIArray) {
+
+                    VI.dataLine = newDataLine;
+                }
+            }
+        }
+    },
+
+    dataUpdater: function (dataLine) {
+
+        if (!dataLine) {
+
+            return;
+        }
+        for (let VI of VILibrary.InnerObjects.existingVIArray) {
+
+            if (VI.dataLine === dataLine && this.sourceInfoArray.length > 0) {
+
+                VI.updater();
+            }
+        }
     },
 
     /**
@@ -143,54 +311,166 @@ VILibrary.InternalFunction = {
             output[i] = 2 * Math.sqrt(real[i] * real[i] + img[i] * img[i]);
         }
         return output;
-    }
+    },
+
+    existingVIArray: [],
+    dataLineArray: []
 };
+
+class TemplateVI {
+
+    constructor (VICanvas) {
+
+        if (new.target === TemplateVI) {
+
+            throw new Error('本VI为模版，不能实例化');
+        }
+        let domElement = VILibrary.InnerObjects.getDomObject(VICanvas);
+        this.container = domElement;
+        this.id = domElement.id;
+        this.fillStyle = 'orange';
+        this.index = 0;
+        this.dataLength = 1024;
+        this.output = [0];
+        this.outputPointCount = -1;//-1为无限制输出
+        this.inputPointCount = 1;
+        //与其他VI的连接信息
+        this.sourceInfoArray = [];//[sourceVIId, sourceOutputType,thisInputType]二维数组，第二维分别存储sourceVI的ID、sourceVI输出类型、自己的输入类型
+        this.targetInfoArray = [];//[targetVIId, thisOutputType,targetInputType]二维数组，第二维分别存储targetVI的ID、自己的输出类型、targetVI的输入类型
+        this.dataLine = 0;
+
+        VILibrary.InnerObjects.existingVIArray.push(this);
+        this.constructor.logCount++;
+
+        this.updater = function () {
+
+            if (this.sourceInfoArray.length > 0) {
+
+                for (let sourceInfo of this.sourceInfoArray) {
+
+                    let sourceVI = VILibrary.InnerObjects.getVIById(sourceInfo[0]);
+                    let sourceOutputType = sourceInfo[1];
+                    let inputType = sourceInfo[2];
+                    let sourceData = sourceVI.getData(sourceOutputType);
+                    this.setData(sourceData, inputType);
+                }
+            }
+        };
+
+        this.destroy = function () {
+
+            let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
+            if (index !== -1) {
+
+                VILibrary.InnerObjects.existingVIArray.splice(index, 1);
+            }
+            this.dataLine = 0;
+            $(this.container).remove();
+        };
+
+        this.setData = function () { };
+
+        this.getData = function () {
+
+            return this.output;
+        };
+
+        this.reset = function () {
+
+            this.index = 0;
+            this.output = [0];
+        };
+
+        this.draw = function () {
+
+            this.ctx = this.container.getContext("2d");
+            this.ctx.font = 'normal 14px Microsoft YaHei';
+            this.ctx.fillStyle = this.fillStyle;
+            this.ctx.fillRect(0, 0, this.container.width, this.container.height);
+            this.ctx.fillStyle = 'black';
+            let length = this.constructor.cnName.length;
+            if (length > 4) {
+
+                this.ctx.fillText(this.constructor.cnName.substring(0, 4), this.container.width / 2 - 14 * 4 / 2, this.container.height / 4 + 6);
+                this.ctx.fillText(this.constructor.cnName.substring(4), this.container.width / 2 - 14 * (length - 4) / 2, this.container.height * 3 / 4);
+
+            }
+            else {
+
+                this.ctx.fillText(this.constructor.cnName, this.container.width / 2 - 14 * length / 2, this.container.height / 2 + 6);
+            }
+        };
+    }
+
+    static get cnName () {
+
+        return 'VI模版';
+    }
+
+    static get defaultWidth () {
+
+        return '65px';
+    }
+
+    static get defaultHeight () {
+
+        return '50px';
+    }
+}
+//因ES6定义Class内只有静态方法没有静态属性，只能在Class外定义
+TemplateVI.logCount = 0;
 
 VILibrary.VI = {
 
-    AudioVI: {
+    AudioVI: class AudioVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.ctx = domElement.getContext('2d');
-            this.name = 'AudioVI';
-            this.zoomValue = 1;
 
-            this.fillStyle = 'silver';
-            this.runningFlag = false;
+            let audioCtx = new (window.AudioContext || webkitAudioContext)(),
+                analyser = audioCtx.createAnalyser(), source, timer = 0, timeStamp = 0, point = {};
 
-            this.dataLength = 2048;
-            this.output = [0];
-            this.outputPointCount = -1;
+            this.ctx = this.container.getContext("2d");
             this.inputPointCount = 0;
+            this.fillStyle = 'silver';
 
-            //虚拟仪器中相连接的控件VI
-            this.target = [];
+            this.destroy = function () {
 
-            let img = new Image();
+                if (!timer) {
+
+                    stop();
+                }
+                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
+                if (index !== -1) {
+
+                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
+                }
+                this.dataLine = 0;
+                $(this.container).remove();
+            };
+
             this.draw = function () {
 
+                let img = new Image();
                 new Promise(function (resolve, reject) {
 
                     img.src = 'img/mic.png';
                     img.onload = resolve;
+                    img.onerror = reject;
                 }).then(function () {
 
                     _this.ctx.fillStyle = _this.fillStyle;
                     _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
                     _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
+                }).catch(function (e) {
+                    console.log('AudioVI:' + e);
                 });
             };
 
             this.draw();
-
-            let audioCtx = new (window.AudioContext || webkitAudioContext)(),
-                source, analyser = audioCtx.createAnalyser(), animationNumber;
-            window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
-                || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
             function start () {
                 // Older browsers might not implement mediaDevices at all, so we set an empty object first
@@ -225,111 +505,108 @@ VILibrary.VI = {
 
                         //音频输出
                         source = audioCtx.createMediaStreamSource(stream);
-                        analyser.fftSize = _this.dataLength;
-                        let bufferLength = analyser.frequencyBinCount;
-                        let dataArray = new Uint8Array(bufferLength);
-
+                    analyser.fftSize = _this.dataLength * 2;
                         source.connect(analyser);
                         analyser.connect(audioCtx.destination);
-                        function getData () {
 
-                            animationNumber = window.requestAnimationFrame(getData);
+                    let bufferLength = analyser.frequencyBinCount;
+                    let dataArray = new Uint8Array(bufferLength);
+
+                    function getAudioData () {
+
+                        if (_this.dataLine) {
+
+                            timer = window.requestAnimationFrame(getAudioData);
 
                             analyser.getByteTimeDomainData(dataArray);
                             _this.output = Array.from(dataArray);
+
+                            //定时更新相同数据线VI的数据
+                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
                         }
+                        else {
 
-                        getData();
+                            stop();
+                        }
+                    }
 
-                        _this.runningFlag = true;
+                    getAudioData();
+
                         _this.fillStyle = 'red';
                         _this.draw();
                     }
                 ).catch(function (err) {
+                    timer = 0;
                     console.log('AudioVI: ' + err.name + ": " + err.message);
                 });
             }
 
             function stop () {
 
-                //切断音频输出
-                analyser.disconnect(audioCtx.destination);
-                window.cancelAnimationFrame(animationNumber);
-                //停止数据存储
-                // mediaRecorder.stop();
-                _this.runningFlag = false;
-                _this.fillStyle = 'silver';
-                _this.draw();
+                if (timer) {
+                    //切断音频输出
+                    analyser.disconnect(audioCtx.destination);
+                    window.cancelAnimationFrame(timer);
+                    timer = 0;
+                    _this.fillStyle = 'silver';
+                    _this.draw();
+                }
             }
 
-            this.getData = function () {
+            this.container.addEventListener('mousedown', function (e) {
 
-                return _this.output;
-            };
+                timeStamp = e.timeStamp;
+                point.x = e.clientX;
+                point.y = e.clientY;
+            }, false);
 
-            this.reset = function () {
+            this.container.addEventListener('mouseup', function (e) {
 
-                _this.output = [0];
-            };
+                //X、Y移动距离小于5，点击间隔小于200，默认点击事件
+                if ((e.timeStamp - timeStamp) < 200 && (point.x - e.clientX) < 5 && (point.y - e.clientY) < 5) {
 
-            this.container.addEventListener('click', function () {
+                    if (_this.dataLine) {
 
-                if (_this.target.length > 0) {
+                        if (!timer) {
 
-                    if (!_this.runningFlag) {
-
-                        start();
-                    }
-                    else {
-                        stop();
+                            start();
+                        }
+                        else {
+                            stop();
+                        }
                     }
                 }
             }, false);
-        },
-        cnName: '麦克风',
-        defaultWidth: '80px',
-        defaultHeight: '80px'
+        }
+
+        static get cnName () {
+
+            return '麦克风';
+        }
+
+        static get defaultWidth () {
+
+            return '80px';
+        }
+
+        static get defaultHeight () {
+
+            return '80px';
+        }
     },
 
-    KnobVI: {
+    KnobVI: class KnobVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'KnobVI';
-            this.zoomValue = 1;
 
-            this.minValue = 0;
-            this.maxValue = 100;
-            this.defaultValue = 100;
-            this.ratio = (this.maxValue - this.minValue) / (Math.PI * 1.5);
-            this.singleOutput = this.defaultValue;
-            this.radian = (this.defaultValue - this.minValue) / this.ratio;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [100];
-            this.outputPointCount = -1;
-            this.inputPointCount = 0;
-
-            //虚拟仪器中相连接的控件VI
-            this.target = [];
-
-            //VI双击弹出框
-            this.boxTitle = '请输入初始值';
-            this.boxContent = '<div class="input-div">' +
-                '<span class="normal-span">最小值:</span><input type="number" id="KnobVI-input-1" value="' + this.minValue + '" class="normal-input">' +
-                '<span class="normal-span">最大值:</span><input type="number" id="KnobVI-input-2" value="' + this.maxValue + '" class="normal-input">' +
-                '<span class="normal-span">初值:</span><input type="number" id="KnobVI-input-3" value="' + this.defaultValue + '" class="normal-input"></div>';
-
-            let spinnerFlag = false;
-            let startX, startY, stopX, stopY;
-            let roundCount = 0;
+            let spinnerFlag = false, startX, startY, stopX, stopY, roundCount = 0;
             let knob_Base = new Image(), knob_Spinner = new Image();
-
+            let _mouseOverFlag = false, _mouseOutFlag = false, _dragAndDropFlag = false,
+                _mouseUpFlag = false, _onclickFlag = false, _mouseMoveFlag = false;
             let p1 = new Promise(function (resolve, reject) {
 
                 knob_Base.src = "img/knob_Base.png";
@@ -342,15 +619,23 @@ VILibrary.VI = {
                 knob_Spinner.onload = resolve;
                 knob_Spinner.onerror = reject;
             });
-            Promise.all([p1, p2]).then(function () { _this.draw(); })
-                   .catch(function (e) { console.log('KnobVI: Error:' + e); });
 
-            /**
-             *设置旋钮初始参数
-             * @param minValue  最小值
-             * @param maxValue  最大值
-             * @param startValue  初值
-             */
+            this.ctx = this.container.getContext("2d");
+            this.inputPointCount = 0;
+            this.output = [100];
+            this.minValue = 0;
+            this.maxValue = 100;
+            this.defaultValue = 100;
+            this.ratio = (this.maxValue - this.minValue) / (Math.PI * 1.5);
+            this.radian = (this.defaultValue - this.minValue) / this.ratio;
+            //VI双击弹出框
+            this.boxTitle = '请输入初始值';
+            this.boxContent = '<div class="input-div">' +
+                '<span class="normal-span">最小值:</span><input type="number" id="KnobVI-input-1" value="' + this.minValue + '" class="normal-input">' +
+                '<span class="normal-span">最大值:</span><input type="number" id="KnobVI-input-2" value="' + this.maxValue + '" class="normal-input">' +
+                '<span class="normal-span">初值:</span><input type="number" id="KnobVI-input-3" value="' + this.defaultValue + '" class="normal-input"></div>';
+
+            //设置旋钮初始参数
             this.setDataRange = function (minValue, maxValue, startValue) {
 
                 let minVal = Number.isNaN(minValue) ? 0 : minValue;
@@ -362,15 +647,15 @@ VILibrary.VI = {
                     return false;
                 }
 
-                _this.minValue = minVal;
-                _this.maxValue = maxVal;
-                _this.defaultValue = startVal;
+                this.minValue = minVal;
+                this.maxValue = maxVal;
+                this.defaultValue = startVal;
 
-                _this.ratio = (_this.maxValue - _this.minValue) / (Math.PI * 1.5);
-                this.setData(_this.defaultValue);
-                this.radian = (_this.defaultValue - _this.minValue) / _this.ratio;
+                this.ratio = (this.maxValue - this.minValue) / (Math.PI * 1.5);
+                this.setData(this.defaultValue);
+                this.radian = (this.defaultValue - this.minValue) / this.ratio;
 
-                _this.draw();
+                this.draw();
             };
 
             this.setData = function (data) {
@@ -380,26 +665,27 @@ VILibrary.VI = {
                     console.log('KnobVI: Not a number!');
                     return false;
                 }
-                if (data < _this.minValue || data > _this.maxValue) {
+                if (data < this.minValue || data > this.maxValue) {
 
                     console.log('KnobVI: Out of range!');
                     return false;
                 }
-                _this.singleOutput = data;
 
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
+                if (this.index <= (this.dataLength - 1)) {
 
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = data;
+                    this.index += 1;
                 }
                 else {
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = data;
                 }
+
             };
 
             this.setInitialData = function () {
@@ -407,53 +693,39 @@ VILibrary.VI = {
                 let minValue = Number($('#KnobVI-input-1').val());
                 let maxValue = Number($('#KnobVI-input-2').val());
                 let defaultValue = Number($('#KnobVI-input-3').val());
-                _this.setDataRange(minValue, maxValue, defaultValue);
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.setDataRange(minValue, maxValue, defaultValue);
             };
 
             this.reset = function () {
 
-                _this.index = 0;
-                _this.singleOutput = _this.defaultValue;
-                _this.output = [100];
+                this.index = 0;
+                this.output = [100];
+                this.minValue = 0;
+                this.maxValue = 100;
+                this.defaultValue = 100;
             };
 
             this.draw = function () {
 
-                let xPos = _this.container.width / 2;
-                let yPos = _this.container.height / 2;
-                _this.ctx.clearRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.drawImage(knob_Base, 0, 0, _this.container.width, _this.container.height);
-                _this.ctx.save();   //保存之前位置
-                _this.ctx.translate(xPos, yPos);
-                _this.ctx.rotate(_this.radian - 135 / 180 * Math.PI);  //旋转, 初始位置为左下角
-                _this.ctx.translate(-xPos, -yPos);
-                _this.ctx.drawImage(knob_Spinner, 0, 0, _this.container.width, _this.container.height);
-                _this.ctx.restore();  //恢复之前位置
-                _this.ctx.beginPath();
-                _this.ctx.font = "normal 14px Calibri";
-                _this.ctx.fillText(_this.minValue.toString(), 0, _this.container.height);
-                _this.ctx.fillText(_this.maxValue.toString(), _this.container.width - 7 * _this.maxValue.toString().length, _this.container.height); //字体大小为14
-                _this.ctx.closePath();
+                let xPos = this.container.width / 2;
+                let yPos = this.container.height / 2;
+                this.ctx.clearRect(0, 0, this.container.width, this.container.height);
+                this.ctx.drawImage(knob_Base, 0, 0, this.container.width, this.container.height);
+                this.ctx.save();   //保存之前位置
+                this.ctx.translate(xPos, yPos);
+                this.ctx.rotate(this.radian - 135 / 180 * Math.PI);  //旋转, 初始位置为左下角
+                this.ctx.translate(-xPos, -yPos);
+                this.ctx.drawImage(knob_Spinner, 0, 0, this.container.width, this.container.height);
+                this.ctx.restore();  //恢复之前位置
+                this.ctx.beginPath();
+                this.ctx.font = "normal 14px Calibri";
+                this.ctx.fillText(this.minValue.toString(), 0, this.container.height);
+                this.ctx.fillText(this.maxValue.toString(), this.container.width - 7 * this.maxValue.toString().length, this.container.height); //字体大小为14
+                this.ctx.closePath();
             };
 
-            let _mouseOverFlag = false;
-            let _mouseOutFlag = false;
-            let _dragAndDropFlag = false;
-            let _mouseUpFlag = false;
-            let _onclickFlag = false;
-            let _mouseMoveFlag = false;
+            Promise.all([p1, p2]).then(function () { _this.draw(); })
+                   .catch(function (e) { console.log('KnobVI:' + e); });
 
             this.dragAndDrop = function () { };// this.container.style.cursor = 'move';
             this.mouseOver = function () { }; // this.container.style.cursor = 'pointer';
@@ -559,6 +831,11 @@ VILibrary.VI = {
                         _this.radian = 270 / 180 * Math.PI;
                     }
                     _this.setData(_this.radian * _this.ratio + parseFloat(_this.minValue));
+                    //旋钮数据更新后全局更新一次
+                    if (_this.dataLine) {
+
+                        VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                    }
                     _this.draw();
                     startX = stopX;
                     startY = stopY;
@@ -615,42 +892,83 @@ VILibrary.VI = {
             this.container.addEventListener('mousemove', onMouseMove, false);
             this.container.addEventListener('mousedown', onMouseDown, false);
             this.container.addEventListener('mouseup', onMouseUp, false);
-        },
-        cnName: '旋钮',
-        defaultWidth: '150px',
-        defaultHeight: '150px'
+        }
+
+        static get cnName () {
+
+            return '旋钮';
+        }
+
+        static get defaultWidth () {
+
+            return '150px';
+        }
+
+        static get defaultHeight () {
+
+            return '150px';
+        }
     },
 
-    DCOutputVI: {
+    DCOutputVI: class DCOutputVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.ctx = domElement.getContext('2d');
-            this.name = 'DCOutputVI';
-            this.zoomValue = 1;
+            let timer = 0, timeStamp = 0, point = {};
 
-            this.dataLength = 1024;
-            this.index = 0;
-            this.singleOutput = 100;//输出初值
-            this.output = [100];
-            this.outputPointCount = -1;
             this.inputPointCount = 0;
-
-            //虚拟仪器中相连接的控件VI
-            this.target = [];
 
             //VI双击弹出框
             this.boxTitle = '请设置输出值';
             this.boxContent = '<div class="input-div"><span class="normal-span">初值:</span>' +
-                '<input type="number" id="DCOutputVI-input" value="' + this.singleOutput + '" class="normal-input"></div>';
+                '<input type="number" id="DCOutputVI-input" value="' + this.output[this.output.length - 1] + '" class="normal-input"></div>';
 
-            /**
-             * 将输出数保存在数组内
-             * @param data singleOutput
-             */
+            this.toggleObserver = function (flag) {
+
+                if (flag) {
+
+                    if (!timer && this.dataLine) {
+
+                        timer = window.setInterval(function () {
+
+                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                        }, 50);
+                    }
+                }
+                else {
+
+                    if (timer) {
+
+                        window.clearInterval(timer);
+                        timer = 0;
+                    }
+                }
+            };
+
+            this.updater = function () {
+
+                this.setData(this.output);
+            };
+
+            this.destroy = function () {
+
+                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
+                if (index !== -1) {
+
+                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
+                }
+                if (timer) {
+
+                    window.clearInterval(timer);
+                    timer = 0;
+                }
+                this.dataLine = 0;
+                $(this.container).remove();
+            };
+
             this.setData = function (data) {
 
                 let temp = Array.isArray(data) ? data[data.length - 1] : data;
@@ -659,89 +977,76 @@ VILibrary.VI = {
                     return false;
                 }
 
-                _this.singleOutput = temp;
+                if (this.index <= (this.dataLength - 1)) {
 
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
-
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = temp;
+                    this.index += 1;
                 }
                 else {
 
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
-                }
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
+                    this.output[this.dataLength - 1] = temp;
                 }
             };
 
             this.setInitialData = function () {
 
-                _this.setData($('#DCOutputVI-input').val());
-            };
-
-            this.reset = function () {
-
-                _this.index = 0;
-                _this.singleOutput = 100;//输出初值
-                _this.output = [100];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = "normal 12px Microsoft YaHei";
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('直流', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('输出', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.setData($('#DCOutputVI-input').val());
             };
 
             this.draw();
-        },
-        cnName: '直流输出',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+
+            this.container.addEventListener('mousedown', function (e) {
+
+                timeStamp = e.timeStamp;
+                point.x = e.clientX;
+                point.y = e.clientY;
+            }, false);
+
+            this.container.addEventListener('mouseup', function (e) {
+
+                //X、Y移动距离小于5，点击间隔小于200，默认点击事件
+                if ((e.timeStamp - timeStamp) < 200 && (point.x - e.clientX) < 5 && (point.y - e.clientY) < 5) {
+
+                    if (_this.dataLine) {
+
+                        if (!timer) {
+
+                            _this.toggleObserver(true);
+                            _this.fillStyle = 'red';
+                            _this.draw();
+                        }
+                        else {
+                            _this.toggleObserver(false);
+                            _this.fillStyle = 'orange';
+                            _this.draw();
+                        }
+                    }
+                }
+            }, false);
+
+        }
+
+        static get cnName () {
+
+            return '直流输出';
+        }
+
     },
 
-    AddVI: {
+    AddVI: class AddVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = domElement.getContext('2d');
-            this.name = 'AddVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.dataLength = 1024;
-            this.index = 0;
+            this.inputPointCount = 2;
             this.originalInput = 0;
             this.latestInput = 0;
-            this.singleOutput = 0;
-            this.output = [0];
-
-            this.outputPointCount = -1;
-            this.inputPointCount = 2;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
 
             //多输入选择弹出框
             this.inputBoxTitle = '请选择加法器输入参数';
@@ -750,7 +1055,6 @@ VILibrary.VI = {
                 '<label class="input-label" for="type1">初值</label></div>' +
                 '<div><input type="radio" id="type2" class="radio-input" name="input-type" value="2" alt="反馈值">' +
                 '<label class="input-label" for="type2">反馈值</label></div></div>';
-
             //VI双击弹出框
             this.boxTitle = '请输入初始值';
             this.boxContent = '<div class="input-div"><span class="normal-span">初值:</span>' +
@@ -767,92 +1071,57 @@ VILibrary.VI = {
 
                 if (inputType === 1) {
 
-                    _this.originalInput = inputValue;
-                    return true;
+                    this.originalInput = inputValue;
                 }
                 else {
 
-                    _this.latestInput = inputValue;
-                    _this.singleOutput = parseFloat(_this.originalInput - _this.latestInput).toFixed(2);
+                    this.latestInput = inputValue;
+                    let temp = parseFloat(this.originalInput - this.latestInput).toFixed(2);
 
-                    let i = 0;
-                    if (_this.index <= (_this.dataLength - 1)) {
+                    if (this.index <= (this.dataLength - 1)) {
 
-                        _this.output[_this.index] = _this.singleOutput;
-                        _this.index += 1;
+                        this.output[this.index] = temp;
+                        this.index += 1;
                     }
                     else {
 
-                        for (i = 0; i < _this.dataLength - 1; i += 1) {
+                        let i;
+                        for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                            _this.output[i] = _this.output[i + 1];
+                            this.output[i] = this.output[i + 1];
                         }
-                        _this.output[_this.dataLength - 1] = _this.singleOutput;
+                        this.output[this.dataLength - 1] = temp;
                     }
-
-                    return _this.singleOutput;
                 }
             };
 
             this.setInitialData = function () {
 
-                _this.originalInput = Number($('#AddVI-input').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-                    return _this.output;
-                }
+                this.setData(Number($('#AddVI-input').val()), 1);
             };
 
             this.reset = function () {
 
-                _this.originalInput = 0;
-                _this.latestInput = 0;
-                _this.singleOutput = 0;
-                _this.index = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-                _this.ctx.font = "normal 12px Microsoft YaHei";
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('加法器', _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+                this.originalInput = 0;
+                this.latestInput = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
+        }
 
-        },
-        cnName: '加法器',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        static get cnName () {
+
+            return '加法器';
+        }
     },
 
-    FFTVI: {
+    FFTVI: class FFTVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'FFTVI';
-            this.zoomValue = 1;
-
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
+            super(VICanvas);
 
             this.setData = function (input) {
 
@@ -860,65 +1129,41 @@ VILibrary.VI = {
 
                     return;
                 }
-                _this.output = VILibrary.InternalFunction.fft(1, 11, input);
-                return _this.output;
+                this.output = VILibrary.InnerObjects.fft(1, 11, input);
+                return this.output;
 
-            };
-
-            this.getData = function () {
-
-                return _this.output;
-            };
-
-            this.reset = function () {
-
-                _this.output = [0];
             };
 
             this.draw = function () {
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('FFT', _this.container.width / 2 - 11, _this.container.height / 2 + 6);
-            };
-            this.draw();
 
-        },
-        cnName: 'FFT',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+                this.ctx = this.container.getContext("2d");
+                this.ctx.font = 'normal 14px Microsoft YaHei';
+                this.ctx.fillStyle = 'orange';
+                this.ctx.fillRect(0, 0, this.container.width, this.container.height);
+                this.ctx.fillStyle = 'black';
+                this.ctx.fillText(this.constructor.cnName, this.container.width / 2 - 7 * 3 / 2, this.container.height / 2 + 6);
+            };
+
+            this.draw();
+        }
+
+        static get cnName () {
+
+            return 'FFT';
+        }
     },
 
-    PIDVI: {
+    PIDVI: class PIDVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext('2d');
-            this.name = 'PIDVI';
-            this.zoomValue = 1;
-
-            this.input = 0;
+            super(VICanvas);
             this.lastInput = 0;
-            this.singleOutput = 0;
             this.P = 1;
             this.I = 1;
             this.D = 1;
             this.Fs = 100;
             this.temp1 = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
 
             //VI双击弹出框
             this.boxTitle = '请输入PID参数';
@@ -927,211 +1172,136 @@ VILibrary.VI = {
                 '<span class="normal-span">I:</span><input type="number" id="PIDVI-input-2" value="' + this.I + '" class="normal-input">' +
                 '<span class="normal-span">D:</span><input type="number" id="PIDVI-input-3" value="' + this.D + '" class="normal-input"></div>';
 
-            /**
-             *
-             * @param input 从输入端读取的数据
-             */
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let temp1 = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(temp1)) {
 
                     return false;
                 }
-
                 let v1, v2, v3, v21;
 
-                v1 = _this.P * _this.input;
+                v1 = this.P * temp1;
 
-                v21 = _this.temp1 + 0.5 * (Number(_this.input) + Number(_this.lastInput)) / _this.Fs;
-                _this.temp1 = v21;
-                v2 = _this.I * v21;
+                v21 = this.temp1 + 0.5 * (Number(temp1) + Number(this.lastInput)) / this.Fs;
+                this.temp1 = v21;
+                v2 = this.I * v21;
 
-                v3 = _this.D * (_this.input - _this.lastInput) * _this.Fs;
+                v3 = this.D * (temp1 - this.lastInput) * this.Fs;
 
-                _this.lastInput = _this.input;
-                _this.singleOutput = v1 + v2 + v3;
+                this.lastInput = temp1;
+                let temp2 = v1 + v2 + v3;
 
                 //将输出数保存在数组内
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
+                if (this.index <= (this.dataLength - 1)) {
 
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = temp2;
+                    this.index += 1;
                 }
                 else {
 
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = temp2;
                 }
-
-                return _this.singleOutput;
             };
 
             this.setInitialData = function () {
 
-                _this.P = Number($('#PIDVI-input-1').val());
-                _this.I = Number($('#PIDVI-input-2').val());
-                _this.D = Number($('#PIDVI-input-3').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.P = Number($('#PIDVI-input-1').val());
+                this.I = Number($('#PIDVI-input-2').val());
+                this.D = Number($('#PIDVI-input-3').val());
             };
 
             this.reset = function () {
 
-                _this.input = 0;
-                _this.lastInput = 0;
-                _this.singleOutput = 0;
-                _this.P = 1;
-                _this.I = 1;
-                _this.D = 1;
-                _this.Fs = 100;
-                _this.temp1 = 0;
-                _this.index = 0;
-                _this.output = [0];
+                this.lastInput = 0;
+                this.P = 1;
+                this.I = 1;
+                this.D = 1;
+                this.Fs = 100;
+                this.temp1 = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw = function () {
 
-                _this.ctx.font = "normal 12px Microsoft YaHei";
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('PID', _this.container.width / 2 - 11, _this.container.height / 2 + 6);
+                this.ctx = this.container.getContext("2d");
+                this.ctx.font = 'normal 14px Microsoft YaHei';
+                this.ctx.fillStyle = 'orange';
+                this.ctx.fillRect(0, 0, this.container.width, this.container.height);
+                this.ctx.fillStyle = 'black';
+                this.ctx.fillText(this.constructor.cnName.substring(0, 3), this.container.width / 2 - 7 * 3 / 2, this.container.height / 4 + 6);
+                this.ctx.fillText(this.constructor.cnName.substring(3), this.container.width / 2 - 14 * 3 / 2, this.container.height * 3 / 4);
             };
 
             this.draw();
-        },
-        cnName: 'PID控制器',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return 'PID控制器';
+        }
     },
 
-    RelayVI: {
+    RelayVI: class RelayVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = domElement.getContext('2d');
-            this.name = 'RelayVI';
-            this.zoomValue = 1;
-
-            this.input = 0;
-            this.singleOutput = 0;
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
+            super(VICanvas);
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let tempInput = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(tempInput)) {
 
                     return false;
                 }
-                _this.singleOutput = _this.input;
 
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
+                if (this.index <= (this.dataLength - 1)) {
 
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = tempInput;
+                    this.index += 1;
                 }
                 else {
 
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = tempInput;
                 }
-                return _this.singleOutput;
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
-            };
-
-            this.reset = function () {
-
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = "normal 12px Microsoft YaHei";
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText(VILibrary.VI.RelayVI.cnName, _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+                return tempInput;
             };
 
             this.draw();
-        },
-        cnName: '存储器',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '存储器';
+        }
     },
 
-    SignalGeneratorVI: {
+    SignalGeneratorVI: class SignalGeneratorVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.ctx = domElement.getContext('2d');
-            this.name = 'SignalGeneratorVI';
-            this.zoomValue = 1;
+            let timer = 0, timeStamp = 0, point = {};
 
-            this.ampSetFlag = false;
-            this.frequencySetFlag = false;
-
-            this.dataLength = 1024;
+            this.inputPointCount = 2;
             this.phase = 0;
             this.amp = 1;
             this.frequency = 256;
             this.signalType = 1;
-            this.singleOutput = 0;
-            this.output = [0];
-
-            this.outputPointCount = -1;
-            this.inputPointCount = 2;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
 
             //多输入选择弹出框
             this.inputBoxTitle = '请选择信号发生器输入参数';
@@ -1153,163 +1323,224 @@ VILibrary.VI = {
                 '<div><input type="radio" id="type4" class="radio-input" name="SignalGeneratorVI-type" value="4">' +
                 '<label class="input-label" for="type4">白噪声</label></div></div>';
 
+            this.toggleObserver = function (flag) {
+
+                if (flag) {
+
+                    if (!timer && this.dataLine) {
+
+                        timer = window.setInterval(function () {
+
+                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                        }, 50);
+                    }
+                }
+                else {
+
+                    if (timer) {
+
+                        window.clearInterval(timer);
+                        timer = 0;
+                    }
+                }
+            };
+
+            this.updater = function () {
+
+                if (this.sourceInfoArray.length > 0) {
+
+                    for (let sourceInfo of this.sourceInfoArray) {
+
+                        let sourceVI = VILibrary.InnerObjects.getVIById(sourceInfo[0]);
+                        let sourceOutputType = sourceInfo[1];
+                        let inputType = sourceInfo[2];
+                        let sourceData = sourceVI.getData(sourceOutputType);
+                        this.setData(sourceData, inputType);
+                    }
+                    //更新完幅值频率后刷新一遍数据
+                    this.setData();
+                }
+            };
+
+            this.destroy = function () {
+
+                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
+                if (index !== -1) {
+
+                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
+                }
+                if (timer) {
+
+                    window.clearInterval(timer);
+                    timer = 0;
+                }
+                this.dataLine = 0;
+                $(this.container).remove();
+            };
+
             // 采样频率为11025Hz
             this.setData = function (input, inputType) {
 
                 if (inputType === 1) {
 
-                    _this.amp = Array.isArray(input) ? input[input.length - 1] : input;
-                    _this.ampSetFlag = true;
+                    this.amp = Array.isArray(input) ? input[input.length - 1] : input;
                 }
                 else if (inputType === 2) {
 
-                    _this.frequency = Array.isArray(input) ? input[input.length - 1] : input;
-                    _this.frequencySetFlag = true;
+                    this.frequency = Array.isArray(input) ? input[input.length - 1] : input;
                 }
-                if (_this.ampSetFlag && _this.frequencySetFlag) {
+                else {
 
-                    _this.ampSetFlag = false;
-                    _this.frequencySetFlag = false;
-                    if (Number.isNaN(_this.amp) || Number.isNaN(_this.frequency) || Number.isNaN(_this.phase)) {
+                    if (Number.isNaN(this.amp) || Number.isNaN(this.frequency) || Number.isNaN(this.phase)) {
 
                         return false;
                     }
                     let FS = 11025;
                     let i, j;
-                    let T = 1 / _this.frequency;//周期
+                    let T = 1 / this.frequency;//周期
                     let dt = 1 / FS;//采样周期
                     let t, t1, t2, t3;
 
-                    if (_this.frequency <= 0) {
+                    if (this.frequency <= 0) {
 
-                        for (i = 0; i < _this.dataLength; i += 1) {
+                        for (i = 0; i < this.dataLength; i += 1) {
 
-                            _this.output[i] = 0;
+                            this.output[i] = 0;
                         }
-                        _this.singleOutput = 0;
-                        return _this.output;
+                        return this.output;
                     }
 
-                    switch (parseInt(_this.signalType)) {
+                    switch (parseInt(this.signalType)) {
                         case 1://正弦波
-                            for (i = 0; i < _this.dataLength; i += 1) {
+                            for (i = 0; i < this.dataLength; i += 1) {
 
-                                _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
+                                this.output[i] = this.amp * Math.sin(2 * Math.PI * this.frequency * i * dt + (2 * Math.PI * this.phase) / 360);
                             }
-                            _this.singleOutput = _this.output[_this.dataLength - 1];
                             break;
 
                         case 2://方波
                             t1 = T / 2;//半周期时长
-                            t3 = T * _this.phase / 360.0;
-                            for (i = 0; i < _this.dataLength; i += 1) {
+                            t3 = T * this.phase / 360.0;
+                            for (i = 0; i < this.dataLength; i += 1) {
 
                                 t = i * dt + t3;
                                 t2 = t - Math.floor(t / T) * T;
                                 if (t2 >= t1) {
 
-                                    _this.output[i] = -_this.amp;
+                                    this.output[i] = -this.amp;
                                 }
                                 else {
 
-                                    _this.output[i] = _this.amp;
+                                    this.output[i] = this.amp;
                                 }
                             }
-                            _this.singleOutput = _this.output[_this.dataLength - 1];
                             break;
 
                         case 3://三角波
-                            t3 = T * _this.phase / 360.0;
-                            for (i = 0; i < _this.dataLength; i += 1) {
+                            t3 = T * this.phase / 360.0;
+                            for (i = 0; i < this.dataLength; i += 1) {
 
                                 t = i * dt + t3;
                                 t2 = parseInt(t / T);
                                 t1 = t - t2 * T;
                                 if (t1 <= T / 2) {
-                                    _this.output[i] = 4 * _this.amp * t1 / T - _this.amp;
+                                    this.output[i] = 4 * this.amp * t1 / T - this.amp;
                                 }
                                 else {
-                                    _this.output[i] = 3 * _this.amp - 4 * _this.amp * t1 / T;
+                                    this.output[i] = 3 * this.amp - 4 * this.amp * t1 / T;
                                 }
                             }
-                            _this.singleOutput = _this.output[_this.dataLength - 1];
                             break;
 
                         case 4://白噪声
                             t2 = 32767;// 0 -- 0x7fff
-                            for (i = 0; i < _this.dataLength; i += 1) {
+                            for (i = 0; i < this.dataLength; i += 1) {
                                 t1 = 0;
                                 for (j = 0; j < 12; j += 1) {
 
                                     t1 += (t2 * Math.random());
                                 }
-                                _this.output[i] = _this.amp * (t1 - 6 * t2) / (3 * t2);
+                                this.output[i] = this.amp * (t1 - 6 * t2) / (3 * t2);
                             }
-                            _this.singleOutput = _this.output[_this.dataLength - 1];
                             break;
 
                         default://正弦波
-                            for (i = 0; i < _this.dataLength; i += 1) {
+                            for (i = 0; i < this.dataLength; i += 1) {
 
-                                _this.output[i] = _this.amp * Math.sin(2 * Math.PI * _this.frequency * i * dt + (2 * Math.PI * _this.phase) / 360);
+                                this.output[i] = this.amp * Math.sin(2 * Math.PI * this.frequency * i * dt + (2 * Math.PI * this.phase) / 360);
                             }
-                            _this.singleOutput = _this.output[_this.dataLength - 1];
-
                     }
-                    _this.phase += 10;
+                    this.phase += 10;
                 }
             };
 
             this.setInitialData = function () {
 
-                _this.signalType = Number($('input[name=SignalGeneratorVI-type]:checked').val());
-
+                this.setSignalType(Number($('input[name=SignalGeneratorVI-type]:checked').val()));
             };
 
-            this.getData = function (dataType) {
+            this.setSignalType = function (type) {
 
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
+                if (isNaN(type)) {
+                    return false;
                 }
-                else {
+                this.signalType = type;
+                this.setData();
+                //全局更新一次
+                if (this.dataLine) {
 
-                    return _this.output;
+                    VILibrary.InnerObjects.dataUpdater(this.dataLine);
                 }
-            };
 
-            this.reset = function () {
-
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = "normal 12px Microsoft YaHei";
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('信号', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('发生器', _this.container.width / 2 - 18, _this.container.height * 3 / 4);
             };
 
             this.draw();
-        },
-        cnName: '信号发生器',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+
+            this.container.addEventListener('mousedown', function (e) {
+
+                timeStamp = e.timeStamp;
+                point.x = e.clientX;
+                point.y = e.clientY;
+            }, false);
+
+            this.container.addEventListener('mouseup', function (e) {
+
+                //X、Y移动距离小于5，点击间隔小于200，默认点击事件
+                if ((e.timeStamp - timeStamp) < 200 && (point.x - e.clientX) < 5 && (point.y - e.clientY) < 5) {
+
+                    if (_this.dataLine) {
+
+                        if (!timer) {
+
+                            _this.toggleObserver(true);
+                            _this.fillStyle = 'red';
+                            _this.draw();
+                        }
+                        else {
+                            _this.toggleObserver(false);
+                            _this.fillStyle = 'orange';
+                            _this.draw();
+                        }
+                    }
+                }
+            }, false);
+        }
+
+        static get cnName () {
+
+            return '信号发生器';
+        }
     },
 
-    BallBeamVI: {
+    BallBeamVI: class BallBeamVI extends TemplateVI {
 
-        createVI: function (VICanvas, draw3DFlag) {
+        constructor (VICanvas, draw3DFlag) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.name = 'BallBeamVI';
-            this.zoomValue = 1;
+
+            let camera, scene, renderer, controls, markControl, base, beam, ball, mark, position = 0, timer = 0;
 
             this.Fs = 50;
             this.markPosition = 0;  //记录标记移动位置
@@ -1320,18 +1551,46 @@ VILibrary.VI = {
             this.u2 = 0;
             this.y1 = 0;
             this.y2 = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
             this.angelOutput = [0];
             this.positionOutput = [0];
 
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
+            this.toggleObserver = function (flag) {
 
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
+                if (flag) {
+
+                    if (!timer && _this.dataLine) {
+
+                        timer = window.setInterval(function () {
+
+                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                        }, 50);
+                    }
+                }
+                else {
+
+                    if (timer) {
+
+                        window.clearInterval(timer);
+                        timer = 0;
+                    }
+                }
+            };
+
+            this.destroy = function () {
+
+                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
+                if (index !== -1) {
+
+                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
+                }
+                if (timer) {
+
+                    window.clearInterval(timer);
+                    timer = 0;
+                }
+                this.dataLine = 0;
+                $(this.container).remove();
+            };
 
             //多输出选择弹出框
             this.outputBoxTitle = '请选择球杆模型输出参数';
@@ -1343,183 +1602,16 @@ VILibrary.VI = {
                 '<div><input type="radio" id="type3" class="radio-input" name="output-type" value="3">' +
                 '<label class="input-label" for="type3">标记位置</label></div></div>';
 
-            let camera, scene, renderer, controls, markControl, base, beam, ball, mark, loadedFlag = false, position = 0;
-
-            function setPosition (ang, pos) {
-                let angle = -ang;//角度为逆时针旋转
-                beam.rotation.z = angle;
-                ball.rotation.z = angle;
-                mark.rotation.z = angle;
-                ball.position.y = pos * Math.sin(angle);
-                ball.position.x = pos * Math.cos(angle);
-                mark.position.y = position * Math.sin(angle);
-                mark.position.x = position * Math.cos(angle);
-            }
-
-            /**
-             *
-             * @param angle 输入端口读取角度
-             */
-            this.setData = function (angle) {
-
-                let inputAngle = Array.isArray(angle) ? angle[angle.length - 1] : angle;
-                if (Number.isNaN(inputAngle)) {
-
-                    return false;
-                }
-
-                let outputPosition, Ts = 1 / _this.Fs, angleMax = 100 * Ts;
-                if (_this.limit) {
-                    if ((inputAngle - _this.PIDAngle) > angleMax) {
-
-                        inputAngle = _this.PIDAngle + angleMax;
-                    }
-                    if ((_this.PIDAngle - inputAngle) > angleMax) {
-
-                        inputAngle = _this.PIDAngle - angleMax;
-                    }
-                    if (inputAngle > 30) {
-
-                        inputAngle = 30;
-                    }
-                    if (inputAngle < -30) {
-
-                        inputAngle = -30;
-                    }
-                }
-
-                _this.PIDAngle = inputAngle;//向输出端口上写数据
-                outputPosition = _this.y1 + 0.5 * Ts * (inputAngle + _this.u1);
-                _this.u1 = inputAngle;
-                _this.y1 = outputPosition;
-                inputAngle = outputPosition;
-                outputPosition = parseFloat(Number(_this.y2) + Number(0.5 * Ts * (inputAngle + _this.u2))).toFixed(2);
-                _this.u2 = inputAngle;
-                _this.y2 = outputPosition;
-                _this.PIDPosition = outputPosition;//向输出端口上写数据
-
-                //将输出数保存在数组内
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
-                    _this.angelOutput[_this.index] = _this.PIDAngle;
-                    _this.positionOutput[_this.index] = _this.PIDPosition;
-                    _this.index += 1;
-                }
-                else {
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
-                        _this.angelOutput[i] = _this.angelOutput[i + 1];
-                        _this.positionOutput[i] = _this.positionOutput[i + 1];
-                    }
-                    _this.angelOutput[_this.dataLength - 1] = _this.PIDAngle;
-                    _this.positionOutput[_this.dataLength - 1] = _this.PIDPosition;
-                }
-                setPosition(_this.PIDAngle * Math.PI / 180, _this.PIDPosition);
-
-                return [_this.PIDAngle, _this.PIDPosition];
-            };
-
-            function VIDraw () {
-                let img = new Image();
-                img.src = 'img/BallBeam.png';
-                img.onload = function () {
-
-                    _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
-                };
-            }
-
-            if (draw3DFlag) {
-
-                let loadingImg = document.createElement('img');
-                loadingImg.src = 'img/loading.gif';
-                loadingImg.style.width = '64px';
-                loadingImg.style.height = '64px';
-                loadingImg.style.position = 'absolute';
-                loadingImg.style.top = domElement.offsetTop + domElement.offsetHeight / 2 - 32 + 'px';
-                loadingImg.style.left = domElement.offsetLeft + domElement.offsetWidth / 2 - 32 + 'px';
-                loadingImg.style.zIndex = '1001';
-                domElement.parentNode.appendChild(loadingImg);
-
-                let mtlLoader = new THREE.MTLLoader();
-                let objLoader = new THREE.OBJLoader();
-
-                mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
-
-                    materials.preload();
-
-                    objLoader.setMaterials(materials);
-                    objLoader.load('assets/BallBeamControl/base.obj', function (a) {
-
-                        a.traverse(function (child) {
-                            if (child instanceof THREE.Mesh) {
-
-                                child.material.side = THREE.DoubleSide;
-                            }
-                        });
-                        base = a;
-                        mtlLoader.load('assets/BallBeamControl/beam.mtl', function (materials) {
-
-                            materials.preload();
-
-                            objLoader.setMaterials(materials);
-                            objLoader.load('assets/BallBeamControl/beam.obj', function (b) {
-
-                                b.traverse(function (child) {
-                                    if (child instanceof THREE.Mesh) {
-
-                                        child.material.side = THREE.DoubleSide;
-                                    }
-                                });
-                                beam = b;
-                                mtlLoader.load('assets/BallBeamControl/ball.mtl', function (materials) {
-
-                                    materials.preload();
-
-                                    objLoader.setMaterials(materials);
-                                    objLoader.load('assets/BallBeamControl/ball.obj', function (c) {
-                                        c.traverse(function (child) {
-                                            if (child instanceof THREE.Mesh) {
-
-                                                child.material.side = THREE.DoubleSide;
-                                            }
-                                        });
-                                        ball = c;
-                                        mtlLoader.load('assets/BallBeamControl/mark.mtl', function (materials) {
-
-                                            materials.preload();
-
-                                            objLoader.setMaterials(materials);
-                                            objLoader.load('assets/BallBeamControl/mark.obj', function (d) {
-                                                d.traverse(function (child) {
-                                                    if (child instanceof THREE.Mesh) {
-
-                                                        child.material.side = THREE.DoubleSide;
-                                                    }
-                                                });
-                                                mark = d;
-                                                loadedFlag = true;
-                                                loadingImg.style.display = 'none';
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            }
-
             /**
              * 三维绘图
              */
             function BallBeamDraw () {
-                renderer = new THREE.WebGLRenderer({
-                    canvas: domElement,
-                    antialias: true
-                });
-                renderer.setClearColor(0x6495ED);
-                renderer.setSize(domElement.clientWidth, domElement.clientHeight);
 
-                camera = new THREE.PerspectiveCamera(30, domElement.clientWidth / domElement.clientHeight, 1, 100000);
+                renderer = new THREE.WebGLRenderer({canvas: _this.container, antialias: true});
+                renderer.setClearColor(0x6495ED);
+                renderer.setSize(_this.container.clientWidth, _this.container.clientHeight);
+
+                camera = new THREE.PerspectiveCamera(30, _this.container.clientWidth / _this.container.clientHeight, 1, 100000);
                 camera.position.z = 400;
                 camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -1613,35 +1705,110 @@ VILibrary.VI = {
 
             }
 
+            function setPosition (ang, pos) {
+
+                let angle = -ang;//角度为逆时针旋转
+                beam.rotation.z = angle;
+                ball.rotation.z = angle;
+                mark.rotation.z = angle;
+                ball.position.y = pos * Math.sin(angle);
+                ball.position.x = pos * Math.cos(angle);
+                mark.position.y = position * Math.sin(angle);
+                mark.position.x = position * Math.cos(angle);
+            }
+
+            /**
+             *
+             * @param angle 输入端口读取角度
+             */
+            this.setData = function (angle) {
+
+                let inputAngle = Array.isArray(angle) ? angle[angle.length - 1] : angle;
+                if (Number.isNaN(inputAngle)) {
+
+                    return false;
+                }
+
+                let outputPosition, Ts = 1 / this.Fs, angleMax = 100 * Ts;
+                if (this.limit) {
+                    if ((inputAngle - this.PIDAngle) > angleMax) {
+
+                        inputAngle = this.PIDAngle + angleMax;
+                    }
+                    if ((this.PIDAngle - inputAngle) > angleMax) {
+
+                        inputAngle = this.PIDAngle - angleMax;
+                    }
+                    if (inputAngle > 30) {
+
+                        inputAngle = 30;
+                    }
+                    if (inputAngle < -30) {
+
+                        inputAngle = -30;
+                    }
+                }
+
+                this.PIDAngle = inputAngle;//向输出端口上写数据
+                outputPosition = this.y1 + 0.5 * Ts * (inputAngle + this.u1);
+                this.u1 = inputAngle;
+                this.y1 = outputPosition;
+                inputAngle = outputPosition;
+                outputPosition = parseFloat(Number(this.y2) + Number(0.5 * Ts * (inputAngle + this.u2))).toFixed(2);
+                this.u2 = inputAngle;
+                this.y2 = outputPosition;
+                this.PIDPosition = outputPosition;//向输出端口上写数据
+
+                //将输出数保存在数组内
+                if (this.index <= (this.dataLength - 1)) {
+
+                    this.angelOutput[this.index] = this.PIDAngle;
+                    this.positionOutput[this.index] = this.PIDPosition;
+                    this.index += 1;
+                }
+                else {
+
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+                        this.angelOutput[i] = this.angelOutput[i + 1];
+                        this.positionOutput[i] = this.positionOutput[i + 1];
+                    }
+                    this.angelOutput[this.dataLength - 1] = this.PIDAngle;
+                    this.positionOutput[this.dataLength - 1] = this.PIDPosition;
+                }
+                setPosition(this.PIDAngle * Math.PI / 180, this.PIDPosition);
+            };
+
             this.getData = function (dataType) {
 
                 if (dataType === 1) {
 
-                    return _this.angelOutput;  //输出角度数组
+                    return this.angelOutput;  //输出角度数组
                 }
                 if (dataType === 2) {
 
-                    return _this.positionOutput;  //输出位置数组
+                    return this.positionOutput;  //输出位置数组
 
                 }
                 if (dataType === 3) {
 
-                    return _this.markPosition;  //输出标记位置
+                    return this.markPosition;  //输出标记位置
                 }
             };
 
             this.reset = function () {
 
-                _this.PIDAngle = 0;
-                _this.PIDPosition = 0;
-                _this.angelOutput = [0];
-                _this.positionOutput = [0];
-                _this.limit = true;
-                _this.u1 = 0;
-                _this.u2 = 0;
-                _this.y1 = 0;
-                _this.y2 = 0;
-                _this.index = 0;
+                this.PIDAngle = 0;
+                this.PIDPosition = 0;
+                this.angelOutput = [0];
+                this.positionOutput = [0];
+                this.limit = true;
+                this.u1 = 0;
+                this.u2 = 0;
+                this.y1 = 0;
+                this.y2 = 0;
+                this.index = 0;
+                position = 0;
                 setPosition(0, 0);
             };
 
@@ -1649,57 +1816,134 @@ VILibrary.VI = {
 
                 if (draw3DFlag) {
 
-                    let timer = window.setInterval(function () {
-                        if (loadedFlag) {
+                    let loadingImg = document.createElement('img');
+                    loadingImg.src = 'img/loading.gif';
+                    loadingImg.style.width = '64px';
+                    loadingImg.style.height = '64px';
+                    loadingImg.style.position = 'absolute';
+                    loadingImg.style.top = this.container.offsetTop + this.container.offsetHeight / 2 - 32 + 'px';
+                    loadingImg.style.left = this.container.offsetLeft + this.container.offsetWidth / 2 - 32 + 'px';
+                    loadingImg.style.zIndex = '10001';
+                    this.container.parentNode.appendChild(loadingImg);
 
-                            new BallBeamDraw();
-                            window.clearInterval(timer);
-                        }
-                    }, 100);
+                    let mtlLoader = new THREE.MTLLoader();
+                    let objLoader = new THREE.OBJLoader();
+
+                    mtlLoader.load('assets/BallBeamControl/base.mtl', function (materials) {
+
+                        materials.preload();
+
+                        objLoader.setMaterials(materials);
+                        objLoader.load('assets/BallBeamControl/base.obj', function (a) {
+
+                            a.traverse(function (child) {
+                                if (child instanceof THREE.Mesh) {
+
+                                    child.material.side = THREE.DoubleSide;
+                                }
+                            });
+                            base = a;
+                            mtlLoader.load('assets/BallBeamControl/beam.mtl', function (materials) {
+
+                                materials.preload();
+
+                                objLoader.setMaterials(materials);
+                                objLoader.load('assets/BallBeamControl/beam.obj', function (b) {
+
+                                    b.traverse(function (child) {
+                                        if (child instanceof THREE.Mesh) {
+
+                                            child.material.side = THREE.DoubleSide;
+                                        }
+                                    });
+                                    beam = b;
+                                    mtlLoader.load('assets/BallBeamControl/ball.mtl', function (materials) {
+
+                                        materials.preload();
+
+                                        objLoader.setMaterials(materials);
+                                        objLoader.load('assets/BallBeamControl/ball.obj', function (c) {
+                                            c.traverse(function (child) {
+                                                if (child instanceof THREE.Mesh) {
+
+                                                    child.material.side = THREE.DoubleSide;
+                                                }
+                                            });
+                                            ball = c;
+                                            mtlLoader.load('assets/BallBeamControl/mark.mtl', function (materials) {
+
+                                                materials.preload();
+
+                                                objLoader.setMaterials(materials);
+                                                objLoader.load('assets/BallBeamControl/mark.obj', function (d) {
+                                                    d.traverse(function (child) {
+                                                        if (child instanceof THREE.Mesh) {
+
+                                                            child.material.side = THREE.DoubleSide;
+                                                        }
+                                                    });
+                                                    mark = d;
+                                                    loadingImg.style.display = 'none';
+                                                    new BallBeamDraw();
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
                 }
                 else {
 
-                    _this.container = domElement;
-                    _this.ctx = domElement.getContext('2d');
-                    VIDraw();
+                    this.ctx = this.container.getContext("2d");
+                    let img = new Image();
+                    img.src = 'img/BallBeam.png';
+                    img.onload = function () {
+
+                        _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
+                    };
                 }
             };
 
             this.draw();
+        }
 
-        },
-        cnName: '球杆模型',
-        defaultWidth: '550px',
-        defaultHeight: '300px'
+        static get cnName () {
+
+            return '球杆模型';
+        }
+
+        static get defaultWidth () {
+
+            return '550px';
+        }
+
+        static get defaultHeight () {
+
+            return '300px';
+        }
     },
 
-    RotorExperimentalRigVI: {
+    RotorExperimentalRigVI: class RotorExperimentalRigVI extends TemplateVI {
 
-        createVI: function (VICanvas, draw3DFlag) {
+        constructor (VICanvas, draw3DFlag) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.name = 'RotorExperimentalRigVI';
-            this.zoomValue = 1;
-            this.isStart = false;
+
+            let camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl,
+                phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency, timer = 0;
 
             this.signalType = 1;
-            this.rotateSpeed = 4096;
+            this.rotateSpeed = 2399;
+            this.rotateFrequency = this.rotateSpeed / 60;  //旋转频率
             this.dataLength = 2048;
-            this.index = 0;
-            this.rotateFrequency = 4096 / 60;  //旋转频率
             this.signalOutput = [0];
             this.frequencyOutput = [0];
             this.orbitXOutput = [0];
             this.orbitYOutput = [0];
-
-            this.outputPointCount = -1;
-            this.inputPointCount = 0;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
 
             //多输出选择弹出框
             this.outputBoxTitle = '请选择转子实验台输出参数';
@@ -1731,12 +1975,13 @@ VILibrary.VI = {
              */
             this.setData = function (rotateSpeed) {
 
-                _this.rotateSpeed = Array.isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
-                if (Number.isNaN(_this.rotateSpeed)) {
+                let temp = Array.isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
+                if (Number.isNaN(temp)) {
 
                     return false;
                 }
-                _this.rotateFrequency = _this.rotateSpeed / 60;
+                this.rotateSpeed = temp;
+                this.rotateFrequency = this.rotateSpeed / 60;
             };
 
             this.setInitialData = function () {
@@ -1748,128 +1993,25 @@ VILibrary.VI = {
 
                 if (dataType === 1) {
 
-                    return _this.signalOutput;  //输出时域信号
+                    return this.signalOutput;  //输出时域信号
 
                 }
                 if (dataType === 2) {
 
-                    return _this.frequencyOutput;  //输出频域信号
+                    return this.frequencyOutput;  //输出频域信号
 
                 }
                 if (dataType === 3) {
 
-                    return [_this.orbitXOutput, _this.orbitYOutput];  //输出轴心位置
+                    return [this.orbitXOutput, this.orbitYOutput];  //输出轴心位置
 
                 }
                 if (dataType === 4) {
 
-                    return _this.rotateFrequency;  //输出旋转频率
+                    return this.rotateFrequency;  //输出旋转频率
 
                 }
             };
-
-            function VIDraw () {
-
-                let img = new Image();
-                img.src = 'img/RotorExperimentalRig.png';
-                img.onload = function () {
-
-                    _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
-                };
-            }
-
-            let camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl, loadedFlag = false,
-                timer1, timer2, phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency;
-
-            if (draw3DFlag) {
-
-                let loadingImg = document.createElement('img');
-                loadingImg.src = 'img/loading.gif';
-                loadingImg.style.width = '64px';
-                loadingImg.style.height = '64px';
-                loadingImg.style.position = 'absolute';
-                loadingImg.style.top = domElement.offsetTop + domElement.offsetHeight / 2 - 32 + 'px';
-                loadingImg.style.left = domElement.offsetLeft + domElement.offsetWidth / 2 - 32 + 'px';
-                loadingImg.style.zIndex = '1001';
-                domElement.parentNode.appendChild(loadingImg);
-
-                let mtlLoader = new THREE.MTLLoader();
-                let objLoader = new THREE.OBJLoader();
-
-                mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {
-
-                    materials.preload();
-
-                    objLoader.setMaterials(materials);
-                    objLoader.load('assets/RotorExperimentalRig/base.obj', function (a) {
-                        a.traverse(function (child) {
-                            if (child instanceof THREE.Mesh) {
-
-                                child.material.side = THREE.DoubleSide;
-                            }
-                        });
-                        base = a;
-                        mtlLoader.load('assets/RotorExperimentalRig/rotor.mtl', function (materials) {
-
-                            materials.preload();
-
-                            objLoader.setMaterials(materials);
-                            objLoader.load('assets/RotorExperimentalRig/rotor.obj', function (b) {
-                                b.traverse(function (child) {
-                                    if (child instanceof THREE.Mesh) {
-
-                                        child.material.side = THREE.DoubleSide;
-                                    }
-                                });
-                                rotor = b;
-                                mtlLoader.load('assets/RotorExperimentalRig/offSwitch.mtl', function (materials) {
-
-                                    materials.preload();
-
-                                    objLoader.setMaterials(materials);
-                                    objLoader.load('assets/RotorExperimentalRig/offSwitch.obj', function (c) {
-                                        c.traverse(function (child) {
-                                            if (child instanceof THREE.Mesh) {
-
-                                                child.material.side = THREE.DoubleSide;
-                                            }
-                                        });
-                                        offSwitch = c;
-                                        mtlLoader.load('assets/RotorExperimentalRig/onSwitch.mtl', function (materials) {
-
-                                            materials.preload();
-
-                                            objLoader.setMaterials(materials);
-                                            objLoader.load('assets/RotorExperimentalRig/onSwitch.obj', function (d) {
-                                                d.traverse(function (child) {
-                                                    if (child instanceof THREE.Mesh) {
-
-                                                        child.material.side = THREE.DoubleSide;
-                                                    }
-                                                });
-                                                onSwitch = d;
-
-                                                loadedFlag = true;
-                                                loadingImg.style.display = 'none';
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            }
-            window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
-                || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-            function rotorAnimate () {
-
-                window.requestAnimationFrame(rotorAnimate);
-                switchControl.update();
-                controls.update();
-                renderer.render(scene, camera);
-
-            }
 
             function generateData () {
 
@@ -1913,7 +2055,7 @@ VILibrary.VI = {
                         _this.signalOutput[i] = _this.orbitYOutput[i];
                     }
                 }
-                _this.frequencyOutput = VILibrary.InternalFunction.fft(1, 11, _this.signalOutput);
+                _this.frequencyOutput = VILibrary.InnerObjects.fft(1, 11, _this.signalOutput);
             }
 
             /**
@@ -1923,13 +2065,13 @@ VILibrary.VI = {
             function RotorExperimentalRigDraw () {
 
                 renderer = new THREE.WebGLRenderer({
-                    canvas: domElement,
+                    canvas: _this.container,
                     antialias: true
                 });
                 renderer.setClearColor(0x6495ED);
-                renderer.setSize(domElement.clientWidth, domElement.clientHeight);
+                renderer.setSize(_this.container.clientWidth, _this.container.clientHeight);
 
-                camera = new THREE.PerspectiveCamera(30, domElement.clientWidth / domElement.clientHeight, 1, 100000);
+                camera = new THREE.PerspectiveCamera(30, _this.container.clientWidth / _this.container.clientHeight, 1, 100000);
                 camera.position.z = 400;
                 camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -1970,37 +2112,36 @@ VILibrary.VI = {
 
                 switchControl.attachEvent('onclick', function () {
 
-                    if (!_this.isStart) {
-
-                        _this.isStart = true;
+                    if (!timer) {
 
                         scene.remove(offSwitch);
                         switchControl.detach(offSwitch);
                         scene.add(onSwitch);
                         switchControl.attach(onSwitch);
 
-                        timer1 = window.setInterval(function () {
+                        timer = window.setInterval(function () {
 
                             phase += 36;
                             generateData();
-                        }, 100);
-                        timer2 = window.setInterval(function () {
 
-                            rotor.rotation.x += 2 * Math.PI * _this.rotateFrequency * 60 / 100;
-                        }, 10);
+                            rotor.rotation.x += 2 * Math.PI * _this.rotateSpeed / 10;
+                            //定时更新相同数据线VI的数据
+                            if (_this.dataLine) {
+
+                                VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                            }
+                        }, 100);
 
                     }
 
                     else {
 
-                        _this.isStart = false;
-
                         scene.remove(onSwitch);
                         switchControl.detach(onSwitch);
                         scene.add(offSwitch);
                         switchControl.attach(offSwitch);
-                        window.clearInterval(timer1);
-                        window.clearInterval(timer2);
+                        window.clearInterval(timer);
+                        timer = 0;
                     }
 
                 });
@@ -2020,6 +2161,17 @@ VILibrary.VI = {
                 // });
             }
 
+            window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
+                || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            function rotorAnimate () {
+
+                window.requestAnimationFrame(rotorAnimate);
+                switchControl.update();
+                controls.update();
+                renderer.render(scene, camera);
+
+            }
+
             this.reset = function () {
 
                 _this.signalType = 1;
@@ -2036,47 +2188,123 @@ VILibrary.VI = {
 
                 if (draw3DFlag) {
 
-                    let timer = window.setInterval(function () {
-                        if (loadedFlag) {
+                    let loadingImg = document.createElement('img');
+                    loadingImg.src = 'img/loading.gif';
+                    loadingImg.style.width = '64px';
+                    loadingImg.style.height = '64px';
+                    loadingImg.style.position = 'absolute';
+                    loadingImg.style.top = this.container.offsetTop + this.container.offsetHeight / 2 - 32 + 'px';
+                    loadingImg.style.left = this.container.offsetLeft + this.container.offsetWidth / 2 - 32 + 'px';
+                    loadingImg.style.zIndex = '1001';
+                    this.container.parentNode.appendChild(loadingImg);
 
-                            new RotorExperimentalRigDraw();
-                            window.clearInterval(timer);
-                        }
-                    }, 100);
+                    let mtlLoader = new THREE.MTLLoader();
+                    let objLoader = new THREE.OBJLoader();
+
+                    mtlLoader.load('assets/RotorExperimentalRig/base.mtl', function (materials) {
+
+                        materials.preload();
+
+                        objLoader.setMaterials(materials);
+                        objLoader.load('assets/RotorExperimentalRig/base.obj', function (a) {
+                            a.traverse(function (child) {
+                                if (child instanceof THREE.Mesh) {
+
+                                    child.material.side = THREE.DoubleSide;
+                                }
+                            });
+                            base = a;
+                            mtlLoader.load('assets/RotorExperimentalRig/rotor.mtl', function (materials) {
+
+                                materials.preload();
+
+                                objLoader.setMaterials(materials);
+                                objLoader.load('assets/RotorExperimentalRig/rotor.obj', function (b) {
+                                    b.traverse(function (child) {
+                                        if (child instanceof THREE.Mesh) {
+
+                                            child.material.side = THREE.DoubleSide;
+                                        }
+                                    });
+                                    rotor = b;
+                                    mtlLoader.load('assets/RotorExperimentalRig/offSwitch.mtl', function (materials) {
+
+                                        materials.preload();
+
+                                        objLoader.setMaterials(materials);
+                                        objLoader.load('assets/RotorExperimentalRig/offSwitch.obj', function (c) {
+                                            c.traverse(function (child) {
+                                                if (child instanceof THREE.Mesh) {
+
+                                                    child.material.side = THREE.DoubleSide;
+                                                }
+                                            });
+                                            offSwitch = c;
+                                            mtlLoader.load('assets/RotorExperimentalRig/onSwitch.mtl', function (materials) {
+
+                                                materials.preload();
+
+                                                objLoader.setMaterials(materials);
+                                                objLoader.load('assets/RotorExperimentalRig/onSwitch.obj', function (d) {
+                                                    d.traverse(function (child) {
+                                                        if (child instanceof THREE.Mesh) {
+
+                                                            child.material.side = THREE.DoubleSide;
+                                                        }
+                                                    });
+                                                    onSwitch = d;
+                                                    loadingImg.style.display = 'none';
+                                                    new RotorExperimentalRigDraw();
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
                 }
                 else {
 
-                    _this.container = domElement;
-                    _this.ctx = domElement.getContext('2d');
-                    VIDraw();
+                    this.ctx = this.container.getContext("2d");
+                    let img = new Image();
+                    img.src = 'img/RotorExperimentalRig.png';
+                    img.onload = function () {
+
+                        _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
+                    };
                 }
             };
+
             this.draw();
-        },
-        cnName: '转子实验台',
-        defaultWidth: '550px',
-        defaultHeight: '300px'
+        }
+
+        static get cnName () {
+
+            return '转子实验台';
+        }
+
+        static get defaultWidth () {
+
+            return '550px';
+        }
+
+        static get defaultHeight () {
+
+            return '300px';
+        }
     },
 
-    TextVI: {
+    TextVI: class TextVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = domElement.getContext('2d');
-            this.name = 'TextVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
+            this.ctx = this.container.getContext("2d");
+            this.outputPointCount = 0;
             this.latestInput = 0;
             this.decimalPlace = 1;
-            this.outputPointCount = 0;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-
             //VI双击弹出框
             this.boxTitle = '请输入保留小数位数';
             this.boxContent = '<div class="input-div">' +
@@ -2084,82 +2312,82 @@ VILibrary.VI = {
 
             this.setData = function (latestInput) {
 
-                _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-                if (Number.isNaN(_this.latestInput)) {
+                this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+                if (Number.isNaN(this.latestInput)) {
 
                     return false;
                 }
 
-                let str = parseFloat(_this.latestInput).toFixed(_this.decimalPlace);
-                _this.ctx.font = "normal 12px Microsoft YaHei";
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText(str, _this.container.width / 2 - 6 * str.length, _this.container.height / 2 + 6);
+                let str = parseFloat(this.latestInput).toFixed(this.decimalPlace);
+                this.ctx.font = "normal 12px Microsoft YaHei";
+                this.ctx.fillStyle = 'orange';
+                this.ctx.fillRect(0, 0, this.container.width, this.container.height);
+                this.ctx.fillStyle = 'black';
+                this.ctx.fillText(str, this.container.width / 2 - 6 * str.length, this.container.height / 2 + 6);
             };
 
             this.setDecimalPlace = function (decimalPlace) {
 
-                _this.decimalPlace = parseInt(decimalPlace);
-                _this.setData(_this.latestInput);
+                this.decimalPlace = parseInt(decimalPlace);
+                this.setData(this.latestInput);
             };
 
             this.setInitialData = function () {
 
-                _this.setDecimalPlace($('#TextVI-input').val());
+                this.setDecimalPlace($('#TextVI-input').val());
             };
 
             this.reset = function () {
 
-                _this.originalInput = 0;
-                _this.latestInput = 0;
-                _this.singleOutput = 0;
-                _this.index = 0;
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = "normal 12px Microsoft YaHei";
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('文本显示', _this.container.width / 2 - 18, _this.container.height / 2 + 6);
+                this.latestInput = 0;
+                this.decimalPlace = 1;
             };
 
             this.draw();
-        },
-        cnName: '文本显示',
-        defaultWidth: '100px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '文本显示';
+        }
+
+        static get defaultWidth () {
+
+            return '100px';
+        }
+
+        static get defaultHeight () {
+
+            return '40px';
+        }
     },
 
-    RoundPanelVI: {
+    RoundPanelVI: class RoundPanelVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext('2d');
-            this.name = 'RoundPanelVI';
-            this.zoomValue = 1;
 
+            this.ctx = this.container.getContext("2d");
+            this.outputPointCount = 0;
             this.latestInput = 0;
             this.handAngle = Math.PI * 5 / 6;
             this.panelRangeAngle = Math.PI * 4 / 3;
-
             this.minValue = 0;
             this.maxValue = 100;
             this.bigSectionNum = 10;
             this.smallSectionNum = 10;
             this.unit = '';
             this.title = '';
-            this.outputPointCount = 0;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-
+            this.bgColor = "RGB(249, 250, 249)";
+            this.screenColor = "RGB(61, 132, 185)";
+            this.borderColor = "RGB(100,100,100)";
+            this.fontColor = "RGB(0, 0, 0)";
+            this.fontSize = parseInt(16 * this.radius / 150);
+            this.R = this.container.width > this.container.height ? this.container.height / 2 : this.container.width / 2;
+            this.radius = this.R * 0.9;
             //VI双击弹出框
             this.boxTitle = '请设置初始参数';
             this.boxContent = '<div class="input-div">' +
@@ -2167,15 +2395,6 @@ VILibrary.VI = {
                 '<span class="normal-span">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + this.unit + '" class="normal-input">' +
                 '<span class="normal-span">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + this.minValue + '" class="normal-input">' +
                 '<span class="normal-span">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + this.maxValue + '" class="normal-input"></div>';
-
-            this.bgColor = "RGB(249, 250, 249)";
-            this.screenColor = "RGB(61, 132, 185)";
-            this.borderColor = "RGB(100,100,100)";
-            this.fontColor = "RGB(0, 0, 0)";
-            this.fontSize = parseInt(16 * _this.radius / 150);
-
-            this.R = _this.container.width > _this.container.height ? _this.container.height / 2 : _this.container.width / 2;
-            this.radius = this.R * 0.9;
 
             function parsePosition (angle) {
 
@@ -2228,34 +2447,34 @@ VILibrary.VI = {
 
                     return false;
                 }
-                _this.minValue = minVal;
-                _this.maxValue = maxVal;
+                this.minValue = minVal;
+                this.maxValue = maxVal;
 
                 if (typeof unitText === 'string') {
 
-                    _this.unit = unitText;
+                    this.unit = unitText;
                 }
 
                 if (typeof titleText === 'string') {
 
-                    _this.title = titleText;
+                    this.title = titleText;
                 }
-                _this.draw();
+                this.draw();
 
             };
 
             this.setData = function (latestInput) {
 
-                _this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
-                if (Number.isNaN(_this.latestInput)) {
+                this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+                if (Number.isNaN(this.latestInput)) {
 
                     return false;
                 }
-                _this.latestInput = _this.latestInput < _this.minValue ? _this.minValue : _this.latestInput;
-                _this.latestInput = _this.latestInput > _this.maxValue ? _this.maxValue : _this.latestInput;
-                _this.latestInput = parseFloat(_this.latestInput).toFixed(2);
-                _this.handAngle = Math.PI * 5 / 6 + _this.latestInput / _this.maxValue * _this.panelRangeAngle;
-                _this.draw();
+                this.latestInput = this.latestInput < this.minValue ? this.minValue : this.latestInput;
+                this.latestInput = this.latestInput > this.maxValue ? this.maxValue : this.latestInput;
+                this.latestInput = parseFloat(this.latestInput).toFixed(2);
+                this.handAngle = Math.PI * 5 / 6 + this.latestInput / this.maxValue * this.panelRangeAngle;
+                this.draw();
             };
 
             this.setInitialData = function () {
@@ -2264,167 +2483,168 @@ VILibrary.VI = {
                 let unit = Number($('#RoundPanelVI-input-2').val());
                 let minValue = Number($('#RoundPanelVI-input-3').val());
                 let maxValue = Number($('#RoundPanelVI-input-4').val());
-                _this.setRange(minValue, maxValue, unit, title);
+                this.setRange(minValue, maxValue, unit, title);
             };
 
             this.reset = function () {
 
-                _this.latestInput = 0;
+                this.latestInput = 0;
             };
-
             this.drawHand = function () {
 
-                _this.ctx.save();
+                this.ctx.save();
                 // 位移到目标点
-                _this.ctx.translate(this.R, this.R);
-                _this.ctx.rotate(_this.handAngle);
-                _this.ctx.moveTo(-_this.radius * 0.05, 0);
-                _this.ctx.lineTo(0, -_this.radius * 0.02);
-                _this.ctx.lineTo(_this.radius * 0.75, 0);
-                _this.ctx.lineTo(0, _this.radius * 0.02);
-                _this.ctx.lineTo(-_this.radius * 0.05, 0);
-                _this.ctx.fillStyle = _this.screenColor;
-                _this.ctx.fill();
-                _this.ctx.restore();
+                this.ctx.translate(this.R, this.R);
+                this.ctx.rotate(this.handAngle);
+                this.ctx.moveTo(-this.radius * 0.05, 0);
+                this.ctx.lineTo(0, -this.radius * 0.02);
+                this.ctx.lineTo(this.radius * 0.75, 0);
+                this.ctx.lineTo(0, this.radius * 0.02);
+                this.ctx.lineTo(-this.radius * 0.05, 0);
+                this.ctx.fillStyle = this.screenColor;
+                this.ctx.fill();
+                this.ctx.restore();
 
             };
 
             this.draw = function () {
 
                 // 画出背景边框
-                _this.ctx.beginPath();
-                _this.ctx.arc(this.R, this.R, _this.R, 0, 360, false);
-                _this.ctx.lineTo(this.R * 2, this.R);
-                _this.ctx.fillStyle = _this.borderColor;//填充颜色
-                _this.ctx.fill();//画实心圆
-                _this.ctx.closePath();
+                this.ctx.beginPath();
+                this.ctx.arc(this.R, this.R, this.R, 0, 360, false);
+                this.ctx.lineTo(this.R * 2, this.R);
+                this.ctx.fillStyle = this.borderColor;//填充颜色
+                this.ctx.fill();//画实心圆
+                this.ctx.closePath();
                 // 画出背景圆
-                _this.ctx.beginPath();
-                _this.ctx.arc(this.R, this.R, _this.R * 0.97, 0, 360, false);
-                _this.ctx.fillStyle = _this.bgColor;//填充颜色
-                _this.ctx.fill();//画实心圆
-                _this.ctx.closePath();
+                this.ctx.beginPath();
+                this.ctx.arc(this.R, this.R, this.R * 0.97, 0, 360, false);
+                this.ctx.fillStyle = this.bgColor;//填充颜色
+                this.ctx.fill();//画实心圆
+                this.ctx.closePath();
                 // 保存
-                _this.ctx.save();
+                this.ctx.save();
                 // 位移到目标点
-                _this.ctx.translate(this.R, this.R);
+                this.ctx.translate(this.R, this.R);
                 // 画出圆弧
-                _this.ctx.beginPath();
-                _this.ctx.arc(0, 0, _this.radius * 0.98, Math.PI * 5 / 6, Math.PI / 6, false);
-                _this.ctx.arc(0, 0, _this.radius, Math.PI / 6, Math.PI * 5 / 6, true);
-                _this.ctx.lineTo(_this.radius * 0.98 * Math.cos(Math.PI * 5 / 6), _this.radius * 0.98 * Math.sin(Math.PI * 5 / 6));
-                _this.ctx.restore();
-                _this.ctx.fillStyle = _this.screenColor;
-                _this.ctx.fill();
-                _this.ctx.beginPath();
-                _this.ctx.lineCap = "round";
-                _this.ctx.lineWidth = 2;
-                if (_this.radius < 150) {
+                this.ctx.beginPath();
+                this.ctx.arc(0, 0, this.radius * 0.98, Math.PI * 5 / 6, Math.PI / 6, false);
+                this.ctx.arc(0, 0, this.radius, Math.PI / 6, Math.PI * 5 / 6, true);
+                this.ctx.lineTo(this.radius * 0.98 * Math.cos(Math.PI * 5 / 6), this.radius * 0.98 * Math.sin(Math.PI * 5 / 6));
+                this.ctx.restore();
+                this.ctx.fillStyle = this.screenColor;
+                this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.lineCap = "round";
+                this.ctx.lineWidth = 2;
+                if (this.radius < 150) {
 
-                    _this.ctx.lineWidth = 1;
+                    this.ctx.lineWidth = 1;
                 }
-                _this.ctx.strokeStyle = _this.screenColor;
+                this.ctx.strokeStyle = this.screenColor;
                 let i, j;
                 // 保存
-                _this.ctx.save();
+                this.ctx.save();
                 // 位移到目标点
-                _this.ctx.translate(this.R, this.R);
+                this.ctx.translate(this.R, this.R);
 
                 let rotateAngle = Math.PI * 5 / 6, position, markStr, fontSize;
-                _this.ctx.font = 'normal ' + _this.fontSize / 2 + 'px Microsoft YaHei';
-                fontSize = /\d+/.exec(_this.ctx.font)[0];
-                for (i = 0; i <= _this.bigSectionNum; i += 1) {
+                this.ctx.font = 'normal ' + this.fontSize / 2 + 'px Microsoft YaHei';
+                fontSize = /\d+/.exec(this.ctx.font)[0];
+                for (i = 0; i <= this.bigSectionNum; i += 1) {
 
-                    _this.ctx.save();
-                    _this.ctx.rotate(rotateAngle);
-                    _this.ctx.moveTo(_this.radius * 0.99, 0);
-                    _this.ctx.lineTo(_this.radius * 0.9, 0);
-                    _this.ctx.restore();
+                    this.ctx.save();
+                    this.ctx.rotate(rotateAngle);
+                    this.ctx.moveTo(this.radius * 0.99, 0);
+                    this.ctx.lineTo(this.radius * 0.9, 0);
+                    this.ctx.restore();
 
-                    if (_this.R > 100) {
-                        for (j = 1; j < _this.smallSectionNum; j += 1) {
+                    if (this.R > 100) {
+                        for (j = 1; j < this.smallSectionNum; j += 1) {
 
-                            if (i == _this.bigSectionNum) {
+                            if (i == this.bigSectionNum) {
                                 break;
                             }
-                            _this.ctx.save();
-                            _this.ctx.rotate(rotateAngle);
-                            _this.ctx.rotate(j * _this.panelRangeAngle / _this.smallSectionNum / _this.bigSectionNum);
-                            _this.ctx.moveTo(_this.radius * 0.99, 0);
-                            _this.ctx.lineTo(_this.radius * 0.95, 0);
-                            _this.ctx.restore();
+                            this.ctx.save();
+                            this.ctx.rotate(rotateAngle);
+                            this.ctx.rotate(j * this.panelRangeAngle / this.smallSectionNum / this.bigSectionNum);
+                            this.ctx.moveTo(this.radius * 0.99, 0);
+                            this.ctx.lineTo(this.radius * 0.95, 0);
+                            this.ctx.restore();
                         }
 
-                        if (i > 0 && i < _this.bigSectionNum) {
+                        if (i > 0 && i < this.bigSectionNum) {
 
-                            markStr = dataFormation((_this.maxValue - _this.minValue) / _this.bigSectionNum * i + _this.minValue);
+                            markStr = dataFormation((this.maxValue - _thisminValue) / this.bigSectionNum * i + this.minValue);
                             position = parsePosition(rotateAngle);
-                            _this.ctx.fillText(markStr, position[0] - fontSize / 4 * markStr.length, position[1]);
+                            this.ctx.fillText(markStr, position[0] - fontSize / 4 * markStr.length, position[1]);
                         }
                     }
-                    rotateAngle += _this.panelRangeAngle / _this.bigSectionNum;
+                    rotateAngle += this.panelRangeAngle / this.bigSectionNum;
                 }
-                markStr = dataFormation(_this.minValue);
+                markStr = dataFormation(this.minValue);
                 position = parsePosition(Math.PI * 5 / 6);
-                _this.ctx.fillText(markStr, position[0] - fontSize / 4 * markStr.length, position[1]);
-                markStr = dataFormation(_this.maxValue);
-                position = parsePosition(Math.PI * 5 / 6 + _this.panelRangeAngle);
-                _this.ctx.fillText(markStr, position[0] - fontSize / 3 * markStr.length, position[1]);
-                _this.ctx.restore();
+                this.ctx.fillText(markStr, position[0] - fontSize / 4 * markStr.length, position[1]);
+                markStr = dataFormation(this.maxValue);
+                position = parsePosition(Math.PI * 5 / 6 + this.panelRangeAngle);
+                this.ctx.fillText(markStr, position[0] - fontSize / 3 * markStr.length, position[1]);
+                this.ctx.restore();
 
-                _this.ctx.font = 'bold ' + _this.fontSize + 'px Microsoft YaHei';
-                fontSize = /\d+/.exec(_this.ctx.font)[0];
-                markStr = _this.latestInput.toString() + _this.unit;
-                _this.ctx.fillText(markStr, this.R - fontSize / 4 * markStr.length, this.R * 3 / 2);
-                markStr = _this.title;
-                _this.ctx.fillText(markStr, this.R - fontSize / 4 * markStr.length, this.R * 1 / 2);
-                _this.ctx.stroke();
-                _this.ctx.closePath();
-                _this.drawHand();
+                this.ctx.font = 'bold ' + this.fontSize + 'px Microsoft YaHei';
+                fontSize = /\d+/.exec(this.ctx.font)[0];
+                markStr = this.latestInput.toString() + this.unit;
+                this.ctx.fillText(markStr, this.R - fontSize / 4 * markStr.length, this.R * 3 / 2);
+                markStr = this.title;
+                this.ctx.fillText(markStr, this.R - fontSize / 4 * markStr.length, this.R * 1 / 2);
+                this.ctx.stroke();
+                this.ctx.closePath();
+                this.drawHand();
             };
 
             this.draw();
+        }
 
-        },
-        cnName: '圆表盘',
-        defaultWidth: '150px',
-        defaultHeight: '150px'
+        static get cnName () {
+
+            return '圆表盘';
+        }
+
+        static get defaultWidth () {
+
+            return '150px';
+        }
+
+        static get defaultHeight () {
+
+            return '150px';
+        }
     },
 
-    BarVI: {
+    BarVI: class BarVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'BarVI';
-            this.zoomValue = 1;
 
-            //坐标数值//
+            this.ctx = this.container.getContext("2d");
+            this.outputPointCount = 0;
             this.labelX = [];
             this.maxValY = 100;
             this.minValY = 0;
             this.autoZoom = true;
-            this.outputPointCount = 0;
-            this.inputPointCount = 1;
-
             this.pointNum = 100;
             this.drawRulerFlag = true;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-
             //网格矩形四周边距 TOP RIGHT BOTTOM LEFT//
             this.offsetT = 10;
             this.offsetR = 10;
             this.offsetB = 10;
             this.offsetL = 10;
-            if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
+            if ((this.container.height >= 200) && (this.container.width >= 200)) {
 
-                _this.offsetB = 35;
-                _this.offsetL = 42;
+                this.offsetB = 35;
+                this.offsetL = 42;
             }
             this.waveWidth = this.container.width - this.offsetL - this.offsetR;
             this.waveHeight = this.container.height - this.offsetT - this.offsetB;
@@ -2444,103 +2664,123 @@ VILibrary.VI = {
             this.curPointX = this.offsetL;
             this.curPointY = this.offsetT;
 
-            this.draw = function () {
+            this.setData = function (data) {
 
-                _this.drawBackground();
-                _this.drawWave();
-                if (_this.drawRulerFlag) {
+                if (!Array.isArray(data)) {
 
-                    _this.drawRuler();
+                    console.log('BarVI: input type error');
+                    return false;
                 }
+                this.pointNum = data.length > this.pointNum ? data.length : this.pointNum;
+
+                let YMax = 0, YMin = 0, i;
+                for (i = 0; i < this.pointNum; i += 1) {
+
+                    this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
+                    YMax = YMax < this.bufferVal[i] ? this.bufferVal[i] : YMax;
+                    YMin = YMin > this.bufferVal[i] ? this.bufferVal[i] : YMin;
+                }
+                if (this.autoZoom) {
+
+                    this.setAxisRangY(YMin, 1.2 * YMax);
+                }
+                this.ratioX = this.waveWidth / this.pointNum;
+                this.ratioY = this.waveHeight / (this.maxValY - this.minValY);
+                this.draw();
             };
 
-            function drawRec (x, y, w, h) {
+            this.draw = function () {
 
-                _this.ctx.beginPath();
-                _this.ctx.fillStyle = _this.signalColor;
-                _this.ctx.fillRect(x, y, w, h);
-                _this.ctx.closePath();
-            }
+                this.drawBackground();
+                this.drawWave();
+                if (this.drawRulerFlag) {
+
+                    this.drawRuler();
+                }
+            };
 
             this.drawWave = function () {
 
                 let i, barHeight, x, y;
                 //绘制柱状图
-                for (i = 0; i < _this.pointNum; i += 1) {
+                for (i = 0; i < this.pointNum; i += 1) {
 
-                    x = _this.offsetL + i * _this.ratioX;
-                    barHeight = _this.bufferVal[i] * _this.ratioY;
-                    y = _this.offsetT + _this.waveHeight - barHeight;
-                    drawRec(x + 0.1 * _this.ratioX, y, _this.ratioX * 0.8, barHeight, true);
+                    x = this.offsetL + i * this.ratioX;
+                    barHeight = this.bufferVal[i] * this.ratioY;
+                    y = this.offsetT + this.waveHeight - barHeight;
+                    this.ctx.beginPath();
+                    this.ctx.fillStyle = this.signalColor;
+                    this.ctx.fillRect(x + 0.1 * this.ratioX, y, this.ratioX * 0.8, barHeight);
+                    this.ctx.closePath();
                 }
             };
 
             this.drawBackground = function () {
 
-                let ctx = _this.ctx;
+                let ctx = this.ctx;
                 //刷背景//
                 ctx.beginPath();
                 /* 将这个渐变设置为fillStyle */
                 // ctx.fillStyle = grad;
-                ctx.fillStyle = _this.bgColor;
+                ctx.fillStyle = this.bgColor;
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = "RGB(25, 25, 25)";
-                ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                ctx.strokeRect(3, 3, _this.container.width - 6, _this.container.height - 6);
+                ctx.fillRect(0, 0, this.container.width, this.container.height);
+                ctx.strokeRect(3, 3, this.container.width - 6, this.container.height - 6);
                 ctx.closePath();
 
                 //画网格矩形边框和填充
                 ctx.beginPath();
-                ctx.fillStyle = _this.screenColor;
+                ctx.fillStyle = this.screenColor;
                 ctx.lineWidth = 1;
                 ctx.strokeStyle = 'RGB(0, 0, 0)';
-                ctx.fillRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
-                ctx.strokeRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
+                ctx.fillRect(this.offsetL, this.offsetT, this.waveWidth, this.waveHeight);
+                ctx.strokeRect(this.offsetL, this.offsetT, this.waveWidth, this.waveHeight);
                 ctx.closePath();
 
                 //网格行数
-                let nRow = _this.container.height / 50;
-                let divY = _this.waveHeight / nRow;
+                let nRow = this.container.height / 50;
+                let divY = this.waveHeight / nRow;
 
                 ctx.beginPath();
                 ctx.lineWidth = 1;
                 ctx.lineCap = "round";
-                ctx.strokeStyle = _this.gridColor;
+                ctx.strokeStyle = this.gridColor;
 
                 let i;
                 //绘制横向网格线
                 for (i = 1; i < nRow; i += 1) {
 
-                    ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
-                    ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
+                    ctx.moveTo(this.offsetL, divY * i + this.offsetT);
+                    ctx.lineTo(this.container.width - this.offsetR, divY * i + this.offsetT);
                 }
                 ctx.stroke();
                 ctx.closePath();
 
-                if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
+                if ((this.container.height >= 200) && (this.container.width >= 200)) {
 
                     //绘制横纵刻度
-                    let scaleYNum = _this.container.height / 50;
-                    let scaleXNum = _this.container.width / 50;
-                    let scaleYStep = _this.waveHeight / scaleYNum;
-                    let scaleXStep = _this.waveWidth / scaleXNum;
+                    let scaleYNum = this.container.height / 50;
+                    let scaleXNum = this.container.width / 50;
+                    let scaleYStep = this.waveHeight / scaleYNum;
+                    let scaleXStep = this.waveWidth / scaleXNum;
                     ctx.beginPath();
                     ctx.lineWidth = 1;
-                    ctx.strokeStyle = _this.fontColor;
+                    ctx.strokeStyle = this.fontColor;
                     //画纵刻度
                     let k;
                     for (k = 2; k <= scaleYNum; k += 2) {
 
-                        ctx.moveTo(_this.offsetL - 6, _this.offsetT + k * scaleYStep);
-                        ctx.lineTo(_this.offsetL, _this.offsetT + k * scaleYStep);
+                        ctx.moveTo(this.offsetL - 6, this.offsetT + k * scaleYStep);
+                        ctx.lineTo(this.offsetL, this.offsetT + k * scaleYStep);
 
                     }
                     // //画横刻度
                     // for (k = 0; k < scaleXNum; k += 2) {
                     //
                     //
-                    //     ctx.moveTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight);
-                    //     ctx.lineTo(_this.offsetL + k * scaleXStep, _this.offsetT + _this.waveHeight + 7);
+                    //     ctx.moveTo(this.offsetL + k * scaleXStep, this.offsetT + this.waveHeight);
+                    //     ctx.lineTo(this.offsetL + k * scaleXStep, this.offsetT + this.waveHeight + 7);
                     //
                     // }
                     ctx.stroke();
@@ -2548,30 +2788,30 @@ VILibrary.VI = {
                     ////////////////画数字字体////////////////
                     ctx.font = "normal 12px Calibri";
 
-                    let valStepX = _this.pointNum / scaleXNum;
-                    let valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
+                    let valStepX = this.pointNum / scaleXNum;
+                    let valStepY = (this.maxValY - this.minValY) / scaleYNum;
 
-                    ctx.fillStyle = _this.fontColor;
+                    ctx.fillStyle = this.fontColor;
                     let temp = 0;
-                    if (_this.labelX.length < _this.pointNum) {
+                    if (this.labelX.length < this.pointNum) {
 
-                        for (i = 0; i < _this.pointNum; i += 1) {
+                        for (i = 0; i < this.pointNum; i += 1) {
 
-                            _this.labelX[i] = i;
+                            this.labelX[i] = i;
                         }
                     }
                     //横坐标刻度//
                     for (i = 0; i < scaleXNum; i += 2) {
 
-                        temp = _this.labelX[parseInt(valStepX * i)];
-                        ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9 + _this.ratioX / 2, _this.container.height - 10);
+                        temp = this.labelX[parseInt(valStepX * i)];
+                        ctx.fillText(VILibrary.InnerObjects.fixNumber(temp), this.offsetL + scaleXStep * i - 9 + this.ratioX / 2, this.container.height - 10);
                     }
                     //纵坐标刻度//
                     for (i = 2; i <= scaleYNum; i += 2) {
 
-                        temp = _this.maxValY - valStepY * i;
+                        temp = this.maxValY - valStepY * i;
 
-                        ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 35, _this.offsetT + scaleYStep * i + 5);
+                        ctx.fillText(VILibrary.InnerObjects.fixNumber(temp), this.offsetL - 35, this.offsetT + scaleYStep * i + 5);
                     }
                     ctx.closePath();
                     ctx.save();
@@ -2583,96 +2823,71 @@ VILibrary.VI = {
             this.drawRuler = function () {
 
                 //是否缝隙间不绘制标尺
-                // if ((_this.curPointX + 0.1 * _this.ratioX - _this.offsetL ) % _this.ratioX < 0.2 * _this.ratioX) {
+                // if ((this.curPointX + 0.1 * this.ratioX - this.offsetL ) % this.ratioX < 0.2 * this.ratioX) {
                 //
                 //     return;
                 // }
 
-                if (_this.curPointX >= (_this.container.width - _this.offsetR)) {
+                if (this.curPointX >= (this.container.width - this.offsetR)) {
                     return;
                 }
                 //画标尺//
-                _this.ctx.beginPath();
-                _this.ctx.lineWidth = 1;
-                _this.ctx.lineCap = "round";
-                _this.ctx.strokeStyle = _this.rulerColor;
-                _this.ctx.font = "normal 14px Calibri";
-                _this.ctx.fillStyle = _this.rulerColor;
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 1;
+                this.ctx.lineCap = "round";
+                this.ctx.strokeStyle = this.rulerColor;
+                this.ctx.font = "normal 14px Calibri";
+                this.ctx.fillStyle = this.rulerColor;
 
                 //竖标尺//
-                _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
-                _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
-                _this.ctx.stroke();
-                let curPointX = parseInt((_this.curPointX - _this.offsetL + _this.ratioX / 2) * _this.pointNum / _this.waveWidth);
-                curPointX = curPointX === _this.pointNum ? curPointX - 1 : curPointX;
-                let curPointY = VILibrary.InternalFunction.fixNumber(_this.bufferVal[curPointX]);
-                _this.ctx.fillText('(' + _this.labelX[curPointX] + ',' + curPointY + ')',
-                    _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
-                _this.ctx.closePath();
+                this.ctx.moveTo(this.curPointX + 0.5, this.offsetT);
+                this.ctx.lineTo(this.curPointX + 0.5, this.container.height - this.offsetB);
+                this.ctx.stroke();
+                let curPointX = parseInt((this.curPointX - this.offsetL + this.ratioX / 2) * this.pointNum / this.waveWidth);
+                curPointX = curPointX === this.pointNum ? curPointX - 1 : curPointX;
+                let curPointY = VILibrary.InnerObjects.fixNumber(this.bufferVal[curPointX]);
+                this.ctx.fillText('(' + this.labelX[curPointX] + ',' + curPointY + ')',
+                    this.container.width - this.curPointX < 80 ? this.curPointX - 80 : this.curPointX + 4, this.offsetT + 15);
+                this.ctx.closePath();
             };
 
             this.reset = function () {
 
-                _this.bufferVal = [];
-                _this.drawBackground();
-            };
-
-            this.setData = function (data) {
-
-                if (!Array.isArray(data)) {
-
-                    console.log('BarVI: input type error');
-                    return false;
-                }
-                _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
-
-                let YMax = 0, YMin = 0, i;
-                for (i = 0; i < _this.pointNum; i += 1) {
-
-                    _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
-                    YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
-                    YMin = YMin > _this.bufferVal[i] ? _this.bufferVal[i] : YMin;
-                }
-                if (_this.autoZoom) {
-
-                    _this.setAxisRangY(YMin, 1.2 * YMax);
-                }
-                _this.ratioX = _this.waveWidth / _this.pointNum;
-                _this.ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
-                _this.draw();
+                this.bufferVal = [];
+                this.drawBackground();
             };
 
             this.setAxisRangY = function (yMin, yMax) {
 
-                _this.minValY = yMin;
-                _this.maxValY = yMax;
-                _this.drawBackground();
+                this.minValY = yMin;
+                this.maxValY = yMax;
+                this.drawBackground();
             };
 
             this.setAxisX = function (labelX) {
 
-                _this.labelX = labelX;
-                _this.drawBackground();
+                this.labelX = labelX;
+                this.drawBackground();
             };
 
             this.setPointNum = function (num) {
 
-                _this.pointNum = num;
-                _this.drawBackground();
+                this.pointNum = num;
+                this.drawBackground();
             };
 
             this.setLabel = function (xLabel, yLabel) {
 
                 this.strLabelX = xLabel;
                 this.strLabelY = yLabel;
-                _this.drawBackground();
+                this.drawBackground();
             };
 
             this.setRowColNum = function (row, col) {
 
-                _this.nRow = row;
-                _this.nCol = col;
-                _this.drawBackground();
+                this.nRow = row;
+                this.nCol = col;
+                this.drawBackground();
             };
 
             let _mouseOverFlag = false;
@@ -2768,39 +2983,43 @@ VILibrary.VI = {
             }
 
             this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-        },
-        cnName: '柱状图',
-        defaultWidth: '500px',
-        defaultHeight: '250px'
+        }
+
+        static get cnName () {
+
+            return '柱状图';
+        }
+
+        static get defaultWidth () {
+
+            return '500px';
+        }
+
+        static get defaultHeight () {
+
+            return '250px';
+        }
     },
 
-    WaveVI: {
+    WaveVI: class WaveVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'WaveVI';
-            this.zoomValue = 1;
 
+            this.ctx = this.container.getContext("2d");
+            this.outputPointCount = 0;
             //坐标单位//
             this.strLabelX = 'X';
             this.strLabelY = 'Y';
-
             //坐标数值//
             this.maxValX = 1023;
             this.minValX = 0;
             this.maxValY = 10;
             this.minValY = -10;
             this.autoZoom = true;
-            this.outputPointCount = 0;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-
             //网格行列数//
             this.nRow = 4;
             this.nCol = 8;
@@ -2835,134 +3054,134 @@ VILibrary.VI = {
 
             this.draw = function () {
 
-                _this.drawBackground();
-                _this.drawWave();
-                if (_this.drawRulerFlag) {
+                this.drawBackground();
+                this.drawWave();
+                if (this.drawRulerFlag) {
 
-                    _this.drawRuler();
+                    this.drawRuler();
                 }
             };
 
             this.drawWave = function () {
 
-                let ratioX = _this.waveWidth / (_this.pointNum - 1);
-                let ratioY = _this.waveHeight / (_this.maxValY - _this.minValY);
+                let ratioX = this.waveWidth / (this.pointNum - 1);
+                let ratioY = this.waveHeight / (this.maxValY - this.minValY);
                 let pointX = [];
                 let pointY = [];
 
                 let i;
-                for (i = 0; i < _this.pointNum; i += 1) {
+                for (i = 0; i < this.pointNum; i += 1) {
 
-                    pointX[i] = _this.offsetL + i * ratioX;
-                    pointY[i] = _this.offsetT + (_this.maxValY - _this.bufferVal[i]) * ratioY;
-                    if (pointY[i] < _this.offsetT) {
+                    pointX[i] = this.offsetL + i * ratioX;
+                    pointY[i] = this.offsetT + (this.maxValY - this.bufferVal[i]) * ratioY;
+                    if (pointY[i] < this.offsetT) {
 
-                        pointY[i] = _this.offsetT;
+                        pointY[i] = this.offsetT;
                     }
-                    if (pointY[i] > (_this.offsetT + _this.waveHeight)) {
+                    if (pointY[i] > (this.offsetT + this.waveHeight)) {
 
-                        pointY[i] = _this.offsetT + _this.waveHeight;
+                        pointY[i] = this.offsetT + this.waveHeight;
                     }
                 }
                 //绘制波形曲线
-                _this.ctx.beginPath();
-                _this.ctx.lineWidth = 2;
-                _this.ctx.lineCap = "round";
-                _this.ctx.strokeStyle = _this.signalColor;
-                _this.ctx.moveTo(pointX[0], pointY[0]);
-                for (i = 1; i < _this.pointNum; i += 1) {
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 2;
+                this.ctx.lineCap = "round";
+                this.ctx.strokeStyle = this.signalColor;
+                this.ctx.moveTo(pointX[0], pointY[0]);
+                for (i = 1; i < this.pointNum; i += 1) {
 
-                    _this.ctx.lineTo(pointX[i], pointY[i]);
+                    this.ctx.lineTo(pointX[i], pointY[i]);
                 }
-                _this.ctx.stroke();
-                _this.ctx.closePath();
-                _this.ctx.save();
+                this.ctx.stroke();
+                this.ctx.closePath();
+                this.ctx.save();
             };
 
             this.drawBackground = function () {
 
-                let ctx = _this.ctx;
+                let ctx = this.ctx;
                 //刷背景//
                 ctx.beginPath();
                 /* 将这个渐变设置为fillStyle */
                 // ctx.fillStyle = grad;
-                ctx.fillStyle = _this.bgColor;
+                ctx.fillStyle = this.bgColor;
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = "RGB(25, 25, 25)";
-                ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                ctx.strokeRect(3, 3, _this.container.width - 6, _this.container.height - 6);
+                ctx.fillRect(0, 0, this.container.width, this.container.height);
+                ctx.strokeRect(3, 3, this.container.width - 6, this.container.height - 6);
                 ctx.closePath();
 
                 //画网格矩形边框和填充
                 ctx.beginPath();
-                ctx.fillStyle = _this.screenColor;
+                ctx.fillStyle = this.screenColor;
                 ctx.lineWidth = 1;
-                ctx.strokeStyle = _this.gridColor;
-                ctx.fillRect(_this.offsetL, _this.offsetT, _this.waveWidth, _this.waveHeight);
-                ctx.strokeRect(_this.offsetL + 0.5, _this.offsetT + 0.5, _this.waveWidth, _this.waveHeight);
+                ctx.strokeStyle = this.gridColor;
+                ctx.fillRect(this.offsetL, this.offsetT, this.waveWidth, this.waveHeight);
+                ctx.strokeRect(this.offsetL + 0.5, this.offsetT + 0.5, this.waveWidth, this.waveHeight);
                 ctx.closePath();
 
-                let nRow = _this.nRow;
-                let nCol = _this.nCol;
-                let divX = _this.waveWidth / nCol;
-                let divY = _this.waveHeight / nRow;
+                let nRow = this.nRow;
+                let nCol = this.nCol;
+                let divX = this.waveWidth / nCol;
+                let divY = this.waveHeight / nRow;
 
                 ctx.beginPath();
                 ctx.lineWidth = 1;
                 ctx.lineCap = "round";
-                ctx.strokeStyle = _this.gridColor;
+                ctx.strokeStyle = this.gridColor;
 
                 let i, j;
                 //绘制横向网格线
                 for (i = 1; i < nRow; i += 1) {
 
-                    ctx.moveTo(_this.offsetL, divY * i + _this.offsetT);
-                    ctx.lineTo(_this.container.width - _this.offsetR, divY * i + _this.offsetT);
+                    ctx.moveTo(this.offsetL, divY * i + this.offsetT);
+                    ctx.lineTo(this.container.width - this.offsetR, divY * i + this.offsetT);
                 }
                 //绘制纵向网格线
                 for (j = 1; j < nCol; j += 1) {
 
-                    ctx.moveTo(divX * j + _this.offsetL, _this.offsetT);
-                    ctx.lineTo(divX * j + _this.offsetL, _this.container.height - _this.offsetB);
+                    ctx.moveTo(divX * j + this.offsetL, this.offsetT);
+                    ctx.lineTo(divX * j + this.offsetL, this.container.height - this.offsetB);
                 }
                 ctx.stroke();
                 ctx.closePath();
 
-                if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
+                if ((this.container.height >= 200) && (this.container.width >= 200)) {
 
                     let scaleYNum = 8;
                     let scaleXNum = 16;
-                    let scaleYStep = _this.waveHeight / scaleYNum;
-                    let scaleXStep = _this.waveWidth / scaleXNum;
+                    let scaleYStep = this.waveHeight / scaleYNum;
+                    let scaleXStep = this.waveWidth / scaleXNum;
 
                     ////////////////画数字字体////////////////
                     ctx.font = "normal 12px Calibri";
 
                     let strLab;
                     //横标签//
-                    strLab = _this.strLabelX;
-                    ctx.fillText(strLab, _this.container.width - _this.offsetR - strLab.length * 6 - 10, _this.container.height - _this.offsetB + 20);
+                    strLab = this.strLabelX;
+                    ctx.fillText(strLab, this.container.width - this.offsetR - strLab.length * 6 - 10, this.container.height - this.offsetB + 20);
 
                     //纵标签//
-                    strLab = _this.strLabelY;
-                    ctx.fillText(strLab, strLab.length * 6, _this.offsetT + 12);
+                    strLab = this.strLabelY;
+                    ctx.fillText(strLab, strLab.length * 6, this.offsetT + 12);
 
-                    let valStepX = (_this.maxValX - _this.minValX) / scaleXNum;
-                    let valStepY = (_this.maxValY - _this.minValY) / scaleYNum;
+                    let valStepX = (this.maxValX - this.minValX) / scaleXNum;
+                    let valStepY = (this.maxValY - this.minValY) / scaleYNum;
 
-                    ctx.fillStyle = _this.fontColor;
+                    ctx.fillStyle = this.fontColor;
                     let temp = 0;
                     //横坐标刻度//
                     for (i = 2; i < scaleXNum; i += 2) {
 
-                        temp = _this.minValX + valStepX * i;
-                        ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9, _this.container.height - 12);
+                        temp = this.minValX + valStepX * i;
+                        ctx.fillText(VILibrary.InnerObjects.fixNumber(temp), this.offsetL + scaleXStep * i - 9, this.container.height - 12);
                     }
                     //纵坐标刻度//
                     for (i = 2; i < scaleYNum; i += 2) {
 
-                        temp = _this.maxValY - valStepY * i;
-                        ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 28, _this.offsetT + scaleYStep * i + 5);
+                        temp = this.maxValY - valStepY * i;
+                        ctx.fillText(VILibrary.InnerObjects.fixNumber(temp), this.offsetL - 28, this.offsetT + scaleYStep * i + 5);
                     }
                     ctx.closePath();
                     ctx.save();
@@ -2974,30 +3193,30 @@ VILibrary.VI = {
             this.drawRuler = function () {
 
                 //画标尺//
-                _this.ctx.beginPath();
-                _this.ctx.lineWidth = 1;
-                _this.ctx.lineCap = "round";
-                _this.ctx.strokeStyle = _this.rulerColor;
-                _this.ctx.font = "normal 14px Calibri";
-                _this.ctx.fillStyle = _this.rulerColor;
+                this.ctx.beginPath();
+                this.ctx.lineWidth = 1;
+                this.ctx.lineCap = "round";
+                this.ctx.strokeStyle = this.rulerColor;
+                this.ctx.font = "normal 14px Calibri";
+                this.ctx.fillStyle = this.rulerColor;
 
                 //竖标尺//
-                _this.ctx.moveTo(_this.curPointX + 0.5, _this.offsetT);
-                _this.ctx.lineTo(_this.curPointX + 0.5, _this.container.height - _this.offsetB);
-                _this.ctx.stroke();
-                let curPointX = parseFloat((_this.curPointX - _this.offsetL) * (_this.maxValX - _this.minValX) / _this.waveWidth)
+                this.ctx.moveTo(this.curPointX + 0.5, this.offsetT);
+                this.ctx.lineTo(this.curPointX + 0.5, this.container.height - this.offsetB);
+                this.ctx.stroke();
+                let curPointX = parseFloat((this.curPointX - this.offsetL) * (this.maxValX - this.minValX) / this.waveWidth)
                 .toFixed(2);
-                let curPointY = parseFloat(_this.bufferVal[parseInt((_this.curPointX - _this.offsetL) * _this.pointNum / _this.waveWidth)])
+                let curPointY = parseFloat(this.bufferVal[parseInt((this.curPointX - this.offsetL) * this.pointNum / this.waveWidth)])
                 .toFixed(2);
-                _this.ctx.fillText('(' + curPointX + ',' + curPointY + ')',
-                    _this.container.width - _this.curPointX < 80 ? _this.curPointX - 80 : _this.curPointX + 4, _this.offsetT + 15);
-                _this.ctx.closePath();
+                this.ctx.fillText('(' + curPointX + ',' + curPointY + ')',
+                    this.container.width - this.curPointX < 80 ? this.curPointX - 80 : this.curPointX + 4, this.offsetT + 15);
+                this.ctx.closePath();
             };
 
             this.reset = function () {
 
-                _this.bufferVal = [];
-                _this.drawBackground();
+                this.bufferVal = [];
+                this.drawBackground();
             };
 
             this.setData = function (data) {
@@ -3007,67 +3226,67 @@ VILibrary.VI = {
                     console.log('WaveVI: input type error');
                     return false;
                 }
-                _this.pointNum = data.length > _this.pointNum ? data.length : _this.pointNum;
+                this.pointNum = data.length > this.pointNum ? data.length : this.pointNum;
                 let YMax = 0, YMin = 0, i;
-                for (i = 0; i < _this.pointNum; i += 1) {
+                for (i = 0; i < this.pointNum; i += 1) {
 
-                    _this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
-                    YMax = YMax < _this.bufferVal[i] ? _this.bufferVal[i] : YMax;
-                    YMin = YMin > _this.bufferVal[i] ? _this.bufferVal[i] : YMin;
+                    this.bufferVal[i] = data[i] == undefined ? 0 : data[i];
+                    YMax = YMax < this.bufferVal[i] ? this.bufferVal[i] : YMax;
+                    YMin = YMin > this.bufferVal[i] ? this.bufferVal[i] : YMin;
                 }
-                if (_this.autoZoom) {
+                if (this.autoZoom) {
 
-                    if ((_this.maxValY <= YMax) || (_this.maxValY - YMax > 5 * (YMax - YMin))) {
+                    if ((this.maxValY <= YMax) || (this.maxValY - YMax > 5 * (YMax - YMin))) {
 
-                        _this.maxValY = 2 * YMax - YMin;
-                        _this.minValY = 2 * YMin - YMax;
+                        this.maxValY = 2 * YMax - YMin;
+                        this.minValY = 2 * YMin - YMax;
                     }
-                    if ((_this.minValY >= YMin) || (YMin - _this.maxValY > 5 * (YMax - YMin))) {
+                    if ((this.minValY >= YMin) || (YMin - this.maxValY > 5 * (YMax - YMin))) {
 
-                        _this.maxValY = 2 * YMax - YMin;
-                        _this.minValY = 2 * YMin - YMax;
+                        this.maxValY = 2 * YMax - YMin;
+                        this.minValY = 2 * YMin - YMax;
                     }
                     if (YMax < 0.01 && YMin > -0.01) {
 
-                        _this.maxValY = 1;
-                        _this.minValY = -1;
+                        this.maxValY = 1;
+                        this.minValY = -1;
                     }
                 }
-                _this.draw();
+                this.draw();
             };
 
             this.setAxisRangX = function (xMin, xNax) {
 
-                _this.minValX = xMin;
-                _this.maxValX = xNax;
-                _this.drawBackground();
+                this.minValX = xMin;
+                this.maxValX = xNax;
+                this.drawBackground();
             };
 
             this.setAxisRangY = function (yMin, yMax) {
 
-                _this.minValY = yMin;
-                _this.maxValY = yMax;
-                _this.drawBackground();
+                this.minValY = yMin;
+                this.maxValY = yMax;
+                this.drawBackground();
             };
 
             this.setPointNum = function (num) {
 
-                _this.pointNum = num;
-                _this.drawBackground();
+                this.pointNum = num;
+                this.drawBackground();
             };
 
             this.setLabel = function (xLabel, yLabel) {
 
                 this.strLabelX = xLabel;
                 this.strLabelY = yLabel;
-                _this.drawBackground();
+                this.drawBackground();
             };
 
             this.setRowColNum = function (row, col) {
 
-                _this.nRow = row;
-                _this.nCol = col;
-                _this.drawBackground();
+                this.nRow = row;
+                this.nCol = col;
+                this.drawBackground();
             };
 
             let _mouseOverFlag = false;
@@ -3167,22 +3386,35 @@ VILibrary.VI = {
             }
 
             this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-        },
-        cnName: '波形显示',
-        defaultWidth: '500px',
-        defaultHeight: '300px'
+
+        }
+
+        static get cnName () {
+
+            return '波形显示';
+        }
+
+        static get defaultWidth () {
+
+            return '500px';
+        }
+
+        static get defaultHeight () {
+
+            return '300px';
+        }
     },
 
-    OrbitWaveVI: {
+    OrbitWaveVI: class OrbitWaveVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
+            super(VICanvas);
+
             const _this = this;
-            this.container = domElement;
+
             this.ctx = this.container.getContext("2d");
-            this.name = 'OrbitWaveVI';
-            this.zoomValue = 1;
+            this.outputPointCount = 0;
 
             //坐标单位//
             this.strLabelX = 'X';
@@ -3192,8 +3424,6 @@ VILibrary.VI = {
             this.MaxVal = 20;
             this.MinVal = -20;
             this.autoZoom = true;
-            this.outputPointCount = 0;
-            this.inputPointCount = 1;
 
             //网格行列数//
             this.nRow = 10;
@@ -3208,10 +3438,10 @@ VILibrary.VI = {
 
             this.offsetB = 5 + this.borderWidth;
             this.offsetL = 5 + this.borderWidth;
-            if ((_this.container.height >= 200) && (_this.container.width >= 200)) {
+            if ((this.container.height >= 200) && (this.container.width >= 200)) {
 
-                _this.offsetB = 25 + _this.borderWidth;
-                _this.offsetL = 38 + _this.borderWidth;
+                this.offsetB = 25 + this.borderWidth;
+                this.offsetL = 38 + this.borderWidth;
             }
             this.waveWidth = this.container.width - this.offsetL - this.offsetR;
             this.waveHeight = this.container.height - this.offsetT - this.offsetB;
@@ -3225,14 +3455,10 @@ VILibrary.VI = {
             this.rulerColor = "RGB(255, 255, 255)";
 
             //缓冲数组
-
             this.bufferValX = [];
             this.bufferValY = [];
             this.curPointX = this.offsetL;
             this.curPointY = this.offsetT;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
 
             this.draw = function () {
 
@@ -3366,13 +3592,13 @@ VILibrary.VI = {
                     for (i = 2; i < scaleXNum; i += 4) {
 
                         temp = _this.MinVal + xValStep * i;
-                        ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL + scaleXStep * i - 9, _this.container.height - 10);
+                        ctx.fillText(VILibrary.InnerObjects.fixNumber(temp), _this.offsetL + scaleXStep * i - 9, _this.container.height - 10);
                     }
                     //纵坐标刻度//
                     for (i = 2; i < scaleYNum; i += 4) {
 
                         temp = _this.MaxVal - yValStep * i;
-                        ctx.fillText(VILibrary.InternalFunction.fixNumber(temp), _this.offsetL - 30, _this.offsetT + scaleYStep * i + 5);
+                        ctx.fillText(VILibrary.InnerObjects.fixNumber(temp), _this.offsetL - 30, _this.offsetT + scaleYStep * i + 5);
                     }
                     ctx.closePath();
                     ctx.save();
@@ -3574,80 +3800,110 @@ VILibrary.VI = {
             }
 
             this.container.addEventListener('mousemove', onMouseMove, false);   // mouseMoveListener
-        },
-        cnName: '二维波形',
-        defaultWidth: '400px',
-        defaultHeight: '370px'
+
+        }
+
+        static get cnName () {
+
+            return '二维波形';
+        }
+
+        static get defaultWidth () {
+
+            return '400px';
+        }
+
+        static get defaultHeight () {
+
+            return '370px';
+        }
     },
 
-    // ButtonVI: {
-    //
-    //     createVI: function (VICanvas) {
-    //
-    //         let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-    //         const _this = this;
-    //         this.container = domElement;
-    //         this.ctx = domElement.getContext('2d');
-    //         this.name = 'ButtonVI';
-    //         this.zoomValue = 1;
-    //
-    //         this.fillStyle = 'silver';
-    //         this.outputPointCount = 0;
-    //         this.inputPointCount = 0;
-    //         this.endpoints = {};
-    //
-    //         this.reset = function () {
-    //
-    //             _this.index = 0;
-    //             _this.output = [0];
-    //         };
-    //
-    //         this.draw = function () {
-    //
-    //             _this.ctx.font = "bold 14px Microsoft YaHei";
-    //             _this.ctx.fillStyle = _this.fillStyle;
-    //             _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-    //             _this.ctx.fillStyle = 'black';
-    //             _this.ctx.fillText(VILibrary.VI.ButtonVI.cnName, _this.container.width / 2 - 11, _this.container.height / 2 + 6);
-    //         };
-    //
-    //         this.draw();
-    //     },
-    //     cnName: '按钮',
-    //     defaultWidth: '100px',
-    //     defaultHeight: '50px'
-    // },
+    ButtonVI: class ButtonVI extends TemplateVI {
 
-    ProportionResponseVI: {
+        constructor (VICanvas) {
 
-        createVI: function (VICanvas) {
+            super(VICanvas);
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
             const _this = this;
-            this.container = domElement;
+
+            let timeStamp = 0, point = {}, timer = 0;
+
             this.ctx = this.container.getContext("2d");
-            this.name = 'ProportionResponseVI';
-            this.zoomValue = 1;
+            this.outputPointCount = 0;
 
-            this.signalType = 1;
+            this.toggleObserver = function (flag) {
+
+                if (flag) {
+
+                    if (!timer && this.dataLine) {
+
+                        timer = window.setInterval(function () {
+
+                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                        }, 50);
+                    }
+                }
+                else {
+
+                    if (timer) {
+
+                        window.clearInterval(timer);
+                        timer = 0;
+                    }
+                }
+            };
+
+            this.draw();
+
+            this.container.addEventListener('mousedown', function (e) {
+
+                timeStamp = e.timeStamp;
+                point.x = e.clientX;
+                point.y = e.clientY;
+            }, false);
+
+            this.container.addEventListener('mouseup', function (e) {
+
+                //X、Y移动距离小于5，点击间隔小于200，默认点击事件
+                if ((e.timeStamp - timeStamp) < 200 && (point.x - e.clientX) < 5 && (point.y - e.clientY) < 5) {
+
+                    if (_this.dataLine) {
+
+                        if (!timer) {
+
+                            _this.toggleObserver(true);
+                            _this.fillStyle = 'red';
+                            _this.draw();
+                        }
+                        else {
+                            _this.toggleObserver(false);
+                            _this.fillStyle = 'orange';
+                            _this.draw();
+                        }
+                    }
+                }
+            }, false);
+        }
+
+        static get cnName () {
+
+            return '开关';
+        }
+
+        static get defaultWidth () {
+
+            return '100px';
+        }
+    },
+
+    ProportionResponseVI: class ProportionResponseVI extends TemplateVI {
+
+        constructor (VICanvas) {
+
+            super(VICanvas);
+
             this.k1 = 1.5;
-            this.Fs = 1000;
-            this.input = 0;
-            this.lastInput = 0;
-            this.temp1 = 0;
-            this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '比例响应';
             this.boxContent = '<div class="input-div"><span class="normal-span">K1:</span>' +
@@ -3655,108 +3911,55 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let temp1 = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(temp1)) {
 
                     return false;
                 }
 
-                _this.singleOutput = _this.k1 * _this.input;
+                let temp2 = this.k1 * temp1;
 
                 //将输出数保存在数组内
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
+                if (this.index <= (this.dataLength - 1)) {
 
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = temp2;
+                    this.index += 1;
                 }
                 else {
 
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = temp2;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k1 = Number($('#ProportionResponseVI-input').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
-            };
-
-            this.reset = function () {
-
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.k1 = Number($('#ProportionResponseVI-input').val());
             };
 
             this.draw();
-        },
-        cnName: '比例响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '比例响应';
+        }
     },
 
-    IntegrationResponseVI: {
+    IntegrationResponseVI: class IntegrationResponseVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'IntegrationResponseVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.signalType = 2;
             this.k2 = 5;
             this.Fs = 1000;
-            this.input = 0;
             this.lastInput = 0;
             this.temp1 = 0;
-            this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '积分响应';
             this.boxContent = '<div class="input-div"><span class="normal-span">K2:</span>' +
@@ -3764,109 +3967,65 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
 
                 let v2, v21;
 
-                v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
-                _this.temp1 = v21;
-                v2 = _this.k2 * v21;
+                v21 = this.temp1 + 0.5 * (inputTemp + this.lastInput) / this.Fs;
+                this.temp1 = v21;
+                v2 = this.k2 * v21;
 
-                _this.singleOutput = v2;
-                _this.lastInput = _this.input;
+                let outputTemp = v2;
+                this.lastInput = inputTemp;
 
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                if (this.index <= (this.dataLength - 1)) {
+
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
-                        _this.output[i] = _this.output[i + 1];
+
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k2 = Number($('#IntegrationResponseVI-input').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.k2 = Number($('#IntegrationResponseVI-input').val());
             };
 
             this.reset = function () {
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
+                this.lastInput = 0;
+                this.temp1 = 0;
+                this.index = 0;
+                this.output = [0];
             };
-
-            this.draw = function () {
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('积分', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
-            };
-
             this.draw();
-        },
-        cnName: '积分响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '积分响应';
+        }
     },
 
-    DifferentiationResponseVI: {
+    DifferentiationResponseVI: class DifferentiationResponseVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'DifferentiationResponseVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.signalType = 3;
             this.k3 = 0.0025;
             this.Fs = 1000;
-            this.input = 0;
             this.lastInput = 0;
-            this.temp1 = 0;
-            this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '微分响应';
             this.boxContent = '<div class="input-div"><span class="normal-span">K3:</span>' +
@@ -3874,103 +4033,60 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
 
-                _this.singleOutput = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;
-                _this.lastInput = _this.input;
+                let outputTemp = this.k3 * (inputTemp - this.lastInput) * this.Fs;
+                this.lastInput = inputTemp;
 
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                if (this.index <= (this.dataLength - 1)) {
+
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
-                        _this.output[i] = _this.output[i + 1];
+
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k3 = Number($('#DifferentiationResponseVI-input').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.k3 = Number($('#DifferentiationResponseVI-input').val());
             };
 
             this.reset = function () {
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
 
-            this.draw = function () {
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('微分', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.lastInput = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
+        }
 
-        },
-        cnName: '微分响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        static get cnName () {
+
+            return '微分响应';
+        }
     },
 
-    InertiaResponseVI: {
+    InertiaResponseVI: class InertiaResponseVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'InertiaResponseVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.signalType = 6;
             this.k1 = 0.025;
             this.Fs = 1000;
-            this.input = 0;
-            this.lastInput = 0;
             this.temp1 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '惯性响应';
             this.boxContent = '<div class="input-div"><span class="normal-span">K1:</span>' +
@@ -3978,8 +4094,8 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
@@ -3987,100 +4103,57 @@ VILibrary.VI = {
                 let v, E;
 
                 //一阶 1/(TS+1)
-                E = Math.exp(-1 / (_this.k1 * _this.Fs));
-                v = E * _this.temp1 + (1.0 - E) * _this.input;
-                _this.temp1 = v;
-                _this.singleOutput = v;//输出
+                E = Math.exp(-1 / (this.k1 * this.Fs));
+                v = E * this.temp1 + (1.0 - E) * inputTemp;
+                this.temp1 = v;
+                let outputTemp = v;//输出
 
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                if (this.index <= (this.dataLength - 1)) {
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
-                        _this.output[i] = _this.output[i + 1];
+
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k1 = Number($('#InertiaResponseVI-input').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.k1 = Number($('#InertiaResponseVI-input').val());
             };
 
             this.reset = function () {
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
 
-            this.draw = function () {
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('惯性', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.temp1 = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
+        }
 
-        },
-        cnName: '惯性响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        static get cnName () {
+
+            return '惯性响应';
+        }
     },
 
-    OscillationResponseVI: {
+    OscillationResponseVI: class OscillationResponseVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'OscillationResponseVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.signalType = 7;
             this.k1 = 50;
             this.k2 = 0.05;
             this.Fs = 1000;
-            this.input = 0;
-            this.lastInput = 0;
             this.temp1 = 0;
             this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '震荡响应';
             this.boxContent = '<div class="input-div">' +
@@ -4089,8 +4162,8 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
@@ -4098,111 +4171,66 @@ VILibrary.VI = {
                 let v, a1, b1;
 
                 //二阶 W^2/(S^2+2gWS+W^2)
-                if (_this.k2 > 1) {
+                if (this.k2 > 1) {
 
-                    _this.k2 = 1;
+                    this.k2 = 1;
                 }
-                b1 = Math.exp(-2 * 6.28 * _this.k1 * _this.k2 / _this.Fs);
-                a1 = 2 * Math.exp(-6.28 * _this.k1 * _this.k2 / _this.Fs) * Math.cos(6.28 * _this.k1 * Math.sqrt(1 - _this.k2 * _this.k2) / _this.Fs);
-                v = a1 * _this.temp1 - b1 * _this.temp2 + 1 * (1 - a1 + b1) * _this.input;
-                _this.temp2 = _this.temp1;
-                _this.temp1 = v;
-                _this.singleOutput = v;//输出
+                b1 = Math.exp(-2 * 6.28 * this.k1 * this.k2 / this.Fs);
+                a1 = 2 * Math.exp(-6.28 * this.k1 * this.k2 / this.Fs) * Math.cos(6.28 * this.k1 * Math.sqrt(1 - this.k2 * this.k2) / this.Fs);
+                v = a1 * this.temp1 - b1 * this.temp2 + 1 * (1 - a1 + b1) * inputTemp;
+                this.temp2 = this.temp1;
+                this.temp1 = v;
+                let outputTemp = v;//输出
 
                 //将输出数保存在数组内
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                if (this.index <= (this.dataLength - 1)) {
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
-                        _this.output[i] = _this.output[i + 1];
+
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k1 = Number($('#OscillationResponseVI-input-1').val());
-                _this.k2 = Number($('#OscillationResponseVI-input-2').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.k1 = Number($('#OscillationResponseVI-input-1').val());
+                this.k2 = Number($('#OscillationResponseVI-input-2').val());
             };
 
             this.reset = function () {
 
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('震荡', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('响应', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.temp1 = 0;
+                this.temp2 = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
-        },
-        cnName: '震荡响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '震荡响应';
+        }
     },
 
-    ProportionIntegrationResponseVI: {
+    ProportionIntegrationResponseVI: class ProportionIntegrationResponseVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'ProportionIntegrationResponseVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.signalType = 4;
             this.k1 = 1.5;
             this.k2 = 1;
-            this.k3 = 0;
             this.Fs = 1000;
-            this.input = 0;
             this.lastInput = 0;
             this.temp1 = 0;
-            this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '比例积分响应';
             this.boxContent = '<div class="input-div">' +
@@ -4211,122 +4239,73 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
 
                 let v1, v2, v21;
 
-                if (_this.signalType < 6) {
-                    v1 = _this.k1 * _this.input;
+                v1 = this.k1 * inputTemp;
 
-                    v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
-                    _this.temp1 = v21;
-                    v2 = _this.k2 * v21;
+                v21 = this.temp1 + 0.5 * (inputTemp + this.lastInput) / this.Fs;
+                this.temp1 = v21;
+                v2 = this.k2 * v21;
 
-                    _this.singleOutput = v1 + v2;
-                    _this.lastInput = _this.input;
-                }
+                let outputTemp = v1 + v2;
+                this.lastInput = inputTemp;
 
                 //将输出数保存在数组内
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
+                if (this.index <= (this.dataLength - 1)) {
 
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
 
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k1 = Number($('#ProportionIntegrationResponseVI-input-1').val());
-                _this.k2 = Number($('#ProportionIntegrationResponseVI-input-2').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.k1 = Number($('#ProportionIntegrationResponseVI-input-1').val());
+                this.k2 = Number($('#ProportionIntegrationResponseVI-input-2').val());
             };
 
             this.reset = function () {
 
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('积分', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.lastInput = 0;
+                this.temp1 = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
-        },
-        cnName: '比例积分响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '比例积分响应';
+        }
     },
 
-    ProportionDifferentiationResponseVI: {
+    ProportionDifferentiationResponseVI: class ProportionDifferentiationResponseVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'ProportionDifferentiationResponseVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.signalType = 5;
             this.k1 = 1;
-            this.k2 = 0;
             this.k3 = 0.0025;
             this.Fs = 1000;
-            this.input = 0;
             this.lastInput = 0;
-            this.temp1 = 0;
-            this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '比例微分响应';
             this.boxContent = '<div class="input-div">' +
@@ -4335,115 +4314,70 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
 
                 let v1, v3;
 
-                v1 = _this.k1 * _this.input;
+                v1 = this.k1 * inputTemp;
 
-                v3 = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;
+                v3 = this.k3 * (inputTemp - this.lastInput) * this.Fs;
 
-                _this.singleOutput = v1 + v3;
-                _this.lastInput = _this.input;
+                let outputTemp = v1 + v3;
+                this.lastInput = inputTemp;
 
                 //将输出数保存在数组内
                 let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
+                if (this.index <= (this.dataLength - 1)) {
 
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
 
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k1 = Number($('#ProportionDifferentiationResponseVI-input-1').val());
-                _this.k3 = Number($('#ProportionDifferentiationResponseVI-input-2').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.k1 = Number($('#ProportionDifferentiationResponseVI-input-1').val());
+                this.k3 = Number($('#ProportionDifferentiationResponseVI-input-2').val());
             };
 
             this.reset = function () {
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
 
-            this.draw = function () {
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('微分', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.lastInput = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
-        },
-        cnName: '比例微分响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '比例微分响应';
+        }
     },
 
-    ProportionInertiaResponseVI: {
+    ProportionInertiaResponseVI: class ProportionInertiaResponseVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'ProportionInertiaResponseVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
-            this.signalType = 8;
             this.k1 = 0.025;
             this.k2 = 1;
             this.Fs = 1000;
-            this.input = 0;
-            this.lastInput = 0;
             this.temp1 = 0;
-            this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
-
             //VI双击弹出框
             this.boxTitle = '比例惯性响应';
             this.boxContent = '<div class="input-div">' +
@@ -4452,8 +4386,8 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
@@ -4461,86 +4395,55 @@ VILibrary.VI = {
                 let v, E;
 
                 //一阶 X+1/(TS+1)
-                E = Math.exp(-1 / (_this.k1 * _this.Fs));
-                v = E * _this.temp1 + (1.0 - E) * _this.input;
-                _this.temp1 = v;
-                _this.singleOutput = v + _this.k2 * _this.input;//输出
+                E = Math.exp(-1 / (this.k1 * this.Fs));
+                v = E * this.temp1 + (1.0 - E) * inputTemp;
+                this.temp1 = v;
+                let outputTemp = v + this.k2 * inputTemp;//输出
 
                 //将输出数保存在数组内
-                let i = 0;
-                if (_this.index <= (_this.dataLength - 1)) {
+                if (this.index <= (this.dataLength - 1)) {
 
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
 
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
 
-                        _this.output[i] = _this.output[i + 1];
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setInitialData = function () {
 
-                _this.k1 = Number($('#ProportionInertiaResponseVI-input-1').val());
-                _this.k2 = Number($('#ProportionInertiaResponseVI-input-2').val());
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
+                this.k1 = Number($('#ProportionInertiaResponseVI-input-1').val());
+                this.k2 = Number($('#ProportionInertiaResponseVI-input-2').val());
             };
 
             this.reset = function () {
 
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText('比例', _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText('惯性', _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.temp1 = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
-        },
-        cnName: '比例惯性响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '比例惯性响应';
+        }
     },
 
-    StepResponseGeneratorVI: {
+    StepResponseGeneratorVI: class StepResponseGeneratorVI extends TemplateVI {
 
-        createVI: function (VICanvas) {
+        constructor (VICanvas) {
 
-            let domElement = VILibrary.InternalFunction.getDomObject(VICanvas);
-            const _this = this;
-            this.container = domElement;
-            this.ctx = this.container.getContext("2d");
-            this.name = 'StepResponseGeneratorVI';
-            this.zoomValue = 1;
+            super(VICanvas);
 
             this.signalType = 0;
             this.k1 = 1;
@@ -4551,192 +4454,156 @@ VILibrary.VI = {
             this.lastInput = 0;
             this.temp1 = 0;
             this.temp2 = 0;
-            this.singleOutput = 0;
-
-            this.dataLength = 1024;
-            this.index = 0;
-            this.output = [0];
-            this.outputPointCount = -1;
-            this.inputPointCount = 1;
-
-            //虚拟仪器中相连接的控件VI
-            this.source = [];
-            this.target = [];
 
             this.setData = function (input) {
 
-                _this.input = Array.isArray(input) ? input[input.length - 1] : input;
-                if (Number.isNaN(_this.input)) {
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
 
                     return false;
                 }
-                let v, v1, v2, v21, v3, E, a1, b1;
+                let v, v1, v2, v21, v3, E, a1, b1, outputTemp = 0;
 
-                if (_this.signalType < 6) {
-                    v1 = _this.k1 * _this.input;
+                if (this.signalType < 6) {
+                    v1 = this.k1 * inputTemp;
 
-                    v21 = _this.temp1 + 0.5 * (_this.input + _this.lastInput) / _this.Fs;
-                    _this.temp1 = v21;
-                    v2 = _this.k2 * v21;
+                    v21 = this.temp1 + 0.5 * (inputTemp + this.lastInput) / this.Fs;
+                    this.temp1 = v21;
+                    v2 = this.k2 * v21;
 
-                    v3 = _this.k3 * (_this.input - _this.lastInput) * _this.Fs;
+                    v3 = this.k3 * (inputTemp - this.lastInput) * this.Fs;
 
-                    _this.singleOutput = v1 + v2 + v3;
-                    _this.lastInput = _this.input;
+                    outputTemp = v1 + v2 + v3;
+                    this.lastInput = inputTemp;
                 }
-                else if (_this.signalType < 9) {
-                    if (_this.signalType == 6) { //一阶 1/(TS+1)
-                        E = Math.exp(-1 / (_this.k1 * _this.Fs));
-                        v = E * _this.temp1 + (1.0 - E) * _this.input;
-                        _this.temp1 = v;
-                        _this.singleOutput = v;//输出
+                else if (this.signalType < 9) {
+
+                    if (this.signalType == 6) { //一阶 1/(TS+1)
+
+                        E = Math.exp(-1 / (this.k1 * this.Fs));
+                        v = E * this.temp1 + (1.0 - E) * inputTemp;
+                        this.temp1 = v;
+                        outputTemp = v;//输出
                     }
-                    if (_this.signalType == 7) { //二阶 W^2/(S^2+2gWS+W^2)
-                        if (_this.k2 > 1) {
-                            _this.k2 = 1;
+                    if (this.signalType == 7) { //二阶 W^2/(S^2+2gWS+W^2)
+
+                        if (this.k2 > 1) {
+
+                            this.k2 = 1;
                         }
-                        b1 = Math.exp(-2 * 6.28 * _this.k1 * _this.k2 / _this.Fs);
-                        a1 = 2 * Math.exp(-6.28 * _this.k1 * _this.k2 / _this.Fs) * Math.cos(6.28 * _this.k1 * Math.sqrt(1 - _this.k2 * _this.k2) / _this.Fs);
-                        v = a1 * _this.temp1 - b1 * _this.temp2 + 1 * (1 - a1 + b1) * _this.input;
-                        _this.temp2 = _this.temp1;
-                        _this.temp1 = v;
-                        _this.singleOutput = v;//输出
+                        b1 = Math.exp(-2 * 6.28 * this.k1 * this.k2 / this.Fs);
+                        a1 = 2 * Math.exp(-6.28 * this.k1 * this.k2 / this.Fs) * Math.cos(6.28 * this.k1 * Math.sqrt(1 - this.k2 * this.k2) / this.Fs);
+                        v = a1 * this.temp1 - b1 * this.temp2 + 1 * (1 - a1 + b1) * inputTemp;
+                        this.temp2 = this.temp1;
+                        this.temp1 = v;
+                        outputTemp = v;//输出
                     }
-                    if (_this.signalType == 8) { //一阶 X+1/(TS+1)
-                        E = Math.exp(-1 / (_this.k1 * _this.Fs));
-                        v = E * _this.temp1 + (1.0 - E) * _this.input;
-                        _this.temp1 = v;
-                        _this.singleOutput = v + _this.k2 * _this.input;//输出
+                    if (this.signalType == 8) { //一阶 X+1/(TS+1)
+
+                        E = Math.exp(-1 / (this.k1 * this.Fs));
+                        v = E * this.temp1 + (1.0 - E) * inputTemp;
+                        this.temp1 = v;
+                        outputTemp = v + this.k2 * inputTemp;//输出
                     }
-                }
-                else {
-                    _this.singleOutput = 0;
                 }
 
                 //将输出数保存在数组内
-                let i = 0;
-                if (_this.index == 0) {
-                    for (i = 0; i < _this.dataLength; i += 1) {
-                        _this.output[i] = 0;
-                    }
-                }
-                if (_this.index <= (_this.dataLength - 1)) {
-                    _this.output[_this.index] = _this.singleOutput;
-                    _this.index += 1;
+                if (this.index <= (this.dataLength - 1)) {
+
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
                 }
                 else {
-                    for (i = 0; i < _this.dataLength - 1; i += 1) {
-                        _this.output[i] = _this.output[i + 1];
+
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+                        this.output[i] = this.output[i + 1];
                     }
-                    _this.output[_this.dataLength - 1] = _this.singleOutput;
+                    this.output[this.dataLength - 1] = outputTemp;
                 }
-
-                return _this.singleOutput;
-
             };
 
             this.setStepType = function (type) {
 
-                _this.signalType = type;
+                this.signalType = type;
 
                 //PID控制器
-                if (_this.signalType == 0) {
-                    _this.k1 = 1;
-                    _this.k2 = 1;
-                    _this.k3 = 1;
+                if (this.signalType == 0) {
+                    this.k1 = 1;
+                    this.k2 = 1;
+                    this.k3 = 1;
                 }
 
                 //比例控制器
-                if (_this.signalType == 1) {
-                    _this.k1 = 1;
-                    _this.k2 = 0;
-                    _this.k3 = 0;
+                if (this.signalType == 1) {
+                    this.k1 = 1;
+                    this.k2 = 0;
+                    this.k3 = 0;
                 }
 
                 //积分控制器
-                if (_this.signalType == 2) {
-                    _this.k1 = 0;
-                    _this.k2 = 1;
-                    _this.k3 = 0;
+                if (this.signalType == 2) {
+                    this.k1 = 0;
+                    this.k2 = 1;
+                    this.k3 = 0;
                 }
 
                 //微分控制器
-                if (_this.signalType == 3) {
-                    _this.k1 = 0;
-                    _this.k2 = 0;
-                    _this.k3 = 1;
+                if (this.signalType == 3) {
+                    this.k1 = 0;
+                    this.k2 = 0;
+                    this.k3 = 1;
                 }
 
                 //比例积分控制器
-                if (_this.signalType == 4) {
-                    _this.k1 = 1;
-                    _this.k2 = 1;
-                    _this.k3 = 0;
+                if (this.signalType == 4) {
+                    this.k1 = 1;
+                    this.k2 = 1;
+                    this.k3 = 0;
                 }
 
                 //比例微分控制器
-                if (_this.signalType == 5) {
-                    _this.k1 = 1;
-                    _this.k2 = 0;
-                    _this.k3 = 1;
+                if (this.signalType == 5) {
+                    this.k1 = 1;
+                    this.k2 = 0;
+                    this.k3 = 1;
                 }
 
                 //惯性环节
-                if (_this.signalType == 6) {
-                    _this.k1 = 1;
-                    _this.k2 = 0;
+                if (this.signalType == 6) {
+                    this.k1 = 1;
+                    this.k2 = 0;
                 }
 
                 //振荡环节
-                if (_this.signalType == 7) {
-                    _this.k1 = 1;
-                    _this.k2 = 1;
+                if (this.signalType == 7) {
+                    this.k1 = 1;
+                    this.k2 = 1;
                 }
 
                 //比例惯性环节
-                if (_this.signalType == 8) {
-                    _this.k1 = 1;
-                    _this.k2 = 1;
+                if (this.signalType == 8) {
+                    this.k1 = 1;
+                    this.k2 = 1;
                 }
 
-            };
-
-            this.getData = function (dataType) {
-
-                if (dataType === 1) {
-
-                    return _this.singleOutput;
-                }
-                else {
-
-                    return _this.output;
-                }
             };
 
             this.reset = function () {
 
-                _this.lastInput = 0;
-                _this.temp1 = 0;
-                _this.temp2 = 0;
-                _this.index = 0;
-                _this.singleOutput = 0;
-                _this.output = [0];
-            };
-
-            this.draw = function () {
-
-                _this.ctx.font = 'normal 12px Microsoft YaHei';
-                _this.ctx.fillStyle = 'orange';
-                _this.ctx.fillRect(0, 0, _this.container.width, _this.container.height);
-                _this.ctx.fillStyle = 'black';
-                _this.ctx.fillText(VILibrary.VI.StepResponseGeneratorVI.cnName.substring(0, 2), _this.container.width / 2 - 12, _this.container.height / 4 + 6);
-                _this.ctx.fillText(VILibrary.VI.StepResponseGeneratorVI.cnName.substring(2), _this.container.width / 2 - 12, _this.container.height * 3 / 4);
+                this.lastInput = 0;
+                this.temp1 = 0;
+                this.temp2 = 0;
+                this.index = 0;
+                this.output = [0];
             };
 
             this.draw();
-        },
-        cnName: '阶跃响应',
-        defaultWidth: '50px',
-        defaultHeight: '50px'
+        }
+
+        static get cnName () {
+
+            return '阶跃响应';
+        }
     }
 };
