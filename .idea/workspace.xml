@@ -1,36 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="0110: afternoon&#10;&#10;VILibrary slim;&#10;DoubleTank Added;">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/img/downArrow.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/img/returnArrow.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/img/rightArrow.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/DoubleTank.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/PIDControl.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/offButton.mtl" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/offButton.obj" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/onButton.mtl" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/onButton.obj" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/resetButton.mtl" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/BallBeamControl/resetButton.obj" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/DoubleTank/tank.mtl" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/DoubleTank/tank.obj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/Fengma.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/Fengma.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+    <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RotorExperimentalRig.html" afterPath="$PROJECT_DIR$/RotorExperimentalRig.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SignalGenerator.html" afterPath="$PROJECT_DIR$/SignalGenerator.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VirtualInstrument.html" afterPath="$PROJECT_DIR$/VirtualInstrument.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/BallBeamControl/base.mtl" afterPath="$PROJECT_DIR$/assets/BallBeamControl/base.mtl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/BallBeamControl/base.obj" afterPath="$PROJECT_DIR$/assets/BallBeamControl/base.obj" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/draggable.css" afterPath="$PROJECT_DIR$/css/draggable.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibrary.js" afterPath="$PROJECT_DIR$/js/VILibrary.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VIParser.js" afterPath="$PROJECT_DIR$/js/VIParser.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test.html" afterPath="$PROJECT_DIR$/test.html" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -135,14 +108,48 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DoubleTank.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DoubleTank.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DoubleTank.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
+            <state relative-caret-position="-24">
               <caret line="5" column="47" lean-forward="false" selection-start-line="5" selection-start-column="47" selection-end-line="5" selection-end-column="47" />
               <folding>
                 <marker date="1484040135320" expanded="true" signature="2729:2744" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ControlCharacteristic.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="96">
+              <caret line="4" column="29" lean-forward="true" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PIDControl.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PIDControl.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="96">
+              <caret line="4" column="20" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="20" />
+              <folding>
+                <element signature="e#1547#2103#0" expanded="false" />
+                <element signature="e#2184#2674#0" expanded="false" />
+                <element signature="e#2727#6344#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="487">
+              <caret line="34" column="36" lean-forward="false" selection-start-line="34" selection-start-column="36" selection-end-line="34" selection-end-column="36" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -251,7 +258,6 @@
         <option value="$PROJECT_DIR$/test.html" />
         <option value="$PROJECT_DIR$/js/VIParser.js" />
         <option value="$PROJECT_DIR$/js/VILibrary.js" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/DoubleTank.html" />
         <option value="$PROJECT_DIR$/assets/BallBeamControl/resetButton.obj" />
         <option value="$PROJECT_DIR$/assets/DoubleTank/tank.mtl" />
@@ -261,6 +267,7 @@
         <option value="$PROJECT_DIR$/assets/BallBeamControl/onButton.mtl" />
         <option value="$PROJECT_DIR$/assets/BallBeamControl/onButton.obj" />
         <option value="$PROJECT_DIR$/assets/DoubleTank/tank.obj" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
@@ -661,14 +668,7 @@
       <workItem from="1483495061421" duration="4252000" />
       <workItem from="1483925592604" duration="6927000" />
       <workItem from="1483943846518" duration="6603000" />
-      <workItem from="1484013460273" duration="15104000" />
-    </task>
-    <task id="LOCAL-00014" summary="1019night">
-      <created>1476884738322</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1476884738322</updated>
+      <workItem from="1484013460273" duration="15274000" />
     </task>
     <task id="LOCAL-00015" summary="1026-1">
       <created>1477469731016</created>
@@ -1006,11 +1006,18 @@
       <option name="project" value="LOCAL" />
       <updated>1482024979312</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="0110: afternoon&#10;&#10;VILibrary slim;&#10;DoubleTank Added;">
+      <created>1484040365258</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1484040365258</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1137221000" />
+    <option name="totallyTimeSpent" value="1137391000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1029,6 +1036,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32615715" sideWeight="0.50428265" order="12" side_tool="true" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3261339" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.4862869" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13185655" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1039,7 +1047,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3261339" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32959402" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -1255,24 +1262,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PIDControl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-888">
-          <caret line="163" column="14" lean-forward="true" selection-start-line="163" selection-start-column="14" selection-end-line="163" selection-end-column="14" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#0;n#div#2;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#0;n#div#3;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#0;n#div#4;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="false" />
-            <element signature="e#1547#2103#0" expanded="false" />
-            <element signature="e#2184#2674#0" expanded="false" />
-            <element signature="e#2727#6344#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/three/ObjectControls.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="335">
@@ -1318,14 +1307,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1824">
           <caret line="76" column="0" lean-forward="true" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="4" column="29" lean-forward="true" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
           <folding />
         </state>
       </provider>
@@ -1413,14 +1394,6 @@
             <element signature="n#!!block;n#exportVI#0" expanded="false" />
             <element signature="n#!!block;n#importVI#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="343">
-          <caret line="28" column="36" lean-forward="false" selection-start-line="28" selection-start-column="36" selection-end-line="28" selection-end-column="36" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1570,11 +1543,39 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DoubleTank.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
+        <state relative-caret-position="-24">
           <caret line="5" column="47" lean-forward="false" selection-start-line="5" selection-start-column="47" selection-end-line="5" selection-end-column="47" />
           <folding>
             <marker date="1484040135320" expanded="true" signature="2729:2744" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="4" column="29" lean-forward="true" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PIDControl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="4" column="20" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="20" />
+          <folding>
+            <element signature="e#1547#2103#0" expanded="false" />
+            <element signature="e#2184#2674#0" expanded="false" />
+            <element signature="e#2727#6344#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="487">
+          <caret line="34" column="36" lean-forward="false" selection-start-line="34" selection-start-column="36" selection-end-line="34" selection-end-column="36" />
+          <folding />
         </state>
       </provider>
     </entry>
