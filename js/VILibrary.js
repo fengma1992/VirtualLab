@@ -53,7 +53,7 @@ VILibrary.InnerObjects = {
 
     getVIById: function (id) {
 
-        for (let VI of VILibrary.InnerObjects.existingVIArray) {
+        for (let VI of this.existingVIArray) {
 
             if (VI.id === id) {
                 return VI
@@ -115,15 +115,22 @@ VILibrary.InnerObjects = {
 
         let sourceVI = this.getVIById(sourceId);
         let targetVI = this.getVIById(targetId);
-        sourceVI.targetInfoArray.push([targetId, sourceOutputType, targetInputType]);
-        targetVI.sourceInfoArray.push([sourceId, sourceOutputType, targetInputType]);
+        let sourceInfo = [sourceId, sourceOutputType, targetInputType];
+        let targetInfo = [targetId, sourceOutputType, targetInputType];
+        if (sourceVI.targetInfoArray.indexOf(targetInfo) !== -1 || targetVI.sourceInfoArray.indexOf(sourceInfo) !== -1) {
+
+            console.log('Already bound!');
+            return
+        }
+        sourceVI.targetInfoArray.push(targetInfo);
+        targetVI.sourceInfoArray.push(sourceInfo);
 
         //******************************分配dataLine*******************************************//
         if (!sourceVI.dataLine && !targetVI.dataLine) {//均未赋过值说明未与其他VI连接，赋一个未被占用的dataLine
 
-            let newDataLine = VILibrary.InnerObjects.dataLineArray.length > 0 ?
-                (Math.max.apply(null, VILibrary.InnerObjects.dataLineArray) + 1 ) : 1;
-            VILibrary.InnerObjects.dataLineArray.push(newDataLine);
+            let newDataLine = this.dataLineArray.length > 0 ?
+                (Math.max.apply(null, this.dataLineArray) + 1 ) : 1;
+            this.dataLineArray.push(newDataLine);
             sourceVI.dataLine = newDataLine;
             targetVI.dataLine = newDataLine;
         }
@@ -137,14 +144,14 @@ VILibrary.InnerObjects = {
         }
         else if (sourceVI.dataLine > targetVI.dataLine) {//均有dataLine，合并较大的那个到较小的
 
-            for (let VI of VILibrary.InnerObjects.existingVIArray) {
+            for (let VI of this.existingVIArray) {
 
                 VI.dataLine = VI.dataLine === sourceVI.dataLine ? targetVI.dataLine : VI.dataLine;
             }
         }
         else if (sourceVI.dataLine < targetVI.dataLine) {
 
-            for (let VI of VILibrary.InnerObjects.existingVIArray) {
+            for (let VI of this.existingVIArray) {
 
                 VI.dataLine = VI.dataLine === targetVI.dataLine ? sourceVI.dataLine : VI.dataLine;
             }
@@ -194,7 +201,7 @@ VILibrary.InnerObjects = {
             }
             else {
 
-                let newDataLine = Math.max.apply(null, VILibrary.InnerObjects.dataLineArray) + 1;
+                let newDataLine = Math.max.apply(null, this.dataLineArray) + 1;
                 for (let VI of targetVIBoundVIArray) {
 
                     VI.dataLine = newDataLine;
@@ -209,12 +216,42 @@ VILibrary.InnerObjects = {
 
             return;
         }
-        for (let VI of VILibrary.InnerObjects.existingVIArray) {
+        for (let VI of this.existingVIArray) {
 
-            if (VI.dataLine === dataLine && VI.sourceInfoArray.length > 0) {
+            if (VI.dataLine === dataLine && VI.hasOwnProperty('updater')) {
 
                 VI.updater();
             }
+        }
+    },
+
+    //双击VI弹出框
+    showBox: function (VI) {
+
+        if (VI.boxTitle) {
+
+            layer.open({
+                type: 1,
+                title: VI.boxTitle,
+                area: ['auto', 'auto'],
+                shade: 0.3,
+                shadeClose: true,
+                closeBtn: false,
+                zIndex: layer.zIndex,
+                content: VI.boxContent,
+                btnAlign: 'c',
+                btn: ['确定', '取消'],
+                yes: function (index) {
+                    VI.setInitialData();
+                    layer.close(index);
+                },
+                btn2: function (index) {
+                    layer.close(index);
+                },
+                success: function (layero) {
+                    layer.setTop(layero);
+                }
+            });
         }
     },
 
@@ -326,9 +363,11 @@ class TemplateVI {
             throw new Error('本VI为模版，不能实例化');
         }
         let domElement = VILibrary.InnerObjects.getDomObject(VICanvas);
+        const _this = this;
         this.container = domElement;
         this.id = domElement.id;
         this.fillStyle = 'orange';
+        this.timer = 0;
         this.index = 0;
         this.dataLength = 1024;
         this.output = [0];
@@ -341,6 +380,28 @@ class TemplateVI {
 
         VILibrary.InnerObjects.existingVIArray.push(this);
         this.constructor.logCount++;
+
+        this.toggleObserver = function (flag) {
+
+            if (flag) {
+
+                if (!this.timer && this.dataLine) {
+
+                    this.timer = window.setInterval(function () {
+
+                        VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                    }, 50);
+                }
+            }
+            else {
+
+                if (this.timer) {
+
+                    window.clearInterval(this.timer);
+                    this.timer = 0;
+                }
+            }
+        };
 
         this.updater = function () {
 
@@ -364,8 +425,12 @@ class TemplateVI {
 
                 VILibrary.InnerObjects.existingVIArray.splice(index, 1);
             }
+            if (this.timer) {
+
+                window.clearInterval(this.timer);
+                this.timer = 0;
+            }
             this.dataLine = 0;
-            $(this.container).remove();
         };
 
         this.setData = function () { };
@@ -377,6 +442,7 @@ class TemplateVI {
 
         this.reset = function () {
 
+            this.toggleObserver(false);
             this.index = 0;
             this.output = [0];
         };
@@ -400,6 +466,13 @@ class TemplateVI {
                 this.ctx.fillText(this.constructor.cnName, this.container.width / 2 - 14 * length / 2, this.container.height / 2 + 6);
             }
         };
+
+        this.handleDblClick = function (e) {
+
+            VILibrary.InnerObjects.showBox(_this);
+        };
+
+        this.container.addEventListener('dblclick', this.handleDblClick, false);
     }
 
     static get cnName () {
@@ -431,25 +504,98 @@ VILibrary.VI = {
             const _this = this;
 
             let audioCtx = new (window.AudioContext || webkitAudioContext)(),
-                analyser = audioCtx.createAnalyser(), source, timer = 0, timeStamp = 0, point = {};
+                analyser = audioCtx.createAnalyser(), source, timeStamp = 0, point = {};
 
+            this.name = 'AudioVI';
             this.ctx = this.container.getContext("2d");
             this.inputPointCount = 0;
             this.fillStyle = 'silver';
 
-            this.destroy = function () {
+            this.toggleObserver = function (flag) {
 
-                if (!timer) {
+                if (flag) {
 
-                    stop();
+                    if (!this.timer) {
+
+                        // Older browsers might not implement mediaDevices at all, so we set an empty object first
+                        if (navigator.mediaDevices === undefined) {
+                            navigator.mediaDevices = {};
+                        }
+
+                        // Some browsers partially implement mediaDevices. We can't just assign an object
+                        // with getUserMedia as it would overwrite existing properties.
+                        // Here, we will just add the getUserMedia property if it's missing.
+                        if (navigator.mediaDevices.getUserMedia === undefined) {
+                            navigator.mediaDevices.getUserMedia = function (constraints) {
+
+                                // First get ahold of the legacy getUserMedia, if present
+                                let getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+
+                                // Some browsers just don't implement it - return a rejected promise with an error
+                                // to keep a consistent interface
+                                if (!getUserMedia) {
+                                    return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                                }
+
+                                // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+                                return new Promise(function (resolve, reject) {
+                                    getUserMedia.call(navigator, constraints, resolve, reject);
+                                });
+                            };
+                        }
+
+                        navigator.mediaDevices.getUserMedia({audio: true}).then(function (stream) {
+                                console.log('AudioVI: getUserMedia supported.');
+
+                                //音频输出
+                                source = audioCtx.createMediaStreamSource(stream);
+                                analyser.fftSize = _this.dataLength * 2;
+                                source.connect(analyser);
+                                analyser.connect(audioCtx.destination);
+
+                                let bufferLength = analyser.frequencyBinCount;
+                                let dataArray = new Uint8Array(bufferLength);
+
+                                function getAudioData () {
+
+                                    if (_this.dataLine) {
+
+                                        _this.timer = window.requestAnimationFrame(getAudioData);
+
+                                        analyser.getByteTimeDomainData(dataArray);
+                                        _this.output = Array.from(dataArray);
+
+                                        //定时更新相同数据线VI的数据
+                                        VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                                    }
+                                    else {
+
+                                        _this.toggleObserver(false);
+                                    }
+                                }
+
+                                getAudioData();
+
+                                _this.fillStyle = 'red';
+                                _this.draw();
+                            }
+                        ).catch(function (err) {
+                            _this.timer = 0;
+                            console.log('AudioVI: ' + err.name + ": " + err.message);
+                        });
+                    }
                 }
-                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
-                if (index !== -1) {
+                else {
+                    if (this.timer) {
 
-                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
+                        //切断音频输出
+                        analyser.disconnect(audioCtx.destination);
+                        window.cancelAnimationFrame(_this.timer);
+                        _this.timer = 0;
+                        _this.fillStyle = 'silver';
+                        _this.draw();
+                    }
                 }
-                this.dataLine = 0;
-                $(this.container).remove();
             };
 
             this.draw = function () {
@@ -472,87 +618,6 @@ VILibrary.VI = {
 
             this.draw();
 
-            function start () {
-                // Older browsers might not implement mediaDevices at all, so we set an empty object first
-                if (navigator.mediaDevices === undefined) {
-                    navigator.mediaDevices = {};
-                }
-
-                // Some browsers partially implement mediaDevices. We can't just assign an object
-                // with getUserMedia as it would overwrite existing properties.
-                // Here, we will just add the getUserMedia property if it's missing.
-                if (navigator.mediaDevices.getUserMedia === undefined) {
-                    navigator.mediaDevices.getUserMedia = function (constraints) {
-
-                        // First get ahold of the legacy getUserMedia, if present
-                        let getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
-
-                        // Some browsers just don't implement it - return a rejected promise with an error
-                        // to keep a consistent interface
-                        if (!getUserMedia) {
-                            return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-                        }
-
-                        // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
-                        return new Promise(function (resolve, reject) {
-                            getUserMedia.call(navigator, constraints, resolve, reject);
-                        });
-                    };
-                }
-
-                navigator.mediaDevices.getUserMedia({audio: true}).then(function (stream) {
-                        console.log('AudioVI: getUserMedia supported.');
-
-                        //音频输出
-                        source = audioCtx.createMediaStreamSource(stream);
-                    analyser.fftSize = _this.dataLength * 2;
-                        source.connect(analyser);
-                        analyser.connect(audioCtx.destination);
-
-                    let bufferLength = analyser.frequencyBinCount;
-                    let dataArray = new Uint8Array(bufferLength);
-
-                    function getAudioData () {
-
-                        if (_this.dataLine) {
-
-                            timer = window.requestAnimationFrame(getAudioData);
-
-                            analyser.getByteTimeDomainData(dataArray);
-                            _this.output = Array.from(dataArray);
-
-                            //定时更新相同数据线VI的数据
-                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
-                        }
-                        else {
-
-                            stop();
-                        }
-                    }
-
-                    getAudioData();
-
-                        _this.fillStyle = 'red';
-                        _this.draw();
-                    }
-                ).catch(function (err) {
-                    timer = 0;
-                    console.log('AudioVI: ' + err.name + ": " + err.message);
-                });
-            }
-
-            function stop () {
-
-                if (timer) {
-                    //切断音频输出
-                    analyser.disconnect(audioCtx.destination);
-                    window.cancelAnimationFrame(timer);
-                    timer = 0;
-                    _this.fillStyle = 'silver';
-                    _this.draw();
-                }
-            }
-
             this.container.addEventListener('mousedown', function (e) {
 
                 timeStamp = e.timeStamp;
@@ -567,13 +632,7 @@ VILibrary.VI = {
 
                     if (_this.dataLine) {
 
-                        if (!timer) {
-
-                            start();
-                        }
-                        else {
-                            stop();
-                        }
+                        _this.toggleObserver(!_this.timer);
                     }
                 }
             }, false);
@@ -620,6 +679,7 @@ VILibrary.VI = {
                 knob_Spinner.onerror = reject;
             });
 
+            this.name = 'KnobVI';
             this.ctx = this.container.getContext("2d");
             this.inputPointCount = 0;
             this.output = [100];
@@ -656,6 +716,11 @@ VILibrary.VI = {
                 this.radian = (this.defaultValue - this.minValue) / this.ratio;
 
                 this.draw();
+
+                this.boxContent = '<div class="input-div">' +
+                    '<span class="normal-span">最小值:</span><input type="number" id="KnobVI-input-1" value="' + this.minValue + '" class="normal-input">' +
+                    '<span class="normal-span">最大值:</span><input type="number" id="KnobVI-input-2" value="' + this.maxValue + '" class="normal-input">' +
+                    '<span class="normal-span">初值:</span><input type="number" id="KnobVI-input-3" value="' + this.defaultValue + '" class="normal-input"></div>';
             };
 
             this.setData = function (data) {
@@ -798,7 +863,6 @@ VILibrary.VI = {
 
                     spinnerFlag = true;
                 }
-
             }
 
             function onMouseMove (event) {
@@ -917,56 +981,19 @@ VILibrary.VI = {
             super(VICanvas);
 
             const _this = this;
-            let timer = 0, timeStamp = 0, point = {};
+            let timeStamp = 0, point = {}, checkClickTimer = null;
 
+            this.name = 'DCOutputVI';
             this.inputPointCount = 0;
 
             //VI双击弹出框
             this.boxTitle = '请设置输出值';
-            this.boxContent = '<div class="input-div"><span class="normal-span">初值:</span>' +
+            this.boxContent = '<div class="input-div"><span class="normal-span">输出值:</span>' +
                 '<input type="number" id="DCOutputVI-input" value="' + this.output[this.output.length - 1] + '" class="normal-input"></div>';
-
-            this.toggleObserver = function (flag) {
-
-                if (flag) {
-
-                    if (!timer && this.dataLine) {
-
-                        timer = window.setInterval(function () {
-
-                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
-                        }, 50);
-                    }
-                }
-                else {
-
-                    if (timer) {
-
-                        window.clearInterval(timer);
-                        timer = 0;
-                    }
-                }
-            };
 
             this.updater = function () {
 
                 this.setData(this.output);
-            };
-
-            this.destroy = function () {
-
-                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
-                if (index !== -1) {
-
-                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
-                }
-                if (timer) {
-
-                    window.clearInterval(timer);
-                    timer = 0;
-                }
-                this.dataLine = 0;
-                $(this.container).remove();
             };
 
             this.setData = function (data) {
@@ -991,6 +1018,8 @@ VILibrary.VI = {
                     }
                     this.output[this.dataLength - 1] = temp;
                 }
+                this.boxContent = '<div class="input-div"><span class="normal-span">输出值:</span>' +
+                    '<input type="number" id="DCOutputVI-input" value="' + temp + '" class="normal-input"></div>';
             };
 
             this.setInitialData = function () {
@@ -1014,21 +1043,35 @@ VILibrary.VI = {
 
                     if (_this.dataLine) {
 
-                        if (!timer) {
+                        clearTimeout(checkClickTimer);
+                        checkClickTimer = setTimeout(function () {
 
-                            _this.toggleObserver(true);
-                            _this.fillStyle = 'red';
-                            _this.draw();
-                        }
-                        else {
-                            _this.toggleObserver(false);
-                            _this.fillStyle = 'orange';
-                            _this.draw();
-                        }
+                            if (!_this.timer) {
+
+                                _this.toggleObserver(true);
+                                _this.fillStyle = 'red';
+                                _this.draw();
+                            }
+                            else {
+                                _this.toggleObserver(false);
+                                _this.fillStyle = 'orange';
+                                _this.draw();
+                            }
+                        }, 250);
                     }
                 }
             }, false);
 
+            //重写双击事件，先去除模版VI旧的绑定再添加新的
+            this.container.removeEventListener('dblclick', this.handleDblClick);
+
+            this.handleDblClick = function (e) {
+
+                clearTimeout(checkClickTimer);
+                VILibrary.InnerObjects.showBox(_this);
+            };
+
+            this.container.addEventListener('dblclick', this.handleDblClick, false);
         }
 
         static get cnName () {
@@ -1044,6 +1087,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'AddVI';
             this.inputPointCount = 2;
             this.originalInput = 0;
             this.latestInput = 0;
@@ -1072,6 +1116,8 @@ VILibrary.VI = {
                 if (inputType === 1) {
 
                     this.originalInput = inputValue;
+                    this.boxContent = '<div class="input-div"><span class="normal-span">初值:</span>' +
+                        '<input type="number" id="AddVI-input" value="' + this.originalInput + '" class="normal-input"></div>';
                 }
                 else {
 
@@ -1093,6 +1139,7 @@ VILibrary.VI = {
                         this.output[this.dataLength - 1] = temp;
                     }
                 }
+
             };
 
             this.setInitialData = function () {
@@ -1123,6 +1170,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'FFTVI';
             this.setData = function (input) {
 
                 if (!Array.isArray(input)) {
@@ -1158,6 +1206,8 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            this.name = 'PIDVI';
             this.lastInput = 0;
             this.P = 1;
             this.I = 1;
@@ -1179,6 +1229,7 @@ VILibrary.VI = {
 
                     return false;
                 }
+
                 let v1, v2, v3, v21;
 
                 v1 = this.P * temp1;
@@ -1189,8 +1240,8 @@ VILibrary.VI = {
 
                 v3 = this.D * (temp1 - this.lastInput) * this.Fs;
 
-                this.lastInput = temp1;
-                let temp2 = v1 + v2 + v3;
+                this.lastInput = parseFloat(temp1).toFixed(2);
+                let temp2 = parseFloat(v1 + v2 + v3).toFixed(2);
 
                 //将输出数保存在数组内
                 if (this.index <= (this.dataLength - 1)) {
@@ -1209,11 +1260,27 @@ VILibrary.VI = {
                 }
             };
 
+            this.setPID = function (P, I, D) {
+
+                if (isNaN(P) || isNaN(I) || isNaN(D)) {
+
+                    return
+                }
+                this.P = P;
+                this.I = I;
+                this.D = D;
+                this.boxContent = '<div class="input-div">' +
+                    '<span class="normal-span">P:</span><input type="number" id="PIDVI-input-1" value="' + this.P + '" class="normal-input">' +
+                    '<span class="normal-span">I:</span><input type="number" id="PIDVI-input-2" value="' + this.I + '" class="normal-input">' +
+                    '<span class="normal-span">D:</span><input type="number" id="PIDVI-input-3" value="' + this.D + '" class="normal-input"></div>';
+            };
+
             this.setInitialData = function () {
 
-                this.P = Number($('#PIDVI-input-1').val());
-                this.I = Number($('#PIDVI-input-2').val());
-                this.D = Number($('#PIDVI-input-3').val());
+                let P = Number($('#PIDVI-input-1').val());
+                let I = Number($('#PIDVI-input-2').val());
+                let D = Number($('#PIDVI-input-3').val());
+                this.setPID(P, I, D);
             };
 
             this.reset = function () {
@@ -1248,11 +1315,295 @@ VILibrary.VI = {
         }
     },
 
+    VibrateSystemVI: class VibrateSystemVI extends TemplateVI {
+
+        constructor (VICanvas) {
+
+            super(VICanvas);
+
+            let Fs = 200, freedom = 1, dt, fremax;
+            let g1 = [], h1 = [], y1 = [], y2 = [], u1 = [], u2 = [];
+
+            this.name = 'VibrateSystemVI';
+
+            function inverse (n, a) {
+
+                let i, j, k, e, f, b = [];
+                for (i = 0; i <= n; i++) {
+                    b.push([]);
+                    for (j = 0; j <= n; j++) {
+                        b[i].push(0);
+                    }
+                    b[i][i] = 1;
+                }
+                for (i = 1; i <= n; i++) {
+                    for (j = i; j <= n; j++) {
+                        if (a[i][j] != 0) {
+                            for (k = 1; k <= n; k++) {
+                                e = a[i][k];
+                                a[i][k] = a[j][k];
+                                a[j][k] = e;
+                                e = b[i][k];
+                                b[i][k] = b[j][k];
+                                b[j][k] = e;
+                            }
+                            f = 1.0 / a[i][i];
+                            for (k = 1; k <= n; k++) {
+                                a[i][k] = f * a[i][k];
+                                b[i][k] = f * b[i][k];
+                            }
+                            for (j = 1; j <= n; j++) {
+                                if (j != i) {
+                                    f = -a[j][i];
+                                    for (k = 1; k <= n; k++) {
+                                        a[j][k] = a[j][k] + f * a[i][k];
+                                        b[j][k] = b[j][k] + f * b[i][k];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                for (i = 1; i <= n; i++) {
+                    for (j = 1; j <= n; j++) {
+                        a[i][j] = b[i][j];
+                    }
+                }
+            }
+
+            function setInitData () {
+                let i, j, l, x, y, z, ss = 0;
+                let m = [], c = [], k = [], a = [], b = [], e = [], f = [];
+                let m1 = [], c1 = [], k1 = [];
+
+                for (i = 0; i < 8; i++) {
+
+                    y1[i] = 0;
+                    y2[i] = 0;
+                    u1[i] = 0;
+                    u2[i] = 0;
+                    m1[i] = 0;
+                    c1[i] = 0;
+                    k1[i] = 0;
+                }
+                m1[1] = 1;
+                c1[1] = 10;
+                k1[1] = 20;
+                // 传递矩阵求模型最大频率
+                dt = 1.0 / Fs;
+                for (i = 0; i <= 2 * freedom; i++) {
+
+                    g1.push([]);
+                    h1.push([]);
+                    m.push([]);
+                    c.push([]);
+                    k.push([]);
+                    a.push([]);
+                    b.push([]);
+                    e.push([]);
+                    f.push([]);
+                    for (j = 0; j < 2 * freedom; j++) {
+
+                        g1[i].push(0);
+                        h1[i].push(0);
+                        m[i].push(0);
+                        c[i].push(0);
+                        k[i].push(0);
+                        a[i].push(0);
+                        b[i].push(0);
+                        e[i].push(0);
+                        f[i].push(0);
+                    }
+                }
+                for (i = 1; i <= freedom; i++) {
+                    for (j = 1; j <= freedom; j++) {
+                        m[i][j] = 0;
+                        c[i][j] = 0;
+                        k[i][j] = 0;
+                    }
+                    m[i][i] = m1[i];
+                    c[i][i - 1] = -c1[i];
+                    c[i][i] = c1[i] + c1[i + 1];
+                    c[i][i + 1] = -c1[i + 1];
+                    k[i][i - 1] = -k1[i];
+                    k[i][i] = k1[i] + k1[i + 1];
+                    k[i][i + 1] = -k1[i + 1];
+                }
+                for (i = 1; i <= freedom; i++) {
+                    for (j = 1; j <= freedom; j++) {
+                        g1[i][j] = k[i][j];
+                    }
+                }
+
+                //******************************************************************
+                inverse(freedom, g1);
+                //******************************************************************
+                for (i = 1; i <= freedom; i++) {
+                    for (j = 1; j <= freedom; j++) {
+                        h1[i][j] = g1[i][j] * m[j][j];
+                    }
+                }
+
+                for (i = 1; i <= freedom; i++) {
+                    m1[i] = 1;
+                }
+                for (i = 1; i <= freedom; i++) {
+                    c1[i] = 0;
+                    for (j = 1; j <= freedom; j++) {
+                        c1[i] += m1[j] * h1[i][j];
+                    }
+                }
+                for (j = 1; j <= freedom; j++) {
+                    m1[j] = c1[j];
+                    if (c1[freedom] != 0) {
+                        m1[j] = c1[j] / c1[freedom];
+                    }
+                }
+                for (i = 1; i <= freedom; i++) {
+                    ss = ss + m1[i] * m1[i] * m[i][i];
+                }
+                ss = Math.sqrt(ss);
+                for (i = 1; i <= freedom; i++) {
+                    m1[i] = m1[i] / ss;
+                }
+                for (i = 1; i <= freedom; i++) {
+                    for (j = 1; j <= freedom; j++) {
+                        g1[i][j] = c1[freedom] * m1[i] * m1[j] * m[j][j];
+                        h1[i][j] -= g1[i][j];
+                    }
+                }
+                fremax = Math.sqrt(1.0 / Math.abs(c1[freedom])) / 2 * Math.PI;
+
+                //==生成状态空间矩阵=====================================================
+                for (i = 1; i <= freedom; i++) {
+                    for (j = 1; j <= freedom; j++) {
+                        a[i][j] = 0;
+                        a[i][j + freedom] = m[i][j];
+                        a[i + freedom][j] = m[i][j];
+                        a[i + freedom][j + freedom] = c[i][j];
+                        b[i][j] = -m[i][j];
+                        b[i][j + freedom] = 0;
+                        b[i + freedom][j] = 0;
+                        b[i + freedom][j + freedom] = k[i][j];
+                    }
+                }
+                i = 2 * freedom;
+                //*********************************************************************
+                inverse(i, a);//g.inverse(i,a);
+                //*********************************************************************
+                //   return;
+                for (i = 1; i <= 2 * freedom; i++) {
+                    for (j = 1; j <= 2 * freedom; j++) {
+                        e[i][j] = 0;
+                        for (l = 1; l <= 2 * freedom; l++) {
+                            e[i][j] = e[i][j] - a[i][l] * b[l][j];
+                        }
+                    }
+                }
+                for (x = 1; x <= 2 * freedom; x++) {
+                    for (y = 1; y <= 2 * freedom; y++) {
+                        g1[x][y] = 0;
+                        f[x][y] = 0;
+                    }
+                    f[x][x] = 1;
+                }
+                //求E^At
+                for (i = 1; i < 20; i++) {
+                    for (x = 1; x <= 2 * freedom; x++) {
+                        for (y = 1; y <= 2 * freedom; y++) {
+                            g1[x][y] = g1[x][y] + f[x][y];
+                        }
+                    }
+                    for (x = 1; x <= 2 * freedom; x++) {
+                        for (y = 1; y <= 2 * freedom; y++) {
+                            h1[x][y] = 0;
+                            for (z = 1; z <= 2 * freedom; z++) {
+                                h1[x][y] = h1[x][y] + e[x][z] * f[z][y];
+                            }
+                            h1[x][y] = h1[x][y] * dt / i;
+                        }
+                    }
+                    for (x = 1; x <= 2 * freedom; x++) {
+                        for (y = 1; y <= 2 * freedom; y++) {
+                            f[x][y] = h1[x][y];
+                        }
+                    }
+                }
+                for (x = 1; x <= 2 * freedom; x++) {
+                    for (y = 1; y <= 2 * freedom; y++) {
+                        h1[x][y] = 0;
+                        for (z = 1; z <= 2 * freedom; z++) {
+                            h1[x][y] = h1[x][y] + g1[x][z] * a[z][y];
+                        }
+                    }
+                }
+            }
+
+            this.setData = function (input) {
+
+                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(inputTemp)) {
+
+                    return false;
+                }
+
+                if (this.index === 0) {
+                    setInitData();
+                }
+                let i, j;
+                //计算过程
+                u2[freedom + 1] = inputTemp;
+                for (i = 1; i <= 2 * freedom; i++) {
+                    y2[i] = 0;
+                    for (j = 1; j <= 2 * freedom; j++) {
+                        y2[i] = y2[i] + g1[i][j] * y1[j] + h1[i][j] * (u1[j] + u2[j]) * 0.5 * dt;
+                    }
+                }
+                for (i = 1; i <= 2 * freedom; i++) {
+                    u1[i] = u2[i];
+                    y1[i] = y2[i];
+                }
+                //输出值
+                let outputTemp = y2[1 + freedom];
+
+                //将输出数保存在数组内
+                if (this.index <= (this.dataLength - 1)) {
+
+                    this.output[this.index] = outputTemp;
+                    this.index += 1;
+                }
+                else {
+
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+
+                        this.output[i] = this.output[i + 1];
+                    }
+                    this.output[this.dataLength - 1] = outputTemp;
+                }
+            };
+
+            this.reset = function () {
+
+                this.index = 0;
+                this.output = [0];
+            };
+
+            this.draw();
+        }
+
+        static get cnName () {
+
+            return 'n自由度振动系统';
+        }
+    },
+
     RelayVI: class RelayVI extends TemplateVI {
 
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            this.name = 'RelayVI';
 
             this.setData = function (input) {
 
@@ -1295,8 +1646,9 @@ VILibrary.VI = {
             super(VICanvas);
 
             const _this = this;
-            let timer = 0, timeStamp = 0, point = {};
+            let timeStamp = 0, point = {}, checkClickTimer = null;
 
+            this.name = 'SignalGeneratorVI';
             this.inputPointCount = 2;
             this.phase = 0;
             this.amp = 1;
@@ -1323,28 +1675,6 @@ VILibrary.VI = {
                 '<div><input type="radio" id="type4" class="radio-input" name="SignalGeneratorVI-type" value="4">' +
                 '<label class="input-label" for="type4">白噪声</label></div></div>';
 
-            this.toggleObserver = function (flag) {
-
-                if (flag) {
-
-                    if (!timer && this.dataLine) {
-
-                        timer = window.setInterval(function () {
-
-                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
-                        }, 50);
-                    }
-                }
-                else {
-
-                    if (timer) {
-
-                        window.clearInterval(timer);
-                        timer = 0;
-                    }
-                }
-            };
-
             this.updater = function () {
 
                 if (this.sourceInfoArray.length > 0) {
@@ -1360,22 +1690,6 @@ VILibrary.VI = {
                     //更新完幅值频率后刷新一遍数据
                     this.setData();
                 }
-            };
-
-            this.destroy = function () {
-
-                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
-                if (index !== -1) {
-
-                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
-                }
-                if (timer) {
-
-                    window.clearInterval(timer);
-                    timer = 0;
-                }
-                this.dataLine = 0;
-                $(this.container).remove();
             };
 
             // 采样频率为11025Hz
@@ -1510,20 +1824,35 @@ VILibrary.VI = {
 
                     if (_this.dataLine) {
 
-                        if (!timer) {
+                        clearTimeout(checkClickTimer);
+                        checkClickTimer = setTimeout(function () {
 
-                            _this.toggleObserver(true);
-                            _this.fillStyle = 'red';
-                            _this.draw();
-                        }
-                        else {
-                            _this.toggleObserver(false);
-                            _this.fillStyle = 'orange';
-                            _this.draw();
-                        }
+                            if (!_this.timer) {
+
+                                _this.toggleObserver(true);
+                                _this.fillStyle = 'red';
+                                _this.draw();
+                            }
+                            else {
+                                _this.toggleObserver(false);
+                                _this.fillStyle = 'orange';
+                                _this.draw();
+                            }
+                        }, 250);
                     }
                 }
             }, false);
+
+            //重写双击事件，先去除模版VI旧的绑定再添加新的
+            this.container.removeEventListener('dblclick', this.handleDblClick);
+
+            this.handleDblClick = function (e) {
+
+                clearTimeout(checkClickTimer);
+                VILibrary.InnerObjects.showBox(_this);
+            };
+
+            this.container.addEventListener('dblclick', this.handleDblClick, false);
         }
 
         static get cnName () {
@@ -1540,8 +1869,10 @@ VILibrary.VI = {
 
             const _this = this;
 
-            let camera, scene, renderer, controls, markControl, base, beam, ball, mark, position = 0, timer = 0;
+            let camera, scene, renderer, controls, markControl, switchControl, resetControl,
+                base, beam, ball, mark, offButton, onButton, resetButton, position = 0;
 
+            this.name = 'BallBeamVI';
             this.Fs = 50;
             this.markPosition = 0;  //记录标记移动位置
             this.PIDAngle = 0;
@@ -1553,44 +1884,6 @@ VILibrary.VI = {
             this.y2 = 0;
             this.angelOutput = [0];
             this.positionOutput = [0];
-
-            this.toggleObserver = function (flag) {
-
-                if (flag) {
-
-                    if (!timer && _this.dataLine) {
-
-                        timer = window.setInterval(function () {
-
-                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
-                        }, 50);
-                    }
-                }
-                else {
-
-                    if (timer) {
-
-                        window.clearInterval(timer);
-                        timer = 0;
-                    }
-                }
-            };
-
-            this.destroy = function () {
-
-                let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
-                if (index !== -1) {
-
-                    VILibrary.InnerObjects.existingVIArray.splice(index, 1);
-                }
-                if (timer) {
-
-                    window.clearInterval(timer);
-                    timer = 0;
-                }
-                this.dataLine = 0;
-                $(this.container).remove();
-            };
 
             //多输出选择弹出框
             this.outputBoxTitle = '请选择球杆模型输出参数';
@@ -1605,7 +1898,7 @@ VILibrary.VI = {
             /**
              * 三维绘图
              */
-            function BallBeamDraw () {
+            function ballBeamDraw () {
 
                 renderer = new THREE.WebGLRenderer({canvas: _this.container, antialias: true});
                 renderer.setClearColor(0x6495ED);
@@ -1658,11 +1951,74 @@ VILibrary.VI = {
                     renderer.domElement.style.cursor = 'auto';
                 });
 
+                //开关控制
+                switchControl = new ObjectControls(camera, renderer.domElement);
+                switchControl.map = plane;
+                switchControl.offsetUse = true;
+
+                switchControl.attachEvent('mouseOver', function () {
+
+                    renderer.domElement.style.cursor = 'pointer';
+                });
+
+                switchControl.attachEvent('mouseOut', function () {
+
+                    renderer.domElement.style.cursor = 'auto';
+                });
+
+                switchControl.attachEvent('onclick', function () {
+
+                    if (!_this.timer) {
+
+                        markControl.detach(mark);
+                        scene.remove(offButton);
+                        switchControl.detach(offButton);
+                        scene.add(onButton);
+                        switchControl.attach(onButton);
+                        _this.toggleObserver(true);
+
+                    }
+                    else {
+
+                        markControl.attach(mark);
+                        scene.remove(onButton);
+                        switchControl.detach(onButton);
+                        scene.add(offButton);
+                        switchControl.attach(offButton);
+                        _this.toggleObserver(false);
+                    }
+                });
+
+                //重置
+                resetControl = new ObjectControls(camera, renderer.domElement);
+                resetControl.map = plane;
+                resetControl.offsetUse = true;
+
+                resetControl.attachEvent('mouseOver', function () {
+
+                    renderer.domElement.style.cursor = 'pointer';
+                });
+
+                resetControl.attachEvent('mouseOut', function () {
+
+                    renderer.domElement.style.cursor = 'auto';
+                });
+
+                resetControl.attachEvent('onclick', function () {
+
+                    markControl.attach(mark);
+                    _this.reset();
+                });
+
                 scene.add(base);
                 scene.add(beam);
                 scene.add(ball);
                 scene.add(mark);
+                scene.add(offButton);
+                scene.add(resetButton);
                 markControl.attach(mark);
+                switchControl.attach(offButton);
+                resetControl.attach(resetButton);
 
                 ballBeamAnimate();
 
@@ -1690,7 +2046,7 @@ VILibrary.VI = {
                 }
 
                 position = this.focused.position.x;
-                _this.markPosition = parseFloat(position).toFixed(2);
+                _this.markPosition = parseInt(position);
             }
 
             window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
@@ -1798,6 +2154,7 @@ VILibrary.VI = {
 
             this.reset = function () {
 
+                this.toggleObserver(false);
                 this.PIDAngle = 0;
                 this.PIDPosition = 0;
                 this.angelOutput = [0];
@@ -1808,6 +2165,7 @@ VILibrary.VI = {
                 this.y1 = 0;
                 this.y2 = 0;
                 this.index = 0;
+                this.markPosition = 0;
                 position = 0;
                 setPosition(0, 0);
             };
@@ -1883,8 +2241,53 @@ VILibrary.VI = {
                                                         }
                                                     });
                                                     mark = d;
-                                                    loadingImg.style.display = 'none';
-                                                    new BallBeamDraw();
+                                                    mtlLoader.load('assets/BallBeamControl/offButton.mtl', function (materials) {
+
+                                                        materials.preload();
+
+                                                        objLoader.setMaterials(materials);
+                                                        objLoader.load('assets/BallBeamControl/offButton.obj', function (e) {
+                                                            e.traverse(function (child) {
+                                                                if (child instanceof THREE.Mesh) {
+
+                                                                    child.material.side = THREE.DoubleSide;
+                                                                }
+                                                            });
+                                                            offButton = e;
+                                                            mtlLoader.load('assets/BallBeamControl/resetButton.mtl', function (materials) {
+
+                                                                materials.preload();
+
+                                                                objLoader.setMaterials(materials);
+                                                                objLoader.load('assets/BallBeamControl/resetButton.obj', function (f) {
+                                                                    f.traverse(function (child) {
+                                                                        if (child instanceof THREE.Mesh) {
+
+                                                                            child.material.side = THREE.DoubleSide;
+                                                                        }
+                                                                    });
+                                                                    resetButton = f;
+                                                                    loadingImg.style.display = 'none';
+                                                                    ballBeamDraw();
+                                                                    mtlLoader.load('assets/BallBeamControl/onButton.mtl', function (materials) {
+
+                                                                        materials.preload();
+
+                                                                        objLoader.setMaterials(materials);
+                                                                        objLoader.load('assets/BallBeamControl/onButton.obj', function (g) {
+                                                                            g.traverse(function (child) {
+                                                                                if (child instanceof THREE.Mesh) {
+
+                                                                                    child.material.side = THREE.DoubleSide;
+                                                                                }
+                                                                            });
+                                                                            onButton = g;
+                                                                        });
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    });
                                                 });
                                             });
                                         });
@@ -1925,6 +2328,287 @@ VILibrary.VI = {
         }
     },
 
+    DoubleTankVI: class DoubleTankVI extends TemplateVI {
+
+        constructor (VICanvas, draw3DFlag) {
+
+            super(VICanvas);
+
+            const _this = this;
+
+            let camera, scene, renderer, controls, tank, sinkWater, tapWater1, tapWater2, tankWater1, tankWater2;
+            let waterMaterial = new THREE.MeshBasicMaterial({color: 0x00a0e3, opacity: 0.9});
+
+            this.name = 'DoubleTankVI';
+            this.Fs = 50;
+            this.h1 = 0;
+            this.h2 = 0;
+            this.waterInput = 0;
+            this.waterOutput1 = [0];    //水箱1流量输出
+            this.waterOutput2 = [0];    //水箱2流量输出
+            this.tankHeight1 = [0];    //水箱1水位高度
+            this.tankHeight2 = [0];    //水箱2水位高度
+
+            //多输出选择弹出框
+            this.outputBoxTitle = '请选择双容水箱输出参数';
+            this.outputBoxContent = '<div class="input-div">' +
+                '<div><input type="radio" id="type1" class="radio-input" name="output-type" value="1">' +
+                '<label class="input-label" for="type1">水箱1输出流量</label></div>' +
+                '<div><input type="radio" id="type2" class="radio-input" name="output-type" value="2">' +
+                '<label class="input-label" for="type2">水箱2输出流量</label></div>' +
+                '<div><input type="radio" id="type3" class="radio-input" name="output-type" value="3">' +
+                '<label class="input-label" for="type3">水箱1水位高度</label></div> ' +
+                '<div><input type="radio" id="type4" class="radio-input" name="output-type" value="4">' +
+                '<label class="input-label" for="type4">水箱2水位高度</label></div></div>';
+
+            function setWater () {
+
+                scene.remove(tapWater1);
+                scene.remove(tankWater1);
+                scene.remove(tapWater2);
+                scene.remove(tankWater2);
+                if (_this.waterInput > 0) {
+
+                    tapWater1 = new THREE.Mesh(new THREE.CylinderGeometry(18, 18, 800, 20), waterMaterial);
+                    tapWater1.position.x = -400;
+                    tapWater1.position.y = 600;
+
+                    scene.add(tapWater1);
+                }
+
+                if (_this.h1 > 0) {
+
+                    tankWater1 = new THREE.Mesh(new THREE.CylinderGeometry(290, 290, _this.h1, 50), waterMaterial);
+                    tankWater1.position.x = -200;
+                    tankWater1.position.y = _this.h1 / 2 + 200;
+
+                    tapWater2 = new THREE.Mesh(new THREE.CylinderGeometry(18, 18, 800, 20), waterMaterial);
+                    tapWater2.position.x = 400;
+                    tapWater2.position.y = -220;
+
+                    scene.add(tankWater1);
+                    scene.add(tapWater2);
+                }
+
+                if (_this.h2 > 0) {
+
+                    tankWater2 = new THREE.Mesh(new THREE.CylinderGeometry(290, 290, _this.h2, 50), waterMaterial);
+                    tankWater2.position.x = 600;
+                    tankWater2.position.y = _this.h2 / 2 - 620;
+
+                    scene.add(tankWater2);
+                }
+            }
+
+            function doubleTankDraw () {
+
+                renderer = new THREE.WebGLRenderer({canvas: _this.container, antialias: true});
+                renderer.setClearColor('wheat');
+                renderer.setSize(_this.container.clientWidth, _this.container.clientHeight);
+
+                camera = new THREE.PerspectiveCamera(30, _this.container.clientWidth / _this.container.clientHeight, 1, 100000);
+                camera.position.z = 5000;
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.rotateSpeed = 0.8;
+                controls.enableZoom = true;
+                controls.zoomSpeed = 1.2;
+                controls.enableDamping = true;
+
+                scene = new THREE.Scene();
+
+                let light = new THREE.AmbientLight(0x555555);
+                scene.add(light);
+                let light1 = new THREE.DirectionalLight(0xffffff, 1);
+                light1.position.set(4000, 4000, 4000);
+                scene.add(light1);
+                let light2 = new THREE.DirectionalLight(0xffffff, 1);
+                light2.position.set(-4000, 4000, -4000);
+                scene.add(light2);
+
+                tank.position.x = -500;
+                tank.position.y = 1000;
+                scene.add(tank);
+
+                sinkWater = new THREE.Mesh(new THREE.BoxGeometry(3180, 200, 1380), waterMaterial);
+                sinkWater.position.x = 30;
+                sinkWater.position.y = -800;
+                scene.add(sinkWater);
+
+                animate();
+
+                // window.addEventListener('resize', function () {
+                //
+                //     camera.aspect = domElement.clientWidth / domElement.clientHeight;
+                //     camera.updateProjectionMatrix();
+                //     renderer.setSize(domElement.clientWidth, domElement.clientHeight);
+                // });
+            }
+
+            window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
+                || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+            function animate () {
+
+                window.requestAnimationFrame(animate);
+                controls.update();
+
+                renderer.render(scene, camera);
+
+            }
+
+            this.setData = function (input) {
+
+                let waterInput = Array.isArray(input) ? input[input.length - 1] : input;
+                if (Number.isNaN(waterInput)) {
+
+                    return false;
+                }
+                waterInput = waterInput < 0 ? 0 : waterInput;
+
+                let u11, u12, dh1, u21, u22, dh2;
+                u11 = waterInput;
+                u12 = Math.sqrt(2 * 9.8 * this.h1); //伯努利方程
+                dh1 = (u11 - u12) / this.Fs;
+                this.h1 = this.h1 + dh1;
+                this.h1 = this.h1 > 800 ? 800 : this.h1;    //800为水箱高度
+                this.waterInput = u11;
+
+                u21 = Math.sqrt(2 * 9.8 * this.h1);
+                u22 = Math.sqrt(2 * 9.8 * this.h2);
+                dh2 = (u21 - u22) / this.Fs;
+                this.h2 = this.h2 + dh2;
+                this.h2 = this.h2 > 800 ? 800 : this.h2;    //800为水箱高度
+
+                //将输出数保存在数组内
+                if (this.index <= (this.dataLength - 1)) {
+
+                    this.waterOutput1[this.index] = u12;
+                    this.waterOutput2[this.index] = u22;
+                    this.tankHeight1[this.index] = this.h1;
+                    this.tankHeight2[this.index] = this.h2;
+                    this.index += 1;
+                }
+                else {
+
+                    let i;
+                    for (i = 0; i < this.dataLength - 1; i += 1) {
+
+                        this.waterOutput1[i] = this.waterOutput1[i + 1];
+                        this.waterOutput2[i] = this.waterOutput2[i + 1];
+                        this.tankHeight1[i] = this.tankHeight1[i + 1];
+                        this.tankHeight2[i] = this.tankHeight2[i + 1];
+                    }
+                    this.waterOutput1[this.dataLength - 1] = u12;
+                    this.waterOutput2[this.dataLength - 1] = u22;
+                    this.tankHeight1[this.dataLength - 1] = this.h1;
+                    this.tankHeight2[this.dataLength - 1] = this.h2;
+                }
+                setWater();
+            };
+
+            this.getData = function (dataType) {
+
+                if (dataType === 1) {
+
+                    return this.waterOutput1;  //输出
+                }
+                if (dataType === 2) {
+
+                    return this.waterOutput2;  //输出
+
+                }
+                if (dataType === 3) {
+
+                    return this.tankHeight1;  //输出
+                }
+                if (dataType === 4) {
+
+                    return this.tankHeight2;  //输出
+                }
+            };
+
+            this.reset = function () {
+
+                this.toggleObserver(false);
+                this.Fs = 50;
+                this.h1 = 0;
+                this.h2 = 0;
+                this.index = 0;
+                this.waterOutput1 = [0];
+                this.waterOutput2 = [0];
+                this.tankHeight1 = [0];
+                this.tankHeight2 = [0];
+            };
+
+            this.draw = function () {
+
+                if (draw3DFlag) {
+
+                    let loadingImg = document.createElement('img');
+                    loadingImg.src = 'img/loading.gif';
+                    loadingImg.style.width = '64px';
+                    loadingImg.style.height = '64px';
+                    loadingImg.style.position = 'absolute';
+                    loadingImg.style.top = this.container.offsetTop + this.container.offsetHeight / 2 - 32 + 'px';
+                    loadingImg.style.left = this.container.offsetLeft + this.container.offsetWidth / 2 - 32 + 'px';
+                    loadingImg.style.zIndex = '10001';
+                    this.container.parentNode.appendChild(loadingImg);
+
+                    let mtlLoader = new THREE.MTLLoader();
+                    let objLoader = new THREE.OBJLoader();
+
+                    mtlLoader.load('assets/DoubleTank/tank.mtl', function (materials) {
+
+                        materials.preload();
+
+                        objLoader.setMaterials(materials);
+                        objLoader.load('assets/DoubleTank/tank.obj', function (a) {
+
+                            a.traverse(function (child) {
+                                if (child instanceof THREE.Mesh) {
+
+                                    child.material.side = THREE.DoubleSide;
+                                }
+                            });
+                            tank = a;
+                            loadingImg.style.display = 'none';
+                            doubleTankDraw();
+                        });
+                    });
+                }
+                else {
+
+                    this.ctx = this.container.getContext("2d");
+                    let img = new Image();
+                    img.src = 'img/BallBeam.png';
+                    img.onload = function () {
+
+                        _this.ctx.drawImage(img, 0, 0, _this.container.width, _this.container.height);
+                    };
+                }
+            };
+
+            this.draw();
+        }
+
+        static get cnName () {
+
+            return '双容水箱';
+        }
+
+        static get defaultWidth () {
+
+            return '550px';
+        }
+
+        static get defaultHeight () {
+
+            return '300px';
+        }
+    },
+
     RotorExperimentalRigVI: class RotorExperimentalRigVI extends TemplateVI {
 
         constructor (VICanvas, draw3DFlag) {
@@ -1934,8 +2618,9 @@ VILibrary.VI = {
             const _this = this;
 
             let camera, scene, renderer, controls, base, rotor, offSwitch, onSwitch, switchControl,
-                phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency, timer = 0;
+                phase = 0, sampleFrequency = 8192, dt = 1 / sampleFrequency;
 
+            this.name = 'RotorExperimentalRigVI';
             this.signalType = 1;
             this.rotateSpeed = 2399;
             this.rotateFrequency = this.rotateSpeed / 60;  //旋转频率
@@ -1968,6 +2653,44 @@ VILibrary.VI = {
                 '<label class="input-label" for="type3">轴心位移X信号</label></div>' +
                 '<div><input type="radio" id="type4" class="radio-input" name="RotorExperimentalRigVI-type" value="4">' +
                 '<label class="input-label" for="type4">轴心位移Y信号</label></div></div>';
+
+            this.toggleObserver = function (flag) {
+
+                if (flag) {
+
+                    if (!this.timer) {
+
+                        scene.remove(offSwitch);
+                        switchControl.detach(offSwitch);
+                        scene.add(onSwitch);
+                        switchControl.attach(onSwitch);
+                        this.timer = window.setInterval(function () {
+
+                            phase += 36;
+                            generateData();
+
+                            rotor.rotation.x += 2 * Math.PI * _this.rotateSpeed / 10;
+                            //定时更新相同数据线VI的数据
+                            if (_this.dataLine) {
+
+                                VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                            }
+                        }, 100);
+                    }
+                }
+                else {
+
+                    if (this.timer) {
+
+                        scene.remove(onSwitch);
+                        switchControl.detach(onSwitch);
+                        scene.add(offSwitch);
+                        switchControl.attach(offSwitch);
+                        window.clearInterval(this.timer);
+                        this.timer = 0;
+                    }
+                }
+            };
 
             /**
              *设置转速
@@ -2062,7 +2785,7 @@ VILibrary.VI = {
              * 三维绘图
              * @constructor
              */
-            function RotorExperimentalRigDraw () {
+            function rotorExperimentalRigDraw () {
 
                 renderer = new THREE.WebGLRenderer({
                     canvas: _this.container,
@@ -2112,38 +2835,7 @@ VILibrary.VI = {
 
                 switchControl.attachEvent('onclick', function () {
 
-                    if (!timer) {
-
-                        scene.remove(offSwitch);
-                        switchControl.detach(offSwitch);
-                        scene.add(onSwitch);
-                        switchControl.attach(onSwitch);
-
-                        timer = window.setInterval(function () {
-
-                            phase += 36;
-                            generateData();
-
-                            rotor.rotation.x += 2 * Math.PI * _this.rotateSpeed / 10;
-                            //定时更新相同数据线VI的数据
-                            if (_this.dataLine) {
-
-                                VILibrary.InnerObjects.dataUpdater(_this.dataLine);
-                            }
-                        }, 100);
-
-                    }
-
-                    else {
-
-                        scene.remove(onSwitch);
-                        switchControl.detach(onSwitch);
-                        scene.add(offSwitch);
-                        switchControl.attach(offSwitch);
-                        window.clearInterval(timer);
-                        timer = 0;
-                    }
-
+                    _this.toggleObserver(!_this.timer);
                 });
 
                 scene.add(base);
@@ -2254,7 +2946,7 @@ VILibrary.VI = {
                                                     });
                                                     onSwitch = d;
                                                     loadingImg.style.display = 'none';
-                                                    new RotorExperimentalRigDraw();
+                                                    rotorExperimentalRigDraw();
                                                 });
                                             });
                                         });
@@ -2301,6 +2993,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'TextVI';
             this.ctx = this.container.getContext("2d");
             this.outputPointCount = 0;
             this.latestInput = 0;
@@ -2330,6 +3023,8 @@ VILibrary.VI = {
 
                 this.decimalPlace = parseInt(decimalPlace);
                 this.setData(this.latestInput);
+                this.boxContent = '<div class="input-div">' +
+                    '<input type="number" id="TextVI-input" value="' + this.decimalPlace + '" class="normal-input"></div>';
             };
 
             this.setInitialData = function () {
@@ -2370,6 +3065,7 @@ VILibrary.VI = {
 
             const _this = this;
 
+            this.name = 'RoundPanelVI';
             this.ctx = this.container.getContext("2d");
             this.outputPointCount = 0;
             this.latestInput = 0;
@@ -2461,6 +3157,11 @@ VILibrary.VI = {
                 }
                 this.draw();
 
+                this.boxContent = '<div class="input-div">' +
+                    '<span class="normal-span">标题:</span><input type="text" id="RoundPanelVI-input-1" value="' + this.title + '" class="normal-input">' +
+                    '<span class="normal-span">单位:</span><input type="text" id="RoundPanelVI-input-2" value="' + this.unit + '" class="normal-input">' +
+                    '<span class="normal-span">最小值:</span><input type="number" id="RoundPanelVI-input-3" value="' + this.minValue + '" class="normal-input">' +
+                    '<span class="normal-span">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + this.maxValue + '" class="normal-input"></div>';
             };
 
             this.setData = function (latestInput) {
@@ -2628,6 +3329,7 @@ VILibrary.VI = {
 
             const _this = this;
 
+            this.name = 'BarVI';
             this.ctx = this.container.getContext("2d");
             this.outputPointCount = 0;
             this.labelX = [];
@@ -3009,6 +3711,7 @@ VILibrary.VI = {
 
             const _this = this;
 
+            this.name = 'WaveVI';
             this.ctx = this.container.getContext("2d");
             this.outputPointCount = 0;
             //坐标单位//
@@ -3413,6 +4116,7 @@ VILibrary.VI = {
 
             const _this = this;
 
+            this.name = 'OrbitWaveVI';
             this.ctx = this.container.getContext("2d");
             this.outputPointCount = 0;
 
@@ -3827,32 +4531,11 @@ VILibrary.VI = {
 
             const _this = this;
 
-            let timeStamp = 0, point = {}, timer = 0;
+            let timeStamp = 0, point = {};
 
+            this.name = 'ButtonVI';
             this.ctx = this.container.getContext("2d");
             this.outputPointCount = 0;
-
-            this.toggleObserver = function (flag) {
-
-                if (flag) {
-
-                    if (!timer && this.dataLine) {
-
-                        timer = window.setInterval(function () {
-
-                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
-                        }, 50);
-                    }
-                }
-                else {
-
-                    if (timer) {
-
-                        window.clearInterval(timer);
-                        timer = 0;
-                    }
-                }
-            };
 
             this.draw();
 
@@ -3870,7 +4553,7 @@ VILibrary.VI = {
 
                     if (_this.dataLine) {
 
-                        if (!timer) {
+                        if (!_this.timer) {
 
                             _this.toggleObserver(true);
                             _this.fillStyle = 'red';
@@ -3903,6 +4586,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'ProportionResponseVI';
             this.k1 = 1.5;
             //VI双击弹出框
             this.boxTitle = '比例响应';
@@ -3939,6 +4623,8 @@ VILibrary.VI = {
             this.setInitialData = function () {
 
                 this.k1 = Number($('#ProportionResponseVI-input').val());
+                this.boxContent = '<div class="input-div"><span class="normal-span">K1:</span>' +
+                    '<input type="number" id="ProportionResponseVI-input" value="' + this.k1 + '" class="normal-input"></div>';
             };
 
             this.draw();
@@ -3956,6 +4642,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'IntegrationResponseVI';
             this.k2 = 5;
             this.Fs = 1000;
             this.lastInput = 0;
@@ -4000,6 +4687,8 @@ VILibrary.VI = {
             this.setInitialData = function () {
 
                 this.k2 = Number($('#IntegrationResponseVI-input').val());
+                this.boxContent = '<div class="input-div"><span class="normal-span">K2:</span>' +
+                    '<input type="number" id="IntegrationResponseVI-input" value="' + this.k2 + '" class="normal-input"></div>';
             };
 
             this.reset = function () {
@@ -4023,6 +4712,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'DifferentiationResponseVI';
             this.k3 = 0.0025;
             this.Fs = 1000;
             this.lastInput = 0;
@@ -4060,6 +4750,8 @@ VILibrary.VI = {
             this.setInitialData = function () {
 
                 this.k3 = Number($('#DifferentiationResponseVI-input').val());
+                this.boxContent = '<div class="input-div"><span class="normal-span">K3:</span>' +
+                    '<input type="number" id="DifferentiationResponseVI-input" value="' + this.k3 + '" class="normal-input"></div>';
             };
 
             this.reset = function () {
@@ -4084,6 +4776,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'InertiaResponseVI';
             this.k1 = 0.025;
             this.Fs = 1000;
             this.temp1 = 0;
@@ -4125,6 +4818,8 @@ VILibrary.VI = {
             this.setInitialData = function () {
 
                 this.k1 = Number($('#InertiaResponseVI-input').val());
+                this.boxContent = '<div class="input-div"><span class="normal-span">K1:</span>' +
+                    '<input type="number" id="InertiaResponseVI-input" value="' + this.k1 + '" class="normal-input"></div>';
             };
 
             this.reset = function () {
@@ -4149,6 +4844,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'OscillationResponseVI';
             this.k1 = 50;
             this.k2 = 0.05;
             this.Fs = 1000;
@@ -4201,6 +4897,9 @@ VILibrary.VI = {
 
                 this.k1 = Number($('#OscillationResponseVI-input-1').val());
                 this.k2 = Number($('#OscillationResponseVI-input-2').val());
+                this.boxContent = '<div class="input-div">' +
+                    '<span class="normal-span">K1:</span><input type="number" id="OscillationResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+                    '<span class="normal-span">K2:</span><input type="number" id="OscillationResponseVI-input-2" value="' + this.k2 + '" class="normal-input"></div>';
             };
 
             this.reset = function () {
@@ -4226,6 +4925,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'ProportionIntegrationResponseVI';
             this.k1 = 1.5;
             this.k2 = 1;
             this.Fs = 1000;
@@ -4277,6 +4977,9 @@ VILibrary.VI = {
 
                 this.k1 = Number($('#ProportionIntegrationResponseVI-input-1').val());
                 this.k2 = Number($('#ProportionIntegrationResponseVI-input-2').val());
+                this.boxContent = '<div class="input-div">' +
+                    '<span class="normal-span">K1:</span><input type="number" id="ProportionIntegrationResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+                    '<span class="normal-span">K2:</span><input type="number" id="ProportionIntegrationResponseVI-input-2" value="' + this.k2 + '" class="normal-input"></div>';
             };
 
             this.reset = function () {
@@ -4302,6 +5005,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'ProportionDifferentiationResponseVI';
             this.k1 = 1;
             this.k3 = 0.0025;
             this.Fs = 1000;
@@ -4350,6 +5054,9 @@ VILibrary.VI = {
 
                 this.k1 = Number($('#ProportionDifferentiationResponseVI-input-1').val());
                 this.k3 = Number($('#ProportionDifferentiationResponseVI-input-2').val());
+                this.boxContent = '<div class="input-div">' +
+                    '<span class="normal-span">K1:</span><input type="number" id="ProportionDifferentiationResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+                    '<span class="normal-span">K3:</span><input type="number" id="ProportionDifferentiationResponseVI-input-2" value="' + this.k3 + '" class="normal-input"></div>';
             };
 
             this.reset = function () {
@@ -4374,6 +5081,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'ProportionInertiaResponseVI';
             this.k1 = 0.025;
             this.k2 = 1;
             this.Fs = 1000;
@@ -4421,6 +5129,9 @@ VILibrary.VI = {
 
                 this.k1 = Number($('#ProportionInertiaResponseVI-input-1').val());
                 this.k2 = Number($('#ProportionInertiaResponseVI-input-2').val());
+                this.boxContent = '<div class="input-div">' +
+                    '<span class="normal-span">K1:</span><input type="number" id="ProportionInertiaResponseVI-input-1" value="' + this.k1 + '" class="normal-input">' +
+                    '<span class="normal-span">K2:</span><input type="number" id="ProportionInertiaResponseVI-input-2" value="' + this.k2 + '" class="normal-input"></div>';
             };
 
             this.reset = function () {
@@ -4445,6 +5156,7 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            this.name = 'StepResponseGeneratorVI';
             this.signalType = 0;
             this.k1 = 1;
             this.k2 = 1;

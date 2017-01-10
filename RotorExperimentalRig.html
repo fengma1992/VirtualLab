@@ -61,9 +61,11 @@
         layer.open({
             type: 1,
             title: '相关数据波形图',
-            area: ['1000px', '500px'],
+            area: ['auto', 'auto'],
             shade: 0,
             maxmin: true,
+            moveOut: true,
+            offset: 'lb',
             closeBtn: false,
             zIndex: layer.zIndex,
             content: '<div class="rowFlex-div"><div class="columnFlex-div">' +

@@ -225,3 +225,11 @@ html {
     cursor: -moz-grab;
     cursor: -webkit-grab;
 }
+
+.VIContainer {
+
+    z-index: 1;
+    background-color: #6dd3d1;
+    width: 800px;
+    height: 400px;
+}

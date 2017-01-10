@@ -6,21 +6,19 @@
 	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+<canvas id="canvas" width="1500" height="800"></canvas>
 <script src="js/VILibrary.js"></script>
 <script src="js/jquery-3.1.1.min.js"></script>
-<!--<script src="js/layui/lay/dest/layui.all.js"></script>-->
-<!--<script src="js/three/three.js"></script>-->
-<!--<script src="js/three/MTLLoader.js"></script>-->
-<!--<script src="js/three/OBJLoader.js"></script>-->
-<!--<script src="js/three/controls/OrbitControls.js"></script>-->
-<!--<script src="js/three/ObjectControls.js"></script>-->
-<canvas id="SignalGeneratorVI" width="100" height="100"></canvas>
+<script src="js/layui/lay/dest/layui.all.js"></script>
+<script src="js/three/three.js"></script>
+<script src="js/three/MTLLoader.js"></script>
+<script src="js/three/OBJLoader.js"></script>
+<script src="js/three/controls/OrbitControls.js"></script>
+<script src="js/three/ObjectControls.js"></script>
 <script>
 
-    document.getElementById('SignalGeneratorVI').getContext
-    let testVI = new VILibrary.VI.DCOutputVI($('#SignalGeneratorVI'), true);
-    console.log(VILibrary.InnerObjects.existingVIArray);
-    console.log(testVI.constructor.cnName);
+    let testVI = new VILibrary.VI.DoubleTankVI($('#canvas'), true);
+
 </script>
 </body>
 </html>

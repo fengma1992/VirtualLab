@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$USER_HOME$/AppData/Local/Temp/7zO4BADC971/ProvinceAndCityJson.js" charset="GBK" />
     <file url="file://$PROJECT_DIR$/assets/BallBeamControl/ball.mtl" charset="GBK" />
     <file url="file://$PROJECT_DIR$/assets/BallBeamControl/ball.obj" charset="GBK" />
     <file url="file://$PROJECT_DIR$/assets/BallBeamControl/base.mtl" charset="GBK" />
@@ -9,5 +10,13 @@
     <file url="file://$PROJECT_DIR$/assets/BallBeamControl/beam.obj" charset="GBK" />
     <file url="file://$PROJECT_DIR$/assets/BallBeamControl/mark.mtl" charset="GBK" />
     <file url="file://$PROJECT_DIR$/assets/BallBeamControl/mark.obj" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/BallBeamControl/offButton.mtl" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/BallBeamControl/offButton.obj" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/BallBeamControl/onButton.mtl" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/BallBeamControl/onButton.obj" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/BallBeamControl/resetButton.mtl" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/BallBeamControl/resetButton.obj" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/DoubleTank/tank.mtl" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/assets/DoubleTank/tank.obj" charset="GBK" />
   </component>
 </project>

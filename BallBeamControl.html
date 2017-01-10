@@ -1,31 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>球杆模型控制实验</title>
-    <link rel="stylesheet" href="css/main.css">
+	<meta charset="UTF-8">
+	<title>球杆模型控制实验</title>
+	<link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 <div class="main-div">
-    <canvas id="mainCanvas" width="1000" height="600"></canvas>
-    <div class="rowFlex-div">
-        <div>
-            <span class="normal-span">P:</span><input type="number" id="PInput" value="20" class="normal-input">
-        </div>
-        <div>
-            <span class="normal-span">I:</span><input type="number" id="IInput" value="0" class="normal-input">
-        </div>
-        <div>
-            <span class="normal-span">D:</span><input type="number" id="DInput" value="20" class="normal-input">
-        </div>
-        <div>
-            <span class="normal-span">标记位置：</span><span id="positionSpan">0</span>
-        </div>
-        <div>
-            <input type="button" id="startBtn" value="开始" class="normal-btn" onclick="start()">
-            <input type="button" value="重置" class="normal-btn" onclick="reset()">
-        </div>
-    </div>
+	<canvas id="mainCanvas" width="1000" height="600"></canvas>
+	<div class="rowFlex-div">
+		<div>
+			<span class="normal-span">P:</span><input type="number" id="PInput" value="20" class="normal-input">
+		</div>
+		<div>
+			<span class="normal-span">I:</span><input type="number" id="IInput" value="0" class="normal-input">
+		</div>
+		<div>
+			<span class="normal-span">D:</span><input type="number" id="DInput" value="20" class="normal-input">
+		</div>
+		<div>
+			<span class="normal-span">标记位置：</span><span id="positionSpan">0</span>
+		</div>
+	</div>
 </div>
 <script src="js/VILibrary.js"></script>
 <script src="js/jquery-3.1.1.min.js"></script>
@@ -36,27 +32,27 @@
 <script src="js/three/controls/OrbitControls.js"></script>
 <script src="js/three/ObjectControls.js"></script>
 <script>
-
     //VI部分变量
-    let positionWave;
-    let angleWave;
+    let positionWave, angleWave, layerIndex = 0;
+    let positionSpan = $('#positionSpan');
     let addVI = new VILibrary.VI.AddVI($('<canvas id="addVI"></canvas>'));
     let PIDVI = new VILibrary.VI.PIDVI($('<canvas id="PIDVI"></canvas>'));
     let ballBeamVI = new VILibrary.VI.BallBeamVI($('#mainCanvas'), true);
-
     VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 3, 1);
     VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 2, 0);
     VILibrary.InnerObjects.bindDataLine(addVI.id, PIDVI.id, 0, 0);
     VILibrary.InnerObjects.bindDataLine(PIDVI.id, ballBeamVI.id, 0, 0);
-    
-    function start () {
-        $('#startBtn').attr('disabled', true);
+
+    function openWave () {
+
         layer.open({
             type: 1,
             title: '相关数据波形图',
             area: ['auto', 'auto'],
             shade: 0,
             maxmin: true,
+            moveOut: true,
+            offset: 'lb',
             closeBtn: false,
             zIndex: layer.zIndex,
             content: '<div class="columnFlex-div" style="margin: 5px 5px">' +
@@ -69,32 +65,35 @@
             '<span>杆角度曲线</span>' +
             '</div>' +
             '</div>',
-            success: function (layero) {
-
+            success: function (layero, index) {
+                layerIndex = index;
+                console.log(layerIndex);
                 layer.setTop(layero);
                 //PID控制器
                 PIDVI.P = $('#PInput').val();
                 PIDVI.I = $('#IInput').val();
                 PIDVI.D = $('#DInput').val();
-                $('#positionSpan').text(ballBeamVI.markPosition);
                 positionWave = new VILibrary.VI.WaveVI($('#positionCanvas'));
                 angleWave = new VILibrary.VI.WaveVI($('#angleCanvas'));
                 VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, positionWave.id, 2, 0);
                 VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, angleWave.id, 1, 0);
-                ballBeamVI.toggleObserver(true);
             }
         });
     }
-
-
     function reset () {
-
         ballBeamVI.toggleObserver(false);
         ballBeamVI.reset();
         layer.closeAll();
         $('#startBtn').attr('disabled', false);
         $('#positionInput').val(0);
     }
+    window.setInterval(function () {
+        positionSpan.text(ballBeamVI.markPosition);
+        if (ballBeamVI.timer && !layerIndex) {
+
+            openWave();
+        }
+    }, 100);
 </script>
 </body>
 </html>

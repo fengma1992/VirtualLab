@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>PID控制原理实验</title>
+	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="js/layui/css/layui.css" media="all">
+</head>
+<body>
+<div class="layui-tab layui-tab-card">
+	<ul class="layui-tab-title">
+		<li class="layui-this">开环控制</li>
+		<li>闭环比例控制</li>
+		<li>闭环比例/微分控制</li>
+		<li>闭环比例/积分控制</li>
+		<li>闭环比例/积分/微分控制</li>
+	</ul>
+	<div class="layui-tab-content" style="width: 800px">
+		<div class="layui-tab-item layui-show">
+			<div id="VIContainer1" style="position: relative;">
+				<canvas id="lineCanvas1" width="800px" height="450px"></canvas>
+			</div>
+		</div>
+		<div class="layui-tab-item">
+			<div id="VIContainer2" style="position: relative;">
+				<canvas id="lineCanvas2" width="800px" height="450px"></canvas>
+			</div>
+		</div>
+		<div class="layui-tab-item">
+			<div id="VIContainer3" style="position: relative;">
+				<canvas id="lineCanvas3" width="800px" height="450px"></canvas>
+			</div>
+		</div>
+		<div class="layui-tab-item">
+			<div id="VIContainer4" style="position: relative;">
+				<canvas id="lineCanvas4" width="800px" height="450px"></canvas>
+			</div>
+		</div>
+		<div class="layui-tab-item">
+			<div id="VIContainer5" style="position: relative;">
+				<canvas id="lineCanvas5" width="800px" height="450px"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="js/VILibrary.js"></script>
+<script src="js/jquery-3.1.1.min.js"></script>
+<!--弹出框-->
+<script src="js/layui/lay/dest/layui.all.js"></script>
+<script>
+    function setPID (index) {
+
+        if (index === 2) {
+
+            PIDVI2.setPID(Number($('#P2').val()), Number($('#I2').val()), Number($('#D2').val()));
+        }
+        if (index === 3) {
+
+            PIDVI3.setPID(Number($('#P3').val()), Number($('#I3').val()), Number($('#D3').val()));
+        }
+        if (index === 4) {
+
+            PIDVI4.setPID(Number($('#P4').val()), Number($('#I4').val()), Number($('#D4').val()));
+        }
+        if (index === 5) {
+
+            PIDVI5.setPID(Number($('#P5').val()), Number($('#I5').val()), Number($('#D5').val()));
+        }
+    }
+
+    function createCanvas (id, className, width, height, top, left, container) {
+
+        let canvas = $('<canvas></canvas>');
+        canvas.attr('id', id);
+        canvas.attr('class', className);
+        canvas.attr('width', width);
+        canvas.attr('height', height);
+        canvas.css('top', top);
+        canvas.css('left', left);
+        canvas.css('position', 'absolute');
+        canvas.attr('oncontextmenu', 'showContextMenu(event, this)');
+        canvas.attr('ondblclick', 'showBox(this)');
+        container.append(canvas);
+        return canvas;
+    }
+
+    function drawLine (canvas, sourceVI, targetVI) {
+
+        let ctx = canvas[0].getContext("2d");
+        let sourcePoint = [sourceVI.attr('width') / 2 + parseFloat(sourceVI.css('left')), sourceVI.attr('height') / 2 + parseFloat(sourceVI.css('top'))];
+        let targetPoint = [targetVI.attr('width') / 2 + parseFloat(targetVI.css('left')), targetVI.attr('height') / 2 + parseFloat(targetVI.css('top'))];
+
+        //输出在输入右侧，从输出右侧连线到输出左侧
+        if (sourcePoint[0] + sourceVI.attr('width') / 2 < targetPoint[0] - targetVI.attr('width') / 2) {
+
+            let startPoint = [sourcePoint[0] + sourceVI.attr('width') / 2, sourcePoint[1]];
+            let endPoint = [targetPoint[0] - targetVI.attr('width') / 2, targetPoint[1]];
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#00a0e3';
+            ctx.moveTo(startPoint[0], startPoint[1]);
+            ctx.lineTo((startPoint[0] + endPoint[0]) / 2, startPoint[1]);
+            ctx.lineTo((startPoint[0] + endPoint[0]) / 2, endPoint[1]);
+            ctx.lineTo(endPoint[0], endPoint[1]);
+            ctx.lineTo(endPoint[0] - 10, endPoint[1] - 10);
+            ctx.stroke();
+            ctx.closePath();
+        }
+        //输出在输入左侧，为避免重叠，输入出点在下
+        else if (sourcePoint[0] - sourceVI.attr('width') / 2 > targetPoint[0] + targetVI.attr('width') / 2) {
+
+            let startPoint = [sourcePoint[0], sourcePoint[1] + sourceVI.attr('height') / 2];
+            let endPoint = [targetPoint[0], targetPoint[1] + targetVI.attr('height') / 2];
+            let tempY = Math.max(startPoint[1], endPoint[1]) + 30;
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#00a0e3';
+            ctx.moveTo(startPoint[0], startPoint[1]);
+            ctx.lineTo(startPoint[0], tempY);
+            ctx.lineTo((startPoint[0] + endPoint[0]) / 2, tempY);
+            ctx.lineTo(endPoint[0], tempY);
+            ctx.lineTo(endPoint[0], endPoint[1]);
+            ctx.lineTo(endPoint[0] - 10, endPoint[1] + 10);
+            ctx.stroke();
+            ctx.closePath();
+        }
+        //输出在输入下侧
+        else if (sourcePoint[1] + sourceVI.attr('height') / 2 < targetPoint[1] - targetVI.attr('height') / 2) {
+
+            let startPoint = [sourcePoint[0], sourcePoint[1] + sourceVI.attr('height') / 2];
+            let endPoint = [targetPoint[0], targetPoint[1] - targetVI.attr('height') / 2];
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#00a0e3';
+            ctx.moveTo(startPoint[0], startPoint[1]);
+            ctx.lineTo(startPoint[0], (startPoint[1] + endPoint[1]) / 2);
+            ctx.lineTo(endPoint[0], (startPoint[1] + endPoint[1]) / 2);
+            ctx.lineTo(endPoint[0], endPoint[1]);
+            ctx.lineTo(endPoint[0] - 10, endPoint[1] - 10);
+            ctx.stroke();
+            ctx.closePath();
+        }
+        //输出在上侧
+        else if (sourcePoint[1] - sourceVI.attr('height') / 2 > targetPoint[1] + targetVI.attr('height') / 2) {
+
+            let startPoint = [sourcePoint[0], sourcePoint[1] - sourceVI.attr('height') / 2];
+            let endPoint = [targetPoint[0], targetPoint[1] + targetVI.attr('height') / 2];
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#00a0e3';
+            ctx.moveTo(startPoint[0], startPoint[1]);
+            ctx.lineTo(startPoint[0], (startPoint[1] + endPoint[1]) / 2);
+            ctx.lineTo(endPoint[0], (startPoint[1] + endPoint[1]) / 2);
+            ctx.lineTo(endPoint[0], endPoint[1]);
+            ctx.lineTo(endPoint[0] + 10, endPoint[1] + 10);
+            ctx.stroke();
+            ctx.closePath();
+        }
+    }
+
+    function parseImportVI (json) {
+
+    }
+    //    开环控制
+    let VIContainer1 = $('#VIContainer1');
+    let lineCanvas1 = $('#lineCanvas1');
+    let DCOutputVI1 = new VILibrary.VI.DCOutputVI(createCanvas('DCOutput1', '', 60, 40, '90px', '30px', VIContainer1));
+    let vibrateSystemVI1 = new VILibrary.VI.VibrateSystemVI(createCanvas('vibrateSystem1', '', 60, 40, '320px', '30px', VIContainer1));//振动系统
+    let inputWaveVI1 = new VILibrary.VI.WaveVI(createCanvas('inputWave1', '', 400, 200, '10px', '360px', VIContainer1));
+    let outputWaveVI1 = new VILibrary.VI.WaveVI(createCanvas('outputWave1', '', 400, 200, '240px', '360px', VIContainer1));
+
+    DCOutputVI1.setData(5);
+    outputWaveVI1.setAxisRangY(-1, 1);
+    outputWaveVI1.autoZoom = false;
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI1.id, vibrateSystemVI1.id, 0, 0);
+    drawLine(lineCanvas1, $(DCOutputVI1.container), $(vibrateSystemVI1.container));
+
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI1.id, inputWaveVI1.id, 0, 0);
+    drawLine(lineCanvas1, $(DCOutputVI1.container), $(inputWaveVI1.container));
+
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI1.id, outputWaveVI1.id, 0, 0);
+    drawLine(lineCanvas1, $(vibrateSystemVI1.container), $(outputWaveVI1.container));
+
+    //闭环比例控制
+    let VIContainer2 = $('#VIContainer2');
+    let lineCanvas2 = $('#lineCanvas2');
+    let DCOutputVI2 = new VILibrary.VI.DCOutputVI(createCanvas('DCOutput2', '', 60, 40, '90px', '30px', VIContainer2));
+    let addVI2 = new VILibrary.VI.AddVI(createCanvas('add2', '', 60, 40, '320px', '30px', VIContainer2));
+    let PIDVI2 = new VILibrary.VI.PIDVI(createCanvas('PID2', '', 60, 40, '320px', '140px', VIContainer2));
+    let vibrateSystemVI2 = new VILibrary.VI.VibrateSystemVI(createCanvas('vibrateSystem2', '', 60, 40, '320px', '250px', VIContainer2));
+    let inputWaveVI2 = new VILibrary.VI.WaveVI(createCanvas('inputWave2', '', 400, 200, '10px', '360px', VIContainer2));
+    let outputWaveVI2 = new VILibrary.VI.WaveVI(createCanvas('outputWave2', '', 400, 200, '240px', '360px', VIContainer2));
+
+    DCOutputVI2.setData(5);
+    outputWaveVI2.setAxisRangY(-2, 10);
+    outputWaveVI2.autoZoom = false;
+    PIDVI2.setPID(300, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI2.id, inputWaveVI2.id, 0, 0);
+    drawLine(lineCanvas2, $(DCOutputVI2.container), $(inputWaveVI2.container));
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI2.id, addVI2.id, 0, 1);
+    drawLine(lineCanvas2, $(DCOutputVI2.container), $(addVI2.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI2.id, addVI2.id, 0, 2);
+    drawLine(lineCanvas2, $(vibrateSystemVI2.container), $(addVI2.container));
+    VILibrary.InnerObjects.bindDataLine(addVI2.id, PIDVI2.id, 0, 0);
+    drawLine(lineCanvas2, $(addVI2.container), $(PIDVI2.container));
+    VILibrary.InnerObjects.bindDataLine(PIDVI2.id, vibrateSystemVI2.id, 0, 0);
+    drawLine(lineCanvas2, $(PIDVI2.container), $(vibrateSystemVI2.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI2.id, outputWaveVI2.id, 0, 0);
+    drawLine(lineCanvas2, $(vibrateSystemVI2.container), $(outputWaveVI2.container));
+
+    //闭环比例/微分控制
+    let VIContainer3 = $('#VIContainer3');
+    let lineCanvas3 = $('#lineCanvas3');
+    let DCOutputVI3 = new VILibrary.VI.DCOutputVI(createCanvas('DCOutput3', '', 60, 40, '90px', '30px', VIContainer3));
+    let addVI3 = new VILibrary.VI.AddVI(createCanvas('add3', '', 60, 40, '320px', '30px', VIContainer3));
+    let PIDVI3 = new VILibrary.VI.PIDVI(createCanvas('PID3', '', 60, 40, '320px', '140px', VIContainer3));
+    let vibrateSystemVI3 = new VILibrary.VI.VibrateSystemVI(createCanvas('vibrateSystem3', '', 60, 40, '320px', '250px', VIContainer3));
+    let inputWaveVI3 = new VILibrary.VI.WaveVI(createCanvas('inputWave3', '', 400, 200, '10px', '360px', VIContainer3));
+    let outputWaveVI3 = new VILibrary.VI.WaveVI(createCanvas('outputWave3', '', 400, 200, '240px', '360px', VIContainer3));
+
+    DCOutputVI3.setData(5);
+    outputWaveVI3.setAxisRangY(-2, 10);
+    outputWaveVI3.autoZoom = false;
+    PIDVI3.setPID(300, 0, 50);
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI3.id, inputWaveVI3.id, 0, 0);
+    drawLine(lineCanvas3, $(DCOutputVI3.container), $(inputWaveVI3.container));
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI3.id, addVI3.id, 0, 1);
+    drawLine(lineCanvas3, $(DCOutputVI3.container), $(addVI3.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI3.id, addVI3.id, 0, 2);
+    drawLine(lineCanvas3, $(vibrateSystemVI3.container), $(addVI3.container));
+    VILibrary.InnerObjects.bindDataLine(addVI3.id, PIDVI3.id, 0, 0);
+    drawLine(lineCanvas3, $(addVI3.container), $(PIDVI3.container));
+    VILibrary.InnerObjects.bindDataLine(PIDVI3.id, vibrateSystemVI3.id, 0, 0);
+    drawLine(lineCanvas3, $(PIDVI3.container), $(vibrateSystemVI3.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI3.id, outputWaveVI3.id, 0, 0);
+    drawLine(lineCanvas3, $(vibrateSystemVI3.container), $(outputWaveVI3.container));
+
+    //闭环比例/积分控制
+    let VIContainer4 = $('#VIContainer4');
+    let lineCanvas4 = $('#lineCanvas4');
+    let DCOutputVI4 = new VILibrary.VI.DCOutputVI(createCanvas('DCOutput4', '', 60, 40, '90px', '30px', VIContainer4));
+    let addVI4 = new VILibrary.VI.AddVI(createCanvas('add4', '', 60, 40, '320px', '30px', VIContainer4));
+    let PIDVI4 = new VILibrary.VI.PIDVI(createCanvas('PID4', '', 60, 40, '320px', '140px', VIContainer4));
+    let vibrateSystemVI4 = new VILibrary.VI.VibrateSystemVI(createCanvas('vibrateSystem4', '', 60, 40, '320px', '250px', VIContainer4));
+    let inputWaveVI4 = new VILibrary.VI.WaveVI(createCanvas('inputWave4', '', 400, 200, '10px', '360px', VIContainer4));
+    let outputWaveVI4 = new VILibrary.VI.WaveVI(createCanvas('outputWave4', '', 400, 200, '240px', '360px', VIContainer4));
+
+    DCOutputVI4.setData(5);
+    outputWaveVI4.setAxisRangY(-2, 10);
+    outputWaveVI4.autoZoom = false;
+    PIDVI4.setPID(30, 15, 0);
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI4.id, inputWaveVI4.id, 0, 0);
+    drawLine(lineCanvas4, $(DCOutputVI4.container), $(inputWaveVI4.container));
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI4.id, addVI4.id, 0, 1);
+    drawLine(lineCanvas4, $(DCOutputVI4.container), $(addVI4.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI4.id, addVI4.id, 0, 2);
+    drawLine(lineCanvas4, $(vibrateSystemVI4.container), $(addVI4.container));
+    VILibrary.InnerObjects.bindDataLine(addVI4.id, PIDVI4.id, 0, 0);
+    drawLine(lineCanvas4, $(addVI4.container), $(PIDVI4.container));
+    VILibrary.InnerObjects.bindDataLine(PIDVI4.id, vibrateSystemVI4.id, 0, 0);
+    drawLine(lineCanvas4, $(PIDVI4.container), $(vibrateSystemVI4.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI4.id, outputWaveVI4.id, 0, 0);
+    drawLine(lineCanvas4, $(vibrateSystemVI4.container), $(outputWaveVI4.container));
+
+    //闭环比例/积分/微分控制
+    let VIContainer5 = $('#VIContainer5');
+    let lineCanvas5 = $('#lineCanvas5');
+    let DCOutputVI5 = new VILibrary.VI.DCOutputVI(createCanvas('DCOutput5', '', 60, 40, '90px', '30px', VIContainer5));
+    let addVI5 = new VILibrary.VI.AddVI(createCanvas('add5', '', 60, 40, '320px', '30px', VIContainer5));
+    let PIDVI5 = new VILibrary.VI.PIDVI(createCanvas('PID5', '', 60, 40, '320px', '140px', VIContainer5));
+    let vibrateSystemVI5 = new VILibrary.VI.VibrateSystemVI(createCanvas('vibrateSystem5', '', 60, 40, '320px', '250px', VIContainer5));
+    let inputWaveVI5 = new VILibrary.VI.WaveVI(createCanvas('inputWave5', '', 400, 200, '10px', '360px', VIContainer5));
+    let outputWaveVI5 = new VILibrary.VI.WaveVI(createCanvas('outputWave5', '', 400, 200, '240px', '360px', VIContainer5));
+
+    DCOutputVI5.setData(5);
+    outputWaveVI5.setAxisRangY(-2, 10);
+    outputWaveVI5.autoZoom = false;
+    PIDVI5.setPID(300, 100, 100);
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI5.id, inputWaveVI5.id, 0, 0);
+    drawLine(lineCanvas5, $(DCOutputVI5.container), $(inputWaveVI5.container));
+    VILibrary.InnerObjects.bindDataLine(DCOutputVI5.id, addVI5.id, 0, 1);
+    drawLine(lineCanvas5, $(DCOutputVI5.container), $(addVI5.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI5.id, addVI5.id, 0, 2);
+    drawLine(lineCanvas5, $(vibrateSystemVI5.container), $(addVI5.container));
+    VILibrary.InnerObjects.bindDataLine(addVI5.id, PIDVI5.id, 0, 0);
+    drawLine(lineCanvas5, $(addVI5.container), $(PIDVI5.container));
+    VILibrary.InnerObjects.bindDataLine(PIDVI5.id, vibrateSystemVI5.id, 0, 0);
+    drawLine(lineCanvas5, $(PIDVI5.container), $(vibrateSystemVI5.container));
+    VILibrary.InnerObjects.bindDataLine(vibrateSystemVI5.id, outputWaveVI5.id, 0, 0);
+    drawLine(lineCanvas5, $(vibrateSystemVI5.container), $(outputWaveVI5.container));
+</script>
+</body>
+</html>

@@ -59,52 +59,19 @@ function checkIfTargetInputValueBound (targetVI, inputType) {
     return false;
 }
 
-//删除VI
 function deleteVI (canvas) {
 
     let canvasId = canvas.id;
     let VI = VILibrary.InnerObjects.getVIById(canvasId);
 
     // 从连线库删除VI数据
-    instance.detachAllConnections(canvas);
-    instance.deleteEndpoint('output-' + canvasId);
-    instance.deleteEndpoint('input-' + canvasId);
+    // instance.detachAllConnections(canvas);
+    // instance.deleteEndpoint('output-' + canvasId);
+    // instance.deleteEndpoint('input-' + canvasId);
 
+    instance.remove(canvas);
     VI.destroy();
     ready();
-}
-
-//双击VI弹出框
-function showBox (VICanvas) {
-
-    let canvasId = VICanvas.id;
-    let VI = VILibrary.InnerObjects.getVIById(canvasId);
-
-    if (VI.boxTitle) {
-
-        layer.open({
-            type: 1,
-            title: VI.boxTitle,
-            area: ['auto', 'auto'],
-            shade: 0.3,
-            shadeClose: true,
-            closeBtn: false,
-            zIndex: layer.zIndex,
-            content: VI.boxContent,
-            btnAlign: 'c',
-            btn: ['确定', '取消'],
-            yes: function (index) {
-                VI.setInitialData();
-                layer.close(index);
-            },
-            btn2: function (index) {
-                layer.close(index);
-            },
-            success: function (layero) {
-                layer.setTop(layero);
-            }
-        });
-    }
 }
 
 /**
@@ -192,15 +159,36 @@ function addEndpoints (id, outputPointCount, inputPointCount) {
 
     if (outputPointCount) {
 
-        instance.addEndpoint(id, outputEndpoint, {
-            anchor: outputAnchors,
-            uuid: 'output-' + id
-        });
+        instance.addEndpoint(id, outputEndpoint, {anchor: outputAnchors, uuid: 'output-' + id});
     }
     if (inputPointCount) {
 
         instance.addEndpoint(id, inputEndpoint, {anchor: inputAnchors, uuid: 'input-' + id});
     }
+}
+
+function showContextMenu (e, canvas) {
+
+    e = e || window.event;
+    e.preventDefault(); //阻止右键默认菜单
+
+    //鼠标点的坐标
+    let oX = e.clientX;
+    let oY = e.clientY;
+    let lockBtn = $('<li class="context-li">锁定</li>');
+    let deleteBtn = $('<li class="context-li">删除</li>');
+    lockBtn.click(function () { instance.toggleDraggable(canvas); });
+    deleteBtn.click(function () { deleteVI(canvas); });
+
+    //菜单出现后的位置
+    contextMenu.css('display', 'block');
+    contextMenu.css('left', oX);
+    contextMenu.css('top', oY);
+    contextMenu.empty();
+    contextMenu.append(lockBtn);
+    contextMenu.append(deleteBtn);
+    VIContainer.append(contextMenu);
+    return false;
 }
 
 function VIDraw (canvas) {
@@ -209,9 +197,7 @@ function VIDraw (canvas) {
     instance.draggable(canvas);
     let VIName = canvas.attr('id').split('-')[0];
     let tempVI = new VILibrary.VI[VIName](canvas, true);
-    // let tempVI = new VILibrary.VI[VIName].createVI(canvas, true);
-    addEndpoints(canvas.attr('id'), tempVI.outputPointCount, tempVI.inputPointCount);
-
+    addEndpoints(tempVI.id, tempVI.outputPointCount, tempVI.inputPointCount);
     return tempVI;
 }
 
@@ -239,34 +225,9 @@ function drop (e) {
     newVICanvas.attr('height', VILibrary.VI[VIName].defaultHeight);
     newVICanvas.css('left', (e.offsetX - newVICanvas.width() / 2) + 'px');
     newVICanvas.css('top', (e.offsetY - newVICanvas.height() / 2) + 'px');
-    newVICanvas.attr('ondblclick', 'showBox(this)');
     newVICanvas.attr('oncontextmenu', 'showContextMenu(event, this)');
 
     VIDraw(newVICanvas);
-}
-
-function showContextMenu (e, canvas) {
-
-    e = e || window.event;
-    e.preventDefault(); //阻止右键默认菜单
-
-    //鼠标点的坐标
-    let oX = e.clientX;
-    let oY = e.clientY;
-    let lockBtn = $('<li class="context-li">锁定</li>');
-    let deleteBtn = $('<li class="context-li">删除</li>');
-    lockBtn.click(function () { instance.toggleDraggable(canvas); });
-    deleteBtn.click(function () { deleteVI(canvas); });
-
-    //菜单出现后的位置
-    contextMenu.css('display', 'block');
-    contextMenu.css('left', oX);
-    contextMenu.css('top', oY);
-    contextMenu.html('');
-    contextMenu.append(lockBtn);
-    contextMenu.append(deleteBtn);
-    VIContainer.append(contextMenu);
-    return false;
 }
 
 function ready () {
@@ -519,7 +480,7 @@ function parseImportVIInfo (json) {
         catch (e) {
 
             init();
-            console.log('Parse ImportVI ' + e);
+            console.log('Parse ImportVI Error:' + e);
             parsingFlag = false;
             return false;
         }
