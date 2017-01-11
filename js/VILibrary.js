@@ -2353,13 +2353,14 @@ VILibrary.VI = {
 
             const _this = this;
 
-            let camera, scene, renderer, controls, tank, sinkWater, tapWater1, tapWater2, tankWater1, tankWater2;
+            let camera, scene, renderer, controls, tank, sinkWater, tapWater1, tapWater2, tapWater3, tankWater1, tankWater2;
             let waterMaterial = new THREE.MeshBasicMaterial({color: 0x00a0e3, opacity: 0.9});
 
             this.name = 'DoubleTankVI';
             this.Fs = 50;
             this.h1 = 0;
             this.h2 = 0;
+            this.h3 = 200;
             this.waterInput = 0;
             this.waterOutput1 = [0];    //水箱1流量输出
             this.waterOutput2 = [0];    //水箱2流量输出
@@ -2384,6 +2385,13 @@ VILibrary.VI = {
                 scene.remove(tankWater1);
                 scene.remove(tapWater2);
                 scene.remove(tankWater2);
+                scene.remove(sinkWater);
+
+                let h3 = 200 - (_this.h1 + _this.h2) / 10;
+                sinkWater = new THREE.Mesh(new THREE.BoxGeometry(3180, h3, 1380), waterMaterial);
+                sinkWater.position.x = 30;
+                sinkWater.position.y = -900 + h3 / 2;
+                scene.add(sinkWater);
                 if (_this.waterInput > 0) {
 
                     tapWater1 = new THREE.Mesh(new THREE.CylinderGeometry(18, 18, 800, 20), waterMaterial);
@@ -2413,7 +2421,12 @@ VILibrary.VI = {
                     tankWater2.position.x = 600;
                     tankWater2.position.y = _this.h2 / 2 - 620;
 
+                    tapWater3 = new THREE.Mesh(new THREE.CylinderGeometry(18, 18, 200, 20), waterMaterial);
+                    tapWater3.position.x = 1350;
+                    tapWater3.position.y = -900 + 200 / 2;
+
                     scene.add(tankWater2);
+                    scene.add(tapWater3);
                 }
             }
 
@@ -2450,7 +2463,7 @@ VILibrary.VI = {
 
                 sinkWater = new THREE.Mesh(new THREE.BoxGeometry(3180, 200, 1380), waterMaterial);
                 sinkWater.position.x = 30;
-                sinkWater.position.y = -800;
+                sinkWater.position.y = -900 + 200 / 2;
                 scene.add(sinkWater);
 
                 animate();
