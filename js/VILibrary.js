@@ -2013,7 +2013,9 @@ VILibrary.VI = {
                     renderer.domElement.style.cursor = 'auto';
                 });
 
-                resetControl.attachEvent('onclick', _this.reset());
+                resetControl.attachEvent('onclick', function () {
+                    _this.reset();
+                });
 
                 scene.add(base);
                 scene.add(beam);

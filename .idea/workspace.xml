@@ -3,13 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/BallBeamControl.html" afterPath="$PROJECT_DIR$/BallBeamControl.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ControlCharacteristic.html" afterPath="$PROJECT_DIR$/ControlCharacteristic.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DoubleTank.html" afterPath="$PROJECT_DIR$/DoubleTank.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RotorExperimentalRig.html" afterPath="$PROJECT_DIR$/RotorExperimentalRig.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibrary.js" afterPath="$PROJECT_DIR$/js/VILibrary.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test.html" afterPath="$PROJECT_DIR$/test.html" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,11 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="VILibrary.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="VILibrary.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/VILibrary.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="2125" column="27" lean-forward="true" selection-start-line="2125" selection-start-column="27" selection-end-line="2125" selection-end-column="27" />
+            <state relative-caret-position="797">
+              <caret line="2167" column="0" lean-forward="true" selection-start-line="2167" selection-start-column="0" selection-end-line="2167" selection-end-column="0" />
               <folding>
                 <element signature="e#154#1025#0" expanded="false" />
                 <element signature="e#1061#1239#0" expanded="false" />
@@ -81,33 +75,34 @@
                 <element signature="e#53983#54980#0" expanded="false" />
                 <element signature="e#55006#63553#0" expanded="false" />
                 <element signature="e#65013#65052#0" expanded="false" />
-                <element signature="e#65090#69840#0" expanded="false" />
-                <element signature="e#70704#70905#0" expanded="false" />
-                <element signature="e#70951#71372#0" expanded="false" />
-                <element signature="e#75183#83168#0" expanded="false" />
-                <element signature="e#83457#94197#0" expanded="false" />
-                <element signature="e#86529#88449#0" expanded="false" />
-                <element signature="e#88680#88836#0" expanded="false" />
-                <element signature="e#92865#93522#0" expanded="false" />
-                <element signature="e#94228#109746#0" expanded="false" />
-                <element signature="e#98518#98637#0" expanded="false" />
-                <element signature="e#98687#99186#0" expanded="false" />
-                <element signature="e#99226#101270#0" expanded="false" />
-                <element signature="e#104859#109477#0" expanded="false" />
-                <element signature="e#109761#111907#0" expanded="false" />
-                <element signature="e#111928#122908#0" expanded="false" />
-                <element signature="e#122922#136719#0" expanded="false" />
-                <element signature="e#136734#151032#0" expanded="false" />
-                <element signature="e#151052#165972#0" expanded="false" />
-                <element signature="e#165989#167468#0" expanded="false" />
-                <element signature="e#167497#169214#0" expanded="false" />
-                <element signature="e#169244#171447#0" expanded="false" />
-                <element signature="e#171481#173515#0" expanded="false" />
-                <element signature="e#173541#175643#0" expanded="false" />
-                <element signature="e#175673#178642#0" expanded="false" />
-                <element signature="e#178682#181483#0" expanded="false" />
-                <element signature="e#184254#186911#0" expanded="false" />
-                <element signature="e#186943#191999#0" expanded="false" />
+                <element signature="e#70755#70956#0" expanded="false" />
+                <element signature="e#71002#71423#0" expanded="false" />
+                <element signature="e#71553#74006#0" expanded="false" />
+                <element signature="e#74056#74413#0" expanded="false" />
+                <element signature="e#75234#83219#0" expanded="false" />
+                <element signature="e#83508#94248#0" expanded="false" />
+                <element signature="e#86580#88500#0" expanded="false" />
+                <element signature="e#88731#88887#0" expanded="false" />
+                <element signature="e#92916#93573#0" expanded="false" />
+                <element signature="e#94279#109797#0" expanded="false" />
+                <element signature="e#98569#98688#0" expanded="false" />
+                <element signature="e#98738#99237#0" expanded="false" />
+                <element signature="e#99277#101321#0" expanded="false" />
+                <element signature="e#104910#109528#0" expanded="false" />
+                <element signature="e#109812#111958#0" expanded="false" />
+                <element signature="e#111979#122959#0" expanded="false" />
+                <element signature="e#122973#136770#0" expanded="false" />
+                <element signature="e#136785#151083#0" expanded="false" />
+                <element signature="e#151103#166023#0" expanded="false" />
+                <element signature="e#166040#167519#0" expanded="false" />
+                <element signature="e#167548#169265#0" expanded="false" />
+                <element signature="e#169295#171498#0" expanded="false" />
+                <element signature="e#171532#173566#0" expanded="false" />
+                <element signature="e#173592#175694#0" expanded="false" />
+                <element signature="e#175724#178693#0" expanded="false" />
+                <element signature="e#178733#181534#0" expanded="false" />
+                <element signature="e#184305#186962#0" expanded="false" />
+                <element signature="e#186994#192051#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -116,10 +111,10 @@
       <file leaf-file-name="BallBeamControl.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="314">
-              <caret line="54" column="23" lean-forward="false" selection-start-line="54" selection-start-column="23" selection-end-line="54" selection-end-column="23" />
+            <state relative-caret-position="-1416">
+              <caret line="4" column="19" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="19" />
               <folding>
-                <marker date="1484099668252" expanded="true" signature="2093:2108" ph="..." />
+                <marker date="1484103194378" expanded="true" signature="2093:2108" ph="..." />
               </folding>
             </state>
           </provider>
@@ -139,11 +134,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="319">
-              <caret line="28" column="40" lean-forward="true" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
+            <state relative-caret-position="487">
+              <caret line="33" column="63" lean-forward="true" selection-start-line="33" selection-start-column="63" selection-end-line="33" selection-end-column="63" />
               <folding />
             </state>
           </provider>
@@ -152,7 +147,7 @@
       <file leaf-file-name="RotorExperimentalRig.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="631">
+            <state relative-caret-position="1608">
               <caret line="67" column="23" lean-forward="false" selection-start-line="67" selection-start-column="23" selection-end-line="67" selection-end-column="23" />
               <folding />
             </state>
@@ -162,10 +157,10 @@
       <file leaf-file-name="test.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="817">
+            <state relative-caret-position="2232">
               <caret line="93" column="7" lean-forward="false" selection-start-line="93" selection-start-column="7" selection-end-line="93" selection-end-column="7" />
               <folding>
-                <marker date="1484041178652" expanded="true" signature="2209:2224" ph="..." />
+                <marker date="1484103194451" expanded="true" signature="2209:2224" ph="..." />
               </folding>
             </state>
           </provider>
@@ -214,7 +209,6 @@
       <find>u2</find>
       <find>this.setData = function</find>
       <find>temp1</find>
-      <find>this.setData = function</find>
       <find>markPosition</find>
     </findStrings>
   </component>
@@ -280,10 +274,10 @@
         <option value="$PROJECT_DIR$/assets/DoubleTank/tank.obj" />
         <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
         <option value="$PROJECT_DIR$/test.html" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/DoubleTank.html" />
         <option value="$PROJECT_DIR$/BallBeamControl.html" />
         <option value="$PROJECT_DIR$/RotorExperimentalRig.html" />
+        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/VILibrary.js" />
       </list>
     </option>
@@ -685,21 +679,8 @@
       <workItem from="1483495061421" duration="4252000" />
       <workItem from="1483925592604" duration="6927000" />
       <workItem from="1483943846518" duration="6603000" />
-      <workItem from="1484013460273" duration="22489000" />
-    </task>
-    <task id="LOCAL-00016" summary="1027-1">
-      <created>1477560527275</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1477560527275</updated>
-    </task>
-    <task id="LOCAL-00017" summary="1027-night&#10;1、更新连接判断；&#10;2、更新断开连接响应...">
-      <created>1477579454864</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1477579454864</updated>
+      <workItem from="1484013460273" duration="23257000" />
+      <workItem from="1484120714139" duration="282000" />
     </task>
     <task id="LOCAL-00018" summary="1028-night&#10;1、更新允许多个连接；&#10;2、更改对象保存为二维数组形式">
       <created>1477651668475</created>
@@ -1030,11 +1011,25 @@
       <option name="project" value="LOCAL" />
       <updated>1484040535370</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="0111: morning&#10;&#10;VILibrary bug fix;">
+      <created>1484103168459</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1484103168459</updated>
+    </task>
+    <task id="LOCAL-00066" summary="0111: morning&#10;&#10;index.HTML change;">
+      <created>1484103257879</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1484103257879</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1144606000" />
+    <option name="totallyTimeSpent" value="1145656000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1051,9 +1046,7 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2805139" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.4978903" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3261339" sideWeight="0.50428265" order="12" side_tool="true" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3261339" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.4862869" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13185655" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1061,9 +1054,11 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2857143" sideWeight="0.4978903" order="3" side_tool="false" content_ui="tabs" x="1235" y="241" width="659" height="704" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3261339" sideWeight="0.49367088" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.4978903" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32959402" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -1104,8 +1099,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1117-night&#10;文档结构更改完成" />
-    <MESSAGE value="1118-morning&#10;更改主页链接" />
     <MESSAGE value="1123-afternoon&#10;backup" />
     <MESSAGE value="1123-night&#10;AudioVI fixed" />
     <MESSAGE value="1130-morning&#10;some bug fixed;&#10;added jQuery;" />
@@ -1129,7 +1122,9 @@
     <MESSAGE value="1218: morning&#10;&#10;VILibrary reconstructed" />
     <MESSAGE value="0110: afternoon&#10;&#10;VILibrary slim;&#10;DoubleTank Added;" />
     <MESSAGE value="0110: afternoon&#10;&#10;index.html change;" />
-    <option name="LAST_COMMIT_MESSAGE" value="0110: afternoon&#10;&#10;index.html change;" />
+    <MESSAGE value="0111: morning&#10;&#10;VILibrary bug fix;" />
+    <MESSAGE value="0111: morning&#10;&#10;index.HTML change;" />
+    <option name="LAST_COMMIT_MESSAGE" value="0111: morning&#10;&#10;index.HTML change;" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -1332,7 +1327,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
           <caret line="159" column="23" lean-forward="false" selection-start-line="159" selection-start-column="17" selection-end-line="159" selection-end-column="23" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1353,7 +1347,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="10" column="12" lean-forward="true" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1392,7 +1385,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1400,7 +1392,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1408,7 +1399,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1416,7 +1406,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1424,7 +1413,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1432,7 +1420,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1440,7 +1427,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1448,7 +1434,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="5" column="1" lean-forward="false" selection-start-line="5" selection-start-column="1" selection-end-line="5" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1466,10 +1451,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="817">
+        <state relative-caret-position="2232">
           <caret line="93" column="7" lean-forward="false" selection-start-line="93" selection-start-column="7" selection-end-line="93" selection-end-column="7" />
           <folding>
-            <marker date="1484041178652" expanded="true" signature="2209:2224" ph="..." />
+            <marker date="1484103194451" expanded="true" signature="2209:2224" ph="..." />
           </folding>
         </state>
       </provider>
@@ -1487,33 +1472,41 @@
         <state relative-caret-position="649">
           <caret line="109" column="22" lean-forward="false" selection-start-line="109" selection-start-column="22" selection-end-line="109" selection-end-column="22" />
           <folding>
-            <marker date="1484043101188" expanded="true" signature="2729:2744" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="54" column="23" lean-forward="false" selection-start-line="54" selection-start-column="23" selection-end-line="54" selection-end-column="23" />
-          <folding>
-            <marker date="1484099668252" expanded="true" signature="2093:2108" ph="..." />
+            <marker date="1484103194406" expanded="true" signature="2729:2744" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="631">
+        <state relative-caret-position="1608">
           <caret line="67" column="23" lean-forward="false" selection-start-line="67" selection-start-column="23" selection-end-line="67" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="487">
+          <caret line="33" column="63" lean-forward="true" selection-start-line="33" selection-start-column="63" selection-end-line="33" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1416">
+          <caret line="4" column="19" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="19" />
+          <folding>
+            <marker date="1484103194378" expanded="true" signature="2093:2108" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/VILibrary.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="2125" column="27" lean-forward="true" selection-start-line="2125" selection-start-column="27" selection-end-line="2125" selection-end-column="27" />
+        <state relative-caret-position="797">
+          <caret line="2167" column="0" lean-forward="true" selection-start-line="2167" selection-start-column="0" selection-end-line="2167" selection-end-column="0" />
           <folding>
             <element signature="e#154#1025#0" expanded="false" />
             <element signature="e#1061#1239#0" expanded="false" />
@@ -1558,42 +1551,35 @@
             <element signature="e#53983#54980#0" expanded="false" />
             <element signature="e#55006#63553#0" expanded="false" />
             <element signature="e#65013#65052#0" expanded="false" />
-            <element signature="e#65090#69840#0" expanded="false" />
-            <element signature="e#70704#70905#0" expanded="false" />
-            <element signature="e#70951#71372#0" expanded="false" />
-            <element signature="e#75183#83168#0" expanded="false" />
-            <element signature="e#83457#94197#0" expanded="false" />
-            <element signature="e#86529#88449#0" expanded="false" />
-            <element signature="e#88680#88836#0" expanded="false" />
-            <element signature="e#92865#93522#0" expanded="false" />
-            <element signature="e#94228#109746#0" expanded="false" />
-            <element signature="e#98518#98637#0" expanded="false" />
-            <element signature="e#98687#99186#0" expanded="false" />
-            <element signature="e#99226#101270#0" expanded="false" />
-            <element signature="e#104859#109477#0" expanded="false" />
-            <element signature="e#109761#111907#0" expanded="false" />
-            <element signature="e#111928#122908#0" expanded="false" />
-            <element signature="e#122922#136719#0" expanded="false" />
-            <element signature="e#136734#151032#0" expanded="false" />
-            <element signature="e#151052#165972#0" expanded="false" />
-            <element signature="e#165989#167468#0" expanded="false" />
-            <element signature="e#167497#169214#0" expanded="false" />
-            <element signature="e#169244#171447#0" expanded="false" />
-            <element signature="e#171481#173515#0" expanded="false" />
-            <element signature="e#173541#175643#0" expanded="false" />
-            <element signature="e#175673#178642#0" expanded="false" />
-            <element signature="e#178682#181483#0" expanded="false" />
-            <element signature="e#184254#186911#0" expanded="false" />
-            <element signature="e#186943#191999#0" expanded="false" />
+            <element signature="e#70755#70956#0" expanded="false" />
+            <element signature="e#71002#71423#0" expanded="false" />
+            <element signature="e#71553#74006#0" expanded="false" />
+            <element signature="e#74056#74413#0" expanded="false" />
+            <element signature="e#75234#83219#0" expanded="false" />
+            <element signature="e#83508#94248#0" expanded="false" />
+            <element signature="e#86580#88500#0" expanded="false" />
+            <element signature="e#88731#88887#0" expanded="false" />
+            <element signature="e#92916#93573#0" expanded="false" />
+            <element signature="e#94279#109797#0" expanded="false" />
+            <element signature="e#98569#98688#0" expanded="false" />
+            <element signature="e#98738#99237#0" expanded="false" />
+            <element signature="e#99277#101321#0" expanded="false" />
+            <element signature="e#104910#109528#0" expanded="false" />
+            <element signature="e#109812#111958#0" expanded="false" />
+            <element signature="e#111979#122959#0" expanded="false" />
+            <element signature="e#122973#136770#0" expanded="false" />
+            <element signature="e#136785#151083#0" expanded="false" />
+            <element signature="e#151103#166023#0" expanded="false" />
+            <element signature="e#166040#167519#0" expanded="false" />
+            <element signature="e#167548#169265#0" expanded="false" />
+            <element signature="e#169295#171498#0" expanded="false" />
+            <element signature="e#171532#173566#0" expanded="false" />
+            <element signature="e#173592#175694#0" expanded="false" />
+            <element signature="e#175724#178693#0" expanded="false" />
+            <element signature="e#178733#181534#0" expanded="false" />
+            <element signature="e#184305#186962#0" expanded="false" />
+            <element signature="e#186994#192051#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="28" column="40" lean-forward="true" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
