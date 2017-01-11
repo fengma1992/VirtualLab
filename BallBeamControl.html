@@ -52,7 +52,7 @@
             shade: 0,
             maxmin: true,
             moveOut: true,
-            offset: 'lb',
+            offset: 'lt',
             closeBtn: false,
             zIndex: layer.zIndex,
             content: '<div class="columnFlex-div" style="margin: 5px 5px">' +
@@ -67,7 +67,6 @@
             '</div>',
             success: function (layero, index) {
                 layerIndex = index;
-                console.log(layerIndex);
                 layer.setTop(layero);
                 //PID控制器
                 PIDVI.P = $('#PInput').val();

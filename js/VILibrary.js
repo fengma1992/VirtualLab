@@ -996,9 +996,9 @@ VILibrary.VI = {
                 this.setData(this.output);
             };
 
-            this.setData = function (data) {
+            this.setData = function (input) {
 
-                let temp = Array.isArray(data) ? data[data.length - 1] : data;
+                let temp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(temp)) {
 
                     return false;
@@ -1106,7 +1106,7 @@ VILibrary.VI = {
 
             this.setData = function (input, inputType) {
 
-                let inputValue = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputValue = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputValue)) {
 
                     console.log('AddVI: Input value error');
@@ -1224,9 +1224,10 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let temp1 = Array.isArray(input) ? input[input.length - 1] : input;
+                let temp1 = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(temp1)) {
 
+                    console.log('PIDVI: Input value error');
                     return false;
                 }
 
@@ -1240,8 +1241,8 @@ VILibrary.VI = {
 
                 v3 = this.D * (temp1 - this.lastInput) * this.Fs;
 
-                this.lastInput = parseFloat(temp1).toFixed(2);
-                let temp2 = parseFloat(v1 + v2 + v3).toFixed(2);
+                this.lastInput = Number(parseFloat(temp1).toFixed(2));
+                let temp2 = Number(parseFloat(v1 + v2 + v3).toFixed(2));
 
                 //将输出数保存在数组内
                 if (this.index <= (this.dataLength - 1)) {
@@ -1258,6 +1259,7 @@ VILibrary.VI = {
                     }
                     this.output[this.dataLength - 1] = temp2;
                 }
+
             };
 
             this.setPID = function (P, I, D) {
@@ -1541,7 +1543,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -1607,7 +1609,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let tempInput = Array.isArray(input) ? input[input.length - 1] : input;
+                let tempInput = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(tempInput)) {
 
                     return false;
@@ -1695,13 +1697,20 @@ VILibrary.VI = {
             // 采样频率为11025Hz
             this.setData = function (input, inputType) {
 
+                let temp = Number(Array.isArray(input) ? input[input.length - 1] : input);
+                if (Number.isNaN(temp)) {
+
+                    console.log('SignalGeneratorVI: Input value error');
+                    return false;
+                }
+
                 if (inputType === 1) {
 
-                    this.amp = Array.isArray(input) ? input[input.length - 1] : input;
+                    this.amp = temp;
                 }
                 else if (inputType === 2) {
 
-                    this.frequency = Array.isArray(input) ? input[input.length - 1] : input;
+                    this.frequency = temp;
                 }
                 else {
 
@@ -1878,10 +1887,10 @@ VILibrary.VI = {
             this.PIDAngle = 0;
             this.PIDPosition = 0;
             this.limit = true;
-            this.u1 = 0;
-            this.u2 = 0;
-            this.y1 = 0;
-            this.y2 = 0;
+            this.angle1 = 0;
+            this.angle2 = 0;
+            this.position1 = 0;
+            this.position2 = 0;
             this.angelOutput = [0];
             this.positionOutput = [0];
 
@@ -2004,11 +2013,7 @@ VILibrary.VI = {
                     renderer.domElement.style.cursor = 'auto';
                 });
 
-                resetControl.attachEvent('onclick', function () {
-
-                    markControl.attach(mark);
-                    _this.reset();
-                });
+                resetControl.attachEvent('onclick', _this.reset());
 
                 scene.add(base);
                 scene.add(beam);
@@ -2075,16 +2080,17 @@ VILibrary.VI = {
 
             /**
              *
-             * @param angle 输入端口读取角度
+             * @param input 输入端口读取角度
              */
-            this.setData = function (angle) {
+            this.setData = function (input) {
 
-                let inputAngle = Array.isArray(angle) ? angle[angle.length - 1] : angle;
+                let inputAngle = Number(Array.isArray(input) ? input[input.length - 1] : input);
+
                 if (Number.isNaN(inputAngle)) {
 
-                    return false;
+                    console.log('BallBeamVI: Input value error');
+                    return;
                 }
-
                 let outputPosition, Ts = 1 / this.Fs, angleMax = 100 * Ts;
                 if (this.limit) {
                     if ((inputAngle - this.PIDAngle) > angleMax) {
@@ -2106,14 +2112,18 @@ VILibrary.VI = {
                 }
 
                 this.PIDAngle = inputAngle;//向输出端口上写数据
-                outputPosition = this.y1 + 0.5 * Ts * (inputAngle + this.u1);
-                this.u1 = inputAngle;
-                this.y1 = outputPosition;
+
+                outputPosition = this.position1 + 0.5 * Ts * (inputAngle + this.angle1);
+                this.angle1 = inputAngle;
+                this.position1 = outputPosition;
                 inputAngle = outputPosition;
-                outputPosition = parseFloat(Number(this.y2) + Number(0.5 * Ts * (inputAngle + this.u2))).toFixed(2);
-                this.u2 = inputAngle;
-                this.y2 = outputPosition;
-                this.PIDPosition = outputPosition;//向输出端口上写数据
+                outputPosition = this.position2 + 0.5 * Ts * (inputAngle + this.angle2);
+                this.angle2 = inputAngle;
+                this.position2 = outputPosition;
+
+                outputPosition = outputPosition < -120 ? -120 : outputPosition;
+                outputPosition = outputPosition > 120 ? 120 : outputPosition;
+                this.PIDPosition = parseFloat(outputPosition).toFixed(2);//向输出端口上写数据
 
                 //将输出数保存在数组内
                 if (this.index <= (this.dataLength - 1)) {
@@ -2155,15 +2165,20 @@ VILibrary.VI = {
             this.reset = function () {
 
                 this.toggleObserver(false);
+                markControl.attach(mark);
+                scene.remove(onButton);
+                switchControl.detach(onButton);
+                scene.add(offButton);
+                switchControl.attach(offButton);
                 this.PIDAngle = 0;
                 this.PIDPosition = 0;
                 this.angelOutput = [0];
                 this.positionOutput = [0];
                 this.limit = true;
-                this.u1 = 0;
-                this.u2 = 0;
-                this.y1 = 0;
-                this.y2 = 0;
+                this.angle1 = 0;
+                this.angle2 = 0;
+                this.position1 = 0;
+                this.position2 = 0;
                 this.index = 0;
                 this.markPosition = 0;
                 position = 0;
@@ -2460,7 +2475,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let waterInput = Array.isArray(input) ? input[input.length - 1] : input;
+                let waterInput = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(waterInput)) {
 
                     return false;
@@ -2532,6 +2547,10 @@ VILibrary.VI = {
             this.reset = function () {
 
                 this.toggleObserver(false);
+                scene.remove(tapWater1);
+                scene.remove(tankWater1);
+                scene.remove(tapWater2);
+                scene.remove(tankWater2);
                 this.Fs = 50;
                 this.h1 = 0;
                 this.h2 = 0;
@@ -2694,11 +2713,11 @@ VILibrary.VI = {
 
             /**
              *设置转速
-             * @param rotateSpeed 输入端口读取转速
+             * @param input 输入端口读取转速
              */
-            this.setData = function (rotateSpeed) {
+            this.setData = function (input) {
 
-                let temp = Array.isArray(rotateSpeed) ? rotateSpeed[rotateSpeed.length - 1] : rotateSpeed;
+                let temp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(temp)) {
 
                     return false;
@@ -3003,9 +3022,9 @@ VILibrary.VI = {
             this.boxContent = '<div class="input-div">' +
                 '<input type="number" id="TextVI-input" value="' + this.decimalPlace + '" class="normal-input"></div>';
 
-            this.setData = function (latestInput) {
+            this.setData = function (input) {
 
-                this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+                this.latestInput = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(this.latestInput)) {
 
                     return false;
@@ -3164,9 +3183,9 @@ VILibrary.VI = {
                     '<span class="normal-span">最大值:</span><input type="number" id="RoundPanelVI-input-4" value="' + this.maxValue + '" class="normal-input"></div>';
             };
 
-            this.setData = function (latestInput) {
+            this.setData = function (input) {
 
-                this.latestInput = Array.isArray(latestInput) ? latestInput[latestInput.length - 1] : latestInput;
+                this.latestInput = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(this.latestInput)) {
 
                     return false;
@@ -4595,7 +4614,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let temp1 = Array.isArray(input) ? input[input.length - 1] : input;
+                let temp1 = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(temp1)) {
 
                     return false;
@@ -4654,7 +4673,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -4723,7 +4742,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -4787,7 +4806,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -4858,7 +4877,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -4939,7 +4958,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -5018,7 +5037,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -5094,7 +5113,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
@@ -5169,7 +5188,7 @@ VILibrary.VI = {
 
             this.setData = function (input) {
 
-                let inputTemp = Array.isArray(input) ? input[input.length - 1] : input;
+                let inputTemp = Number(Array.isArray(input) ? input[input.length - 1] : input);
                 if (Number.isNaN(inputTemp)) {
 
                     return false;
