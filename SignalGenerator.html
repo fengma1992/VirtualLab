@@ -15,7 +15,6 @@
 		<button id="squareBtn" class="normal-btn" onclick="setValue(2)">方波</button>
 		<button id="triangleBtn" class="normal-btn" onclick="setValue(3)">三角波</button>
 		<button id="noiseBtn" class="normal-btn" onclick="setValue(4)">白噪声</button>
-		<button id="startBtn" class="normal-btn" onclick="start()">运行</button>
 	</div>
 	<div class="rowFlex-div">
 		<div class="rowFlex-div">
@@ -37,14 +36,11 @@
 <script>
     let ampInput = $('#ampInput');
     let freqInput = $('#freqInput');
-    let startBtn = $('#startBtn');
-    startBtn.disabled = true;
 
     let waveVI = new VILibrary.VI.WaveVI($('#signalCanvas'));
     let signalGeneratorVI = new VILibrary.VI.SignalGeneratorVI($('#dataCanvas'));
-    let knobVI2 = new VILibrary.VI.KnobVI($('#knobCanvas2'));
     let knobVI1 = new VILibrary.VI.KnobVI($('#knobCanvas1'));
-    let started = false;
+    let knobVI2 = new VILibrary.VI.KnobVI($('#knobCanvas2'));
 
     VILibrary.InnerObjects.bindDataLine(knobVI1.id, signalGeneratorVI.id, 0, 1);
     VILibrary.InnerObjects.bindDataLine(knobVI2.id, signalGeneratorVI.id, 0, 2);
@@ -53,23 +49,6 @@
     function setValue (signalType) {
 
         signalGeneratorVI.setSignalType(signalType);
-        startBtn.clickable = false;
-    }
-
-    function start () {
-        if (!started) {
-
-            signalGeneratorVI.toggleObserver(true);
-            startBtn.text('停止');
-            startBtn.css('background-color', 'red');
-            started = !started;
-        }
-        else {
-            signalGeneratorVI.toggleObserver(false);
-            startBtn.text('运行');
-            startBtn.css('background-color', '');
-            started = !started;
-        }
     }
 
     knobVI1.setDataRange(0, 100, parseFloat(ampInput.val()));
@@ -88,7 +67,7 @@
 
     function setAmp () {
 
-        let amplitude = parseFloat(ampInput.val()).toFixed(1);
+        let amplitude = Number(parseFloat(ampInput.val()).toFixed(1));
         amplitude = amplitude > 100 ? 100 : amplitude;
         ampInput.val(amplitude);
         knobVI1.setData(amplitude);
@@ -97,7 +76,7 @@
 
     function setFreq () {
 
-        let frequency = parseFloat(freqInput.val()).toFixed(1);
+        let frequency = Number(parseFloat(freqInput.val()).toFixed(1));
         frequency = frequency > 1000 ? 1000 : frequency;
         freqInput.val(frequency);
         knobVI2.setData(frequency);

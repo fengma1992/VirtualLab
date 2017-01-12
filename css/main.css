@@ -233,3 +233,12 @@ html {
     width: 800px;
     height: 400px;
 }
+
+.dataTip {
+
+    background-color: white;
+    box-shadow: 1px 1px 19px #AAA;
+    -o-box-shadow: 1px 1px 19px #AAA;
+    -webkit-box-shadow: 1px 1px 19px #AAA;
+    -moz-box-shadow: 1px 1px 19px #AAA;
+}

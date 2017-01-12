@@ -13,6 +13,7 @@
       <w>github</w>
       <w>mousedown</w>
       <w>mousemove</w>
+      <w>mouseout</w>
       <w>mouseover</w>
       <w>mouseup</w>
       <w>oncontextmenu</w>

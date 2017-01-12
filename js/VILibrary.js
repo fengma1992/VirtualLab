@@ -678,6 +678,7 @@ VILibrary.VI = {
                 knob_Spinner.onload = resolve;
                 knob_Spinner.onerror = reject;
             });
+            let dataTip = $('');
 
             this.name = 'KnobVI';
             this.ctx = this.container.getContext("2d");
@@ -750,7 +751,6 @@ VILibrary.VI = {
                     }
                     this.output[this.dataLength - 1] = data;
                 }
-
             };
 
             this.setInitialData = function () {
@@ -854,9 +854,9 @@ VILibrary.VI = {
 
             };
 
-            function onMouseDown (event) {
+            function onMouseDown (e) {
 
-                let tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
+                let tempData = rotateAxis(e.offsetX - _this.container.width / 2, -(e.offsetY - _this.container.height / 2), 135);
                 startX = tempData[0];
                 startY = tempData[1];
                 if ((startX * startX + startY * startY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5) {
@@ -865,9 +865,9 @@ VILibrary.VI = {
                 }
             }
 
-            function onMouseMove (event) {
+            function onMouseMove (e) {
 
-                let tempData = rotateAxis(event.offsetX - _this.container.width / 2, -(event.offsetY - _this.container.height / 2), 135);
+                let tempData = rotateAxis(e.offsetX - _this.container.width / 2, -(e.offsetY - _this.container.height / 2), 135);
                 stopX = tempData[0];
                 stopY = tempData[1];
                 if ((stopX * stopX + stopY * stopY) <= _this.container.width / 2 * _this.container.width / 2 * 0.5 && !spinnerFlag) {
@@ -909,9 +909,24 @@ VILibrary.VI = {
                         _this.mouseMove();
                     }
                 }
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">输出值:' + _this.output[_this.output.length - 1].toFixed(2) + '</span></div>');
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
             }
 
-            function onMouseUp (event) {
+            function onMouseUp () {
 
                 spinnerFlag = false;
                 roundCount = 0;
@@ -920,6 +935,11 @@ VILibrary.VI = {
 
                     _this.mouseUp();
                 }
+            }
+
+            function onMouseOut () {
+
+                dataTip.remove();
             }
 
             function calculateRadian (x1, y1, x2, y2) {
@@ -956,6 +976,7 @@ VILibrary.VI = {
             this.container.addEventListener('mousemove', onMouseMove, false);
             this.container.addEventListener('mousedown', onMouseDown, false);
             this.container.addEventListener('mouseup', onMouseUp, false);
+            this.container.addEventListener('mouseout', onMouseOut, false);
         }
 
         static get cnName () {
@@ -982,6 +1003,7 @@ VILibrary.VI = {
 
             const _this = this;
             let timeStamp = 0, point = {}, checkClickTimer = null;
+            let dataTip = $('');
 
             this.name = 'DCOutputVI';
             this.inputPointCount = 0;
@@ -1035,7 +1057,6 @@ VILibrary.VI = {
                 point.x = e.clientX;
                 point.y = e.clientY;
             }, false);
-
             this.container.addEventListener('mouseup', function (e) {
 
                 //X、Y移动距离小于5，点击间隔小于200，默认点击事件
@@ -1061,6 +1082,25 @@ VILibrary.VI = {
                     }
                 }
             }, false);
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">输出值:' + _this.output[_this.output.length - 1].toFixed(2) + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
 
             //重写双击事件，先去除模版VI旧的绑定再添加新的
             this.container.removeEventListener('dblclick', this.handleDblClick);
@@ -1086,6 +1126,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'AddVI';
             this.inputPointCount = 2;
@@ -1156,6 +1199,28 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">输入值:' + _this.originalInput.toFixed(2) + '</span>' +
+                    '<span class="normal-span">反馈值:' + _this.latestInput.toFixed(2) + '</span>' +
+                    '<span class="normal-span">输出值:' + _this.output[_this.output.length - 1].toFixed(2) + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -1206,6 +1271,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'PIDVI';
             this.lastInput = 0;
@@ -1309,6 +1377,28 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">P:' + _this.P + '</span>' +
+                    '<span class="normal-span">I:' + _this.I + '</span>' +
+                    '<span class="normal-span">D:' + _this.D + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -1649,6 +1739,8 @@ VILibrary.VI = {
 
             const _this = this;
             let timeStamp = 0, point = {}, checkClickTimer = null;
+            let dataTip = $('');
+            let signalName = ['正弦波', '方波', '三角波', '白噪声'];
 
             this.name = 'SignalGeneratorVI';
             this.inputPointCount = 2;
@@ -1697,19 +1789,25 @@ VILibrary.VI = {
             // 采样频率为11025Hz
             this.setData = function (input, inputType) {
 
-                let temp = Number(Array.isArray(input) ? input[input.length - 1] : input);
-                if (Number.isNaN(temp)) {
-
-                    console.log('SignalGeneratorVI: Input value error');
-                    return false;
-                }
 
                 if (inputType === 1) {
 
+                    let temp = Number(Array.isArray(input) ? input[input.length - 1] : input);
+                    if (Number.isNaN(temp)) {
+
+                        console.log('SignalGeneratorVI: Input value error');
+                        return false;
+                    }
                     this.amp = temp;
                 }
                 else if (inputType === 2) {
 
+                    let temp = Number(Array.isArray(input) ? input[input.length - 1] : input);
+                    if (Number.isNaN(temp)) {
+
+                        console.log('SignalGeneratorVI: Input value error');
+                        return false;
+                    }
                     this.frequency = temp;
                 }
                 else {
@@ -1825,7 +1923,6 @@ VILibrary.VI = {
                 point.x = e.clientX;
                 point.y = e.clientY;
             }, false);
-
             this.container.addEventListener('mouseup', function (e) {
 
                 //X、Y移动距离小于5，点击间隔小于200，默认点击事件
@@ -1851,16 +1948,35 @@ VILibrary.VI = {
                     }
                 }
             }, false);
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">信号类型:' + signalName[_this.signalType - 1] + '</span>' +
+                    '<span class="normal-span">幅值:' + _this.amp.toFixed(2) + '</span>' +
+                    '<span class="normal-span">频率:' + _this.frequency.toFixed(2) + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
 
             //重写双击事件，先去除模版VI旧的绑定再添加新的
             this.container.removeEventListener('dblclick', this.handleDblClick);
-
             this.handleDblClick = function (e) {
 
                 clearTimeout(checkClickTimer);
                 VILibrary.InnerObjects.showBox(_this);
             };
-
             this.container.addEventListener('dblclick', this.handleDblClick, false);
         }
 
@@ -1879,7 +1995,8 @@ VILibrary.VI = {
             const _this = this;
 
             let camera, scene, renderer, controls, markControl, switchControl, resetControl,
-                base, beam, ball, mark, offButton, onButton, resetButton, position = 0;
+                base, beam, ball, mark, offButton, onButton, resetButton;
+            let dataTip = $('');
 
             this.name = 'BallBeamVI';
             this.Fs = 50;
@@ -2042,18 +2159,15 @@ VILibrary.VI = {
                 controls.enabled = false;
                 renderer.domElement.style.cursor = 'pointer';
                 this.focused.position.y = this.previous.y;  //lock y direction
-                position = this.focused.position.x;
-                if (position < -120) {
+                if (this.focused.position.x < -120) {
 
                     this.focused.position.x = -120;
                 }
-                else if (position > 120) {
+                else if (this.focused.position.x > 120) {
 
                     this.focused.position.x = 120;
                 }
-
-                position = this.focused.position.x;
-                _this.markPosition = parseInt(position);
+                _this.markPosition = parseInt(this.focused.position.x);
             }
 
             window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
@@ -2183,7 +2297,6 @@ VILibrary.VI = {
                 this.position2 = 0;
                 this.index = 0;
                 this.markPosition = 0;
-                position = 0;
                 setPosition(0, 0);
             };
 
@@ -2327,6 +2440,26 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">标记位置:' + _this.markPosition + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -2355,12 +2488,12 @@ VILibrary.VI = {
 
             let camera, scene, renderer, controls, tank, sinkWater, tapWater1, tapWater2, tapWater3, tankWater1, tankWater2;
             let waterMaterial = new THREE.MeshBasicMaterial({color: 0x00a0e3, opacity: 0.9});
+            let dataTip = $('');
 
             this.name = 'DoubleTankVI';
             this.Fs = 50;
             this.h1 = 0;
             this.h2 = 0;
-            this.h3 = 200;
             this.waterInput = 0;
             this.waterOutput1 = [0];    //水箱1流量输出
             this.waterOutput2 = [0];    //水箱2流量输出
@@ -2375,9 +2508,9 @@ VILibrary.VI = {
                 '<div><input type="radio" id="type2" class="radio-input" name="output-type" value="2">' +
                 '<label class="input-label" for="type2">水箱2输出流量</label></div>' +
                 '<div><input type="radio" id="type3" class="radio-input" name="output-type" value="3">' +
-                '<label class="input-label" for="type3">水箱1水位高度</label></div> ' +
+                '<label class="input-label" for="type3">水箱1水位</label></div> ' +
                 '<div><input type="radio" id="type4" class="radio-input" name="output-type" value="4">' +
-                '<label class="input-label" for="type4">水箱2水位高度</label></div></div>';
+                '<label class="input-label" for="type4">水箱2水位</label></div></div>';
 
             function setWater () {
 
@@ -2385,6 +2518,7 @@ VILibrary.VI = {
                 scene.remove(tankWater1);
                 scene.remove(tapWater2);
                 scene.remove(tankWater2);
+                scene.remove(tapWater3);
                 scene.remove(sinkWater);
 
                 let h3 = 200 - (_this.h1 + _this.h2) / 10;
@@ -2551,29 +2685,27 @@ VILibrary.VI = {
                 }
                 if (dataType === 3) {
 
-                    return this.tankHeight1;  //输出
+                    return this.tankHeight1;  //输出水箱1水位高度
                 }
                 if (dataType === 4) {
 
-                    return this.tankHeight2;  //输出
+                    return this.tankHeight2;  //输出水箱2水位高度
                 }
             };
 
             this.reset = function () {
 
                 this.toggleObserver(false);
-                scene.remove(tapWater1);
-                scene.remove(tankWater1);
-                scene.remove(tapWater2);
-                scene.remove(tankWater2);
                 this.Fs = 50;
                 this.h1 = 0;
                 this.h2 = 0;
                 this.index = 0;
+                this.waterInput = 0;
                 this.waterOutput1 = [0];
                 this.waterOutput2 = [0];
                 this.tankHeight1 = [0];
                 this.tankHeight2 = [0];
+                setWater();
             };
 
             this.draw = function () {
@@ -2625,6 +2757,27 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">水箱1水位:' + _this.h1.toFixed(2) + '</span>' +
+                    '<span class="normal-span">水箱2水位:' + _this.h2.toFixed(2) + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -4620,6 +4773,9 @@ VILibrary.VI = {
 
             super(VICanvas);
 
+            const _this = this;
+            let dataTip = $('');
+
             this.name = 'ProportionResponseVI';
             this.k1 = 1.5;
             //VI双击弹出框
@@ -4662,6 +4818,26 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k1:' + _this.k1 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -4675,6 +4851,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'IntegrationResponseVI';
             this.k2 = 5;
@@ -4732,6 +4911,26 @@ VILibrary.VI = {
                 this.output = [0];
             };
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k2:' + _this.k2 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -4745,6 +4944,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'DifferentiationResponseVI';
             this.k3 = 0.0025;
@@ -4796,6 +4998,26 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k3:' + _this.k3 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -4809,6 +5031,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'InertiaResponseVI';
             this.k1 = 0.025;
@@ -4864,6 +5089,26 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k1:' + _this.k1 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -4877,6 +5122,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'OscillationResponseVI';
             this.k1 = 50;
@@ -4945,6 +5193,27 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k1:' + _this.k1 + '</span>' +
+                    '<span class="normal-span">k2:' + _this.k2 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -4958,6 +5227,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'ProportionIntegrationResponseVI';
             this.k1 = 1.5;
@@ -5025,6 +5297,27 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k1:' + _this.k1 + '</span>' +
+                    '<span class="normal-span">k2:' + _this.k2 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -5038,6 +5331,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'ProportionDifferentiationResponseVI';
             this.k1 = 1;
@@ -5101,6 +5397,27 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k1:' + _this.k1 + '</span>' +
+                    '<span class="normal-span">k3:' + _this.k3 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -5114,6 +5431,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'ProportionInertiaResponseVI';
             this.k1 = 0.025;
@@ -5176,6 +5496,27 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k1:' + _this.k1 + '</span>' +
+                    '<span class="normal-span">k2:' + _this.k2 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
@@ -5189,6 +5530,9 @@ VILibrary.VI = {
         constructor (VICanvas) {
 
             super(VICanvas);
+
+            const _this = this;
+            let dataTip = $('');
 
             this.name = 'StepResponseGeneratorVI';
             this.signalType = 0;
@@ -5345,6 +5689,28 @@ VILibrary.VI = {
             };
 
             this.draw();
+
+            this.container.addEventListener('mousemove', function (e) {
+                //************************************数据提示****************************************//
+                dataTip.remove();
+                dataTip = $('<div class="rowFlex-div dataTip">' +
+                    '<span class="normal-span">k1:' + _this.k1 + '</span>' +
+                    '<span class="normal-span">k2:' + _this.k2 + '</span>' +
+                    '<span class="normal-span">k3:' + _this.k3 + '</span></div>');
+
+                if (e.target.parentElement.id === 'VIContainer') {
+
+                    $(e.target.parentElement).append(dataTip);
+                }
+                else {
+                    dataTip.css('position', 'fixed');
+                    dataTip.css('top', '0');
+                    dataTip.css('left', '0');
+                    dataTip.css('width', '100%');
+                    $('body').prepend(dataTip);
+                }
+            }, false);
+            this.container.addEventListener('mouseout', function () { dataTip.remove(); }, false);
         }
 
         static get cnName () {
