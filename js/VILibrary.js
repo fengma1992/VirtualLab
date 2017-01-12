@@ -387,6 +387,8 @@ class TemplateVI {
 
                 if (!this.timer && this.dataLine) {
 
+                    this.fillStyle = 'red';
+                    this.draw();
                     this.timer = window.setInterval(function () {
 
                         VILibrary.InnerObjects.dataUpdater(_this.dataLine);
@@ -400,6 +402,8 @@ class TemplateVI {
                     window.clearInterval(this.timer);
                     this.timer = 0;
                 }
+                this.fillStyle = 'orange';
+                this.draw();
             }
         };
 
@@ -573,7 +577,6 @@ VILibrary.VI = {
                                         _this.toggleObserver(false);
                                     }
                                 }
-
                                 getAudioData();
 
                                 _this.fillStyle = 'red';
@@ -592,9 +595,9 @@ VILibrary.VI = {
                         analyser.disconnect(audioCtx.destination);
                         window.cancelAnimationFrame(_this.timer);
                         _this.timer = 0;
-                        _this.fillStyle = 'silver';
-                        _this.draw();
                     }
+                    _this.fillStyle = 'silver';
+                    _this.draw();
                 }
             };
 
@@ -921,6 +924,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -1067,21 +1071,12 @@ VILibrary.VI = {
                         clearTimeout(checkClickTimer);
                         checkClickTimer = setTimeout(function () {
 
-                            if (!_this.timer) {
-
-                                _this.toggleObserver(true);
-                                _this.fillStyle = 'red';
-                                _this.draw();
-                            }
-                            else {
-                                _this.toggleObserver(false);
-                                _this.fillStyle = 'orange';
-                                _this.draw();
-                            }
+                            _this.toggleObserver(!_this.timer);
                         }, 250);
                     }
                 }
             }, false);
+
             this.container.addEventListener('mousemove', function (e) {
                 //************************************数据提示****************************************//
                 dataTip.remove();
@@ -1096,6 +1091,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -1216,6 +1212,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -1394,6 +1391,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -1789,7 +1787,6 @@ VILibrary.VI = {
             // 采样频率为11025Hz
             this.setData = function (input, inputType) {
 
-
                 if (inputType === 1) {
 
                     let temp = Number(Array.isArray(input) ? input[input.length - 1] : input);
@@ -1933,17 +1930,7 @@ VILibrary.VI = {
                         clearTimeout(checkClickTimer);
                         checkClickTimer = setTimeout(function () {
 
-                            if (!_this.timer) {
-
-                                _this.toggleObserver(true);
-                                _this.fillStyle = 'red';
-                                _this.draw();
-                            }
-                            else {
-                                _this.toggleObserver(false);
-                                _this.fillStyle = 'orange';
-                                _this.draw();
-                            }
+                            _this.toggleObserver(!_this.timer);
                         }, 250);
                     }
                 }
@@ -1964,6 +1951,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -2021,6 +2009,37 @@ VILibrary.VI = {
                 '<div><input type="radio" id="type3" class="radio-input" name="output-type" value="3">' +
                 '<label class="input-label" for="type3">标记位置</label></div></div>';
 
+            this.toggleObserver = function (flag) {
+
+                if (flag) {
+
+                    if (!this.timer && this.dataLine) {
+
+                        markControl.detach(mark);
+                        scene.remove(offButton);
+                        switchControl.detach(offButton);
+                        scene.add(onButton);
+                        switchControl.attach(onButton);
+                        this.timer = window.setInterval(function () {
+
+                            VILibrary.InnerObjects.dataUpdater(_this.dataLine);
+                        }, 50);
+                    }
+                }
+                else {
+
+                    if (this.timer) {
+
+                        window.clearInterval(this.timer);
+                        this.timer = 0;
+                    }
+                    markControl.attach(mark);
+                    scene.remove(onButton);
+                    switchControl.detach(onButton);
+                    scene.add(offButton);
+                    switchControl.attach(offButton);
+                }
+            };
             /**
              * 三维绘图
              */
@@ -2094,25 +2113,7 @@ VILibrary.VI = {
 
                 switchControl.attachEvent('onclick', function () {
 
-                    if (!_this.timer) {
-
-                        markControl.detach(mark);
-                        scene.remove(offButton);
-                        switchControl.detach(offButton);
-                        scene.add(onButton);
-                        switchControl.attach(onButton);
-                        _this.toggleObserver(true);
-
-                    }
-                    else {
-
-                        markControl.attach(mark);
-                        scene.remove(onButton);
-                        switchControl.detach(onButton);
-                        scene.add(offButton);
-                        switchControl.attach(offButton);
-                        _this.toggleObserver(false);
-                    }
+                    _this.toggleObserver(!_this.timer);
                 });
 
                 //重置
@@ -2281,11 +2282,6 @@ VILibrary.VI = {
             this.reset = function () {
 
                 this.toggleObserver(false);
-                markControl.attach(mark);
-                scene.remove(onButton);
-                switchControl.detach(onButton);
-                scene.add(offButton);
-                switchControl.attach(offButton);
                 this.PIDAngle = 0;
                 this.PIDPosition = 0;
                 this.angelOutput = [0];
@@ -2455,6 +2451,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -2773,6 +2770,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -2869,13 +2867,13 @@ VILibrary.VI = {
 
                     if (this.timer) {
 
-                        scene.remove(onSwitch);
-                        switchControl.detach(onSwitch);
-                        scene.add(offSwitch);
-                        switchControl.attach(offSwitch);
                         window.clearInterval(this.timer);
                         this.timer = 0;
                     }
+                    scene.remove(onSwitch);
+                    switchControl.detach(onSwitch);
+                    scene.add(offSwitch);
+                    switchControl.attach(offSwitch);
                 }
             };
 
@@ -4740,17 +4738,7 @@ VILibrary.VI = {
 
                     if (_this.dataLine) {
 
-                        if (!_this.timer) {
-
-                            _this.toggleObserver(true);
-                            _this.fillStyle = 'red';
-                            _this.draw();
-                        }
-                        else {
-                            _this.toggleObserver(false);
-                            _this.fillStyle = 'orange';
-                            _this.draw();
-                        }
+                        _this.toggleObserver(!_this.timer);
                     }
                 }
             }, false);
@@ -4833,6 +4821,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -4926,6 +4915,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -5013,6 +5003,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -5104,6 +5095,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -5209,6 +5201,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -5313,6 +5306,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -5413,6 +5407,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -5512,6 +5507,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
@@ -5706,6 +5702,7 @@ VILibrary.VI = {
                     dataTip.css('position', 'fixed');
                     dataTip.css('top', '0');
                     dataTip.css('left', '0');
+                    dataTip.css('z-index', '100');
                     dataTip.css('width', '100%');
                     $('body').prepend(dataTip);
                 }
