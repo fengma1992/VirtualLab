@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e5717af6-1570-410d-b876-c11527f72f7e" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PIDControl.html" afterPath="$PROJECT_DIR$/PIDControl.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/VILibrary.js" afterPath="$PROJECT_DIR$/js/VILibrary.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DoubleTank.html" afterPath="$PROJECT_DIR$/DoubleTank.html" />
     </list>
     <ignored path="objectControl.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,11 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="VILibrary.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VILibrary.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/VILibrary.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="671">
-              <caret line="405" column="28" lean-forward="false" selection-start-line="405" selection-start-column="28" selection-end-line="405" selection-end-column="28" />
+            <state relative-caret-position="-65">
+              <caret line="394" column="27" lean-forward="true" selection-start-line="394" selection-start-column="27" selection-end-line="394" selection-end-column="27" />
               <folding>
                 <element signature="e#0#43#0" expanded="false" />
                 <element signature="e#154#1025#0" expanded="false" />
@@ -803,8 +802,8 @@
       <file leaf-file-name="ControlCharacteristic.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="552">
-              <caret line="89" column="37" lean-forward="false" selection-start-line="89" selection-start-column="37" selection-end-line="89" selection-end-column="37" />
+            <state relative-caret-position="288">
+              <caret line="27" column="46" lean-forward="true" selection-start-line="27" selection-start-column="46" selection-end-line="27" selection-end-column="46" />
               <folding />
             </state>
           </provider>
@@ -813,8 +812,8 @@
       <file leaf-file-name="SignalGenerator.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1056">
-              <caret line="56" column="37" lean-forward="true" selection-start-line="56" selection-start-column="37" selection-end-line="56" selection-end-column="37" />
+            <state relative-caret-position="480">
+              <caret line="32" column="46" lean-forward="true" selection-start-line="32" selection-start-column="46" selection-end-line="34" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -823,10 +822,10 @@
       <file leaf-file-name="DoubleTank.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DoubleTank.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-911">
-              <caret line="46" column="44" lean-forward="false" selection-start-line="46" selection-start-column="44" selection-end-line="46" selection-end-column="44" />
+            <state relative-caret-position="313">
+              <caret line="70" column="27" lean-forward="false" selection-start-line="70" selection-start-column="27" selection-end-line="70" selection-end-column="27" />
               <folding>
-                <marker date="1484103194406" expanded="true" signature="2729:2744" ph="..." />
+                <marker date="1484219213195" expanded="true" signature="2729:2744" ph="..." />
               </folding>
             </state>
           </provider>
@@ -888,7 +887,7 @@
       <file leaf-file-name="BallBeamControl.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-984">
+            <state relative-caret-position="-1056">
               <caret line="4" column="19" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="19" />
               <folding>
                 <marker date="1484103194378" expanded="true" signature="2093:2108" ph="..." />
@@ -907,7 +906,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RotorExperimentalRig.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="RotorExperimentalRig.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="631">
@@ -1020,9 +1019,7 @@
         <option value="$PROJECT_DIR$/assets/BallBeamControl/onButton.mtl" />
         <option value="$PROJECT_DIR$/assets/BallBeamControl/onButton.obj" />
         <option value="$PROJECT_DIR$/assets/DoubleTank/tank.obj" />
-        <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
         <option value="$PROJECT_DIR$/test.html" />
-        <option value="$PROJECT_DIR$/DoubleTank.html" />
         <option value="$PROJECT_DIR$/BallBeamControl.html" />
         <option value="$PROJECT_DIR$/RotorExperimentalRig.html" />
         <option value="$PROJECT_DIR$/index.html" />
@@ -1031,6 +1028,8 @@
         <option value="$PROJECT_DIR$/SignalGenerator.html" />
         <option value="$PROJECT_DIR$/PIDControl.html" />
         <option value="$PROJECT_DIR$/js/VILibrary.js" />
+        <option value="$PROJECT_DIR$/ControlCharacteristic.html" />
+        <option value="$PROJECT_DIR$/DoubleTank.html" />
       </list>
     </option>
   </component>
@@ -1397,14 +1396,7 @@
       <workItem from="1483943846518" duration="6603000" />
       <workItem from="1484013460273" duration="23257000" />
       <workItem from="1484120714139" duration="2022000" />
-      <workItem from="1484184498383" duration="13614000" />
-    </task>
-    <task id="LOCAL-00021" summary="1101-afternoon&#10;1、数据框架更新完成；&#10;2、测试稳定性">
-      <created>1477991311190</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1477991311190</updated>
+      <workItem from="1484184498383" duration="14382000" />
     </task>
     <task id="LOCAL-00022" summary="1101-afternoon&#10;1、数据框架更新完成；&#10;2、测试稳定性">
       <created>1477992475953</created>
@@ -1742,11 +1734,18 @@
       <option name="project" value="LOCAL" />
       <updated>1484206609435</updated>
     </task>
-    <option name="localTasksCounter" value="70" />
+    <task id="LOCAL-00070" summary="0112: afternoon&#10;&#10;bug fix;">
+      <created>1484209031653</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1484209031653</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1161010000" />
+    <option name="totallyTimeSpent" value="1161778000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1816,7 +1815,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1130-morning&#10;some bug fixed;&#10;added jQuery;" />
     <MESSAGE value="1130-AFTERNOON&#10;some bug fixed;" />
     <MESSAGE value="1130-AFTERNOON&#10;BIG CHANGE!!! SOME UNUSED FILES DELETED." />
     <MESSAGE value="1201-MORNING&#10;BIG CHANGE!!! SLIM VIPARSER" />
@@ -1841,7 +1839,8 @@
     <MESSAGE value="0111: morning&#10;&#10;index.HTML change;" />
     <MESSAGE value="0111: afternoon&#10;&#10;bug fix;" />
     <MESSAGE value="0112: afternoon&#10;&#10;signalGenerator bug fix;" />
-    <option name="LAST_COMMIT_MESSAGE" value="0112: afternoon&#10;&#10;signalGenerator bug fix;" />
+    <MESSAGE value="0112: afternoon&#10;&#10;bug fix;" />
+    <option name="LAST_COMMIT_MESSAGE" value="0112: afternoon&#10;&#10;bug fix;" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -2144,34 +2143,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-984">
-          <caret line="4" column="19" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="19" />
-          <folding>
-            <marker date="1484103194378" expanded="true" signature="2093:2108" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="631">
-          <caret line="67" column="23" lean-forward="false" selection-start-line="67" selection-start-column="23" selection-end-line="67" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DoubleTank.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-911">
-          <caret line="46" column="44" lean-forward="false" selection-start-line="46" selection-start-column="44" selection-end-line="46" selection-end-column="44" />
-          <folding>
-            <marker date="1484103194406" expanded="true" signature="2729:2744" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="199">
@@ -2193,26 +2164,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1056">
-          <caret line="56" column="37" lean-forward="true" selection-start-line="56" selection-start-column="37" selection-end-line="56" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="552">
-          <caret line="89" column="37" lean-forward="false" selection-start-line="89" selection-start-column="37" selection-end-line="89" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/VILibrary.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="671">
-          <caret line="405" column="28" lean-forward="false" selection-start-line="405" selection-start-column="28" selection-end-line="405" selection-end-column="28" />
+        <state relative-caret-position="-65">
+          <caret line="394" column="27" lean-forward="true" selection-start-line="394" selection-start-column="27" selection-end-line="394" selection-end-column="27" />
           <folding>
             <element signature="e#0#43#0" expanded="false" />
             <element signature="e#154#1025#0" expanded="false" />
@@ -2977,6 +2932,50 @@
             <element signature="e#208961#209274#0" expanded="false" />
             <element signature="e#209437#209476#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SignalGenerator.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="46" lean-forward="true" selection-start-line="32" selection-start-column="46" selection-end-line="34" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ControlCharacteristic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="27" column="46" lean-forward="true" selection-start-line="27" selection-start-column="46" selection-end-line="27" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DoubleTank.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="313">
+          <caret line="70" column="27" lean-forward="false" selection-start-line="70" selection-start-column="27" selection-end-line="70" selection-end-column="27" />
+          <folding>
+            <marker date="1484219213195" expanded="true" signature="2729:2744" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BallBeamControl.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1056">
+          <caret line="4" column="19" lean-forward="false" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="19" />
+          <folding>
+            <marker date="1484103194378" expanded="true" signature="2093:2108" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RotorExperimentalRig.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="631">
+          <caret line="67" column="23" lean-forward="false" selection-start-line="67" selection-start-column="23" selection-end-line="67" selection-end-column="23" />
+          <folding />
         </state>
       </provider>
     </entry>
