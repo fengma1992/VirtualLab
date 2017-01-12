@@ -2191,8 +2191,8 @@ VILibrary.VI = {
                 mark.rotation.z = angle;
                 ball.position.y = pos * Math.sin(angle);
                 ball.position.x = pos * Math.cos(angle);
-                mark.position.y = position * Math.sin(angle);
-                mark.position.x = position * Math.cos(angle);
+                mark.position.y = _this.markPosition * Math.sin(angle);
+                mark.position.x = _this.markPosition * Math.cos(angle);
             }
 
             /**
