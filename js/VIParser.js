@@ -197,6 +197,9 @@ function VIDraw (canvas) {
     instance.draggable(canvas);
     let VIName = canvas.attr('id').split('-')[0];
     let tempVI = new VILibrary.VI[VIName](canvas, true);
+    if (tempVI.id === 'WaveVI-0') {
+        tempVI.setAxisRangX(0, 44100);
+    }
     addEndpoints(tempVI.id, tempVI.outputPointCount, tempVI.inputPointCount);
     return tempVI;
 }

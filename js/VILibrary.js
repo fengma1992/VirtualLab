@@ -74,10 +74,10 @@ VILibrary.InnerObjects = {
     /**
      * 查询某个VI已绑定的其他VI(默认包含自己)，调用后查询结果会存在boundVIArray中，
      * @param VI 需查询的VI
-     * @param boundVIArray 空数组
      */
-    findBoundVI: function (VI, boundVIArray) {
+    findBoundVI: function (VI) {
 
+        let boundVIArray = [];
         boundVIArray.push(VI);
         if (VI.sourceInfoArray) {
 
@@ -183,10 +183,10 @@ VILibrary.InnerObjects = {
         }
 
         //*****************************重分配dataLine*************************************//
-        let sourceVIBoundVIArray = [], targetVIBoundVIArray = [];
+        let sourceVIBoundVIArray, targetVIBoundVIArray;
 
-        this.findBoundVI(sourceVI, sourceVIBoundVIArray);
-        this.findBoundVI(targetVI, targetVIBoundVIArray);
+        sourceVIBoundVIArray = this.findBoundVI(sourceVI);
+        targetVIBoundVIArray = this.findBoundVI(targetVI);
 
         if (sourceVIBoundVIArray.length === 1) {//无其他VI相连
 
@@ -558,6 +558,7 @@ VILibrary.VI = {
                                 analyser.connect(audioCtx.destination);
 
                                 let bufferLength = analyser.frequencyBinCount;
+                            console.log(bufferLength);
                                 let dataArray = new Uint8Array(bufferLength);
 
                                 function getAudioData () {
@@ -577,6 +578,7 @@ VILibrary.VI = {
                                         _this.toggleObserver(false);
                                     }
                                 }
+
                                 getAudioData();
 
                                 _this.fillStyle = 'red';
@@ -1239,7 +1241,7 @@ VILibrary.VI = {
 
                     return;
                 }
-                this.output = VILibrary.InnerObjects.fft(1, 11, input);
+                this.output = VILibrary.InnerObjects.fft(1, 10, input);
                 return this.output;
 
             };
@@ -2310,6 +2312,7 @@ VILibrary.VI = {
                     loadingImg.style.zIndex = '10001';
                     this.container.parentNode.appendChild(loadingImg);
 
+                    new Promise.all()
                     let mtlLoader = new THREE.MTLLoader();
                     let objLoader = new THREE.OBJLoader();
 

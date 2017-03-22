@@ -9,6 +9,7 @@
 <div class="main-div">
 	<canvas id="mainCanvas" width="1000" height="600"></canvas>
 	<div class="rowFlex-div">
+		<canvas id="addVI" width="65" height="50"></canvas>
 		<div>
 			<span class="normal-span">P:</span><input type="number" id="PInput" value="1" class="normal-input">
 		</div>
@@ -18,6 +19,7 @@
 		<div>
 			<span class="normal-span">D:</span><input type="number" id="DInput" value="0" class="normal-input">
 		</div>
+		<canvas id="PIDVI" width="65" height="50"></canvas>
 		<div>
 			<span class="normal-span">设定水箱2期望水位(0-800)</span>
 			<input type="number" id="waterHeightInput" value="400" placeholder="0-800" class="normal-input">
@@ -39,8 +41,8 @@
     //VI部分变量
     let heightWave1, heightWave2, layerIndex = 0, waterHeight = 0;
     let waterHeightInput = $('#waterHeightInput');
-    let addVI = new VILibrary.VI.AddVI($('<canvas id="addVI"></canvas>'));
-    let PIDVI = new VILibrary.VI.PIDVI($('<canvas id="PIDVI"></canvas>'));
+    let addVI = new VILibrary.VI.AddVI($('#addVI'));
+    let PIDVI = new VILibrary.VI.PIDVI($('#PIDVI'));
     let doubleTankVI = new VILibrary.VI.DoubleTankVI($('#mainCanvas'), true);
     VILibrary.InnerObjects.bindDataLine(doubleTankVI.id, addVI.id, 4, 2);
     VILibrary.InnerObjects.bindDataLine(addVI.id, PIDVI.id, 0, 0);

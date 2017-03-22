@@ -8,9 +8,11 @@
 </head>
 <body>
 <div class="main-div">
-	<canvas id="signalCanvas" width="1000" height="400"></canvas>
+	<canvas id="signalCanvas" width="1000" height="350"></canvas>
+	<canvas id="freqCanvas" width="1000" height="350"></canvas>
 	<div class="rowFlex-div">
 		<canvas id="dataCanvas" width="60" height="40"></canvas>
+		<canvas id="FFTCanvas" width="60" height="40"></canvas>
 		<button id="sinBtn" class="normal-btn" onclick="setValue(1)">正弦波</button>
 		<button id="squareBtn" class="normal-btn" onclick="setValue(2)">方波</button>
 		<button id="triangleBtn" class="normal-btn" onclick="setValue(3)">三角波</button>
@@ -38,13 +40,19 @@
     let freqInput = $('#freqInput');
 
     let waveVI = new VILibrary.VI.WaveVI($('#signalCanvas'));
+    let freqVI = new VILibrary.VI.WaveVI($('#freqCanvas'));
     let signalGeneratorVI = new VILibrary.VI.SignalGeneratorVI($('#dataCanvas'));
+    let FFTVI = new VILibrary.VI.FFTVI($('#FFTCanvas'));
     let knobVI1 = new VILibrary.VI.KnobVI($('#knobCanvas1'));
     let knobVI2 = new VILibrary.VI.KnobVI($('#knobCanvas2'));
 
     VILibrary.InnerObjects.bindDataLine(knobVI1.id, signalGeneratorVI.id, 0, 1);
     VILibrary.InnerObjects.bindDataLine(knobVI2.id, signalGeneratorVI.id, 0, 2);
     VILibrary.InnerObjects.bindDataLine(signalGeneratorVI.id, waveVI.id, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(signalGeneratorVI.id, FFTVI.id, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(FFTVI.id, freqVI.id, 0, 0);
+
+    freqVI.pointNum = signalGeneratorVI.dataLength / 2;
 
     function setValue (signalType) {
 
