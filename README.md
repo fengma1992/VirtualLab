@@ -1,5 +1,5 @@
 # VirtualLab
-alpha1
+beta2
 
 Using HTML5 and WebGL to build a virtual lab
 
