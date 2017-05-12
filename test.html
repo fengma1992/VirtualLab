@@ -36,59 +36,124 @@
 <script src="js/three/controls/OrbitControls.js"></script>
 <script src="js/three/ObjectControls.js"></script>
 <script>
-	//VI部分变量
-	let positionWave;
-	let angleWave;
-	let addVI = new VILibrary.VI.AddVI($('<canvas id="addVI"></canvas>'));
-	let PIDVI = new VILibrary.VI.PIDVI($('<canvas id="PIDVI"></canvas>'));
-	let ballBeamVI = new VILibrary.VI.BallBeamVI($('#mainCanvas'), true);
-	VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 3, 1);
-	VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 2, 0);
-	VILibrary.InnerObjects.bindDataLine(addVI.id, PIDVI.id, 0, 0);
-	VILibrary.InnerObjects.bindDataLine(PIDVI.id, ballBeamVI.id, 0, 0);
+    //VI部分变量
+    let positionWave;
+    let angleWave;
+    let addVI = new VILibrary.VI.AddVI($('<canvas id="addVI"></canvas>'));
+    let PIDVI = new VILibrary.VI.PIDVI($('<canvas id="PIDVI"></canvas>'));
+    let ballBeamVI = new VILibrary.VI.BallBeamVI($('#mainCanvas'), true);
+    VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 3, 1);
+    VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, addVI.id, 2, 0);
+    VILibrary.InnerObjects.bindDataLine(addVI.id, PIDVI.id, 0, 0);
+    VILibrary.InnerObjects.bindDataLine(PIDVI.id, ballBeamVI.id, 0, 0);
 
-	function start() {
-		$('#startBtn').attr('disabled', true);
-		layer.open({
-			type: 1,
-			title: '相关数据波形图',
-			area: ['auto', 'auto'],
-			shade: 0,
-			maxmin: true,
-			closeBtn: false,
-			zIndex: layer.zIndex,
-			content: '<div class="columnFlex-div" style="margin: 5px 5px">' +
-			'<div class="columnFlex-div">' +
-			'<canvas id="positionCanvas" width="500" height="300"></canvas>' +
-			'<span>小球位置曲线</span>' +
-			'</div>' +
-			'<div class="columnFlex-div">' +
-			'<canvas id="angleCanvas" width="500" height="300"></canvas>' +
-			'<span>杆角度曲线</span>' +
-			'</div>' +
-			'</div>',
-			success: function (layero) {
-				layer.setTop(layero);
-				//PID控制器
-				PIDVI.P = $('#PInput').val();
-				PIDVI.I = $('#IInput').val();
-				PIDVI.D = $('#DInput').val();
-				$('#positionSpan').text(ballBeamVI.markPosition);
-				positionWave = new VILibrary.VI.WaveVI($('#positionCanvas'));
-				angleWave = new VILibrary.VI.WaveVI($('#angleCanvas'));
-				VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, positionWave.id, 2, 0);
-				VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, angleWave.id, 1, 0);
-				ballBeamVI.toggleObserver(true);
-			}
-		});
-	}
-	function reset() {
-		ballBeamVI.toggleObserver(false);
-		ballBeamVI.reset();
-		layer.closeAll();
-		$('#startBtn').attr('disabled', false);
-		$('#positionInput').val(0);
-	}
+    function start () {
+        $('#startBtn').attr('disabled', true);
+        layer.open({
+            type: 1,
+            title: '相关数据波形图',
+            area: ['auto', 'auto'],
+            shade: 0,
+            maxmin: true,
+            closeBtn: false,
+            zIndex: layer.zIndex,
+            content: '<div class="columnFlex-div" style="margin: 5px 5px">' +
+            '<div class="columnFlex-div">' +
+            '<canvas id="positionCanvas" width="500" height="300"></canvas>' +
+            '<span>小球位置曲线</span>' +
+            '</div>' +
+            '<div class="columnFlex-div">' +
+            '<canvas id="angleCanvas" width="500" height="300"></canvas>' +
+            '<span>杆角度曲线</span>' +
+            '</div>' +
+            '</div>',
+            success: function (layero) {
+                layer.setTop(layero);
+                //PID控制器
+                PIDVI.P = $('#PInput').val();
+                PIDVI.I = $('#IInput').val();
+                PIDVI.D = $('#DInput').val();
+                $('#positionSpan').text(ballBeamVI.markPosition);
+                positionWave = new VILibrary.VI.WaveVI($('#positionCanvas'));
+                angleWave = new VILibrary.VI.WaveVI($('#angleCanvas'));
+                VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, positionWave.id, 2, 0);
+                VILibrary.InnerObjects.bindDataLine(ballBeamVI.id, angleWave.id, 1, 0);
+                ballBeamVI.toggleObserver(true);
+            }
+        });
+    }
+    function reset () {
+        ballBeamVI.toggleObserver(false);
+        ballBeamVI.reset();
+        layer.closeAll();
+        $('#startBtn').attr('disabled', false);
+        $('#positionInput').val(0);
+    }
+    let jsontxt =
+
+        [
+            {
+                ID: "Add-0",
+                Width: 65,
+                Height: 50,
+                Top: "585px",
+                Left: "164px",
+                InputInfo: [["Relay-0", 0, 1], ["BallBeam-0", 2, 2]],
+                OutputInfo: [["PID-0", 0, 0]],
+                EventBusLine: 1
+            },
+            {
+                ID: "PID-0",
+                Width: 65,
+                Height: 50,
+                Top: "472px",
+                Left: "149px",
+                InputInfo: [["Add-0", 0, 0]],
+                OutputInfo: [["BallBeam-0", 0, 0]],
+                EventBusLine: 1
+            },
+            {
+                ID: "BallBeam-0",
+                Width: 550,
+                Height: 300,
+                Top: "88px",
+                Left: "61px",
+                InputInfo: [["PID-0", 0, 0]],
+                OutputInfo: [["Relay-0", 3, 0], ["Add-0", 2, 2],
+                    ["Wave-1", 2, 0], ["Wave-0", 1, 0]],
+                EventBusLine: 1
+            },
+            {
+                ID: "Wave-0",
+                Width: 500,
+                Height: 300,
+                Top: "415px",
+                Left: "658px",
+                InputInfo: [["BallBeam-0", 1, 0]],
+                EventBusLine: 1
+            },
+            {
+                ID: "Wave-1",
+                Width: 500,
+                Height: 300,
+                Top: "88px",
+                Left: "660px",
+                InputInfo: [["BallBeam-0", 2, 0]],
+                EventBusLine: 1
+            },
+            {
+                ID: "Relay-0",
+                Width: 65,
+                Height: 50,
+                Top: "505px",
+                Left: "369px",
+                InputInfo: [["BallBeam-0", 3, 0]],
+                OutputInfo: [["Add-0", 0, 1]],
+                EventBusLine: 1
+            }
+        ]
+
+    ;
 </script>
 </body>
 </html>
