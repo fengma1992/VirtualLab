@@ -28,8 +28,10 @@ bd.append(mainContainer);
 let instance;
 let parsingFlag = false;
 
+//初始化函数
 function init () {
 
+    //将前台标签内容清空
     sideBar.html('');
     VIContainer.html('');
     fileImporter.val('');
@@ -46,6 +48,11 @@ function init () {
     containerResize();
 }
 
+/**
+ * 检测VI输入端接口是否已绑定
+ * @param targetVI 数据输入VI
+ * @param inputType 数据输入类型
+ */
 function checkIfTargetInputValueBound (targetVI, inputType) {
 
     for (let sourceInfo of targetVI.sourceInfoArray) {
@@ -59,6 +66,10 @@ function checkIfTargetInputValueBound (targetVI, inputType) {
     return false;
 }
 
+/**
+ * 删除VI装配区的VI
+ * @param canvas 前台画布元素
+ */
 function deleteVI (canvas) {
 
     let canvasId = canvas.id;
@@ -167,6 +178,11 @@ function addEndpoints (id, outputPointCount, inputPointCount) {
     }
 }
 
+/**
+ *右键VI菜单
+ * @param e 事件
+ * @param canvas VI画布对象
+ */
 function showContextMenu (e, canvas) {
 
     e = e || window.event;
@@ -191,6 +207,10 @@ function showContextMenu (e, canvas) {
     return false;
 }
 
+/**
+ *VI绘制函数
+ * @param canvas VI画布对象
+ */
 function VIDraw (canvas) {
 
     VIContainer.append(canvas);
@@ -204,16 +224,28 @@ function VIDraw (canvas) {
     return tempVI;
 }
 
+/**
+ *阻止拖拽默认事件
+ * @param e 事件
+ */
 function allowDrop (e) {
 
     e.preventDefault();
 }
 
+/**
+ *拖动事件，传递ID信息
+ * @param e 事件
+ */
 function drag (e) {
 
     e.dataTransfer.setData('Text', e.target.id);
 }
 
+/**
+ *拖动放开事件
+ * @param e 事件
+ */
 function drop (e) {
 
     e.preventDefault();
@@ -233,6 +265,9 @@ function drop (e) {
     VIDraw(newVICanvas);
 }
 
+/**
+ *连线库准备
+ */
 function ready () {
 
     instance = window.jsp = jsPlumb.getInstance({
@@ -427,6 +462,11 @@ function ready () {
     jsPlumb.fire('jsPlumbDemoLoaded', instance);
 }
 
+/**
+ *添加VI列表
+ * @param id 画布ID
+ * @param name VI名称
+ */
 function addCanvasToSideBar (id, name) {
 
     let VISpan = $('<span></span>');
@@ -442,6 +482,15 @@ function addCanvasToSideBar (id, name) {
     return VISpan;
 }
 
+/**
+ *新建VI画布
+ * @param id ID
+ * @param className CSS类名
+ * @param width 宽
+ * @param height 高
+ * @param top 距顶部距离
+ * @param left 距左侧距离
+ */
 function createCanvas (id, className, width, height, top, left) {
 
     let canvas = $('<canvas></canvas>');
@@ -457,6 +506,10 @@ function createCanvas (id, className, width, height, top, left) {
     return canvas;
 }
 
+/**
+ *解析JSON脚本
+ * @param json JSON数据
+ */
 function parseImportVIInfo (json) {
 
     parsingFlag = true;//导入解析时无需弹出输入输出选择
@@ -508,6 +561,9 @@ function parseImportVIInfo (json) {
     fileImporter.val('');
 }
 
+/**
+ *导出VI到JSON脚本
+ */
 function exportVI () {
 
     layer.prompt({
@@ -570,6 +626,9 @@ function exportVI () {
 
 }
 
+/**
+ *从JSON脚本文件导入VI
+ */
 function importVI () {
 
     let selectedFile = fileImporter[0].files[0];
@@ -589,6 +648,9 @@ function importVI () {
 
 init();
 
+/**
+ *自动缩放界面大小
+ */
 function containerResize () {
 
     let height = window.innerHeight * 0.95 > 600 ? window.innerHeight * 0.95 : 600;
