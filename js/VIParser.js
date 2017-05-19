@@ -4,15 +4,15 @@
 
 'use strict';
 let bd = $('body');
-let navigationBar = $('<div id="navigationBar-div"></div>');
-let fileImporter = $('<input type="file" id="file-input" accept="text/plain;" onchange="importVI()">');
-let importBtn = $('<input type="button" class="navigationBar-btn" value="导入">');
-let exportBtn = $('<input type="button" class="navigationBar-btn" value="导出" onclick="exportVI()">');
-let resetBtn = $('<input type="button" class="navigationBar-btn" value="重置" onclick="init()">');
-let mainContainer = $('<div id="container-div" class="rowFlex-div"></div>');
-let sideBar = $('<div id="sideBar" class="draggable-sideBar"></div>');
-let VIContainer = $('<div id="VIContainer" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>');
-let contextMenu = $('<div id="contextMenu" class="columnFlex-div"></div>');
+let navigationBar = $('<div id="navigationBar-div"></div>');//导航栏
+let fileImporter = $('<input type="file" id="file-input" accept="text/plain;" onchange="importVI()">');//脚本导入（不可见）
+let importBtn = $('<input type="button" class="navigationBar-btn" value="导入">');//脚本导入按钮
+let exportBtn = $('<input type="button" class="navigationBar-btn" value="导出" onclick="exportVI()">');//脚本导出按钮
+let resetBtn = $('<input type="button" class="navigationBar-btn" value="重置" onclick="init()">');//重置按钮
+let mainContainer = $('<div id="container-div" class="rowFlex-div"></div>');//主显示区，包含sideBar和VIContainer
+let sideBar = $('<div id="sideBar" class="draggable-sideBar"></div>');//左侧VI列表
+let VIContainer = $('<div id="VIContainer" class="draggable-div" ondrop="drop(event)" ondragover="allowDrop(event)"></div>');//VI装配区
+let contextMenu = $('<div id="contextMenu" class="columnFlex-div"></div>');//右键菜单
 
 VIContainer.click(function () { contextMenu.css('display', 'none');});
 importBtn.click(function () { fileImporter.click();});
@@ -25,10 +25,12 @@ navigationBar.append(resetBtn);
 bd.append(navigationBar);
 bd.append(mainContainer);
 
-let instance;
-let parsingFlag = false;
+let instance;//连线库实例
+let parsingFlag = false;//脚本解析状态量
 
-//初始化函数
+/**
+ * 初始化函数
+ */
 function init () {
 
     //将前台标签内容清空
@@ -61,7 +63,6 @@ function checkIfTargetInputValueBound (targetVI, inputType) {
 
             return true;
         }
-
     }
     return false;
 }
@@ -75,18 +76,14 @@ function deleteVI (canvas) {
     let canvasId = canvas.id;
     let VI = VILibrary.InnerObjects.getVIById(canvasId);
 
-    // 从连线库删除VI数据
-    // instance.detachAllConnections(canvas);
-    // instance.deleteEndpoint('output-' + canvasId);
-    // instance.deleteEndpoint('input-' + canvasId);
-
+    // 从连线库实例删除VI数据
     instance.remove(canvas);
     VI.destroy();
     ready();
 }
 
 /**
- *添加节点
+ *添加连线节点
  * @param id 元素ID
  * @param outputPointCount 输出节点允许最大连接数
  * @param inputPointCount 输入节点允许最大连接数
@@ -213,14 +210,14 @@ function showContextMenu (e, canvas) {
  */
 function VIDraw (canvas) {
 
-    VIContainer.append(canvas);
-    instance.draggable(canvas);
+    VIContainer.append(canvas);//向装配区添加Canvas对象
+    instance.draggable(canvas);//也向连线实例添加Canvas对象
     let VIName = canvas.attr('id').split('-')[0];
     let tempVI = new VILibrary.VI[VIName](canvas, true);
     if (tempVI.id === 'WaveVI-0') {
         tempVI.setAxisRangX(0, 44100);
     }
-    addEndpoints(tempVI.id, tempVI.outputPointCount, tempVI.inputPointCount);
+    addEndpoints(tempVI.id, tempVI.outputPointCount, tempVI.inputPointCount);//向Canvas添加连线端口
     return tempVI;
 }
 
@@ -249,7 +246,7 @@ function drag (e) {
 function drop (e) {
 
     e.preventDefault();
-    let VICanvas = $('#' + e.dataTransfer.getData('Text'));
+    let VICanvas = $('#' + e.dataTransfer.getData('Text'));//获取drag()函数保存的ID信息并新建Canvas对象
     let newVICanvas = $('<canvas></canvas>');
     let VIName = VICanvas.attr('id');
 
@@ -270,6 +267,7 @@ function drop (e) {
  */
 function ready () {
 
+    //新建连线对象实例
     instance = window.jsp = jsPlumb.getInstance({
         // default drag options
         DragOptions: {cursor: 'pointer', zIndex: 2000},
@@ -293,6 +291,7 @@ function ready () {
         Container: 'VIContainer'
     });
 
+    //设置连线样式基本类型
     let basicType = {
         connector: 'StateMachine',
         paintStyle: {stroke: 'red', strokeWidth: 4},
@@ -300,6 +299,7 @@ function ready () {
         overlays: ['Arrow']
     };
 
+    //注册基本样式
     instance.registerConnectionType('basic', basicType);
 
     // suspend drawing and initialise.
@@ -308,6 +308,7 @@ function ready () {
         // 监听连线事件
         instance.bind('connection', function (connectionInfo) {
 
+            //检测是否在在脚本导入连线阶段
             if (!parsingFlag) {
 
                 let sourceId = connectionInfo.sourceId;
@@ -319,9 +320,10 @@ function ready () {
 
                 new Promise(function (resolve, reject) {
 
-                    //对多输出控件判断
+                    //对多输出控件判断，outputBoxTitle在VI类中自定义
                     if (sourceVI.outputBoxTitle) {
 
+                        //输出参数设置弹出框
                         layer.open({
                             type: 1,
                             title: sourceVI.outputBoxTitle,
@@ -366,6 +368,7 @@ function ready () {
                     //对于多输入控件,进行输入端口判断
                     if (targetVI.inputBoxTitle) {
 
+                        //输入参数设置弹出框
                         layer.open({
                             type: 1,
                             title: targetVI.inputBoxTitle,
@@ -416,11 +419,12 @@ function ready () {
                             }
                         });
                     }
+                    //无输出输入选择，直接连接默认接口
                     else {
                         VILibrary.InnerObjects.bindDataLine(sourceId, targetId, sourceOutputType, targetInputType);
                     }
                 })
-                .catch(function () {
+                .catch(function () {//错误捕捉
 
                     if (connectionInfo) {
 
@@ -454,11 +458,13 @@ function ready () {
             let sourceId = connectionInfo.sourceId;
             let targetId = connectionInfo.targetId;
 
+            //解绑数据线连接
             VILibrary.InnerObjects.unbindDataLine(sourceId, targetId);
             console.log('Connection detached');
         });
     });
 
+    //连线库激发
     jsPlumb.fire('jsPlumbDemoLoaded', instance);
 }
 
@@ -478,7 +484,7 @@ function addCanvasToSideBar (id, name) {
     VISpan.attr('draggable', 'true');
     VISpan.attr('ondragstart', 'drag(event)');
     VISpan.text(name);
-    sideBar.append(VISpan);
+    sideBar.append(VISpan);//向左侧VI列表添加显示项
     return VISpan;
 }
 
@@ -500,8 +506,8 @@ function createCanvas (id, className, width, height, top, left) {
     canvas.attr('height', height);
     canvas.css('top', top);
     canvas.css('left', left);
-    canvas.attr('oncontextmenu', 'showContextMenu(event, this)');
-    canvas.attr('ondblclick', 'showBox(this)');
+    canvas.attr('oncontextmenu', 'showContextMenu(event, this)');//添加右键点击菜单
+    canvas.attr('ondblclick', 'showBox(this)');//添加双击弹出属性数据设置框
 
     return canvas;
 }
@@ -512,6 +518,7 @@ function createCanvas (id, className, width, height, top, left) {
  */
 function parseImportVIInfo (json) {
 
+    //因连接接口时默认会弹出选择框，设置parsingFlag为true产生暂时性死区，屏蔽弹出框
     parsingFlag = true;//导入解析时无需弹出输入输出选择
     for (let importVIInfo of json.VIInfo) {
 
@@ -557,7 +564,7 @@ function parseImportVIInfo (json) {
             }
         }
     }
-    parsingFlag = false;//解析完毕取消连线弹框锁定
+    parsingFlag = false;//解析完毕取消屏蔽弹出框
     fileImporter.val('');
 }
 
@@ -566,6 +573,7 @@ function parseImportVIInfo (json) {
  */
 function exportVI () {
 
+    //文件名输入弹出框
     layer.prompt({
         formType: 0,
         value: 'exportVI.txt',
@@ -611,6 +619,7 @@ function exportVI () {
         pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSONString));
         pom.setAttribute('download', value);
 
+        //模拟链接点击事件，下载保存的脚本文件
         if (document.createEvent) {
 
             let event = document.createEvent('MouseEvents');

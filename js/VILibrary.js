@@ -256,8 +256,8 @@ VILibrary.InnerObjects = {
 		for (let VI of this.existingVIArray) {
 			
 			if (VI.dataLine === dataLine && VI.hasOwnProperty('updater')) {
-				
-				VI.updater();
+
+                VI.updater();//通知各个VI更新自身数据
 			}
 		}
 	},
@@ -400,6 +400,7 @@ VILibrary.InnerObjects = {
 		
 		let objLoader = new THREE.OBJLoader();
 		let mtlLoader = new THREE.MTLLoader();
+        //Promise对象 ES6中新增异步文件传输
 		return new Promise(function (resolve, reject) {
 			mtlLoader.load(MTLUrl, function (material) {
 				objLoader.setMaterials(material);
@@ -615,7 +616,7 @@ TemplateVI.logCount = 0;
 
 //VI对象类
 VILibrary.VI = {
-	
+
 	AudioVI: class AudioVI extends TemplateVI {
 		
 		constructor(VICanvas) {
@@ -623,7 +624,8 @@ VILibrary.VI = {
 			super(VICanvas);
 			
 			const _this = this;
-			
+
+            //新建音频操作对象
 			let audioCtx = new (window.AudioContext || webkitAudioContext)(),
 				analyser = audioCtx.createAnalyser(), source, timeStamp = 0, point = {};
 			
@@ -681,7 +683,8 @@ VILibrary.VI = {
 								function getAudioData() {
 									
 									if (_this.dataLine) {
-										
+
+                                        //根据负载，自动数据更新与界面更新
 										_this.timer = window.requestAnimationFrame(getAudioData);
 										
 										analyser.getByteTimeDomainData(dataArray);
@@ -723,6 +726,7 @@ VILibrary.VI = {
 			this.draw = function () {
 				
 				let img = new Image();
+                //Promise加载显示图像
 				new Promise(function (resolve, reject) {
 					
 					img.src = 'img/mic.png';
@@ -739,7 +743,8 @@ VILibrary.VI = {
 			};
 			
 			this.draw();
-			
+
+            //添加事件监听，点击VI开启关闭麦克风
 			this.container.addEventListener('mousedown', function (e) {
 				
 				timeStamp = e.timeStamp;
@@ -775,7 +780,7 @@ VILibrary.VI = {
 			return '80px';
 		}
 	},
-	
+
 	KnobVI: class KnobVI extends TemplateVI {
 		
 		constructor(VICanvas) {
@@ -817,8 +822,14 @@ VILibrary.VI = {
 				'<span class="normal-span">最小值:</span><input type="number" id="KnobVI-input-1" value="' + this.minValue + '" class="normal-input">' +
 				'<span class="normal-span">最大值:</span><input type="number" id="KnobVI-input-2" value="' + this.maxValue + '" class="normal-input">' +
 				'<span class="normal-span">初值:</span><input type="number" id="KnobVI-input-3" value="' + this.defaultValue + '" class="normal-input"></div>';
-			
-			//设置旋钮初始参数
+
+            /**
+             * 设置旋钮初始参数
+             * @param minValue 最小值
+             * @param maxValue 最大值
+             * @param startValue 初始值
+             * @returns {boolean}
+             */
 			this.setDataRange = function (minValue, maxValue, startValue) {
 				
 				let minVal = Number.isNaN(minValue) ? 0 : minValue;
@@ -1127,7 +1138,7 @@ VILibrary.VI = {
 			return '150px';
 		}
 	},
-	
+
 	DCOutputVI: class DCOutputVI extends TemplateVI {
 		
 		constructor(VICanvas) {
@@ -1158,7 +1169,8 @@ VILibrary.VI = {
 					
 					return false;
 				}
-				
+
+                //最新数据永远在output最后一位
 				if (this.index <= (this.dataLength - 1)) {
 					
 					this.output[this.index] = temp;
@@ -1289,6 +1301,7 @@ VILibrary.VI = {
 					this.boxContent = '<div class="input-div"><span class="normal-span">初值:</span>' +
 						'<input type="number" id="AddVI-input" value="' + this.originalInput + '" class="normal-input"></div>';
 				}
+                //最新数据永远在output最后一位
 				else {
 					
 					this.latestInput = inputValue;
@@ -2291,7 +2304,8 @@ VILibrary.VI = {
 				//     renderer.setSize(domElement.clientWidth, domElement.clientHeight);
 				// });
 			}
-			
+
+            //模型中标记拖拽
 			function onBallBeamDrag() {
 				
 				controls.enabled = false;
@@ -2307,10 +2321,11 @@ VILibrary.VI = {
 				}
 				_this.markPosition = parseInt(this.focused.position.x);
 			}
-			
+
 			window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
 				|| window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-			
+
+            //界面实时更新，循环调用
 			function ballBeamAnimate() {
 				
 				window.requestAnimationFrame(ballBeamAnimate);
@@ -2319,7 +2334,12 @@ VILibrary.VI = {
 				renderer.render(scene, camera);
 				
 			}
-			
+
+            /**
+             * 设置球、杆位置
+             * @param ang 杆角度
+             * @param pos 球位置
+             */
 			function setPosition(ang, pos) {
 				
 				let angle = -ang;//角度为逆时针旋转
@@ -3942,7 +3962,8 @@ VILibrary.VI = {
 					this.drawRuler();
 				}
 			};
-			
+
+            //绘制波形
 			this.drawWave = function () {
 				
 				let ratioX = this.waveWidth / (this.pointNum - 1);
@@ -3978,7 +3999,8 @@ VILibrary.VI = {
 				this.ctx.closePath();
 				this.ctx.save();
 			};
-			
+
+            //绘制背景
 			this.drawBackground = function () {
 				
 				let ctx = this.ctx;
@@ -4070,7 +4092,8 @@ VILibrary.VI = {
 			};
 			
 			this.drawBackground();
-			
+
+            //绘制鼠标移动时的标尺
 			this.drawRuler = function () {
 				
 				//画标尺//
@@ -4135,14 +4158,16 @@ VILibrary.VI = {
 				}
 				this.draw();
 			};
-			
+
+            //设置X轴范围
 			this.setAxisRangX = function (xMin, xNax) {
 				
 				this.minValX = xMin;
 				this.maxValX = xNax;
 				this.drawBackground();
 			};
-			
+
+            //设置Y轴范围
 			this.setAxisRangY = function (yMin, yMax) {
 				
 				this.minValY = yMin;
@@ -4155,7 +4180,8 @@ VILibrary.VI = {
 				this.pointNum = num;
 				this.drawBackground();
 			};
-			
+
+            //设置X、Y轴坐标标签
 			this.setLabel = function (xLabel, yLabel) {
 				
 				this.strLabelX = xLabel;
