@@ -646,6 +646,7 @@ function importVI () {
     }
 }
 
+//调用init()
 init();
 
 /**
@@ -658,4 +659,7 @@ function containerResize () {
     VIContainer.css('height', height);
 }
 
+/**
+ * 添加浏览器缩放监听事件
+ */
 window.addEventListener('resize', containerResize, false);

@@ -4,10 +4,17 @@
 
 'use strict';
 
+//新建VILibrary对象
 let VILibrary = {REVISION: '1.0'};
 
+//VI使用所需公共函数
 VILibrary.InnerObjects = {
-	
+
+    /**
+     * 数字位对齐
+     * @param num 数字
+     * @returns {*}
+     */
 	fixNumber: function (num) {
 		
 		let strLab;
@@ -44,13 +51,23 @@ VILibrary.InnerObjects = {
 		}
 		return strLab;
 	},
-	
+
+    /**
+     * 获取DOM对象
+     * @param obj 待检测对象
+     * @returns {*}
+     */
 	getDomObject: function (obj) {
 		
 		obj = typeof obj === "string" ? document.getElementById(obj) : obj;
 		return (obj instanceof HTMLElement) ? obj : (obj instanceof jQuery) ? obj[0] : false;
 	},
-	
+
+    /**
+     * 通过ID获取VI
+     * @param id ID值
+     * @returns {*}
+     */
 	getVIById: function (id) {
 		
 		for (let VI of this.existingVIArray) {
@@ -61,7 +78,12 @@ VILibrary.InnerObjects = {
 		}
 		return false;
 	},
-	
+
+    /**
+     * 通过VI类名获取VI中文名
+     * @param VIName VI类名
+     * @returns {boolean}
+     */
 	getVIcnName: function (VIName) {
 		
 		if (VILibrary.VI.hasOwnProperty(VIName)) {
@@ -110,7 +132,14 @@ VILibrary.InnerObjects = {
 		}
 		return boundVIArray;
 	},
-	
+
+    /**
+     * 绑定两个VI数据接口
+     * @param sourceId 数据输出VI
+     * @param targetId 数据输入VI
+     * @param sourceOutputType 数据输出端口
+     * @param targetInputType 数据输入端口
+     */
 	bindDataLine: function (sourceId, targetId, sourceOutputType, targetInputType) {
 		
 		let sourceVI = this.getVIById(sourceId);
@@ -157,8 +186,12 @@ VILibrary.InnerObjects = {
 			}
 		}
 	},
-	
-	//解绑默认将与targetVI相关的VI赋新dataLine值
+
+    /**
+     *解绑默认将与targetVI相关的VI赋新dataLine值
+     * @param sourceId 数据输出VI ID
+     * @param targetId 数据输入VI ID
+     */
 	unbindDataLine: function (sourceId, targetId) {
 		
 		let sourceVI = this.getVIById(sourceId);
@@ -209,7 +242,11 @@ VILibrary.InnerObjects = {
 			}
 		}
 	},
-	
+
+    /**
+     * 数据更新广播
+     * @param dataLine 数据线
+     */
 	dataUpdater: function (dataLine) {
 		
 		if (!dataLine) {
@@ -224,8 +261,11 @@ VILibrary.InnerObjects = {
 			}
 		}
 	},
-	
-	//双击VI弹出框
+
+    /**
+     *双击VI弹出框
+     * @param VI VI对象
+     */
 	showBox: function (VI) {
 		
 		if (VI.boxTitle) {
@@ -349,7 +389,13 @@ VILibrary.InnerObjects = {
 		}
 		return output;
 	},
-	
+
+    /**
+     * 模型导入函数
+     * @param MTLUrl MTL链接地址
+     * @param OBJUrl OBJ链接地址
+     * @returns {Promise}
+     */
 	loadModule: function (MTLUrl, OBJUrl) {
 		
 		let objLoader = new THREE.OBJLoader();
@@ -370,10 +416,16 @@ VILibrary.InnerObjects = {
 			})
 		})
 	},
+
+    //记录已创建的VI
 	existingVIArray: [],
+    //记录已使用的数据线
 	dataLineArray: []
 };
 
+/**
+ * 模板VI类
+ */
 class TemplateVI {
 	
 	constructor(VICanvas) {
@@ -400,7 +452,11 @@ class TemplateVI {
 		
 		VILibrary.InnerObjects.existingVIArray.push(this);
 		this.constructor.logCount++;
-		
+
+        /**
+         * 开关自动监听
+         * @param flag true或false，分别开/关
+         */
 		this.toggleObserver = function (flag) {
 			
 			if (flag) {
@@ -426,7 +482,10 @@ class TemplateVI {
 				this.draw();
 			}
 		};
-		
+
+        /**
+         * 自身数据更新
+         */
 		this.updater = function () {
 			
 			if (this.sourceInfoArray.length > 0) {
@@ -441,7 +500,10 @@ class TemplateVI {
 				}
 			}
 		};
-		
+
+        /**
+         * 已新建VI销毁
+         */
 		this.destroy = function () {
 			
 			let index = VILibrary.InnerObjects.existingVIArray.indexOf(this);
@@ -456,22 +518,35 @@ class TemplateVI {
 			}
 			this.dataLine = 0;
 		};
-		
+
+        /**
+         * 数据设置
+         */
 		this.setData = function () {
 		};
-		
+
+        /**
+         * 从外部调用，数据获取
+         * @returns {Array|[number]}
+         */
 		this.getData = function () {
 			
 			return this.output;
 		};
-		
+
+        /**
+         * VI重置
+         */
 		this.reset = function () {
 			
 			this.toggleObserver(false);
 			this.index = 0;
 			this.output = [0];
 		};
-		
+
+        /**
+         * VI界面绘图
+         */
 		this.draw = function () {
 			
 			this.ctx = this.container.getContext("2d");
@@ -491,33 +566,54 @@ class TemplateVI {
 				this.ctx.fillText(this.constructor.cnName, this.container.width / 2 - 14 * length / 2, this.container.height / 2 + 6);
 			}
 		};
-		
+
+        /**
+         * Canvas画布双击事件
+         * @param e 事件
+         */
 		this.handleDblClick = function (e) {
 			
 			VILibrary.InnerObjects.showBox(_this);
 		};
-		
+
+        /**
+         * 添加双击事件监听
+         */
 		this.container.addEventListener('dblclick', this.handleDblClick, false);
 	}
-	
+
+    /**
+     * 中文名
+     * @returns {string}
+     */
 	static get cnName() {
 		
 		return 'VI模版';
 	}
-	
+
+    /**
+     * 默认宽度
+     * @returns {string}
+     */
 	static get defaultWidth() {
 		
 		return '65px';
 	}
-	
+
+    /**
+     * 默认高度
+     * @returns {string}
+     */
 	static get defaultHeight() {
 		
 		return '50px';
 	}
 }
-//因ES6定义Class内只有静态方法没有静态属性，只能在Class外定义
+
+//因ES6定义Class内只有静态方法没有静态属性，只能在Class外定义，记录已新建的VI数量
 TemplateVI.logCount = 0;
 
+//VI对象类
 VILibrary.VI = {
 	
 	AudioVI: class AudioVI extends TemplateVI {
